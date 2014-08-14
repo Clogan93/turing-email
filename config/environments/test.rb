@@ -1,4 +1,15 @@
 Rails.application.configure do
+  config.heroku_app_name = 'turing-website-test'
+
+  config.domain = "#{ENV.has_key?('LOCALHOST') ? ENV['LOCALHOST'] : 'localhost'}:4000"
+  config.url = "http://#{config.domain}"
+  config.api_url = "http://#{config.domain}"
+
+  config.log_level = :info
+
+  # Speed up tests by lowering bcrypt's cost function.
+  ActiveModel::SecurePassword.min_cost = true
+
   # Settings specified here will take precedence over those in config/application.rb.
 
   # The test environment is used exclusively to run your application's

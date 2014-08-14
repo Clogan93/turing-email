@@ -1,4 +1,12 @@
 Rails.application.configure do
+  config.heroku_app_name = 'turing-email-dev'
+
+  config.domain = "#{ENV.has_key?('LOCALHOST') ? ENV['LOCALHOST'] : 'localhost'}:4000"
+  config.url = "http://#{config.domain}"
+  config.api_url = "http://#{config.domain}"
+
+  config.log_level = :info
+
   # Settings specified here will take precedence over those in config/application.rb.
 
   # In the development environment your application's code is reloaded on

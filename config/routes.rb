@@ -1,4 +1,26 @@
 Rails.application.routes.draw do
+  root 'static_pages#home'
+
+  get '/api-docs', to: 'static_pages#api_docs'
+
+  resources :sessions, only: [:new, :create, :destroy]
+
+  resources :users, except: [:index, :show]
+  match('/forgot_password', to: 'users#forgot_password', via: ['get', 'post'], as: :forgot_password)
+
+  match '/signup',  to: 'users#new',        via: 'get'
+  match '/signin',  to: 'sessions#new',     via: 'get'
+  match '/signout', to: 'sessions#destroy', via: 'delete'
+
+  namespace :api, :defaults => {:format => :json} do
+    namespace :v1 do
+      resources :users, only: [:create]
+
+      resources :sessions, only: [:create]
+      match '/signout', to: 'sessions#destroy', via: 'delete'
+    end
+  end
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

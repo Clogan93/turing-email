@@ -1,0 +1,7 @@
+Welcome to Turing!<br /><br />
+<% if !current_user.nil? %>
+  <%= link_to('Signout', signout_path, :method => :delete) %>
+<% else %>
+  <%= link_to('Signin', signin_path) %><br />
+  <%= link_to('Signup', signup_path) %>
+<% end %>

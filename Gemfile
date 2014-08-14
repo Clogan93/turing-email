@@ -1,10 +1,14 @@
 source 'https://rubygems.org'
 
+#ruby
+ruby '2.0.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.1.1'
-# Use sqlite3 as the database for Active Record
-gem 'sqlite3'
+
+# Use postgres as the database for Active Record
+gem 'pg', '0.17.1'
+
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.3'
 # Use Uglifier as compressor for JavaScript assets
@@ -27,10 +31,10 @@ gem 'sdoc', '~> 0.4.0',          group: :doc
 gem 'spring',        group: :development
 
 # Use ActiveModel has_secure_password
-# gem 'bcrypt', '~> 3.1.7'
+gem 'bcrypt', '~> 3.1.7'
 
 # Use unicorn as the app server
-# gem 'unicorn'
+gem 'unicorn', '~> 4.8.3'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
@@ -38,3 +42,32 @@ gem 'spring',        group: :development
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
+# heroku
+gem 'rails_12factor', '~> 0.0.2', group: [:production, :beta]
+
+# deflater
+gem 'heroku-deflater', '~> 0.5.3'
+
+# bootstrap
+gem 'bootstrap-sass', '~> 3.1.1'
+
+# rabl
+gem 'rabl', '~> 0.9.3'
+
+# oj - needed for rabl
+gem 'oj', '~> 2.7.2'
+
+# swagger
+gem 'swagger-docs'
+gem 'swagger-ui_rails'
+
+group :test do
+  # rspec
+  gem 'rspec-rails', '~> 3.0.1'
+
+  # factory girl
+  gem 'factory_girl_rails', '4.4.1'
+end
+
+# aws
+gem 'aws-sdk', '~> 1.45.0'

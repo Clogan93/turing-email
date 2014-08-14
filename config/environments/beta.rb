@@ -1,10 +1,10 @@
 Rails.application.configure do
-  config.heroku_app_name = 'turing-email'
+  config.heroku_app_name = 'turing-email-beta'
 
-  config.domain = 'turingemail.com'
-  config.url = "https://www.#{config.domain}"
-  config.api_url = "https://api.#{config.domain}"
-
+  config.domain = 'turing-email-beta.herokuapp.com'
+  config.url = "https://#{config.domain}"
+  config.api_url = "https://#{config.domain}"
+  
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Code is not reloaded between requests.
