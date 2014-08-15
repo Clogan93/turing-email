@@ -2,8 +2,8 @@ Rails.application.configure do
   config.heroku_app_name = 'turing-email'
 
   config.domain = 'turingemail.com'
-  config.url = "https://www.#{config.domain}"
-  config.api_url = "https://api.#{config.domain}"
+  config.url = "http://www.#{config.domain}"
+  config.api_url = "http://api.#{config.domain}"
 
   # Settings specified here will take precedence over those in config/application.rb.
 

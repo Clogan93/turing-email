@@ -16,17 +16,17 @@ $config.http_errors = {
     :account_locked => {:status_code => 603, :description => 'Account locked.'}
 }
 
-$config.domain = 'turingemail.com'
-
 $config.company_name = 'Turing Technology, Inc.'
 $config.service_name = 'Turing Email'
 $config.service_name_short = 'Turing'
 
+$config.email_domain = 'turinginc.com'
+
 #$config.password_validation_regex = /\A(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}\z/
 $config.email_validation_regex = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
 
-$config.support_email = "support@#{$config.domain}"
-$config.logs_email = "logs@#{$config.domain}"
+$config.support_email = "support@#{$config.email_domain}"
+$config.logs_email = "logs@#{$config.email_domain}"
 
 $config.support_email_name = "#{$config.service_name} (Support)"
 $config.logs_email_name = "#{$config.service_name} Logs (#{Rails.env})"
