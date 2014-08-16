@@ -1,4 +1,4 @@
-window.MessageItem = Backbone.Model.extend({
+window.EmailItem = Backbone.Model.extend({
   toggleStatus: function(){
     if(this.get('status') == 'incomplete'){
       this.set({'status': 'complete'});

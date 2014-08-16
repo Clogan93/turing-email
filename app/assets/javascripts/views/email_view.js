@@ -1,4 +1,4 @@
-window.MessageView = Backbone.View.extend({
+window.EmailView = Backbone.View.extend({
   template: _.template('<h3 class="<%= status %>"><input type=checkbox <%= status == "complete" ? "checked=checked" : "" %>/> <%= description %> <a href="#<%= id %>">☞</a></h3><a href="#test">Test</a>'),
 
   events: {

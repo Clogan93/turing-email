@@ -6,5 +6,5 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
-Message.create(description: 'Pick up milk', status: 'incomplete')
-Message.create(description: 'Walk the dog', status: 'complete')
+Email.create(description: 'Pick up milk', status: 'incomplete')
+Email.create(description: 'Walk the dog', status: 'complete')

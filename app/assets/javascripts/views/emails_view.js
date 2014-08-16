@@ -1,4 +1,4 @@
-window.MessagesView = Backbone.View.extend({
+window.EmailsView = Backbone.View.extend({
   initialize: function(){
     this.collection.on('add', this.addOne, this);
     this.collection.on('reset', this.addAll, this);
@@ -14,8 +14,8 @@ window.MessagesView = Backbone.View.extend({
     this.collection.forEach(this.addOne, this);
   },
 
-  addOne: function(messageItem){
-    var messageView = new MessageView({model: messageItem});
-    this.$el.append(messageView.render().el); 
+  addOne: function(emailItem){
+    var emailView = new EmailView({model: emailItem});
+    this.$el.append(emailView.render().el); 
   }
 });

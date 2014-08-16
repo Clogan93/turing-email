@@ -1,4 +1,4 @@
-window.MessageApp = new (Backbone.Router.extend({
+window.EmailApp = new (Backbone.Router.extend({
   routes: {
     "": "index",
     ":id": "show",
@@ -6,9 +6,9 @@ window.MessageApp = new (Backbone.Router.extend({
   },
 
   initialize: function(){
-    this.messageItems = new MessageItems();
-    this.messagesView = new MessagesView({collection: this.messageItems});
-    this.messagesView.render();
+    this.emailItems = new EmailItems();
+    this.emailsView = new EmailsView({collection: this.emailItems});
+    this.emailsView.render();
   },
 
   test: function() {
@@ -16,8 +16,8 @@ window.MessageApp = new (Backbone.Router.extend({
   },
 
   index: function(){
-    $('#app').html(this.messagesView.el);
-    this.messageItems.fetch();
+    $('#app').html(this.emailsView.el);
+    this.emailItems.fetch();
   },
 
   start: function(){
@@ -25,6 +25,6 @@ window.MessageApp = new (Backbone.Router.extend({
   },
 
   show: function(id){
-    this.messageItems.focusOnMessageItem(id);
+    this.emailItems.focusOnEmailItem(id);
   }
 }));

@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  resources :messages
+  resources :emails
 
   root 'static_pages#home'
 
