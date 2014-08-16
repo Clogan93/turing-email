@@ -74,3 +74,6 @@ gem 'aws-sdk', '~> 1.45.0'
 
 # google api
 gem 'google-api-client'
+
+# backbone
+gem 'backbone-rails', git: 'https://github.com/rubymaverick/backbone-rails.git'

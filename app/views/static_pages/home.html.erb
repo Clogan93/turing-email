@@ -1,4 +1,12 @@
-Welcome to Turing!<br /><br />
+Welcome to Turing!
+<br />
+<br />
+
+<a href="/inbox">Mail</a>
+
+<br />
+<br />
+
 <% if !current_user.nil? %>
   <%= link_to('Signout', signout_path, :method => :delete) %>
 <% else %>

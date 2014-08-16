@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
+  resources :messages
+
   root 'static_pages#home'
+
+  get '/inbox', to: 'static_pages#inbox'
 
   get '/api-docs', to: 'static_pages#api_docs'
 

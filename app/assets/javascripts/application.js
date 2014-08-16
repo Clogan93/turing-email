@@ -12,7 +12,11 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require turbolinks
-//= require_tree .
+//= turbolinks
+//= require backbone-rails
+//= require_tree ./models
+//= require_tree ./collections
+//= require_tree ./views
+//= require router
 //
-//= require swagger-ui
+// swagger-ui
