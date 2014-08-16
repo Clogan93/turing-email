@@ -1,11 +1,16 @@
+$config = Rails.configuration
+$url_helpers = Rails.application.routes.url_helpers
+$helpers = ActionController::Base.helpers
+
 # constants
 
 ERROR = -1
 OK = 1
 
-$config = Rails.configuration
-$url_helpers = Rails.application.routes.url_helpers
-$helpers = ActionController::Base.helpers
+# keys
+
+$config.google_clientid ||= ENV['GOOGLE_CLIENTID']
+$config.google_secret ||= ENV['GOOGLE_SECRET']
 
 # http errors
 
