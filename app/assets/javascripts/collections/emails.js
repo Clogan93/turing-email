@@ -1,5 +1,5 @@
-window.EmailItems = Backbone.Collection.extend({
-  model: EmailItem,
+window.Emails = Backbone.Collection.extend({
+  model: Email,
   url: '/emails',
 
   initialize: function(){
@@ -10,9 +10,9 @@ window.EmailItems = Backbone.Collection.extend({
     model.trigger('hide');
   },
 
-  focusOnEmailItem: function(id) {
-    var modelsToRemove = this.filter(function(emailItem){
-      return emailItem.id != id;
+  focusOnEmail: function(id) {
+    var modelsToRemove = this.filter(function(email){
+      return email.id != id;
     });
 
     this.remove(modelsToRemove);

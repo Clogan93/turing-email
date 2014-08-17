@@ -1,4 +1,4 @@
-window.EmailsView = Backbone.View.extend({
+window.InboxView = Backbone.View.extend({
   initialize: function(){
     this.collection.on('add', this.addOne, this);
     this.collection.on('reset', this.addAll, this);

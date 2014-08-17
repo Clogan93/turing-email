@@ -1,0 +1,107 @@
+// Place all the styles related to the messages controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+@font-face {font-family: 'proxima_nova_softmedium';src: url('http://rocketway.net/themebuilder/template/templates/pure/font/mark_simonson_-_proxima_nova_soft_medium-webfont.eot');src: url('http://rocketway.net/themebuilder/template/templates/pure/font/mark_simonson_-_proxima_nova_soft_medium-webfont.eot?#iefix') format('embedded-opentype'),url('http://rocketway.net/themebuilder/template/templates/pure/font/mark_simonson_-_proxima_nova_soft_medium-webfont.woff') format('woff'),url('http://rocketway.net/themebuilder/template/templates/pure/font/mark_simonson_-_proxima_nova_soft_medium-webfont.ttf') format('truetype');font-weight: normal;font-style: normal;
+}
+
+@font-face {font-family: 'proxima_nova_softregular';src: url('http://rocketway.net/themebuilder/template/templates/pure/font/mark_simonson_-_proxima_nova_soft_regular-webfont.eot'); src: url('http://rocketway.net/themebuilder/template/templates/pure/font/mark_simonson_-_proxima_nova_soft_regular-webfont.eot?#iefix') format('embedded-opentype'),url('http://rocketway.net/themebuilder/template/templates/pure/font/mark_simonson_-_proxima_nova_soft_regular-webfont.woff') format('woff'),url('http://rocketway.net/themebuilder/template/templates/pure/font/mark_simonson_-_proxima_nova_soft_regular-webfont.ttf') format('truetype');font-weight: normal;font-style: normal;
+}
+
+
+@font-face {font-family: 'proxima_nova_softsemibold';src: url('http://rocketway.net/themebuilder/template/templates/pure/font/mark_simonson_-_proxima_nova_soft_semibold-webfont.eot'); src: url('http://rocketway.net/themebuilder/template/templates/pure/font/mark_simonson_-_proxima_nova_soft_semibold-webfont.eot?#iefix') format('embedded-opentype'),url('http://rocketway.net/themebuilder/template/templates/pure/font/mark_simonson_-_proxima_nova_soft_semibold-webfont.woff') format('woff'),url('http://rocketway.net/themebuilder/template/templates/pure/font/mark_simonson_-_proxima_nova_soft_semibold-webfont.ttf') format('truetype');font-weight: normal;font-style: normal;
+
+}
+
+@font-face {font-family: 'proxima_nova_softbold';src: url('http://rocketway.net/themebuilder/template/templates/pure/font/mark_simonson_-_proxima_nova_soft_bold-webfont.eot');src: url('http://rocketway.net/themebuilder/template/templates/pure/font/mark_simonson_-_proxima_nova_soft_bold-webfont.eot?#iefix') format('embedded-opentype'),url('http://rocketway.net/themebuilder/template/templates/pure/font/mark_simonson_-_proxima_nova_soft_bold-webfont.woff') format('woff'),url('http://rocketway.net/themebuilder/template/templates/pure/font/mark_simonson_-_proxima_nova_soft_bold-webfont.ttf') format('truetype');font-weight: normal;font-style: normal;
+
+}
+
+body
+{
+	background-color: rgb(101, 112, 122);
+}
+
+#inbox_label
+{
+	font-size: 24px;
+	font-weight: bold;
+	color: #333333;
+	font-family: proxima_nova_softmedium, Helvetica, Arial, sans-serif;
+}
+
+.read
+{
+	font-weight: bold;
+	border: 1px solid #efefef;
+	background-color: white;
+	padding: 4px;
+}
+
+.wrapper
+{
+	background-color: rgb(249, 249, 249);
+}
+
+.email_body
+{
+	width: 80%;
+	color: black;
+}
+
+h3
+{
+	color: #777777;
+	font-family: proxima_nova_softmedium, Helvetica, Arial, sans-serif !important;
+}
+
+a
+{
+	color: #dd5555;
+}
+
+#inbox
+{
+	margin-left: 10%;
+}
+
+.content
+{
+	margin-top: 2%;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #f1f1f1;
+}
+
+.email_header
+{
+	padding: 4px;
+}
+
+a.email_link
+{
+	position: absolute;
+	left: 350px;
+}
+
+#logo
+{
+	font-size: 30px;
+	font-weight: bold;
+	font-family: proxima_nova_softmedium, Helvetica, Arial, sans-serif !important;
+	margin-left: 25px;
+	padding-top: 25px;
+}
+
+.email_preview_text
+{
+	position: absolute;
+	left: 750px;
+	font-weight: 100;
+}
+
+.email_date_text
+{
+	position: absolute;
+	left: 1150px;	
+}
