@@ -1,5 +1,13 @@
 Welcome to Turing!<br /><br />
 <% if !current_user.nil? %>
+  <% google_token = current_user.user_google_auth_tokens.first %>
+
+  <%= link_to("#{google_token ? 'Change' : 'Link'} Gmail Account", google_oauth2_url(true)) %>
+  <% if google_token %>
+    | <%= link_to("Unlink Gmail Account", google_oauth2_remove_url, method: 'delete') %>
+  <% end %>
+
+  <br /><br />
   <%= link_to('Signout', signout_path, :method => :delete) %>
 <% else %>
   <%= link_to('Signin', signin_path) %><br />

@@ -73,3 +73,19 @@ def reserve_key(object, keys = {:key => nil}, length = 256)
     end
   end
 end
+
+def retry_block(retry_attempts = 2)
+  attempts = 0
+
+  begin
+    yield
+  rescue Exception => ex
+    attempts += 1
+
+    if attempts < retry_attempts
+      retry
+    else
+      raise ex
+    end
+  end
+end

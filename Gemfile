@@ -73,4 +73,7 @@ end
 gem 'aws-sdk', '~> 1.45.0'
 
 # google api
-gem 'google-api-client'
+gem 'google-api-client', '~> 0.7.1'
+
+# rest-client
+gem 'rest-client', '~> 1.7.2'

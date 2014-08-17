@@ -4,6 +4,9 @@ class User < ActiveRecord::Base
   has_one  :user_auth_key,
            :dependent => :destroy
 
+  has_many :user_google_auth_tokens,
+           :dependent => :destroy
+
   validates :email,
             :format     => { with: $config.email_validation_regex },
             :allow_nil => true
@@ -17,6 +20,7 @@ class User < ActiveRecord::Base
   }
 
   # class methods
+
   def User.generate_email_verification_code
     return random_string(16)
   end

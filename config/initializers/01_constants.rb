@@ -9,7 +9,7 @@ OK = 1
 
 # keys
 
-$config.google_clientid ||= ENV['GOOGLE_CLIENTID']
+$config.google_client_id ||= ENV['GOOGLE_CLIENT_ID']
 $config.google_secret ||= ENV['GOOGLE_SECRET']
 
 # http errors
@@ -43,6 +43,8 @@ $config.error_message_repeat = "Please try again. If this keeps happening please
 $config.error_message_default = "There was an error. #{$config.error_message_repeat}"
 
 $config.max_login_attempts = 5
+
+#$config.google_redirect_uri = "#{$config.url}#{$url_helpers.google_oauth2_path}"
 
 =begin
 $config.s3_key_length = 256

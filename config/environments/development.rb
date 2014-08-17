@@ -5,7 +5,7 @@ Rails.application.configure do
   config.url = "http://#{config.domain}"
   config.api_url = "http://#{config.domain}"
 
-  config.google_clientid = '900985518357-chpj6f40dertjuam39gn8i0bienk8v24.apps.googleusercontent.com'
+  config.google_client_id = '900985518357-chpj6f40dertjuam39gn8i0bienk8v24.apps.googleusercontent.com'
   config.google_secret = 'NzWBuq2I7Ci04vrElrFE7LQE'
 
   config.log_level = :info

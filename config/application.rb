@@ -22,7 +22,7 @@ module TuringEmail
 
     # keys
 
-    config.google_clientid = nil
+    config.google_client_id = nil
     config.google_secret = nil
 
     config.log_tags = [ lambda { |request| request.user_agent },

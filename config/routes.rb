@@ -8,6 +8,9 @@ Rails.application.routes.draw do
   resources :users, except: [:index, :show]
   match('/forgot_password', to: 'users#forgot_password', via: ['get', 'post'], as: :forgot_password)
 
+  match '/google_oauth2_callback', to: 'user_google_auth_tokens#google_oauth2_callback', via: 'get'
+  match '/google_oauth2_remove', to: 'user_google_auth_tokens#google_oauth2_remove', via: 'delete', as: :google_oauth2_remove
+
   match '/signup',  to: 'users#new',        via: 'get'
   match '/signin',  to: 'sessions#new',     via: 'get'
   match '/signout', to: 'sessions#destroy', via: 'delete'

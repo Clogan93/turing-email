@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140709032217) do
+ActiveRecord::Schema.define(version: 20140816053514) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,23 @@ ActiveRecord::Schema.define(version: 20140709032217) do
 
   add_index "user_auth_keys", ["encrypted_auth_key"], name: "index_user_auth_keys_on_encrypted_auth_key", using: :btree
   add_index "user_auth_keys", ["user_id"], name: "index_user_auth_keys_on_user_id", using: :btree
+
+  create_table "user_google_auth_tokens", force: true do |t|
+    t.integer  "user_id"
+    t.text     "access_token"
+    t.text     "token_type"
+    t.integer  "expires_in"
+    t.integer  "issued_at"
+    t.text     "refresh_token"
+    t.datetime "expires_at"
+    t.text     "google_id"
+    t.text     "email"
+    t.boolean  "verified_email"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "user_google_auth_tokens", ["user_id", "email"], name: "index_user_google_auth_tokens_on_user_id_and_email", unique: true, using: :btree
 
   create_table "users", force: true do |t|
     t.boolean  "admin"
