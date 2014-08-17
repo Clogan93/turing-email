@@ -23,7 +23,7 @@ class UserGoogleAuthToken < ActiveRecord::Base
   }
 
   def oauth2_client()
-    log_console("get oauth2_client")
+    log_console('get oauth2_client')
     self.log()
 
     self.with_lock do
@@ -76,6 +76,8 @@ class UserGoogleAuthToken < ActiveRecord::Base
       self.refresh_token = oauth2_client.refresh_token
 
       self.expires_at = Time.now + self.expires_in.seconds
+
+      self.save!
 
       oauth2 = Google::OAuth2.new(self.api_client())
       json = oauth2.userinfo_get()
