@@ -1,7 +1,7 @@
 class User < ActiveRecord::Base
   has_secure_password
   
-  has_one  :user_auth_key,
+  has_many :user_auth_key,
            :dependent => :destroy
 
   has_many :gmail_accounts,
