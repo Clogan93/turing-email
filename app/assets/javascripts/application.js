@@ -18,5 +18,6 @@
 //= require_tree ./collections
 //= require_tree ./views
 //= require router
+//= require jquery-ui.min
 //
 // swagger-ui

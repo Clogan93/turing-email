@@ -3,5 +3,31 @@
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
 $ ->
-  EmailApp.start()
-  return
+	EmailApp.start()
+	return
+
+$ ->
+	$("#dialog").dialog(
+		autoOpen: false
+		height: 300
+		width: 350
+		modal: true
+		buttons: [
+			{
+				text: "Send"
+				click: ->
+					$(this).dialog "close"
+					return
+			}
+			{
+				text: "Cancel"
+				click: ->
+					$(this).dialog "close"
+					return
+			}
+		]
+	)
+
+	$("#compose_button").click ->
+		$("#dialog").dialog "open"
+		return

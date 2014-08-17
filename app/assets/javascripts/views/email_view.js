@@ -6,7 +6,17 @@ window.EmailView = Backbone.View.extend({
     '<span class="email_date_text"><%= created_at.substring(0, 10) %></span>' +
     '</h3>' +
     '<div class="email_body" style="display:none">' +
-    '<br /><%= body %></div><br /><a href="#label#1">Label</a>'),
+    '<br /><%= body %>' +
+    '<br />' +
+    '<br />' +
+    '<br />' +
+    '<div align="center" class="send_email_button reply_button">' +
+    '<span>Reply</span>' +
+    '</div>' +
+    '<div align="center" class="send_email_button forward_button">' +
+    '<span>Forward</span>' +
+    '</div>' +
+    '</div><br />'),
 
   events: {
     'click a': 'toggleStatus'

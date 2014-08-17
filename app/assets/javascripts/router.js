@@ -21,15 +21,24 @@ window.EmailApp = new (Backbone.Router.extend({
   },
 
   test: function(id) {
-    alert(id);
+    console.log(id);
+    $('#app').html("<div>Here will be the emails for label " + id + ".</div>");
   },
 
   show: function(id){
-    alert("yo1")
     this.emails.focusOnEmail(id);
     $(".email_body").show();
     $(".email_link").hide();
     $(".email_preview_text").hide();
+
+    $(".reply_button").click(function() {
+      $("#dialog").dialog("open");
+    });
+
+    $(".forward_button").click(function() {
+      $("#dialog").dialog("open");
+    });
+
   }
 
 }));
