@@ -5,6 +5,18 @@ class Integer
   MIN = -MAX - 1
 end
 
+class String
+  def force_utf8(hard = false)
+    return self if !hard && self.encoding == Encoding::UTF_8
+
+    if self.encoding != Encoding::UTF_8
+      return self.encode('utf-8', :invalid => :replace, :undef => :replace, :replace => ' ')
+    else
+      self.encode('utf-16', :invalid => :replace, :undef => :replace, :replace => ' ').encode('utf-8', :invalid => :replace, :undef => :replace, :replace => ' ')
+    end
+  end
+end
+
 def open_force_file(url)
   file = open(url)
 

@@ -44,8 +44,6 @@ $config.error_message_default = "There was an error. #{$config.error_message_rep
 
 $config.max_login_attempts = 5
 
-#$config.google_redirect_uri = "#{$config.url}#{$url_helpers.google_oauth2_path}"
-
 =begin
 $config.s3_key_length = 256
 $config.s3_base_url = "https://s3.amazonaws.com/#{$config.s3_bucket}"

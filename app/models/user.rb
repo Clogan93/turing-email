@@ -4,7 +4,7 @@ class User < ActiveRecord::Base
   has_one  :user_auth_key,
            :dependent => :destroy
 
-  has_many :user_google_auth_tokens,
+  has_many :gmail_accounts,
            :dependent => :destroy
 
   validates :email,

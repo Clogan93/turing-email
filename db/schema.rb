@@ -11,10 +11,52 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140816053514) do
+ActiveRecord::Schema.define(version: 20140817201301) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "emails", force: true do |t|
+    t.integer  "user_id"
+    t.text     "message_id"
+    t.text     "from_name"
+    t.text     "from_address"
+    t.text     "tos"
+    t.text     "ccs"
+    t.text     "subject"
+    t.text     "html_part"
+    t.text     "text_part"
+    t.text     "body_text"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "emails", ["message_id"], name: "index_emails_on_message_id", unique: true, using: :btree
+
+  create_table "gmail_accounts", force: true do |t|
+    t.integer  "user_id"
+    t.text     "google_id"
+    t.text     "email"
+    t.boolean  "verified_email"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "gmail_accounts", ["email"], name: "index_gmail_accounts_on_email", using: :btree
+  add_index "gmail_accounts", ["user_id", "email"], name: "index_gmail_accounts_on_user_id_and_email", unique: true, using: :btree
+  add_index "gmail_accounts", ["user_id", "google_id"], name: "index_gmail_accounts_on_user_id_and_google_id", unique: true, using: :btree
+
+  create_table "google_o_auth2_tokens", force: true do |t|
+    t.integer  "google_api_id"
+    t.string   "google_api_type"
+    t.text     "access_token"
+    t.integer  "expires_in"
+    t.integer  "issued_at"
+    t.text     "refresh_token"
+    t.datetime "expires_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "user_auth_keys", force: true do |t|
     t.integer  "user_id"
@@ -25,23 +67,6 @@ ActiveRecord::Schema.define(version: 20140816053514) do
 
   add_index "user_auth_keys", ["encrypted_auth_key"], name: "index_user_auth_keys_on_encrypted_auth_key", using: :btree
   add_index "user_auth_keys", ["user_id"], name: "index_user_auth_keys_on_user_id", using: :btree
-
-  create_table "user_google_auth_tokens", force: true do |t|
-    t.integer  "user_id"
-    t.text     "access_token"
-    t.text     "token_type"
-    t.integer  "expires_in"
-    t.integer  "issued_at"
-    t.text     "refresh_token"
-    t.datetime "expires_at"
-    t.text     "google_id"
-    t.text     "email"
-    t.boolean  "verified_email"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "user_google_auth_tokens", ["user_id", "email"], name: "index_user_google_auth_tokens_on_user_id_and_email", unique: true, using: :btree
 
   create_table "users", force: true do |t|
     t.boolean  "admin"
