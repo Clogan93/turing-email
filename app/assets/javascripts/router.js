@@ -1,9 +1,8 @@
 window.EmailApp = new (Backbone.Router.extend({
   routes: {
     "": "index",
-    "test": "test",
-    "test2": "test2",
-    ":id": "show"
+    "label#:id": "test",
+    "email#:id": "show"
   },
 
   initialize: function(){
@@ -21,12 +20,8 @@ window.EmailApp = new (Backbone.Router.extend({
     Backbone.history.start();
   },
 
-  test: function() {
-    alert("test");
-  },
-
-  test2: function() {
-    alert("test2");
+  test: function(id) {
+    alert(id);
   },
 
   show: function(id){
