@@ -1,9 +1,9 @@
 window.EmailItem = Backbone.Model.extend({
   toggleStatus: function(){
-    if(this.get('status') == 'incomplete'){
-      this.set({'status': 'complete'});
+    if(this.get('read') == false){
+      this.set({'read': true});
     }else{
-      this.set({'status': 'incomplete'});
+      this.set({'read': false});
     }
 
     this.save();

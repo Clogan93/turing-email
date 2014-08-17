@@ -17,8 +17,11 @@ ActiveRecord::Schema.define(version: 20140816052050) do
   enable_extension "plpgsql"
 
   create_table "emails", force: true do |t|
-    t.string   "description"
-    t.string   "status"
+    t.string   "from_address"
+    t.string   "to_address"
+    t.string   "subject"
+    t.text   "body"
+    t.boolean   "read"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

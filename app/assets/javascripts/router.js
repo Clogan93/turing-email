@@ -26,5 +26,6 @@ window.EmailApp = new (Backbone.Router.extend({
 
   show: function(id){
     this.emailItems.focusOnEmailItem(id);
+    $(".email_body").show();
   }
 }));

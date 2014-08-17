@@ -1,5 +1,5 @@
 window.EmailView = Backbone.View.extend({
-  template: _.template('<h3 class="<%= status %>"><input type=checkbox <%= status == "complete" ? "checked=checked" : "" %>/> <%= description %> <a href="#<%= id %>">☞</a></h3><a href="#test">Test</a>'),
+  template: _.template('<h3 class="<%= status %>"><input type=checkbox <%= read == true ? "checked=checked" : "" %>/> <a href="#<%= id %>"><%= subject %></a></h3><div class="email_body" style="display:none"><br /><%= body %></div><br />'),
 
   events: {
     'change input': 'toggleStatus'

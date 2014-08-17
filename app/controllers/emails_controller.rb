@@ -14,7 +14,11 @@ class EmailsController < ApplicationController
   end
 
   def update
-    @email.update_column(:status, params[:email][:status])
+    @email.update_column(:from_address, params[:email][:from_address])
+    @email.update_column(:to_address, params[:email][:to_address])
+    @email.update_column(:subject, params[:email][:subject])
+    @email.update_column(:body, params[:email][:body])
+    @email.update_column(:read, params[:email][:read])
 
     respond_with @email
   end
