@@ -9,8 +9,8 @@ $ ->
 $ ->
 	$("#dialog").dialog(
 		autoOpen: false
-		height: 300
-		width: 350
+		height: 450
+		width: 700
 		modal: true
 		buttons: [
 			{
