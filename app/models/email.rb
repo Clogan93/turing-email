@@ -2,7 +2,7 @@ class Email < ActiveRecord::Base
   belongs_to :user
   belongs_to :email_account, polymorphic: true
 
-  validates_presence_of(:user, :email_account, :message_id, :thread_id)
+  validates_presence_of(:user, :email_account, :uid, :message_id)
 
   def Email.email_raw_from_mime_data(mime_data)
     mail_data_file = Tempfile.new('turing')
@@ -18,11 +18,9 @@ class Email < ActiveRecord::Base
 
   def Email.email_from_mime_data(mime_data)
     email_raw = Email.email_raw_from_mime_data(mime_data)
-
     email = Email.new
 
     email.message_id = email_raw.message_id
-
     email.date = email_raw.date
 
     begin

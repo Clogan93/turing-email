@@ -4,14 +4,11 @@ class CreateEmails < ActiveRecord::Migration
       t.belongs_to :user
       t.belongs_to :email_account, polymorphic: true
 
-      t.boolean :seen, :default => false
-
-      t.text :gmail_id
-      t.text :gmail_history_id
-
+      t.text :uid
       t.text :message_id
       t.text :thread_id
 
+      t.boolean :seen, :default => false
       t.text :snippet
 
       t.datetime :date
@@ -32,7 +29,8 @@ class CreateEmails < ActiveRecord::Migration
     end
 
     add_index :emails, [:user_id, :email_account_id, :message_id], unique: true
-    add_index :emails, :gmail_id, unique: true
+    add_index :emails, [:user_id, :email_account_id, :uid], unique: true
+    add_index :emails, :uid
     add_index :emails, :message_id
     add_index :emails, :thread_id
   end

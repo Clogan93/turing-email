@@ -27,11 +27,8 @@ class GmailAccount < ActiveRecord::Base
     mime_data = GmailAccount.mime_data_from_gmail_data(gmail_data)
     email = Email.email_from_mime_data(mime_data)
 
-    email.gmail_id = gmail_data['id']
-    email.gmail_history_id = gmail_data['historyId']
-
+    email.uid = gmail_data['id']
     email.thread_id = gmail_data['threadId']
-
     email.snippet = gmail_data['snippet']
 
     return email
