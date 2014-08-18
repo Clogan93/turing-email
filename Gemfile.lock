@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/rubymaverick/backbone-rails.git
+  revision: cabd9871438ce00d722a93a8fb9d826ddde770a8
+  specs:
+    backbone-rails (0.9.0)
+      rails (>= 3.0.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -197,6 +204,7 @@ PLATFORMS
 
 DEPENDENCIES
   aws-sdk (~> 1.45.0)
+  backbone-rails!
   bcrypt (~> 3.1.7)
   bootstrap-sass (~> 3.1.1)
   coffee-rails (~> 4.0.0)

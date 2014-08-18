@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(version: 20140817201301) do
     t.integer  "user_id"
     t.integer  "email_account_id"
     t.string   "email_account_type"
+    t.boolean  "is_read",            default: false
     t.text     "gmail_id"
     t.text     "gmail_history_id"
     t.text     "message_id"

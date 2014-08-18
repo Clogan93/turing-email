@@ -80,3 +80,6 @@ gem 'rest-client', '~> 1.7.2'
 
 # mail
 gem 'mail', '~> 2.5.4'
+
+# backbone
+gem 'backbone-rails', git: 'https://github.com/rubymaverick/backbone-rails.git'

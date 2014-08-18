@@ -4,6 +4,8 @@ class CreateEmails < ActiveRecord::Migration
       t.belongs_to :user
       t.belongs_to :email_account, polymorphic: true
 
+      t.boolean :is_read, :default => false
+
       t.text :gmail_id
       t.text :gmail_history_id
 

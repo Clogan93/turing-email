@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>TuringWebsite</title>
+    <title>Turing Email</title>
+    <link rel="shortcut icon" href="/assets/favicon.ico"/>
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
     <%= csrf_meta_tags %>
@@ -18,6 +19,5 @@
 
     <%= yield %>
 
-    <%= debug(params) if Rails.env.development? %>
   </body>
 </html>
