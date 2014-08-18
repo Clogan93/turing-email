@@ -13,7 +13,7 @@ class EmailsController < ApplicationController
   end
 
   def update
-    @email.update_column(:is_read, params[:email][:is_read])
+    @email.update_column(:seen, params[:email][:seen])
 
     respond_with @email
   end

@@ -1,5 +1,5 @@
 window.EmailView = Backbone.View.extend({
-  template: _.template('<h3 class="email_header <%= status %><%= is_read == true ? "" : " read" %>">' +
+  template: _.template('<h3 class="email_header <%= status %><%= seen == true ? "" : " read" %>">' +
     '<%= from_address %> ' +  
     '<a class="email_link" href="#email#<%= id %>"><%= subject %></a>' +
     '<span class="email_preview_text"><%= snippet %></span>' +

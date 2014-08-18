@@ -20,7 +20,7 @@ ActiveRecord::Schema.define(version: 20140817201301) do
     t.integer  "user_id"
     t.integer  "email_account_id"
     t.string   "email_account_type"
-    t.boolean  "is_read",            default: false
+    t.boolean  "seen",               default: false
     t.text     "gmail_id"
     t.text     "gmail_history_id"
     t.text     "message_id"
@@ -40,7 +40,7 @@ ActiveRecord::Schema.define(version: 20140817201301) do
     t.datetime "updated_at"
   end
 
-  add_index "emails", ["gmail_id"], name: "index_emails_on_gmail_id", using: :btree
+  add_index "emails", ["gmail_id"], name: "index_emails_on_gmail_id", unique: true, using: :btree
   add_index "emails", ["message_id"], name: "index_emails_on_message_id", using: :btree
   add_index "emails", ["thread_id"], name: "index_emails_on_thread_id", using: :btree
   add_index "emails", ["user_id", "email_account_id", "message_id"], name: "index_emails_on_user_id_and_email_account_id_and_message_id", unique: true, using: :btree
