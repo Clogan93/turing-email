@@ -7,6 +7,9 @@ class User < ActiveRecord::Base
   has_many :gmail_accounts,
            :dependent => :destroy
 
+  has_many :emails,
+           :dependent => :destroy
+
   validates :email,
             :format     => { with: $config.email_validation_regex },
             :allow_nil => true

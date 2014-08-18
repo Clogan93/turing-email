@@ -7,6 +7,8 @@ class CreateGmailAccounts < ActiveRecord::Migration
       t.text :email
       t.boolean :verified_email
 
+      t.text :last_history_id_synced
+
       t.timestamps
     end
 

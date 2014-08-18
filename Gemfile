@@ -77,3 +77,6 @@ gem 'google-api-client', '~> 0.7.1'
 
 # rest-client
 gem 'rest-client', '~> 1.7.2'
+
+# mail
+gem 'mail', '~> 2.5.4'

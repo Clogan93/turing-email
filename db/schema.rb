@@ -18,11 +18,19 @@ ActiveRecord::Schema.define(version: 20140817201301) do
 
   create_table "emails", force: true do |t|
     t.integer  "user_id"
+    t.integer  "email_account_id"
+    t.string   "email_account_type"
+    t.text     "gmail_id"
+    t.text     "gmail_history_id"
     t.text     "message_id"
+    t.text     "thread_id"
+    t.text     "snippet"
+    t.datetime "date"
     t.text     "from_name"
     t.text     "from_address"
     t.text     "tos"
     t.text     "ccs"
+    t.text     "bccs"
     t.text     "subject"
     t.text     "html_part"
     t.text     "text_part"
@@ -31,13 +39,17 @@ ActiveRecord::Schema.define(version: 20140817201301) do
     t.datetime "updated_at"
   end
 
-  add_index "emails", ["message_id"], name: "index_emails_on_message_id", unique: true, using: :btree
+  add_index "emails", ["gmail_id"], name: "index_emails_on_gmail_id", using: :btree
+  add_index "emails", ["message_id"], name: "index_emails_on_message_id", using: :btree
+  add_index "emails", ["thread_id"], name: "index_emails_on_thread_id", using: :btree
+  add_index "emails", ["user_id", "email_account_id", "message_id"], name: "index_emails_on_user_id_and_email_account_id_and_message_id", unique: true, using: :btree
 
   create_table "gmail_accounts", force: true do |t|
     t.integer  "user_id"
     t.text     "google_id"
     t.text     "email"
     t.boolean  "verified_email"
+    t.text     "last_history_id_synced"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

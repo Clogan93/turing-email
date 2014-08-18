@@ -9,28 +9,27 @@ module Google
 
     # labels
 
-    def labels_list(userId, fields = nil)
+    def labels_list(userId, fields: nil)
       args = method(__method__).parameters.map { |arg| {arg[1] => eval(arg[1].to_s)} }
       parameters = Google::Misc.get_parameters_from_args(args)
 
-      result = self.api_client.execute(:api_method => self.gmail_api.users.labels.list,
-                                       :parameters => parameters)
-
-      return JSON.parse(result.data.to_json())
+      result = self.api_client.execute!(:api_method => self.gmail_api.users.labels.list,
+                                        :parameters => parameters)
+      return result.data
     end
 
     # threads
 
-    def threads_list(userId, includeSpamTrash = nil, labelIds = nil, maxResults = nil, pageToken = nil, q = nil, fields = nil)
+    def threads_list(userId, includeSpamTrash: nil, labelIds: nil, maxResults: nil, pageToken: nil, q: nil, fields: nil)
       args = method(__method__).parameters.map { |arg| {arg[1] => eval(arg[1].to_s)} }
       parameters = Google::Misc.get_parameters_from_args(args)
 
-      result = self.api_client.execute(:api_method => self.gmail_api.users.threads.list,
-                                       :parameters => parameters)
-      return JSON.parse(result.data.to_json())
+      result =  self.api_client.execute!(:api_method => self.gmail_api.users.threads.list,
+                                         :parameters => parameters)
+      return result.data
     end
 
-    def threads_get_call(userId, id, fields = nil)
+    def threads_get_call(userId, id, fields: nil)
       args = method(__method__).parameters.map { |arg| {arg[1] => eval(arg[1].to_s)} }
       parameters = Google::Misc.get_parameters_from_args(args)
 
@@ -38,15 +37,15 @@ module Google
              :parameters => parameters
     end
 
-    def threads_get(userId, id, fields = nil)
-      call = self.threads_get_call(userId, id, fields)
-      result = self.api_client.execute(call)
-      return JSON.parse(result.data.to_json())
+    def threads_get(userId, id, fields: nil)
+      call = self.threads_get_call(userId, id, fields: fields)
+      result = self.api_client.execute!(call)
+      return result.data
     end
 
     # messages
 
-    def messages_get_call(userId, id, format = nil, fields = nil)
+    def messages_get_call(userId, id, format: nil, fields: nil)
       args = method(__method__).parameters.map { |arg| {arg[1] => eval(arg[1].to_s)} }
       parameters = Google::Misc.get_parameters_from_args(args)
 
@@ -54,10 +53,10 @@ module Google
              :parameters => parameters
     end
 
-    def messages_get(userId, id, format = nil, fields = nil)
-      call = self.messages_get_call(userId, id, format, fields)
-      result = self.api_client.execute(call)
-      return JSON.parse(result.data.to_json())
+    def messages_get(userId, id, format: nil, fields: nil)
+      call = self.messages_get_call(userId, id, format: format, fields: fields)
+      result = self.api_client.execute!(call)
+      return result.data
     end
   end
 end

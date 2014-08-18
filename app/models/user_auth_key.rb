@@ -1,8 +1,7 @@
 class UserAuthKey < ActiveRecord::Base
   belongs_to :user
 
-  validates :user, :presence => true
-  validates :encrypted_auth_key, :presence => true
+  validates_presence_of(:user, :encrypted_auth_key)
 
   before_validation {
     self.encrypted_auth_key = UserAuthKey.encrypt(UserAuthKey.new_key) if self.encrypted_auth_key.nil?

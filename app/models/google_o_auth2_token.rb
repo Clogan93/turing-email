@@ -1,7 +1,7 @@
 class GoogleOAuth2Token < ActiveRecord::Base
   belongs_to :google_api, polymorphic: true
 
-  validates_presence_of(:google_api_id, :google_api_type)
+  validates_presence_of(:google_api)
   validates_presence_of(:access_token, :expires_in, :issued_at, :refresh_token)
   validates_presence_of(:expires_at)
 
@@ -11,9 +11,6 @@ class GoogleOAuth2Token < ActiveRecord::Base
   }
 
   def oauth2_client()
-    log_console('get oauth2_client')
-    self.log()
-
     oauth2_client = Google::OAuth2.get_client($config.google_client_id, $config.google_secret)
 
     oauth2_client.access_token = self.access_token
@@ -71,9 +68,11 @@ class GoogleOAuth2Token < ActiveRecord::Base
   end
 
   def log()
+=begin
     log_console("access_token=#{self.access_token}\n" +
                 "expires_in=#{self.expires_in}\n" +
                 "issued_at=#{self.issued_at}\n" +
                 "refresh_token=#{self.refresh_token}\n")
+=end
   end
 end

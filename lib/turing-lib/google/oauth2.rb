@@ -25,14 +25,14 @@ module Google
       args = method(__method__).parameters.map { |arg| {arg[1] => eval(arg[1].to_s)} }
       parameters = Google::Misc.get_parameters_from_args(args)
 
-      result = self.api_client.execute(:api_method => self.oauth2_api.tokeninfo,
-                                       :parameters => parameters)
-      return JSON.parse(result.data.to_json())
+      result = self.api_client.execute!(:api_method => self.oauth2_api.tokeninfo,
+                                        :parameters => parameters)
+      return result.data
     end
 
     def userinfo_get()
-      result = self.api_client.execute(:api_method => self.oauth2_api.userinfo.get)
-      return JSON.parse(result.data.to_json())
+      result = self.api_client.execute!(:api_method => self.oauth2_api.userinfo.get)
+      return result.data
     end
   end
 end
