@@ -1,5 +1,7 @@
 module Google
   class Misc
+    MAX_BATCH_REQUESTS = 1000
+
     def Misc.get_parameters_from_args(args)
       parameters = {}
 

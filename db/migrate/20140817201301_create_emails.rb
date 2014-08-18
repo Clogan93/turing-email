@@ -32,7 +32,7 @@ class CreateEmails < ActiveRecord::Migration
     end
 
     add_index :emails, [:user_id, :email_account_id, :message_id], unique: true
-    add_index :emails, :gmail_id
+    add_index :emails, :gmail_id, unique: true
     add_index :emails, :message_id
     add_index :emails, :thread_id
   end
