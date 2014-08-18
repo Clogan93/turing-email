@@ -39,6 +39,11 @@ class GmailAccount < ActiveRecord::Base
     return @gmail
   end
 
+  def mime_data_from_gmail_id(gmail_id)
+    gmail_data = self.gmail.messages_get('me', gmail_id, format: 'raw')
+    return GmailAccount.mime_data_from_gmail_data(gmail_data)
+  end
+
   def refresh_user_info(api_client = nil, do_save = true)
     api_client = self.google_o_auth2_token.api_client() if api_client.nil?
     oauth2 = Google::OAuth2.new(api_client)
@@ -81,8 +86,10 @@ class GmailAccount < ActiveRecord::Base
       break if nextPageToken.nil?
     end
 
-    gmail_ids = gmail_ids.reverse()
-    self.sync_gmail_ids(gmail_ids, true)
+    self.sync_gmail_ids(gmail_ids)
+
+    gmail_data = self.gmail.messages_get('me', gmail_ids.first, format: 'minimal', fields: 'historyId')
+    self.set_last_history_id_synced(gmail_data['historyId'])
   end
 
   def partial_sync()
@@ -139,19 +146,20 @@ class GmailAccount < ActiveRecord::Base
     end
   end
 
-  def sync_gmail_ids(gmail_ids, update_last_history_id_synced = false)
+  def sync_gmail_ids(gmail_ids)
     gmail_id_index = 0
 
     while gmail_id_index < gmail_ids.length
       current_gmail_ids = gmail_ids[gmail_id_index ... (gmail_id_index + MESSAGE_BATCH_SIZE)]
-      emails = Email.where(:gmail_id => current_gmail_ids)
-      emails_by_gmail_id = {}
-      emails.each { |email| emails_by_gmail_id[email.gmail_id] = email }
+
+      emails = Email.where(:uid => current_gmail_ids)
+      emails_by_uid = {}
+      emails.each { |email| emails_by_uid[email.uid] = email }
 
       batch_request = sync_gmail_ids_batch_request()
 
       current_gmail_ids.each do |gmail_id|
-        format = emails_by_gmail_id.has_key?(gmail_id) ? 'minimal' : 'raw'
+        format = emails_by_uid.has_key?(gmail_id) ? 'minimal' : 'raw'
         log_console("QUEUEING message SYNC format=#{format} gmail_id = #{gmail_id}")
 
         call = self.gmail.messages_get_call('me', gmail_id, format: format)
@@ -159,13 +167,6 @@ class GmailAccount < ActiveRecord::Base
       end
 
       self.google_o_auth2_token.api_client.execute!(batch_request)
-
-      if update_last_history_id_synced
-        gmail_id = current_gmail_ids.last
-        message_data = self.gmail.messages_get('me', gmail_id, format: 'minimal')
-
-        self.set_last_history_id_synced(message_data['historyId'])
-      end
 
       gmail_id_index += MESSAGE_BATCH_SIZE
     end
