@@ -210,6 +210,11 @@ class GmailAccount < ActiveRecord::Base
         email.user = self.user
         email.email_account = self
 
+        if email.message_id.nil?
+          log_console('NO message_id - SKIPPING!!!!!')
+          next
+        end
+
         begin
           email.save!
         rescue ActiveRecord::RecordNotUnique => unique_violation
@@ -226,7 +231,9 @@ class GmailAccount < ActiveRecord::Base
           next
         end
 
-        self.sync_email_labels(email, gmail_data['labelIds'])
+        gmail_label_ids = gmail_data['labelIds']
+        gmail_label_ids.delete('INBOX')
+        self.sync_email_labels(email, gmail_label_ids)
       end
     end
   end

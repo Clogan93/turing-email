@@ -6,3 +6,9 @@ task :sync_email => :environment do
     gmail_account.sync()
   end
 end
+
+task :email_genie => :environment do
+  GmailAccount.all.each do |gmail_account|
+
+  end
+end
