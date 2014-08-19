@@ -19,5 +19,7 @@
 //= require_tree ./views
 //= require router
 //= require jquery-ui.min
+//= require bootstrap
 //
 // swagger-ui
+

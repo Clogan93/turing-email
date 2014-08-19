@@ -5,6 +5,8 @@ Rails.application.routes.draw do
 
   get '/inbox', to: 'static_pages#inbox'
 
+  get '/email_threading_prototype', to: 'static_pages#email_threading_prototype'
+
   get '/api-docs', to: 'static_pages#api_docs'
 
   resources :sessions, only: [:new, :create, :destroy]

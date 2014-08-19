@@ -13,7 +13,12 @@ window.EmailApp = new (Backbone.Router.extend({
 
   index: function(){
     $('#app').html(this.inboxView.el);
-    this.emails.fetch();
+    this.emails.fetch({ 
+      success: function (collection, response, options) {
+        /* Set the inbox count to the number of emails in the inbox. */
+        $("#inbox_count_badge").html(collection.length);
+      }
+    });
   },
 
   start: function(){
