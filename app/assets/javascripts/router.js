@@ -47,7 +47,7 @@ window.EmailApp = new (Backbone.Router.extend({
       $("#dialog").dialog("open");
     });
 
-    // this.emails.focusOnEmail(id);
+    this.emails.focusOnEmail(id);
 
   }
 
