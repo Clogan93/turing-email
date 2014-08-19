@@ -1,0 +1,2 @@
+module EmailFoldersControllerHelper
+end
