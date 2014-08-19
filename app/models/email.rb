@@ -26,6 +26,7 @@ class Email < ActiveRecord::Base
     email = Email.new
 
     email.message_id = email_raw.message_id
+    email.list_id = email_raw.header['List-ID'].decoded if email_raw.header['List-ID']
     email.date = email_raw.date
 
     begin

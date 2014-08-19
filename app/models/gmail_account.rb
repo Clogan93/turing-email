@@ -128,16 +128,22 @@ class GmailAccount < ActiveRecord::Base
         log_console("created #{gmail_label_id}")
       end
 
-      begin
-        email_folder_mapping = EmailFolderMapping.new()
-        email_folder_mapping.email = email
-        email_folder_mapping.email_folder = gmail_label
-        email_folder_mapping.save!
+      self.apply_label_to_email(email, gmail_label)
+    end
+  end
 
-        log_console("created email_folder_mapping.id=#{email_folder_mapping.id} FOR #{gmail_label_id}")
-      rescue ActiveRecord::RecordNotUnique => unique_violation
-        log_console('email_folder_mapping EXISTS!')
-      end
+  def apply_label_to_email(email, gmail_label)
+    log_console("APPLY #{gmail_label.name} TO #{email.uid}")
+
+    begin
+      email_folder_mapping = EmailFolderMapping.new()
+      email_folder_mapping.email = email
+      email_folder_mapping.email_folder = gmail_label
+      email_folder_mapping.save!
+
+      log_console("created email_folder_mapping.id=#{email_folder_mapping.id} FOR #{gmail_label_id}")
+    rescue ActiveRecord::RecordNotUnique => unique_violation
+      log_console('email_folder_mapping EXISTS!')
     end
   end
 
@@ -219,6 +225,13 @@ class GmailAccount < ActiveRecord::Base
           email.save!
         rescue ActiveRecord::RecordNotUnique => unique_violation
           raise unique_violation if unique_violation.message !~ /index_emails_on_user_id_and_email_account_id_and_message_id/
+
+          email = Email.find_by_uid(gmail_data['id'])
+          raise 'AHHHHHHHHHH unique_violation but NO email?!' if email.nil?
+
+          gmail_label_ids = gmail_data['labelIds']
+          gmail_label_ids.delete('INBOX')
+          self.sync_email_labels(email, gmail_label_ids)
         end
 
         self.sync_email_labels(email, gmail_data['labelIds'])

@@ -4,9 +4,7 @@ module GmailAccountsHelper
 
     oauth2_base_client.redirect_uri = gmail_oauth2_callback_url
     oauth2_base_client.scope = %w(https://www.googleapis.com/auth/userinfo.email
-                             https://www.googleapis.com/auth/gmail.modify
-                             https://www.googleapis.com/auth/gmail.readonly
-                             https://www.googleapis.com/auth/gmail.compose)
+                                  https://www.googleapis.com/auth/gmail.readonly)
 
     options = {}
     options[:access_type] = :offline
