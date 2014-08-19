@@ -33,28 +33,21 @@
 
 	<div class="row wrapper">
 
-		<div class="col-md-1">
-			<div id="side_bar">
-				<br />
-				<div class="row">
-					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Compose</button>
-			    </div>
-			    <br />
-			    <div class="row">
-					<div id="labels">
-						<div id="labels_header">Labels</div>
-						<div class="email_label"><a href="#label#1">Stanford</a></div>
-						<div class="email_label"><a href="#label#2">Sports</a></div>
-						<div class="email_label"><a href="#label#3">Tech</a></div>
-						<div class="email_label"><a href="#label#4">Family</a></div>
-					</div>
-				</div>
-			</div>
-		</div>
+		<div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+          	<br />
+          	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Compose</button>
+          	<li><h3 class="h3"><a href="/inbox">Inbox <span class="badge">42</span></a></h3></li>
+            <li><a href="#label#1">Stanford</a></li>
+            <li><a href="#label#2">Sports</a></li>
+            <li><a href="#label#3">Tech</a></li>
+            <li><a href="#label#4">Family</a></li>
+          </ul>
+        </div>
 
-		<div class="col-md-11 inbox_content">
-			<div id="inbox_label" class="row">
-				<a href="/inbox" class="hidden_link">Inbox</a>
+		<div class="col-md-10">
+			<div class="page-header">
+			  <h1 class="h1">Inbox <small>with advanced management features</small></h1>
 			</div>
 			<br />
 			<div id="app" class="row"></div>
