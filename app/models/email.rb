@@ -2,6 +2,11 @@ class Email < ActiveRecord::Base
   belongs_to :user
   belongs_to :email_account, polymorphic: true
 
+  has_many :email_folder_mappings,
+           :dependent => :destroy
+  has_many :imap_folders, :through => :email_folder_mappings, :source => :email_folder, :source => 'ImapFolder'
+  has_many :gmail_labels, :through => :email_folder_mappings, :source => :email_folder, :source_type => 'GmailLabel'
+
   validates_presence_of(:user, :email_account, :uid, :message_id)
 
   def Email.email_raw_from_mime_data(mime_data)

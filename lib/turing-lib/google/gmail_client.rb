@@ -1,5 +1,5 @@
 module Google
-  class Gmail
+  class GmailClient
     attr_accessor :api_client, :gmail_api
 
     def initialize(api_client)
@@ -14,6 +14,15 @@ module Google
       parameters = Google::Misc.get_parameters_from_args(args)
 
       result = self.api_client.execute!(:api_method => self.gmail_api.users.labels.list,
+                                        :parameters => parameters)
+      return result.data
+    end
+
+    def labels_get(userId, id, fields: nil)
+      args = method(__method__).parameters.map { |arg| {arg[1] => eval(arg[1].to_s)} }
+      parameters = Google::Misc.get_parameters_from_args(args)
+
+      result = self.api_client.execute!(:api_method => self.gmail_api.users.labels.get,
                                         :parameters => parameters)
       return result.data
     end

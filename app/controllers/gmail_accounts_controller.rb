@@ -17,17 +17,17 @@ class GmailAccountsController < ApplicationController
       token = gmail_account = nil
 
       begin
-        oauth2_client = Google::OAuth2.get_client($config.google_client_id, $config.google_secret)
-        oauth2_client.redirect_uri = gmail_oauth2_callback_url
-        oauth2_client.code = code
-        oauth2_client.fetch_access_token!()
+        oauth2_base_client = Google::OAuth2Client.base_client($config.google_client_id, $config.google_secret)
+        oauth2_base_client.redirect_uri = gmail_oauth2_callback_url
+        oauth2_base_client.code = code
+        oauth2_base_client.fetch_access_token!()
 
         current_user.with_lock do
           current_user.gmail_accounts.destroy_all
 
           # don't save because no GmailAccount yet to set to required google_api attribute.
           google_oauth2_token = GoogleOAuth2Token.new()
-          google_oauth2_token.update(oauth2_client, false)
+          google_oauth2_token.update(oauth2_base_client, false)
 
           # don't assign google_o_auth2_token yet because it hasn't been saved so no ID.
           gmail_account = GmailAccount.new()

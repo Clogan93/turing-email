@@ -1,17 +1,17 @@
 require 'signet/oauth_2/client'
 
 module Google
-  class OAuth2
-    def OAuth2.get_client(client_id, client_secret)
-      oauth2_client = Signet::OAuth2::Client.new()
+  class OAuth2Client
+    def OAuth2Client.base_client(client_id, client_secret)
+      oauth2_base_client = Signet::OAuth2::Client.new()
 
-      oauth2_client.client_id = client_id
-      oauth2_client.client_secret = client_secret
+      oauth2_base_client.client_id = client_id
+      oauth2_base_client.client_secret = client_secret
 
-      oauth2_client.authorization_uri = 'https://accounts.google.com/o/oauth2/auth'
-      oauth2_client.token_credential_uri = 'https://accounts.google.com/o/oauth2/token'
+      oauth2_base_client.authorization_uri = 'https://accounts.google.com/o/oauth2/auth'
+      oauth2_base_client.token_credential_uri = 'https://accounts.google.com/o/oauth2/token'
 
-      return oauth2_client
+      return oauth2_base_client
     end
 
     attr_accessor :api_client, :oauth2_api

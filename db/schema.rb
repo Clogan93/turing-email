@@ -11,16 +11,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140818211919) do
+ActiveRecord::Schema.define(version: 20140819000500) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "email_folders", force: true do |t|
-    t.text     "name"
+  create_table "email_folder_mappings", force: true do |t|
+    t.integer  "email_id"
+    t.integer  "email_folder_id"
+    t.string   "email_folder_type"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "email_folder_mappings", ["email_id", "email_folder_id"], name: "index_email_folder_mappings_on_email_id_and_email_folder_id", unique: true, using: :btree
 
   create_table "emails", force: true do |t|
     t.integer  "user_id"
@@ -65,6 +69,20 @@ ActiveRecord::Schema.define(version: 20140818211919) do
   add_index "gmail_accounts", ["user_id", "email"], name: "index_gmail_accounts_on_user_id_and_email", unique: true, using: :btree
   add_index "gmail_accounts", ["user_id", "google_id"], name: "index_gmail_accounts_on_user_id_and_google_id", unique: true, using: :btree
 
+  create_table "gmail_labels", force: true do |t|
+    t.integer  "gmail_account_id"
+    t.text     "label_id"
+    t.text     "name"
+    t.text     "message_list_visibility"
+    t.text     "label_list_visibility"
+    t.text     "label_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "gmail_labels", ["gmail_account_id", "label_id"], name: "index_gmail_labels_on_gmail_account_id_and_label_id", unique: true, using: :btree
+  add_index "gmail_labels", ["gmail_account_id"], name: "index_gmail_labels_on_gmail_account_id", using: :btree
+
   create_table "google_o_auth2_tokens", force: true do |t|
     t.integer  "google_api_id"
     t.string   "google_api_type"
@@ -76,6 +94,17 @@ ActiveRecord::Schema.define(version: 20140818211919) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "imap_folders", force: true do |t|
+    t.integer  "email_account_id"
+    t.string   "email_account_type"
+    t.text     "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "imap_folders", ["email_account_id", "name"], name: "index_imap_folders_on_email_account_id_and_name", unique: true, using: :btree
+  add_index "imap_folders", ["email_account_id"], name: "index_imap_folders_on_email_account_id", using: :btree
 
   create_table "user_auth_keys", force: true do |t|
     t.integer  "user_id"

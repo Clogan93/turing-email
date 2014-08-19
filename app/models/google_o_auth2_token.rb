@@ -10,24 +10,24 @@ class GoogleOAuth2Token < ActiveRecord::Base
     log_exception(false) { RestClient.get("https://accounts.google.com/o/oauth2/revoke?token=#{self.access_token}") }
   }
 
-  def oauth2_client()
-    oauth2_client = Google::OAuth2.get_client($config.google_client_id, $config.google_secret)
+  def oauth2_base_client()
+    oauth2_base_client = Google::OAuth2Client.base_client($config.google_client_id, $config.google_secret)
 
-    oauth2_client.access_token = self.access_token
-    oauth2_client.expires_in = self.expires_in
-    oauth2_client.issued_at = Time.at(self.issued_at)
-    oauth2_client.refresh_token = self.refresh_token
+    oauth2_base_client.access_token = self.access_token
+    oauth2_base_client.expires_in = self.expires_in
+    oauth2_base_client.issued_at = Time.at(self.issued_at)
+    oauth2_base_client.refresh_token = self.refresh_token
 
-    self.refresh(oauth2_client)
+    self.refresh(oauth2_base_client)
 
-    return oauth2_client
+    return oauth2_base_client
   end
 
   def api_client()
-    oauth2_client = self.oauth2_client()
+    oauth2_base_client = self.oauth2_base_client()
 
     api_client = Google::APIClient.new(:application_name => $config.service_name)
-    api_client.authorization = oauth2_client
+    api_client.authorization = oauth2_base_client
 
     return api_client
   end
