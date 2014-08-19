@@ -21,10 +21,10 @@ class EmailsController < ApplicationController
 
     threads.each do |thread_id, emails|
       emails.sort! { |x, y| y.date <=> x.date }
-      @threads_array.push(emails)
+      @threads_array.push(:thread => emails)
     end
 
-    @threads_array.sort! { |x, y| y.first.date <=> x.first.date }
+    @threads_array.sort! { |x, y| y[:thread].first.date <=> x[:thread].first.date }
 
     respond_with @threads_array
   end

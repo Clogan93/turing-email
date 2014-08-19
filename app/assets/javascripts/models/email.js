@@ -1,9 +1,9 @@
 window.Email = Backbone.Model.extend({
   toggleStatus: function(){
-    if(this.get('read') == false){
-      this.set({'read': true});
+    if(this.get('seen') == false){
+      this.set({'seen': true});
     }else{
-      this.set({'read': false});
+      this.set({'seen': false});
     }
 
     this.save();
