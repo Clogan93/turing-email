@@ -231,7 +231,9 @@ class GmailAccount < ActiveRecord::Base
           next
         end
 
-        self.sync_email_labels(email, gmail_data['labelIds'])
+        gmail_label_ids = gmail_data['labelIds']
+        gmail_label_ids.delete('INBOX')
+        self.sync_email_labels(email, gmail_label_ids)
       end
     end
   end
