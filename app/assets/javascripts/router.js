@@ -6,12 +6,16 @@ window.EmailApp = new (Backbone.Router.extend({
   },
 
   initialize: function(){
+    console.log("1");
     this.emails = new Emails();
+    console.log("2");
     this.inboxView = new InboxView({collection: this.emails});
     this.inboxView.render();
+    console.log("3");
   },
 
   index: function(){
+    console.log("4");
     $('#app').html(this.inboxView.el);
     this.emails.fetch({ 
       success: function (collection, response, options) {
@@ -31,7 +35,6 @@ window.EmailApp = new (Backbone.Router.extend({
   },
 
   show: function(id){
-    this.emails.focusOnEmail(id);
     $(".email_body").show();
     $(".email_link").hide();
     $(".email_preview_text").hide();
@@ -43,6 +46,8 @@ window.EmailApp = new (Backbone.Router.extend({
     $(".forward_button").click(function() {
       $("#dialog").dialog("open");
     });
+
+    // this.emails.focusOnEmail(id);
 
   }
 
