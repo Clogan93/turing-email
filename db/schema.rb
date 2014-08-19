@@ -33,6 +33,7 @@ ActiveRecord::Schema.define(version: 20140819000500) do
     t.text     "uid"
     t.text     "message_id"
     t.text     "thread_id"
+    t.text     "list_id"
     t.boolean  "seen",               default: false
     t.text     "snippet"
     t.datetime "date"
