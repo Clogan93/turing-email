@@ -210,6 +210,11 @@ class GmailAccount < ActiveRecord::Base
         email.user = self.user
         email.email_account = self
 
+        if email.message_id.nil?
+          log_console('NO message_id - SKIPPING!!!!!')
+          next
+        end
+
         begin
           email.save!
         rescue ActiveRecord::RecordNotUnique => unique_violation
