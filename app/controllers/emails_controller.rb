@@ -1,11 +1,32 @@
 class EmailsController < ApplicationController
+  before_action :signed_in_user
+
   before_filter :load_email, only: %w(show update destroy)
   respond_to :json, :html
 
   def index
-    @emails = Email.all
+    inbox_label = GmailLabel.where(:gmail_account => current_user.gmail_accounts.first,
+                                   :label_id => 'INBOX').first
+    return {} if inbox_label.nil?
 
-    respond_with @emails
+    emails = inbox_label.emails
+    threads = {}
+
+    emails.each do |email|
+      threads[email.thread_id] = [] if threads[email.thread_id].nil?
+      threads[email.thread_id].push(email)
+    end
+
+    @threads_array = []
+
+    threads.each do |thread_id, emails|
+      emails.sort! { |x, y| y.date <=> x.date }
+      @threads_array.push(emails)
+    end
+
+    @threads_array.sort! { |x, y| y.first.date <=> x.first.date }
+
+    respond_with @threads_array
   end
 
   def show
