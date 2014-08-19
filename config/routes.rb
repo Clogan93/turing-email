@@ -1,11 +1,10 @@
 Rails.application.routes.draw do
-  resources :emails
-
   root 'static_pages#home'
 
   get '/inbox', to: 'static_pages#inbox'
-
   get '/email_threading_prototype', to: 'static_pages#email_threading_prototype'
+
+  resources :emails, :email_folders
 
   get '/api-docs', to: 'static_pages#api_docs'
 
