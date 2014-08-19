@@ -1,7 +1,7 @@
 class EmailsController < ApplicationController
   before_action :signed_in_user
+  before_action :correct_user,   only: [:show, :update, :destroy]
 
-  before_filter :load_email, only: %w(show update destroy)
   respond_to :json, :html
 
   def index
@@ -53,7 +53,10 @@ class EmailsController < ApplicationController
 
   private
 
-  def load_email
-    @email = Email.find params[:id]
+  # Before filters
+
+  def correct_user
+    @email = Email.find_by(:id => params[:id])
+    redirect_to(root_url) unless current_user?(@email.user)
   end
 end
