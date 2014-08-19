@@ -9,7 +9,7 @@ window.EmailView = Backbone.View.extend({
     '</div>' +
     '<div class="email_body" style="display:none">' +
       '<div class="row">' +
-        '<div class="col-md-11"><p style="word-wrap: break-word; padding-top: 2.5%;"><%= text_part %></p></div>' +
+        '<div class="col-md-11"><p style="word-wrap: break-word; padding-top: 2.5%;"><pre><%= text_part %></pre></p></div>' +
       '</div>' +
       '<br />' +
       '<br />' +
