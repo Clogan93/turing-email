@@ -1,21 +1,23 @@
 window.EmailView = Backbone.View.extend({
-  template: _.template('<h3 class="email_header <%= status %><%= is_read == true ? "" : " read" %>">' +
-    '<%= from_address %> ' +  
-    '<a class="email_link" href="#email#<%= id %>"><%= subject %></a>' +
-    '<span class="email_preview_text"><%= snippet %></span>' +
-    '<span class="email_date_text"><%= date.substring(0, 10) %></span>' +
+  template: _.template('<div class="row" class="<%= status %><%= is_read == true ? "" : "read" %>">' +
+    '<h3>' +
+    '<div class="col-md-3"><%= from_address %></div>' +  
+    '<div class="col-md-3"><a href="#email#<%= id %>"><%= subject %></a></div>' +
+    '<div class="col-md-4"><%= snippet %></div>' +
+    '<div class="col-md-2"><%= date.substring(0, 10) %></div>' +
     '</h3>' +
+    '</div>' +
     '<div class="email_body" style="display:none">' +
-    '<br /><%= text_part %>' +
-    '<br />' +
-    '<br />' +
-    '<br />' +
-    '<div align="center" class="send_email_button reply_button">' +
-    '<span>Reply</span>' +
-    '</div>' +
-    '<div align="center" class="send_email_button forward_button">' +
-    '<span>Forward</span>' +
-    '</div>' +
+      '<div class="row">' +
+        '<div class="col-md-11"><p style="word-wrap: break-word; padding-top: 2.5%;"><%= text_part %></p></div>' +
+      '</div>' +
+      '<br />' +
+      '<br />' +
+      '<br />' +
+      '<div class="row">' +
+      '<div class="col-md-2"><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Reply</button></div>' +
+      '<div class="col-md-9"><button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">Forward</button></div>' +
+      '</div>' +
     '</div><br />'),
 
   events: {
