@@ -11,7 +11,7 @@ window.Inbox = Backbone.Collection.extend(
 
     focusOnEmail: (id) ->
         modelsToRemove = @filter((email) ->
-            email.id isnt id
+            email.attributes.thread[0].id.toString() isnt id.toString()
         )
         @remove modelsToRemove
         return

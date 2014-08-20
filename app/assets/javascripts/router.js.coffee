@@ -1,22 +1,25 @@
 window.EmailApp = new (Backbone.Router.extend(
+    Models: {}
+    Views: {}
+    Collections: {}
+
     routes:
         "": "index"
-        "label#:id": "test"
+        "label#:id": "show_label_info"
         "email#:id": "show"
 
     initialize: ->
-        console.log "1"
-        @emails = new Emails()
-        console.log "2"
-        @inboxView = new InboxView(collection: @emails)
-        @inboxView.render()
-        console.log "3"
+        #Collections
+        this.Collections.inbox = new Inbox()
+
+        #View
+        this.Views.inboxView = new InboxView(collection: this.Collections.inbox)
+        this.Views.inboxView.render()
         return
 
     index: ->
-        console.log "4"
-        $("#app").html @inboxView.el
-        @emails.fetch success: (collection, response, options) ->
+        $("#app").html this.Views.inboxView.el
+        this.Collections.inbox.fetch success: (collection, response, options) ->
             
             # Set the inbox count to the number of emails in the inbox. 
             $("#inbox_count_badge").html collection.length
@@ -28,23 +31,14 @@ window.EmailApp = new (Backbone.Router.extend(
         Backbone.history.start()
         return
 
-    test: (id) ->
-        console.log id
+    show_label_info: (id) ->
         $("#app").html "<div>Here will be the emails for label " + id + ".</div>"
         return
 
     show: (id) ->
         $(".email_body").show()
         $(".email_information_header").hide()
-        $(".email_preview_text").hide()
-        $(".reply_button").click ->
-            $("#dialog").dialog "open"
-            return
 
-        $(".forward_button").click ->
-            $("#dialog").dialog "open"
-            return
-
-        @emails.focusOnEmail id
+        this.Collections.inbox.focusOnEmail id
         return
 ))()
