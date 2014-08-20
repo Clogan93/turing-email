@@ -4,6 +4,8 @@ class CreateEmails < ActiveRecord::Migration
       t.belongs_to :user
       t.belongs_to :email_account, polymorphic: true
 
+      t.boolean :auto_filed, :default => false
+
       t.text :uid
       t.text :message_id
       t.text :thread_id

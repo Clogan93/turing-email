@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 20140819000500) do
     t.integer  "user_id"
     t.integer  "email_account_id"
     t.string   "email_account_type"
+    t.boolean  "auto_filed",         default: false
     t.text     "uid"
     t.text     "message_id"
     t.text     "thread_id"
