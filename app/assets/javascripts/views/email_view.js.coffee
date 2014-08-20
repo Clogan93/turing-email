@@ -1,5 +1,4 @@
-window.EmailView = Backbone.View.extend(
-    
+window.EmailView = Backbone.View.extend(    
     template: _.template("""
     <div class=\"email_information_header row<%= thread[0].status %><%= thread[0].seen == true ? \"\" : \" seen\" %>\">
         <h3>
