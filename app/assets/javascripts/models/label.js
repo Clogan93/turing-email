@@ -1,0 +1,1 @@
+window.Label = Backbone.Model.extend({});

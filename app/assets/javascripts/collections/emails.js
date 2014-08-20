@@ -12,7 +12,7 @@ window.Emails = Backbone.Collection.extend({
 
   focusOnEmail: function(id) {
     var modelsToRemove = this.filter(function(email){
-      return email.cid != "c" + id;
+      return email.attributes.thread[0].id != id;
     });
 
     this.remove(modelsToRemove);
