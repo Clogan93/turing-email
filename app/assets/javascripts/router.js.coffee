@@ -6,7 +6,7 @@ window.EmailApp = new (Backbone.Router.extend(
     routes:
         "": "index"
         "label#:id": "show_label_info"
-        "email#:id": "show"
+        "email#:id": "show_email"
 
     initialize: ->
         #Collections
@@ -35,10 +35,10 @@ window.EmailApp = new (Backbone.Router.extend(
         $("#app").html "<div>Here will be the emails for label " + id + ".</div>"
         return
 
-    show: (id) ->
-        $(".email_body").show()
-        $(".email_information_header").hide()
-
-        this.Collections.inbox.focusOnEmail id
+    show_email: (id) ->
+        email = this.Collections.inbox.retrieveEmail id
+        this.Views.emailView = new EmailView({ model: email });
+        this.Views.emailView.render()
+        $("#app").html this.Views.emailView.el
         return
 ))()

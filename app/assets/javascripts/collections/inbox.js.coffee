@@ -15,4 +15,10 @@ window.Inbox = Backbone.Collection.extend(
         )
         @remove modelsToRemove
         return
+
+    retrieveEmail: (id) ->
+        modelToReturn = @filter((email) ->
+            email.attributes.thread[0].id.toString() is id.toString()
+        )
+        return modelToReturn[0]
 )
