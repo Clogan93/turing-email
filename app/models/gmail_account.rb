@@ -43,7 +43,7 @@ class GmailAccount < ActiveRecord::Base
   end
 
   def gmail_data_from_gmail_id(gmail_id, format = 'raw')
-    return self.gmail_client.messages_get('me', gmail_id, format)
+    return self.gmail_client.messages_get('me', gmail_id, format: format)
   end
 
   def mime_data_from_gmail_id(gmail_id)
