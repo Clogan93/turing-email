@@ -120,6 +120,11 @@ class GmailAccount < ActiveRecord::Base
     gmail_label_ids.each do |gmail_label_id|
       next if gmail_label_id == 'UNREAD'
 
+      if gmail_label_id == 'INBOX' && email.auto_filed
+        log_console('SKIPPING INBOX label because UNIMPORTANT!')
+        next
+      end
+
       gmail_label = GmailLabel.where(:gmail_account => self, :label_id => gmail_label_id).first
       if gmail_label.nil?
         label_data = self.gmail_client.labels_get('me', gmail_label_id)
@@ -132,6 +137,29 @@ class GmailAccount < ActiveRecord::Base
     end
   end
 
+  # polymorphic call
+  def move_email_to_folder(email, folder)
+    log_console("MOVING #{email.uid} TO #{folder}")
+
+    gmail_label = GmailLabel.find_by(:gmail_account => self,
+                                     :name => folder)
+
+    if gmail_label.nil?
+      log_console("LABEL DNE! Creating!!")
+
+      gmail_label = GmailLabel.new()
+
+      gmail_label.gmail_account = email.email_account
+      gmail_label.label_id = label_name
+      gmail_label.name = label_name
+      gmail_label.label_type = 'user'
+
+      gmail_label.save!
+    end
+
+    self.apply_label_to_email(:email, gmail_label)
+  end
+
   def apply_label_to_email(email, gmail_label)
     log_console("APPLY #{gmail_label.name} TO #{email.uid}")
 
@@ -141,7 +169,7 @@ class GmailAccount < ActiveRecord::Base
       email_folder_mapping.email_folder = gmail_label
       email_folder_mapping.save!
 
-      log_console("created email_folder_mapping.id=#{email_folder_mapping.id} FOR #{gmail_label_id}")
+      log_console("created email_folder_mapping.id=#{email_folder_mapping.id} FOR #{gmail_label.id}")
     rescue ActiveRecord::RecordNotUnique => unique_violation
       log_console('email_folder_mapping EXISTS!')
     end
@@ -204,6 +232,39 @@ class GmailAccount < ActiveRecord::Base
     end
   end
 
+  def create_email_from_gmail_data(gmail_data)
+    email = GmailAccount.email_from_gmail_data(gmail_data)
+    email.user = self.user
+    email.email_account = self
+
+    if email.message_id.nil?
+      log_console('NO message_id - SKIPPING!!!!!')
+      return
+    end
+
+    begin
+      email.save!
+      self.sync_email_labels(email, gmail_data['labelIds'])
+    rescue ActiveRecord::RecordNotUnique => unique_violation
+      raise unique_violation if unique_violation.message !~ /index_emails_on_user_id_and_email_account_id_and_message_id/
+
+      email = Email.find_by_uid(gmail_data['id'])
+      raise 'AHHHHHHHHHH unique_violation but NO email?!' if email.nil?
+
+      self.sync_email_labels(email, gmail_data['labelIds'])
+    end
+  end
+
+  def update_email_from_gmail_data(gmail_data)
+    email = Email.find_by_uid(gmail_data['id'])
+    if email.nil?
+      log_console('Email GONE!!!')
+      return
+    end
+
+    self.sync_email_labels(email, gmail_data['labelIds'])
+  end
+
   def sync_gmail_ids_batch_request()
     return Google::APIClient::BatchRequest.new() do |result|
       raise result.error_message if result.error?
@@ -212,41 +273,10 @@ class GmailAccount < ActiveRecord::Base
       log_console("SYNC PROCESSING message.id = #{gmail_data['id']}")
 
       if gmail_data['raw']
-        email = GmailAccount.email_from_gmail_data(gmail_data)
-        email.user = self.user
-        email.email_account = self
-
-        if email.message_id.nil?
-          log_console('NO message_id - SKIPPING!!!!!')
-          next
-        end
-
-        begin
-          email.save!
-        rescue ActiveRecord::RecordNotUnique => unique_violation
-          raise unique_violation if unique_violation.message !~ /index_emails_on_user_id_and_email_account_id_and_message_id/
-
-          email = Email.find_by_uid(gmail_data['id'])
-          raise 'AHHHHHHHHHH unique_violation but NO email?!' if email.nil?
-
-          gmail_label_ids = gmail_data['labelIds']
-          gmail_label_ids.delete('INBOX')
-          self.sync_email_labels(email, gmail_label_ids)
-        end
-
-        self.sync_email_labels(email, gmail_data['labelIds'])
+        self.create_email_from_gmail_data(gmail_data)
       else
         log_console('EXISTS - minimal update!')
-
-        email = Email.find_by_uid(gmail_data['id'])
-        if email.nil?
-          log_console('Email GONE!!!')
-          next
-        end
-
-        gmail_label_ids = gmail_data['labelIds']
-        gmail_label_ids.delete('INBOX')
-        self.sync_email_labels(email, gmail_label_ids)
+        self.update_email_from_gmail_data(gmail_data)
       end
     end
   end

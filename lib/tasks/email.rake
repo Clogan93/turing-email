@@ -13,11 +13,15 @@ task :email_genie => :environment do
                                    :label_id => 'INBOX').first
     next if inbox_label.nil?
 
-    emails = inbox_label.where('date < ?', Time.now - 24.hours).count
+    emails = inbox_label.emails.where('date < ?', Time.now - 24.hours)
 
     emails.each do |email|
+      log_console("PROCESSING #{email.uid}")
+
       if EmailGenie.email_is_unimportant(email)
-        EmailGenie.archive(email, inbox_label)
+        log_console("#{email.uid} is UNIMPORTANT!!")
+
+        EmailGenie.auto_file(email, inbox_label)
       end
     end
   end
