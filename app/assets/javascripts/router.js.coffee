@@ -28,6 +28,10 @@ window.EmailApp = new (Backbone.Router.extend(
             $("#inbox_count_badge").html collection.length
             return
 
+        $("#email_folders").html this.Views.emailFoldersView.el
+        this.Collections.email_folders.fetch  success: (collection, response, options) ->
+            return
+
         return
 
     start: ->

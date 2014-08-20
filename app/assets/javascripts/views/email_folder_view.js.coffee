@@ -1,6 +1,6 @@
 window.EmailFolderView = Backbone.View.extend(    
     template: _.template("""
-    <div>This is a test.</div>
+    <%= label_type === \"system\" ? \"\" : \"<li><a href='#label#\" + id + \"'>\" + name + \"</a></li>\" %>
     """)
 
     initialize: ->
