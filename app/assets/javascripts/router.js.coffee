@@ -11,10 +11,13 @@ window.EmailApp = new (Backbone.Router.extend(
     initialize: ->
         #Collections
         this.Collections.inbox = new Inbox()
+        this.Collections.email_folders = new EmailFolders()
 
         #View
         this.Views.inboxView = new InboxView(collection: this.Collections.inbox)
         this.Views.inboxView.render()
+        this.Views.emailFoldersView = new EmailFoldersView(collection: this.Collections.email_folders)
+        this.Views.emailFoldersView.render()
         return
 
     index: ->
