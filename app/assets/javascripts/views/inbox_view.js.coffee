@@ -14,7 +14,7 @@ window.InboxView = Backbone.View.extend(
         return
 
     addOne: (email) ->
-        emailView = new EmailView(model: email)
-        @$el.append emailView.render().el
+        emailHeaderView = new EmailHeaderView(model: email)
+        @$el.append emailHeaderView.render().el
         return
 )

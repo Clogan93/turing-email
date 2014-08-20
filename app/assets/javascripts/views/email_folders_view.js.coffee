@@ -1,4 +1,4 @@
-window.EmailsView = Backbone.View.extend(
+window.EmailFoldersView = Backbone.View.extend(    
     initialize: ->
         @collection.on "add", @addOne, this
         @collection.on "reset", @addAll, this
@@ -13,8 +13,9 @@ window.EmailsView = Backbone.View.extend(
         @collection.forEach @addOne, this
         return
 
-    addOne: (email) ->
-        emailView = new EmailView(model: email)
-        @$el.append emailView.render().el
+    addOne: (email_folder) ->
+        console.log email_folder
+        emailFolderView = new EmailFolderView(model: email_folder)
+        @$el.append emailFolderView.render().el
         return
 )

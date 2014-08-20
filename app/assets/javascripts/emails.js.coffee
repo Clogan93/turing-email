@@ -5,29 +5,3 @@
 $ ->
 	EmailApp.start()
 	return
-
-$ ->
-	$("#dialog").dialog(
-		autoOpen: false
-		height: 450
-		width: 700
-		modal: true
-		buttons: [
-			{
-				text: "Send"
-				click: ->
-					$(this).dialog "close"
-					return
-			}
-			{
-				text: "Cancel"
-				click: ->
-					$(this).dialog "close"
-					return
-			}
-		]
-	)
-
-	$("#compose_button").click ->
-		$("#dialog").dialog "open"
-		return
