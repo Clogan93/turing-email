@@ -42,9 +42,23 @@ class GmailAccount < ActiveRecord::Base
     return @gmail_client
   end
 
+  def gmail_data_from_gmail_id(gmail_id, format = 'raw')
+    return self.gmail_client.messages_get('me', gmail_id, format)
+  end
+
   def mime_data_from_gmail_id(gmail_id)
-    gmail_data = self.gmail_client.messages_get('me', gmail_id, format: 'raw')
+    gmail_data = self.gmail_data_from_gmail_id(gmail_id)
     return GmailAccount.mime_data_from_gmail_data(gmail_data)
+  end
+
+  def email_raw_from_gmail_id(gmail_id)
+    mime_data = self.mime_data_from_gmail_id(gmail_id)
+    return Email.email_raw_from_mime_data(mime_data)
+  end
+
+  def email_from_gmail_id(gmail_id)
+    gmail_data = self.gmail_data_from_gmail_id(gmail_id, 'raw')
+    return GmailAccount.email_from_gmail_data(gmail_data)
   end
 
   def refresh_user_info(api_client = nil, do_save = true)
@@ -59,13 +73,13 @@ class GmailAccount < ActiveRecord::Base
     self.save! if do_save
   end
 
-  def sync()
+  def sync_email()
     log_console("SYNCING Gmail #{self.email}")
 
     if self.last_history_id_synced.nil?
-      self.full_sync()
+      self.sync_email_full()
     else
-      self.partial_sync()
+      self.sync_email_partial()
     end
   end
 
@@ -138,11 +152,11 @@ class GmailAccount < ActiveRecord::Base
   end
 
   # polymorphic call
-  def move_email_to_folder(email, folder)
-    log_console("MOVING #{email.uid} TO #{folder}")
+  def move_email_to_folder(email, folder_name)
+    log_console("MOVING #{email.uid} TO #{folder_name}")
 
     gmail_label = GmailLabel.find_by(:gmail_account => self,
-                                     :name => folder)
+                                     :name => folder_name)
 
     if gmail_label.nil?
       log_console("LABEL DNE! Creating!!")
@@ -150,14 +164,14 @@ class GmailAccount < ActiveRecord::Base
       gmail_label = GmailLabel.new()
 
       gmail_label.gmail_account = email.email_account
-      gmail_label.label_id = label_name
-      gmail_label.name = label_name
+      gmail_label.label_id = folder_name
+      gmail_label.name = folder_name
       gmail_label.label_type = 'user'
 
       gmail_label.save!
     end
 
-    self.apply_label_to_email(:email, gmail_label)
+    self.apply_label_to_email(email, gmail_label)
   end
 
   def apply_label_to_email(email, gmail_label)
@@ -175,7 +189,7 @@ class GmailAccount < ActiveRecord::Base
     end
   end
 
-  def full_sync()
+  def sync_email_full()
     log_console("FULL SYNC with last_history_id_synced = #{self.last_history_id_synced}\n")
 
     gmail_ids = []
@@ -201,7 +215,7 @@ class GmailAccount < ActiveRecord::Base
     self.set_last_history_id_synced(gmail_data['historyId'])
   end
 
-  def partial_sync()
+  def sync_email_partial()
     log_console("PARTIAL SYNC with last_history_id_synced = #{self.last_history_id_synced}\n")
 
     nextPageToken = nil
@@ -313,7 +327,7 @@ class GmailAccount < ActiveRecord::Base
     log_console("SET last_history_id_synced = #{self.last_history_id_synced}\n")
   end
 
-  def full_sync_threads()
+  def sync_threads_full()
     threads_list_data = self.gmail_client.threads_list('me', labelIds: 'INBOX', fields: 'nextPageToken,threads(id,historyId)')
     threads_data = threads_list_data['threads']
 

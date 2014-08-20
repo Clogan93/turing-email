@@ -13,6 +13,7 @@ class CreateGmailLabels < ActiveRecord::Migration
     end
 
     add_index :gmail_labels, [:gmail_account_id, :label_id], unique: true
+    add_index :gmail_labels, [:gmail_account_id, :name], unique: true
     add_index :gmail_labels, :gmail_account_id
   end
 end
