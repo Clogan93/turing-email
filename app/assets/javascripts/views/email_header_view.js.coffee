@@ -21,9 +21,6 @@ window.EmailHeaderView = Backbone.View.extend(
     <br />
     """)
 
-    events:
-        "click a": "toggleStatus"
-
     initialize: ->
         @model.on "change", @render, this
         @model.on "destroy hide", @remove, this
@@ -35,9 +32,5 @@ window.EmailHeaderView = Backbone.View.extend(
 
     remove: ->
         @$el.remove()
-        return
-
-    toggleStatus: ->
-        @model.toggleStatus()
         return
 )

@@ -13,8 +13,8 @@ window.EmailFoldersView = Backbone.View.extend(
         @collection.forEach @addOne, this
         return
 
-    addOne: (email_folder) ->
-        emailFolderView = new EmailFolderView(model: email_folder)
+    addOne: (email_folder_header) ->
+        emailFolderView = new EmailFolderHeaderView(model: email_folder_header)
         @$el.append emailFolderView.render().el
         return
 )

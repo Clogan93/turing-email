@@ -20,7 +20,6 @@
 //= require router
 //= require jquery-ui.min
 //= require bootstrap
-//= require bootstrap-wysiwyg
 //
 // swagger-ui
 

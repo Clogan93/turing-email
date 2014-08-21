@@ -1,4 +1,4 @@
 window.EmailFolders = Backbone.Collection.extend(
-    model: EmailFolder
+    model: EmailFolderHeader
     url: "/email_folders.json"
 )

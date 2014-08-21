@@ -1,0 +1,1 @@
+window.EmailFolderHeader = Backbone.Model.extend({})
