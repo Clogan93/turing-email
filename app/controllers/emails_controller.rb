@@ -7,7 +7,10 @@ class EmailsController < ApplicationController
   def index
     inbox_label = GmailLabel.where(:gmail_account => current_user.gmail_accounts.first,
                                    :label_id => 'INBOX').first
-    return {} if inbox_label.nil?
+    if inbox_label.nil?
+      respond_with nil
+      return
+    end
 
     emails = inbox_label.emails
     threads = {}

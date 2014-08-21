@@ -16,12 +16,11 @@ class CreateEmails < ActiveRecord::Migration
 
       t.datetime :date
 
-      t.text :from_name
-      t.text :from_address
+      t.text :from_name, :from_address
+      t.text :sender_name, :sender_address
+      t.text :reply_to_name, :reply_to_address
 
-      t.text :tos
-      t.text :ccs
-      t.text :bccs
+      t.text :tos, :ccs, :bccs
       t.text :subject
 
       t.text :html_part

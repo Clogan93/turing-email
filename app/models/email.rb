@@ -29,13 +29,11 @@ class Email < ActiveRecord::Base
     email.list_id = email_raw.header['List-ID'].decoded if email_raw.header['List-ID']
     email.date = email_raw.date
 
-    begin
-      email.from_name = email_raw.header[:from].tree.addresses[0].name if email_raw.header[:from]
-    rescue
-      email.from_name = email_raw.from.match(/(.*) <.*>/)[1] if email_raw.from =~ /.* <.*>/
-    end
+    email.from_name, email.from_address = Email.parse_address_header(email_raw.header['from'], email_raw.from[0])
+    email.from_address = email_raw.from_addrs[0] if email.from_address.nil?
 
-    email.from_address = email_raw.from_addrs[0]
+    email.sender_name, email.sender_address = Email.parse_address_header(email_raw.header['sender'], email_raw.sender)
+    email.reply_to_name, email.reply_to_address = Email.parse_address_header(email_raw.header['reply_to'], email_raw.reply_to)
 
     email.tos = email_raw.to.join('; ') if !email_raw.to.blank?
     email.ccs = email_raw.cc.join('; ') if !email_raw.cc.blank?
@@ -47,5 +45,25 @@ class Email < ActiveRecord::Base
     email.body_text = email_raw.decoded.force_utf8 if !email_raw.multipart? && email_raw.content_type =~ /text/i
 
     return email
+  end
+
+  def Email.parse_address_header(address_header, address_string = nil)
+    name = address = nil
+
+    if address_header
+      log_exception(true) { name = address_header.tree.addresses[0].name }
+      log_exception(true) { address = address_header.tree.addresses[0].address }
+    end
+
+    if name.nil? ||address.nil?
+      if address_string =~ /.* <.*>/
+        name = address_string.match(/(.*) <.*>/)[0] if name.nil?
+        address = address_string.match(/(.*) <.*>/)[1] if address.nil?
+      else
+        address = address_string if address.nil?
+      end
+    end
+
+    return name, address
   end
 end

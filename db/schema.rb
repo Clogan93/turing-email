@@ -40,6 +40,10 @@ ActiveRecord::Schema.define(version: 20140819000500) do
     t.datetime "date"
     t.text     "from_name"
     t.text     "from_address"
+    t.text     "sender_name"
+    t.text     "sender_address"
+    t.text     "reply_to_name"
+    t.text     "reply_to_address"
     t.text     "tos"
     t.text     "ccs"
     t.text     "bccs"
@@ -83,6 +87,7 @@ ActiveRecord::Schema.define(version: 20140819000500) do
   end
 
   add_index "gmail_labels", ["gmail_account_id", "label_id"], name: "index_gmail_labels_on_gmail_account_id_and_label_id", unique: true, using: :btree
+  add_index "gmail_labels", ["gmail_account_id", "name"], name: "index_gmail_labels_on_gmail_account_id_and_name", unique: true, using: :btree
   add_index "gmail_labels", ["gmail_account_id"], name: "index_gmail_labels_on_gmail_account_id", using: :btree
 
   create_table "google_o_auth2_tokens", force: true do |t|
