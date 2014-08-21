@@ -39,11 +39,19 @@ window.EmailApp = new (Backbone.Router.extend(
         return
 
     show_label_info: (id) ->
-        $("#app").html "<div>Here will be the emails for label " + id + ".</div>"
+        this.Collections.emailFolder = new EmailFolder()
+        this.Collections.emailFolder.url = "/email_folders/" + id.toString() + ".json"
+        this.Views.emailFolderView = new EmailFolderView(collection: this.Collections.emailFolder)
+        this.Views.emailFolderView.render()
+        $("#app").html this.Views.emailFolderView.el
+        this.Collections.emailFolder.fetch  success: (collection, response, options) ->
+            return
+
         return
 
     show_email: (id) ->
         email = this.Collections.inbox.retrieveEmail id
+        email = this.Collections.emailFolder.retrieveEmail id  if email is `undefined`
         this.Views.emailView = new EmailView({ model: email });
         this.Views.emailView.render()
         $("#app").html this.Views.emailView.el

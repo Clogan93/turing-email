@@ -1,13 +1,20 @@
-window.EmailFolderView = Backbone.View.extend(    
-    template: _.template("""
-    <%= label_type === \"system\" ? \"\" : \"<li><a href='#label#\" + id + \"'>\" + name + \"</a></li><br />\" %>
-    """)
-
+window.EmailFolderView = Backbone.View.extend(
     initialize: ->
-        @model.on "change", @render, this
+        @collection.on "add", @addOne, this
+        @collection.on "reset", @addAll, this
         return
 
     render: ->
-        @$el.html @template(@model.toJSON())
+        @addAll()
         this
+
+    addAll: ->
+        @$el.empty()
+        @collection.forEach @addOne, this
+        return
+
+    addOne: (email) ->
+        emailHeaderView = new EmailHeaderView(model: email)
+        @$el.append emailHeaderView.render().el
+        return
 )

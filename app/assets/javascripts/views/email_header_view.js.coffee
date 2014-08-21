@@ -7,7 +7,7 @@ window.EmailHeaderView = Backbone.View.extend(
             </div>
             <div class=\"col-md-3\">
                 <a href=\"#email#<%= thread[0].id %>\">
-                    <%= thread[0].subject %>
+                    <%= thread[0].subject == \"\" ? \"(no subject)\" : thread[0].subject %>
                 </a>
             </div>
             <div class=\"col-md-4\">
@@ -21,9 +21,6 @@ window.EmailHeaderView = Backbone.View.extend(
     <br />
     """)
 
-    events:
-        "click a": "toggleStatus"
-
     initialize: ->
         @model.on "change", @render, this
         @model.on "destroy hide", @remove, this
@@ -35,9 +32,5 @@ window.EmailHeaderView = Backbone.View.extend(
 
     remove: ->
         @$el.remove()
-        return
-
-    toggleStatus: ->
-        @model.toggleStatus()
         return
 )
