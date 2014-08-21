@@ -3,12 +3,12 @@ class CreateEmails < ActiveRecord::Migration
     create_table :emails do |t|
       t.belongs_to :user
       t.belongs_to :email_account, polymorphic: true
+      t.belongs_to :email_thread
 
       t.boolean :auto_filed, :default => false
 
       t.text :uid
       t.text :message_id
-      t.text :thread_id
       t.text :list_id
 
       t.boolean :seen, :default => false
@@ -36,6 +36,6 @@ class CreateEmails < ActiveRecord::Migration
     add_index :emails, [:user_id, :email_account_id, :uid], unique: true
     add_index :emails, :uid
     add_index :emails, :message_id
-    add_index :emails, :thread_id
+    add_index :emails, :email_thread_id
   end
 end

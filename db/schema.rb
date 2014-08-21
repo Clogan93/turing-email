@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140819000500) do
+ActiveRecord::Schema.define(version: 20140821061753) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -26,14 +26,24 @@ ActiveRecord::Schema.define(version: 20140819000500) do
 
   add_index "email_folder_mappings", ["email_id", "email_folder_id"], name: "index_email_folder_mappings_on_email_id_and_email_folder_id", unique: true, using: :btree
 
+  create_table "email_threads", force: true do |t|
+    t.integer  "user_id"
+    t.text     "uid"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "email_threads", ["uid"], name: "index_email_threads_on_uid", using: :btree
+  add_index "email_threads", ["user_id", "uid"], name: "index_email_threads_on_user_id_and_uid", unique: true, using: :btree
+
   create_table "emails", force: true do |t|
     t.integer  "user_id"
     t.integer  "email_account_id"
     t.string   "email_account_type"
+    t.integer  "email_thread_id"
     t.boolean  "auto_filed",              default: false
     t.text     "uid"
     t.text     "message_id"
-    t.text     "thread_id"
     t.text     "list_id"
     t.boolean  "seen",                    default: false
     t.text     "snippet"
@@ -56,8 +66,8 @@ ActiveRecord::Schema.define(version: 20140819000500) do
     t.datetime "updated_at"
   end
 
+  add_index "emails", ["email_thread_id"], name: "index_emails_on_email_thread_id", using: :btree
   add_index "emails", ["message_id"], name: "index_emails_on_message_id", using: :btree
-  add_index "emails", ["thread_id"], name: "index_emails_on_thread_id", using: :btree
   add_index "emails", ["uid"], name: "index_emails_on_uid", using: :btree
   add_index "emails", ["user_id", "email_account_id", "message_id"], name: "index_emails_on_user_id_and_email_account_id_and_message_id", unique: true, using: :btree
   add_index "emails", ["user_id", "email_account_id", "uid"], name: "index_emails_on_user_id_and_email_account_id_and_uid", unique: true, using: :btree

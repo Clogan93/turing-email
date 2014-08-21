@@ -12,8 +12,9 @@ class EmailsController < ApplicationController
       return
     end
 
-    emails = inbox_label.emails
-    @threads_array = Email.get_threads_array_from_emails(emails)
+    email_thread_ids = inbox_label.emails.pluck(:email_thread_id)
+    @threads_array = EmailThread.get_threads_array_from_ids(email_thread_ids)
+
     respond_with @threads_array
   end
 

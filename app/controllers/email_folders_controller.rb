@@ -11,7 +11,9 @@ class EmailFoldersController < ApplicationController
   end
 
   def show
-    @threads_array = Email.get_threads_array_from_emails(@gmail_label.emails)
+    email_thread_ids = @gmail_label.emails.pluck(:email_thread_id)
+    @threads_array = EmailThread.get_threads_array_from_ids(email_thread_ids)
+    
     respond_with @threads_array
   end
 

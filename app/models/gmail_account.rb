@@ -31,7 +31,6 @@ class GmailAccount < ActiveRecord::Base
     email = Email.email_from_mime_data(mime_data)
 
     email.uid = gmail_data['id']
-    email.thread_id = gmail_data['threadId']
     email.snippet = gmail_data['snippet']
 
     return email
@@ -257,7 +256,15 @@ class GmailAccount < ActiveRecord::Base
     end
 
     begin
-      email.save!
+      gmail_thread_id = gmail_data['threadId']
+
+      email_thread = EmailThread.find_or_create_by!(:user => self.user,
+                                                    :uid => gmail_thread_id)
+      email_thread.with_lock do
+        email.email_thread = email_thread
+        email.save!
+      end
+
       self.sync_email_labels(email, gmail_data['labelIds'])
     rescue ActiveRecord::RecordNotUnique => unique_violation
       raise unique_violation if unique_violation.message !~ /index_emails_on_user_id_and_email_account_id_and_message_id/
@@ -330,34 +337,20 @@ class GmailAccount < ActiveRecord::Base
     end
   end
 
-  def set_last_history_id_synced(last_history_id_synced)
-    self.last_history_id_synced = last_history_id_synced
-    self.save!
-    log_console("SET last_history_id_synced = #{self.last_history_id_synced}\n")
-  end
-
-  def sync_threads_full()
-    threads_list_data = self.gmail_client.threads_list('me', labelIds: 'INBOX', fields: 'nextPageToken,threads(id,historyId)')
-    threads_data = threads_list_data['threads']
-
-    log_console("got #{threads_data.length} threads!\n")
-
-    (threads_data.length - 1).downto(0).each do |thread_index|
-      thread_data = threads_data[thread_index]
-      self.sync_thread(thread_data['id'])
-
-      self.set_last_history_id_synced(thread_data['historyId'])
-    end
-  end
-
-  def sync_thread(thread_id)
-    log_console("SYNCING thread.id = #{thread_id}")
-    thread_data = self.gmail_client.threads_get('me', thread_id, fields: 'messages(id)')
+  def sync_gmail_thread(gmail_thread_id)
+    log_console("SYNCING gmail_thread_id = #{gmail_thread_id}")
+    thread_data = self.gmail_client.threads_get('me', gmail_thread_id, fields: 'messages(id)')
     messages_data = thread_data['messages']
     log_console("thread has #{messages_data.length} messages!")
 
     gmail_ids = []
     messages_data.each { |message_data| gmail_ids.push(message_data['id']) }
     self.sync_gmail_ids(gmail_ids)
+  end
+
+  def set_last_history_id_synced(last_history_id_synced)
+    self.last_history_id_synced = last_history_id_synced
+    self.save!
+    log_console("SET last_history_id_synced = #{self.last_history_id_synced}\n")
   end
 end
