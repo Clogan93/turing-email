@@ -32,7 +32,8 @@ class EmailGenie
       log_console("UNIMPORTANT => NOREPLY = #{email.reply_to_address} #{email.from_address}")
       return true
     elsif email.from_address == 'calendar-notification@google.com' ||
-          email.sender_address == 'calendar-notification@google.com'
+          email.sender_address == 'calendar-notification@google.com' ||
+          email.has_calendar_attachment
       log_console("UNIMPORTANT => Calendar!")
       return true
     end
@@ -54,6 +55,8 @@ class EmailGenie
 
       if EmailGenie::LISTS.keys.include?(email.list_id.downcase)
         email.email_account.move_email_to_folder(email, EmailGenie::LISTS[email.list_id.downcase])
+      elsif email.from_address == 'notifications@github.com'
+        email.email_account.move_email_to_folder(email, "GitHub/#{email.list_id}")
       else
         email.email_account.move_email_to_folder(email, 'List Emails')
       end

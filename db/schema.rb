@@ -30,12 +30,12 @@ ActiveRecord::Schema.define(version: 20140819000500) do
     t.integer  "user_id"
     t.integer  "email_account_id"
     t.string   "email_account_type"
-    t.boolean  "auto_filed",         default: false
+    t.boolean  "auto_filed",              default: false
     t.text     "uid"
     t.text     "message_id"
     t.text     "thread_id"
     t.text     "list_id"
-    t.boolean  "seen",               default: false
+    t.boolean  "seen",                    default: false
     t.text     "snippet"
     t.datetime "date"
     t.text     "from_name"
@@ -51,6 +51,7 @@ ActiveRecord::Schema.define(version: 20140819000500) do
     t.text     "html_part"
     t.text     "text_part"
     t.text     "body_text"
+    t.boolean  "has_calendar_attachment", default: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
