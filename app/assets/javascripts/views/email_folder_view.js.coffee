@@ -14,7 +14,6 @@ window.EmailFolderView = Backbone.View.extend(
         return
 
     addOne: (email) ->
-        console.log email
         emailHeaderView = new EmailHeaderView(model: email)
         @$el.append emailHeaderView.render().el
         return
