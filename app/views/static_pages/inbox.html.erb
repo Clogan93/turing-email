@@ -51,18 +51,18 @@
 				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
 				<h4 class="modal-title" id="myModalLabel">Compose</h4>
 			</div>
-			<div class="modal-body">
-				<form>
-					<input type="text" class="form-control" placeholder="To"/><br />
-					<input type="text" class="form-control" placeholder="CC"/><br />
-					<input type="text" class="form-control" placeholder="Subject"/><br />
-					<textarea class="form-control" rows="8"></textarea>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-primary">Send</button>
-			</div>
+			<form action="/send_email" method="post">
+				<div class="modal-body">
+						<input type="text" class="form-control" placeholder="To"/><br />
+						<input type="text" class="form-control" placeholder="CC"/><br />
+						<input type="text" class="form-control" placeholder="Subject"/><br />
+						<textarea class="form-control" rows="8"></textarea>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="submit" class="btn btn-primary">Send</button>
+				</div>
+			</form>
 		</div>
 	</div>
 </div>
