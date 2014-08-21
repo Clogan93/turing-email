@@ -281,7 +281,16 @@ class GmailAccount < ActiveRecord::Base
 
   def sync_gmail_ids_batch_request()
     return Google::APIClient::BatchRequest.new() do |result|
-      raise result.error_message if result.error?
+      if result.error?
+        if result.response.status == 404
+          log_console("DELETED = #{result.request.parameters['id']}")
+          Email.destroy_all(:email_account => self,
+                            :uid => result.request.parameters['id'])
+          next
+        else
+          raise Google::Misc.raise_exception(result)
+        end
+      end
 
       gmail_data = result.data
       log_console("SYNC PROCESSING message.id = #{gmail_data['id']}")
