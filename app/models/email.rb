@@ -44,6 +44,8 @@ class Email < ActiveRecord::Base
     email.html_part = email_raw.html_part.decoded.force_utf8 if email_raw.html_part
     email.body_text = email_raw.decoded.force_utf8 if !email_raw.multipart? && email_raw.content_type =~ /text/i
 
+    email.has_calendar_attachment = Email.part_has_calendar_attachment(email_raw)
+
     return email
   end
 
@@ -65,5 +67,15 @@ class Email < ActiveRecord::Base
     end
 
     return name, address
+  end
+
+  def Email.part_has_calendar_attachment(part)
+    return true if part.content_type =~ /text\/calendar/i
+
+    part.parts.each do |current_part|
+      return true if Email.part_has_calendar_attachment(current_part)
+    end
+
+    return false
   end
 end

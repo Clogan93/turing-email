@@ -27,6 +27,8 @@ class CreateEmails < ActiveRecord::Migration
       t.text :text_part
       t.text :body_text
 
+      t.boolean :has_calendar_attachment, :default => false
+
       t.timestamps
     end
 
