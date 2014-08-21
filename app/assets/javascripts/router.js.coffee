@@ -24,8 +24,10 @@ window.EmailApp = new (Backbone.Router.extend(
         $("#app").html this.Views.inboxView.el
         this.Collections.inbox.fetch success: (collection, response, options) ->
             
-            # Set the inbox count to the number of emails in the inbox. 
-            $("#inbox_count_badge").html collection.length
+            # Set the inbox count to the number of emails in the inbox.
+
+            # console.log collection.where thread: undefined
+            $("#inbox_count_badge").html collection.unreadCount()
             return
 
         $("#email_folders").html this.Views.emailFoldersView.el
