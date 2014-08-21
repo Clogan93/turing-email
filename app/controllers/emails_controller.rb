@@ -13,8 +13,7 @@ class EmailsController < ApplicationController
     end
 
     emails = inbox_label.emails
-    @threads_array = get_threads_array_from_emails(emails)
-
+    @threads_array = Email.get_threads_array_from_emails(emails)
     respond_with @threads_array
   end
 
