@@ -33,8 +33,8 @@ class Email < ActiveRecord::Base
     email.from_name, email.from_address = Email.parse_address_header(email_raw.header['from'], email_raw.from[0])
     email.from_address = email_raw.from_addrs[0] if email.from_address.nil?
 
-    email.sender_name, email.sender_address = Email.parse_address_header(email_raw.header['sender'], email_raw.sender)
-    email.reply_to_name, email.reply_to_address = Email.parse_address_header(email_raw.header['reply_to'], email_raw.reply_to)
+    email.sender_name, email.sender_address = Email.parse_address_header(email_raw.header['sender'], email_raw.sender[0])
+    email.reply_to_name, email.reply_to_address = Email.parse_address_header(email_raw.header['reply_to'], email_raw.reply_to[0])
 
     email.tos = email_raw.to.join('; ') if !email_raw.to.blank?
     email.ccs = email_raw.cc.join('; ') if !email_raw.cc.blank?
