@@ -198,8 +198,8 @@ class GmailAccount < ActiveRecord::Base
     while true
       log_console("SYNCING page = #{nextPageToken}")
 
-      messages_list_data = self.gmail_client.messages_list('me', labelIds: 'INBOX', pageToken: nextPageToken,
-                                                    maxResults: Google::Misc::MAX_BATCH_REQUESTS)
+      messages_list_data = self.gmail_client.messages_list('me', pageToken: nextPageToken,
+                                                           maxResults: Google::Misc::MAX_BATCH_REQUESTS)
       messages_data = messages_list_data['messages']
       log_console("GOT #{messages_data.length} messages\n")
 
