@@ -37,7 +37,7 @@ class Email < ActiveRecord::Base
     email = Email.new
 
     email.message_id = email_raw.message_id
-    email.list_id = email_raw.header['List-ID'].decoded if email_raw.header['List-ID']
+    email.list_id = email_raw.header['List-ID'].decoded.force_utf8(true) if email_raw.header['List-ID']
     email.date = email_raw.date
 
     from_string = email_raw.from ? email_raw.from[0] : nil
@@ -55,9 +55,9 @@ class Email < ActiveRecord::Base
     email.bccs = email_raw.bcc.join('; ') if !email_raw.bcc.blank?
     email.subject = email_raw.subject.nil? ? '' : email_raw.subject
 
-    email.text_part = email_raw.text_part.decoded.force_utf8 if email_raw.text_part
-    email.html_part = email_raw.html_part.decoded.force_utf8 if email_raw.html_part
-    email.body_text = email_raw.decoded.force_utf8 if !email_raw.multipart? && email_raw.content_type =~ /text/i
+    email.text_part = email_raw.text_part.decoded.force_utf8(true) if email_raw.text_part
+    email.html_part = email_raw.html_part.decoded.force_utf8(true) if email_raw.html_part
+    email.body_text = email_raw.decoded.force_utf8(true) if !email_raw.multipart? && email_raw.content_type =~ /text/i
 
     email.has_calendar_attachment = Email.part_has_calendar_attachment(email_raw)
 
