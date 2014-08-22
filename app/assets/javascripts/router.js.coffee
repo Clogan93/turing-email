@@ -26,8 +26,6 @@ window.EmailApp = new (Backbone.Router.extend(
             
             # Set the inbox count to the number of emails in the inbox.
 
-            console.log collection
-
             # console.log collection.where thread: undefined
             $("#inbox_count_badge").html collection.unreadCount()
             return
