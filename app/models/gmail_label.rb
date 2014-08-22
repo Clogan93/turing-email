@@ -7,4 +7,12 @@ class GmailLabel < ActiveRecord::Base
   has_many :emails, :through => :email_folder_mappings
 
   validates_presence_of(:gmail_account_id, :label_id, :name, :label_type)
+
+  def num_threads
+    return self.emails.pluck(:email_thread_id).uniq.count
+  end
+
+  def num_unread_threads
+    return self.emails.where(:seen => false).pluck(:email_thread_id).uniq.count
+  end
 end

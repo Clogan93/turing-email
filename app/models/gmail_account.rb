@@ -125,7 +125,7 @@ class GmailAccount < ActiveRecord::Base
     log_console("SYNC LABELS for #{email.uid}")
     email.email_folder_mappings.destroy_all()
 
-    email.seen = gmail_label_ids.include?('UNREAD')
+    email.seen = !gmail_label_ids.include?('UNREAD')
     email.save!
 
     log_console("seen = #{email.seen}")
