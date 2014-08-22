@@ -20,6 +20,7 @@ Rails.application.routes.draw do
   namespace :api, :defaults => {:format => :json} do
     namespace :v1 do
       resources :users, only: [:create]
+      match '/users/current', to: 'users#current', via: 'get'
 
       resources :emails, only: [:show]
       resources :email_folders, only: [:index]
