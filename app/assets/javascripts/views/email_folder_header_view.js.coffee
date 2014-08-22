@@ -1,6 +1,6 @@
 window.EmailFolderHeaderView = Backbone.View.extend(    
     template: _.template("""
-    <%= label_type === \"system\" ? \"\" : \"<li><a href='#label#\" + id + \"'>\" + name + \"</a></li><span class='badge'></span><br />\" %>
+    <%= gmail_label.label_type === \"system\" ? \"\" : \"<li><a href='#label#\" + gmail_label.label_id + \"'>\" + gmail_label.name + \"</a></li><span class='badge'></span><br />\" %>
     """)
 
     initialize: ->

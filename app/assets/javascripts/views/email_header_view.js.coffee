@@ -3,16 +3,16 @@ window.EmailHeaderView = Backbone.View.extend(
     <tr>
         <h3>
             <td class="first_column">
-                <%= thread[0].from_name == \"\" ? thread[0].from_address : thread[0].from_name %>
+                <%= email_thread.emails[0].email.from_name == \"\" ? email_thread.emails[0].email.from_address : email_thread.emails[0].email.from_name %>
             </td>
             <td class="second_column">
-                <a href=\"#email#<%= thread[0].id %>\">
-                    <%= thread[0].subject == \"\" ? \"(no subject)\" : thread[0].subject %>
+                <a href=\"#email#<%= email_thread.emails[0].email.id %>\">
+                    <%= email_thread.emails[0].email.subject == \"\" ? \"(no subject)\" : email_thread.emails[0].email.subject %>
                 </a>
-                <span class="email_snippet"><%= thread[0].snippet %></span>
+                <span class="email_snippet"><%= email_thread.emails[0].email.snippet %></span>
             </td>
             <td class="third_column">
-                <%= thread[0].date.substring(0, 10) %>
+                <%= email_thread.emails[0].email.date.substring(0, 10) %>
             </td>
         </h3>
     </tr>

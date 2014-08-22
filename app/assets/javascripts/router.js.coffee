@@ -44,7 +44,7 @@ window.EmailApp = new (Backbone.Router.extend(
 
     show_label_info: (id) ->
         this.Collections.emailFolder = new EmailFolder()
-        this.Collections.emailFolder.url = "/email_folders/" + id.toString() + ".json"
+        this.Collections.emailFolder.url = "/api/v1/email_threads/in_folder?folder_id=" + id.toString()
         this.Views.emailFolderView = new EmailFolderView(collection: this.Collections.emailFolder)
         this.Views.emailFolderView.render()
         $("#app").html this.Views.emailFolderView.el
