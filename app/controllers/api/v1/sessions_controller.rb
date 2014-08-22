@@ -23,7 +23,7 @@ class Api::V1::SessionsController < ApiController
       elsif @user.authenticate(params[:password])
         sign_in @user
 
-        render 'api/v1/users/get_info'
+        render 'api/v1/users/show'
         return
       else
         User.increment_counter(:login_attempt_count, @user.id)

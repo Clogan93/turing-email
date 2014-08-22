@@ -29,7 +29,7 @@ class Api::V1::UsersController < ApiController
     if success
       sign_in @user
       
-      render 'api/v1/users/get_info'
+      render 'api/v1/users/show'
     else
       render :status => $config.http_errors[:invalid_email_or_password][:status_code],
              :json => $config.http_errors[:invalid_email_or_password][:description]

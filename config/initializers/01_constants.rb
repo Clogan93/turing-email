@@ -18,7 +18,11 @@ $config.http_errors = {
     :already_have_account => {:status_code => 600, :description => 'You already have an account!'},
     :invalid_email_or_password => {:status_code => 601, :description => 'Invalid email or password.'},
     :email_in_use => {:status_code => 602, :description => 'Email in use.'},
-    :account_locked => {:status_code => 603, :description => 'Account locked.'}
+    :account_locked => {:status_code => 603, :description => 'Account locked.'},
+
+    :email_folder_not_found => {:status_code => 610, :description => 'Email folder not found.'},
+
+    :email_not_found => {:status_code => 620, :description => 'Email not found.'}
 }
 
 $config.company_name = 'Turing Technology, Inc.'

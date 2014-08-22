@@ -1,20 +1,20 @@
 window.EmailHeaderView = Backbone.View.extend(
     template: _.template("""
-    <div class=\"email_information_header row<%= thread[0].status %><%= thread[0].seen == true ? \"\" : \" seen\" %>\">
+    <div class=\"email_information_header row<%= email_thread[0].status %><%= email_thread[0].seen == true ? \"\" : \" seen\" %>\">
         <h3>
             <div class=\"col-md-3\">
-                <%= thread[0].from_address %>
+                <%= email_thread[0].from_address %>
             </div>
             <div class=\"col-md-3\">
-                <a href=\"#email#<%= thread[0].id %>\">
-                    <%= thread[0].subject == \"\" ? \"(no subject)\" : thread[0].subject %>
+                <a href=\"#email#<%= email_thread[0].id %>\">
+                    <%= email_thread[0].subject == \"\" ? \"(no subject)\" : email_thread[0].subject %>
                 </a>
             </div>
             <div class=\"col-md-4\">
-                <%= thread[0].snippet %>
+                <%= email_thread[0].snippet %>
             </div>
             <div class=\"col-md-2\">
-                <%= thread[0].date.substring(0, 10) %>
+                <%= email_thread[0].date.substring(0, 10) %>
             </div>
         </h3>
     </div>

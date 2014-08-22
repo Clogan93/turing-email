@@ -1,6 +1,6 @@
 window.EmailView = Backbone.View.extend(    
     template: _.template("""
-    <% _.each(thread, function(email) { %>
+    <% _.each(email_thread, function(email) { %>
         <div class=\"email_body\">
             <h3>
                 <div class=\"col-md-3\">

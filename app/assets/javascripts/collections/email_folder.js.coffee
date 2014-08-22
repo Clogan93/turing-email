@@ -3,7 +3,7 @@ window.EmailFolder = Backbone.Collection.extend(
 
     retrieveEmail: (id) ->
         modelToReturn = @filter((email) ->
-            email.attributes.thread[0].id.toString() is id.toString()
+            email.attributes.email_thread[0].id.toString() is id.toString()
         )
         return modelToReturn[0]
 )

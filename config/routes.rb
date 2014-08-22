@@ -1,10 +1,7 @@
 Rails.application.routes.draw do
   root 'static_pages#home'
-
   get '/inbox', to: 'static_pages#inbox'
   get '/email_threading_prototype', to: 'static_pages#email_threading_prototype'
-
-  resources :emails, :email_folders
 
   get '/api-docs', to: 'static_pages#api_docs'
 
@@ -23,6 +20,11 @@ Rails.application.routes.draw do
   namespace :api, :defaults => {:format => :json} do
     namespace :v1 do
       resources :users, only: [:create]
+
+      resources :emails, only: [:show]
+      resources :email_folders, only: [:index]
+      match '/email_threads/inbox', to: 'email_threads#inbox', via: 'get'
+      match '/email_threads/in_folder', to: 'email_threads#in_folder', via: 'get'
 
       resources :sessions, only: [:create]
       match '/signout', to: 'sessions#destroy', via: 'delete'
