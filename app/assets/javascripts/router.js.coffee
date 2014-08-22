@@ -39,12 +39,14 @@ window.EmailApp = new (Backbone.Router.extend(
         return
 
     show_label_info: (id) ->
+        console.log "1"
         this.Collections.emailFolder = new EmailFolder()
         this.Collections.emailFolder.url = "/api/v1/email_threads/in_folder?folder_id=" + id.toString()
         this.Views.emailFolderView = new EmailFolderView(collection: this.Collections.emailFolder)
         this.Views.emailFolderView.render()
         $("#app").html this.Views.emailFolderView.el
         this.Collections.emailFolder.fetch  success: (collection, response, options) ->
+            console.log collection
             return
 
         return

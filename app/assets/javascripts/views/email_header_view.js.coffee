@@ -3,7 +3,7 @@ window.EmailHeaderView = Backbone.View.extend(
     <tr>
         <h3>
             <td class="first_column">
-                <%= email_thread.emails[0].email.from_name == \"\" ? email_thread.emails[0].email.from_address : email_thread.emails[0].email.from_name %>
+                <%= email_thread.emails[0].email.from_name == null ? email_thread.emails[0].email.from_address : email_thread.emails[0].email.from_name %>
             </td>
             <td class="second_column">
                 <a href=\"#email#<%= email_thread.emails[0].email.id %>\">
