@@ -183,3 +183,46 @@ a.email_link
 {
 	color: black;
 }
+
+#email_table
+{
+	tr
+	{
+		// border-top: 1px gray solid;
+		border-color: #ddd;
+		border-width: 1px;
+		border-top-style: solid;
+	}
+
+	td {
+		padding: 8px 0px;
+		white-space: nowrap;
+		overflow: hidden;
+	}
+
+	.first_column
+	{
+		min-width: 150px;
+		max-width: 150px;
+	}
+
+	.second_column
+	{
+		padding-left: 10px;
+		width: 825px;
+		max-width: 825px;
+
+		span.email_snippet
+		{
+			color: gray;
+		}
+	}
+
+	.third_column
+	{
+		padding-left: 10px;
+		width: 90px;
+		max-width: 90px;
+	}
+
+}

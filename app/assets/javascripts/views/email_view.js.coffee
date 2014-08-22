@@ -4,18 +4,18 @@ window.EmailView = Backbone.View.extend(
         <div class=\"email_body\">
             <h3>
                 <div class=\"col-md-3\">
-                    <%= thread[0].from_name == \"\" ? thread[0].from_address : thread[0].from_name %>
+                    <%= email.from_name == \"\" ? email.from_address : email.from_name %>
                 </div>
                 <div class=\"col-md-3\">
-                    <a href=\"#email#<%= thread[0].id %>\">
-                        <%= thread[0].subject == \"\" ? \"(no subject)\" : thread[0].subject %>
+                    <a href=\"#email#<%= email.id %>\">
+                        <%= email.subject == \"\" ? \"(no subject)\" : email.subject %>
                     </a>
                 </div>
                 <div class=\"col-md-4\">
-                    <%= thread[0].snippet %>
+                    <%= email.snippet %>
                 </div>
                 <div class=\"col-md-2\">
-                    <%= thread[0].date.substring(0, 10) %>
+                    <%= email.date.substring(0, 10) %>
                 </div>
             </h3>
             <div class="row">
