@@ -5,3 +5,16 @@
 $ ->
 	EmailApp.start()
 	return
+
+$ ->
+	$("#compose_form").submit ->
+	    url = "/send_emails"
+	    $.ajax
+	        type: "POST"
+	        url: url
+	        data: $("#compose_form").serialize() # serializes the form's elements.
+	        success: (data) ->
+	            alert data # show response from the php script.
+	            return
+
+	    false # avoid to execute the actual submit of the form.
