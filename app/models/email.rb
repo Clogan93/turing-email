@@ -30,11 +30,15 @@ class Email < ActiveRecord::Base
     email.list_id = email_raw.header['List-ID'].decoded if email_raw.header['List-ID']
     email.date = email_raw.date
 
-    email.from_name, email.from_address = Email.parse_address_header(email_raw.header['from'], email_raw.from[0])
+    from_string = email_raw.from ? email_raw.from[0] : nil
+    email.from_name, email.from_address = Email.parse_address_header(email_raw.header['from'], from_string)
     email.from_address = email_raw.from_addrs[0] if email.from_address.nil?
 
-    email.sender_name, email.sender_address = Email.parse_address_header(email_raw.header['sender'], email_raw.sender[0])
-    email.reply_to_name, email.reply_to_address = Email.parse_address_header(email_raw.header['reply_to'], email_raw.reply_to[0])
+    sender_string = email_raw.sender ? email_raw.sender[0] : nil
+    email.sender_name, email.sender_address = Email.parse_address_header(email_raw.header['sender'], sender_string)
+
+    reply_to_string = email_raw.reply_to ? email_raw.reply_to[0] : nil
+    email.reply_to_name, email.reply_to_address = Email.parse_address_header(email_raw.header['reply_to'], reply_to_string)
 
     email.tos = email_raw.to.join('; ') if !email_raw.to.blank?
     email.ccs = email_raw.cc.join('; ') if !email_raw.cc.blank?
