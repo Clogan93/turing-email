@@ -36,6 +36,10 @@ class EmailGenie
           email.has_calendar_attachment
       log_console("UNIMPORTANT => Calendar!")
       return true
+    elsif email.seen && EmailInReplyTo.find_by(:email_account => email.email_account,
+                                               :in_reply_to_message_id => email.message_id)
+      log_console("UNIMPORTANT => Email SEEN AND replied too!")
+      return true
     end
 
     return false

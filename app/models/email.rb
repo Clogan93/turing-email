@@ -8,6 +8,12 @@ class Email < ActiveRecord::Base
   has_many :imap_folders, :through => :email_folder_mappings, :source => :email_folder, :source => 'ImapFolder'
   has_many :gmail_labels, :through => :email_folder_mappings, :source => :email_folder, :source_type => 'GmailLabel'
 
+  has_many :email_references,
+           :dependent => :destroy
+
+  has_many :email_in_reply_tos,
+           :dependent => :destroy
+
   validates_presence_of(:user, :email_account, :uid, :message_id, :email_thread_id)
 
   def Email.email_raw_from_mime_data(mime_data)
@@ -24,6 +30,10 @@ class Email < ActiveRecord::Base
 
   def Email.email_from_mime_data(mime_data)
     email_raw = Email.email_raw_from_mime_data(mime_data)
+    return Email.email_from_email_raw(email_raw)
+  end
+
+  def Email.email_from_email_raw(email_raw)
     email = Email.new
 
     email.message_id = email_raw.message_id
@@ -82,5 +92,41 @@ class Email < ActiveRecord::Base
     end
 
     return false
+  end
+
+  def add_references(email_raw)
+    return if email_raw.references.nil?
+
+    if email_raw.references.class == String
+      EmailReference.find_or_create_by!(:email_account => self.email_account, :email => self,
+                                        :references_message_id => email_raw.references)
+      return
+    end
+
+    email_raw.references.each do |references_message_id|
+      begin
+        EmailReference.find_or_create_by!(:email_account => self.email_account, :email => self,
+                                          :references_message_id => references_message_id)
+      rescue ActiveRecord::RecordNotUnique
+      end
+    end
+  end
+
+  def add_in_reply_tos(email_raw)
+    return if email_raw.in_reply_to.nil?
+
+    if email_raw.in_reply_to.class == String
+      EmailInReplyTo.find_or_create_by!(:email_account => self.email_account, :email => self,
+                                        :in_reply_to_message_id => email_raw.in_reply_to)
+      return
+    end
+
+    email_raw.in_reply_to.each do |in_reply_to_message_id|
+      begin
+        EmailInReplyTo.find_or_create_by!(:email_account => self.email_account, :email => self,
+                                          :in_reply_to_message_id => in_reply_to_message_id)
+      rescue ActiveRecord::RecordNotUnique
+      end
+    end
   end
 end

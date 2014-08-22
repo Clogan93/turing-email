@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140821061753) do
+ActiveRecord::Schema.define(version: 20140822053119) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,34 @@ ActiveRecord::Schema.define(version: 20140821061753) do
   end
 
   add_index "email_folder_mappings", ["email_id", "email_folder_id"], name: "index_email_folder_mappings_on_email_id_and_email_folder_id", unique: true, using: :btree
+
+  create_table "email_in_reply_tos", force: true do |t|
+    t.integer  "email_account_id"
+    t.string   "email_account_type"
+    t.integer  "email_id"
+    t.text     "in_reply_to_message_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "email_in_reply_tos", ["email_account_id", "in_reply_to_message_id"], name: "index_email_in_reply_tos_ea_id_and_irtm_id", using: :btree
+  add_index "email_in_reply_tos", ["email_account_id"], name: "index_email_in_reply_tos_on_email_account_id", using: :btree
+  add_index "email_in_reply_tos", ["email_id", "in_reply_to_message_id"], name: "index_email_in_reply_tos_on_email_id_and_in_reply_to_message_id", unique: true, using: :btree
+  add_index "email_in_reply_tos", ["email_id"], name: "index_email_in_reply_tos_on_email_id", using: :btree
+
+  create_table "email_references", force: true do |t|
+    t.integer  "email_account_id"
+    t.string   "email_account_type"
+    t.integer  "email_id"
+    t.text     "references_message_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "email_references", ["email_account_id", "references_message_id"], name: "index_email_references_ea_id_and_rm_id", using: :btree
+  add_index "email_references", ["email_account_id"], name: "index_email_references_on_email_account_id", using: :btree
+  add_index "email_references", ["email_id", "references_message_id"], name: "index_email_references_on_email_id_and_references_message_id", unique: true, using: :btree
+  add_index "email_references", ["email_id"], name: "index_email_references_on_email_id", using: :btree
 
   create_table "email_threads", force: true do |t|
     t.integer  "user_id"
