@@ -13,10 +13,13 @@ class EmailGenie
 
     emails = inbox_label.emails.where('date < ?', Time.now - 24.hours)
 
+    sent_label = GmailLabel.where(:gmail_account => gmail_account,
+                                  :label_id => 'SENT').first
+
     emails.each do |email|
       log_console("PROCESSING #{email.uid}")
 
-      if EmailGenie.email_is_unimportant(email)
+      if EmailGenie.email_is_unimportant(email, sent_label)
         log_console("#{email.uid} is UNIMPORTANT!!")
 
         EmailGenie.auto_file(email, inbox_label)
@@ -24,7 +27,7 @@ class EmailGenie
     end
   end
 
-  def EmailGenie.email_is_unimportant(email)
+  def EmailGenie.email_is_unimportant(email, sent_label = nil)
     if email.list_id && email.tos.downcase !~ /#{email.email_account.email}/
       log_console("UNIMPORTANT => list_id = #{email.list_id}")
       return true
@@ -36,6 +39,22 @@ class EmailGenie
           email.has_calendar_attachment
       log_console("UNIMPORTANT => Calendar!")
       return true
+    elsif email.seen && EmailInReplyTo.find_by(:email_account => email.email_account,
+                                               :in_reply_to_message_id => email.message_id)
+      log_console("UNIMPORTANT => Email SEEN AND replied too!")
+      return true
+    elsif sent_label
+      reply_address = email.reply_to_address ? email.reply_to_address : email.from_address
+
+      num_emails_to_address = sent_label.emails.where('tos ILIKE ?', "%#{reply_address}%").count
+      num_emails_from_address = Email.where("from_address=? OR reply_to_address=?",
+                                            reply_address, reply_address).count
+
+      ratio = num_emails_to_address / num_emails_from_address.to_f()
+      if ratio < 0.1
+        log_console("UNIMPORTANT => ratio = #{ratio} with reply_address = #{reply_address}!")
+        return true
+      end
     end
 
     return false

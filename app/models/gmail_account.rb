@@ -14,6 +14,14 @@ class GmailAccount < ActiveRecord::Base
            :as => :email_account,
            :dependent => :destroy
 
+  has_many :email_references,
+           :as => :email_account,
+           :dependent => :destroy
+
+  has_many :email_in_reply_tos,
+           :as => :email_account,
+           :dependent => :destroy
+
   has_many :gmail_labels,
            :dependent => :destroy
 
@@ -26,14 +34,23 @@ class GmailAccount < ActiveRecord::Base
     return mime_data
   end
 
+  def GmailAccount.email_raw_from_gmail_data(gmail_data)
+    mime_data = GmailAccount.mime_data_from_gmail_data(gmail_data)
+    return Email.email_raw_from_mime_data(mime_data)
+  end
+
   def GmailAccount.email_from_gmail_data(gmail_data)
     mime_data = GmailAccount.mime_data_from_gmail_data(gmail_data)
     email = Email.email_from_mime_data(mime_data)
 
-    email.uid = gmail_data['id']
-    email.snippet = gmail_data['snippet']
+    GmailAccount.init_email_from_gmail_data(email, gmail_data)
 
     return email
+  end
+
+  def GmailAccount.init_email_from_gmail_data(email, gmail_data)
+    email.uid = gmail_data['id']
+    email.snippet = gmail_data['snippet']
   end
 
   def gmail_client()
@@ -191,10 +208,11 @@ class GmailAccount < ActiveRecord::Base
   def sync_email_full()
     log_console("FULL SYNC with last_history_id_synced = #{self.last_history_id_synced}\n")
 
-    gmail_ids = []
     nextPageToken = nil
 
     while true
+      gmail_ids = []
+
       log_console("SYNCING page = #{nextPageToken}")
 
       messages_list_data = self.gmail_client.messages_list('me', pageToken: nextPageToken,
@@ -204,11 +222,11 @@ class GmailAccount < ActiveRecord::Base
 
       messages_data.each { |message_data| gmail_ids.push(message_data['id']) }
 
+      self.sync_gmail_ids(gmail_ids)
+
       nextPageToken = messages_list_data['nextPageToken']
       break if nextPageToken.nil?
     end
-
-    self.sync_gmail_ids(gmail_ids)
 
     gmail_data = self.gmail_client.messages_get('me', gmail_ids.first, format: 'minimal', fields: 'historyId')
     self.set_last_history_id_synced(gmail_data['historyId'])
@@ -246,7 +264,10 @@ class GmailAccount < ActiveRecord::Base
   end
 
   def create_email_from_gmail_data(gmail_data)
-    email = GmailAccount.email_from_gmail_data(gmail_data)
+    email_raw = GmailAccount.email_raw_from_gmail_data(gmail_data)
+    email = Email.email_from_email_raw(email_raw)
+    GmailAccount.init_email_from_gmail_data(email, gmail_data)
+
     email.user = self.user
     email.email_account = self
 
@@ -263,6 +284,11 @@ class GmailAccount < ActiveRecord::Base
       email_thread.with_lock do
         email.email_thread = email_thread
         email.save!
+
+        email.with_lock do
+          email.add_references(email_raw)
+          email.add_in_reply_tos(email_raw)
+        end
       end
 
       self.sync_email_labels(email, gmail_data['labelIds'])
