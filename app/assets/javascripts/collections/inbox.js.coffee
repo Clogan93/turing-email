@@ -18,13 +18,13 @@ window.Inbox = Backbone.Collection.extend(
 
     retrieveEmail: (id) ->
         modelToReturn = @filter((email) ->
-            email.attributes.email_thread[0].id.toString() is id.toString()
+            email.attributes.email_thread.emails[0].email.id.toString() is id.toString()
         )
         return modelToReturn[0]
 
     unreadCount: ->
         modelToCount = @filter((email) ->
-            email.attributes.thread[0].seen is false
+            email.attributes.email_thread.emails[0].email.seen is false
         )
         return modelToCount.length
 )
