@@ -46,4 +46,9 @@ class Api::V1::UsersController < ApiController
 
     raise ex
   end
+
+  def current
+    @user = current_user
+    render 'api/v1/users/show'
+  end
 end

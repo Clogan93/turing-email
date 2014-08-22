@@ -75,7 +75,13 @@ class EmailGenie
       if EmailGenie::LISTS.keys.include?(email.list_id.downcase)
         email.email_account.move_email_to_folder(email, EmailGenie::LISTS[email.list_id.downcase])
       elsif email.from_address == 'notifications@github.com'
-        email.email_account.move_email_to_folder(email, "GitHub/#{email.list_id}")
+        subfolder = email.list_id
+
+        if subfolder =~ /.* <.*>/
+          subfolder = subfolder.match(/(.*) <.*>/)[0]
+        end
+
+        email.email_account.move_email_to_folder(email, "GitHub/#{subfolder}")
       else
         email.email_account.move_email_to_folder(email, 'List Emails')
       end
