@@ -180,7 +180,7 @@ class GmailAccount < ActiveRecord::Base
       gmail_label = GmailLabel.new()
 
       gmail_label.gmail_account = email.email_account
-      gmail_label.label_id = folder_name
+      gmail_label.label_id = SecureRandom.uuid()
       gmail_label.name = folder_name
       gmail_label.label_type = 'user'
 
