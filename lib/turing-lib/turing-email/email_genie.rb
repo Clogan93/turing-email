@@ -40,6 +40,17 @@ class EmailGenie
                                                :in_reply_to_message_id => email.message_id)
       log_console("UNIMPORTANT => Email SEEN AND replied too!")
       return true
+    else
+      reply_address = email.reply_to_address ? email.reply_to_address : email.from_address
+      num_emails_to_address =
+          Email.where(:from_address => [email.email_account.email, 'david@turingsecurity.com']).where('tos ILIKE ?', "%#{reply_address}%").count
+      num_emails_from_address = Email.where("from_address=? OR reply_to_address=?", reply_address, reply_address).count
+
+      ratio = num_emails_to_address / num_emails_from_address.to_f()
+      if ratio < 0.1
+        log_console("UNIMPORTANT => ratio = #{ratio} with reply_address = #{reply_address}!")
+        return true
+      end
     end
 
     return false
