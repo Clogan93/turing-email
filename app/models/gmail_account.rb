@@ -58,6 +58,13 @@ class GmailAccount < ActiveRecord::Base
     return @gmail_client
   end
 
+  def init_email_from_gmail_data(email, gmail_data)
+    GmailAccount.init_email_from_gmail_data(email, gmail_data)
+
+    email.user = self.user
+    email.email_account = self
+  end
+
   def gmail_data_from_gmail_id(gmail_id, format = 'raw')
     return self.gmail_client.messages_get('me', gmail_id, format: format)
   end
@@ -74,7 +81,10 @@ class GmailAccount < ActiveRecord::Base
 
   def email_from_gmail_id(gmail_id)
     gmail_data = self.gmail_data_from_gmail_id(gmail_id, 'raw')
-    return GmailAccount.email_from_gmail_data(gmail_data)
+    email =  GmailAccount.email_from_gmail_data(gmail_data)
+    self.init_email_from_gmail_data(email, gmail_data)
+
+    return email
   end
 
   def refresh_user_info(api_client = nil, do_save = true)
@@ -266,10 +276,7 @@ class GmailAccount < ActiveRecord::Base
   def create_email_from_gmail_data(gmail_data)
     email_raw = GmailAccount.email_raw_from_gmail_data(gmail_data)
     email = Email.email_from_email_raw(email_raw)
-    GmailAccount.init_email_from_gmail_data(email, gmail_data)
-
-    email.user = self.user
-    email.email_account = self
+    self.init_email_from_gmail_data(email, gmail_data)
 
     if email.message_id.nil?
       log_console('NO message_id - SKIPPING!!!!!')
