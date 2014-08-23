@@ -6,7 +6,7 @@ window.EmailHeaderView = Backbone.View.extend(
                 <%= email_thread.emails[0].email.from_name == null ? email_thread.emails[0].email.from_address : email_thread.emails[0].email.from_name %>
             </td>
             <td class="second_column">
-                <a href=\"#email#<%= email_thread.emails[0].email.id %>\">
+                <a href=\"#email#<%= email_thread.emails[0].email.uid %>\">
                     <%= email_thread.emails[0].email.subject == \"\" ? \"(no subject)\" : email_thread.emails[0].email.subject %>
                 </a>
                 <span class="email_snippet"><%= email_thread.emails[0].email.snippet %></span>
@@ -24,6 +24,12 @@ window.EmailHeaderView = Backbone.View.extend(
         return
 
     render: ->
+        console.log @model.toJSON()
+        try
+            if EmailApp.Models.user.attributes.user.email == @model.get("email_thread").emails[0].email.from_address
+                @model.attributes.email_thread.emails[0].email.from_name = "me"
+        catch error
+            console.log error
         @$el.html @template(@model.toJSON())
         this
 

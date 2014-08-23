@@ -9,6 +9,9 @@ window.EmailApp = new (Backbone.Router.extend(
         "email#:id": "show_email"
 
     initialize: ->
+        #Models
+        this.Models.user = new User()
+
         #Collections
         this.Collections.inbox = new Inbox()
         this.Collections.email_folders = new EmailFolders()
@@ -30,6 +33,9 @@ window.EmailApp = new (Backbone.Router.extend(
 
         $("#email_folders").html this.Views.emailFoldersView.el
         this.Collections.email_folders.fetch  success: (collection, response, options) ->
+            return
+
+        this.Models.user.fetch  success: (model, response, options) ->
             return
 
         return
