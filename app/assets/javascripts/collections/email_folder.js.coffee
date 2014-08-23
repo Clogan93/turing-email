@@ -1,9 +1,9 @@
 window.EmailFolder = Backbone.Collection.extend(
     model: Email
 
-    retrieveEmail: (id) ->
+    retrieveEmail: (uid) ->
         modelToReturn = @filter((email) ->
-            email.attributes.email_thread[0].id.toString() is id.toString()
+            email.attributes.email_thread.emails[0].email.uid.toString() is uid.toString()
         )
         return modelToReturn[0]
 

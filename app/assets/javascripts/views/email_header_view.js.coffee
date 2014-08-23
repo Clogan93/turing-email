@@ -24,6 +24,11 @@ window.EmailHeaderView = Backbone.View.extend(
         return
 
     render: ->
+        try
+            if EmailApp.Models.user.attributes.user.email == @model.get("email_thread").emails[0].email.from_address
+                @model.attributes.email_thread.emails[0].email.from_name = "me"
+        catch error
+            console.log error
         @$el.html @template(@model.toJSON())
         this
 
