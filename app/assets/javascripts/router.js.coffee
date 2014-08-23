@@ -33,6 +33,11 @@ window.EmailApp = new (Backbone.Router.extend(
         $("#email_folders").html this.Views.emailFoldersView.el
         this.Collections.email_folders.fetch  success: (collection, response, options) ->
             EmailApp.Views.emailFoldersView.render()
+
+            $(".bullet_span").click ->
+                console.log $(this).parent().children("ul").children("li")
+                $(this).parent().children("ul").children("li").toggle()
+
             return
 
         this.Models.user.fetch  success: (model, response, options) ->
