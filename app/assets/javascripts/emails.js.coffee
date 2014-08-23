@@ -3,10 +3,6 @@
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
 $ ->
-	EmailApp.start()
-	return
-
-$ ->
 	$("#compose_form").submit ->
 	    url = "/send_emails"
 	    $.ajax

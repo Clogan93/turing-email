@@ -1,13 +1,13 @@
 window.EmailView = Backbone.View.extend(    
     template: _.template("""
-    <% _.each(email_thread, function(email) { %>
+    <% _.each(email_thread.emails, function(email) { %>
         <div class=\"email_body\">
             <h3>
                 <div class=\"col-md-3\">
                     <%= email.from_name == \"\" ? email.from_address : email.from_name %>
                 </div>
                 <div class=\"col-md-3\">
-                    <a href=\"#email#<%= email.id %>\">
+                    <a href=\"#email#<%= email.uid %>\">
                         <%= email.subject == \"\" ? \"(no subject)\" : email.subject %>
                     </a>
                 </div>
