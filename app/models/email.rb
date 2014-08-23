@@ -3,6 +3,8 @@ class Email < ActiveRecord::Base
   belongs_to :email_account, polymorphic: true
   belongs_to :email_thread
 
+  belongs_to :auto_filed_folder, polymorphic: true
+
   has_many :email_folder_mappings,
            :dependent => :destroy
   has_many :imap_folders, :through => :email_folder_mappings, :source => :email_folder, :source => 'ImapFolder'

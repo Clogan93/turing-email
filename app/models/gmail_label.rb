@@ -6,6 +6,9 @@ class GmailLabel < ActiveRecord::Base
            :dependent => :destroy
   has_many :emails, :through => :email_folder_mappings
 
+  has_many :auto_filed_emails,
+           :as => :auto_filed_folder
+
   validates_presence_of(:gmail_account_id, :label_id, :name, :label_type)
 
   def num_threads
