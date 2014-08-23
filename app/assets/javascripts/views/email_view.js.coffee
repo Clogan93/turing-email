@@ -1,27 +1,27 @@
 window.EmailView = Backbone.View.extend(    
     template: _.template("""
-    <% _.each(email_thread.emails, function(email) { %>
+    <% _.each(email_thread.emails, function(email_info) { %>
         <div class=\"email_body\">
             <h3>
                 <div class=\"col-md-3\">
-                    <%= email.from_name == \"\" ? email.from_address : email.from_name %>
+                    <%= email_info.email.from_name == \"\" ? email_info.email.from_address : email_info.email.from_name %>
                 </div>
                 <div class=\"col-md-3\">
-                    <a href=\"#email#<%= email.uid %>\">
-                        <%= email.subject == \"\" ? \"(no subject)\" : email.subject %>
+                    <a href=\"#email#<%= email_info.email.uid %>\">
+                        <%= email_info.email.subject == \"\" ? \"(no subject)\" : email_info.email.subject %>
                     </a>
                 </div>
                 <div class=\"col-md-4\">
-                    <%= email.snippet %>
+                    <%= email_info.email.snippet %>
                 </div>
                 <div class=\"col-md-2\">
-                    <%= email.date.substring(0, 10) %>
+                    <%= email_info.email.date == null ? \"\" : email_info.email.date.substring(0, 10) %>
                 </div>
             </h3>
             <div class="row">
                 <div class="col-md-11">
                     <pre>
-                        <%= email.text_part %>
+                        <%= email_info.email.text_part %>
                     </pre>
                 </div>
             </div>
