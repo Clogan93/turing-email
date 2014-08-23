@@ -8,7 +8,6 @@ window.EmailFolderHeaderView = Backbone.View.extend(
         return
 
     render: ->
-        console.log @model.toJSON()
         @$el.html @template(@model.toJSON())
         this
 )
