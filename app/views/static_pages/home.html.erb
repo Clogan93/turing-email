@@ -8,10 +8,11 @@ Welcome to Turing!
 <br />
 
 <% if !current_user.nil? %>
-  <% gmail_account = current_user.gmail_accounts.first %>
+  <% google_o_auth2_token = nil
+     google_o_auth2_token = current_user.gmail_accounts.first.google_o_auth2_token if current_user.gmail_accounts.first %>
 
-  <%= link_to("#{gmail_account ? 'Change' : 'Link'} Gmail Account", gmail_oauth2_url(true)) %>
-  <% if gmail_account %>
+  <%= link_to("#{google_o_auth2_token ? 'Change' : 'Link'} Gmail Account", gmail_oauth2_url(true)) %>
+  <% if google_o_auth2_token %>
     | <%= link_to("Unlink Gmail Account", gmail_oauth2_remove_url, method: 'delete') %>
   <% end %>
 
