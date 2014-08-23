@@ -6,7 +6,7 @@ window.EmailHeaderView = Backbone.View.extend(
                 <%= email_thread.emails[0].email.from_name == \"\" ? email_thread.emails[0].email.from_address : email_thread.emails[0].email.from_name %>
             </td>
             <td class="second_column">
-                <a href=\"#email#<%= email_thread.emails[0].email.id %>\">
+                <a href=\"#email#<%= email_thread.emails[0].email.uid %>\">
                     <%= email_thread.emails[0].email.subject == \"\" ? \"(no subject)\" : email_thread.emails[0].email.subject %>
                 </a>
                 <span class="email_snippet"><%= email_thread.emails[0].email.snippet %></span>
