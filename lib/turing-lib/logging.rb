@@ -5,20 +5,18 @@ class Exception
 end
 
 def log_email(subject, text = ' ', to_console = true, to = $config.logs_email, delayed_send = false)
-  log_exception() do
+  log_exception(false) do
     text = ' ' if text == '' || text.nil?
 
-    log_exception() do
-=begin
+    log_exception(false) do
       r = RestClient
       r = r.delay if delayed_send
 
-      #r.post "#{$config.mailgun_api_url}/messages",
+      r.post "#{$config.mailgun_api_url}/messages",
              :from => $config.logs_email_full,
              :to => to,
-             :subject => "Pluto (#{Rails.env}) - #{subject}",
+             :subject => "#{$config.service_name} (#{Rails.env}) - #{subject}",
              :text => text
-=end
     end
 
     if to_console
