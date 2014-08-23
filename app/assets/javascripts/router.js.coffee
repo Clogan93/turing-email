@@ -19,8 +19,7 @@ window.EmailApp = new (Backbone.Router.extend(
         #View
         this.Views.inboxView = new InboxView(collection: this.Collections.inbox)
         this.Views.inboxView.render()
-        this.Views.emailFoldersView = new EmailFoldersView(collection: this.Collections.email_folders)
-        this.Views.emailFoldersView.render()
+        this.Views.emailFoldersView = new EmailFoldersTreeView(collection: this.Collections.email_folders)
         return
 
     index: ->
@@ -33,6 +32,7 @@ window.EmailApp = new (Backbone.Router.extend(
 
         $("#email_folders").html this.Views.emailFoldersView.el
         this.Collections.email_folders.fetch  success: (collection, response, options) ->
+            EmailApp.Views.emailFoldersView.render()
             return
 
         this.Models.user.fetch  success: (model, response, options) ->
