@@ -73,7 +73,7 @@ class EmailGenie
       log_console("Found list_id=#{email.list_id}")
 
       if EmailGenie::LISTS.keys.include?(email.list_id.downcase)
-        email.email_account.move_email_to_folder(email, EmailGenie::LISTS[email.list_id.downcase])
+        email.email_account.move_email_to_folder(email, EmailGenie::LISTS[email.list_id.downcase], true)
       elsif email.from_address == 'notifications@github.com'
         subfolder = email.list_id
 
@@ -81,12 +81,12 @@ class EmailGenie
           subfolder = subfolder.match(/(.*) <.*>/)[0]
         end
 
-        email.email_account.move_email_to_folder(email, "GitHub/#{subfolder}")
+        email.email_account.move_email_to_folder(email, "GitHub/#{subfolder}", true)
       else
-        email.email_account.move_email_to_folder(email, 'List Emails')
+        email.email_account.move_email_to_folder(email, 'List Emails', true)
       end
     else
-      email.email_account.move_email_to_folder(email, 'Unimportant')
+      email.email_account.move_email_to_folder(email, 'Unimportant', true)
     end
 
     email.auto_filed = true
