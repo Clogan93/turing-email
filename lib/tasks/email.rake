@@ -19,3 +19,8 @@ task :email_genie => :environment do
     EmailGenie.process_gmail_account(gmail_account)
   end
 end
+
+task :email_genie_reports => :environment do
+  GmailAccount.all.each do |gmail_account|
+  end
+end

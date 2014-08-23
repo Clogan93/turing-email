@@ -25,6 +25,11 @@ module TuringEmail
     config.google_client_id = nil
     config.google_secret = nil
 
+    config.mailgun_api_key = nil
+    config.mailgun_public_api_key = nil
+    config.mailgun_smtp_username = nil
+    config.mailgun_smtp_password = nil
+
     config.log_tags = [ lambda { |request| request.user_agent },
                         lambda { |request| request.referrer },
                         lambda { |request| request.headers['X-Forwarded-For'] } ]

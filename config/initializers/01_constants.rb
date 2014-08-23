@@ -12,6 +12,11 @@ OK = 1
 $config.google_client_id ||= ENV['GOOGLE_CLIENT_ID']
 $config.google_secret ||= ENV['GOOGLE_SECRET']
 
+$config.mailgun_api_key ||= ENV['MAILGUN_API_KEY']
+$config.mailgun_public_api_key ||= ENV['MAILGUN_PUBLIC_API_KEY']
+$config.mailgun_smtp_username ||= ENV['MAILGUN_SMTP_USERNAME']
+$config.mailgun_smtp_password ||= ENV['MAILGUN_SMTP_PASSWORD']
+
 # http errors
 
 $config.http_errors = {
@@ -47,6 +52,11 @@ $config.error_message_repeat = "Please try again. If this keeps happening please
 $config.error_message_default = "There was an error. #{$config.error_message_repeat}"
 
 $config.max_login_attempts = 5
+
+# mailgun
+$config.mailgun_smtp_server = 'smtp.mailgun.org'
+$config.mailgun_api_url_base = "https://api:#{$config.mailgun_api_key}@api.mailgun.net/v2"
+$config.mailgun_api_url = "#{$config.mailgun_api_url_base}/#{$config.mailgun_domain}"
 
 =begin
 $config.s3_key_length = 256

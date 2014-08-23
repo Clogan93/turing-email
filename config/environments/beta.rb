@@ -4,6 +4,8 @@ Rails.application.configure do
   config.domain = 'turing-email-beta.herokuapp.com'
   config.url = "https://#{config.domain}"
   config.api_url = "https://#{config.domain}"
+
+  config.mailgun_domain = 'beta.turingemail.com'
   
   # Settings specified here will take precedence over those in config/application.rb.
 
