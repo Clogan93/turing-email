@@ -4,7 +4,7 @@ window.Inbox = Backbone.Collection.extend(
     initialize: ->
         @on "remove", @hideModel, this
         page = getQuerystringNameValue("page")
-        @url = "/api/v1/email_threads/inbox?page=" + page if @page != null
+        @url = "/api/v1/email_threads/inbox?page=" + page if page != null
 
         return
 
