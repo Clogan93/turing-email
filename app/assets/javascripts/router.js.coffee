@@ -17,15 +17,16 @@ window.EmailApp = new (Backbone.Router.extend(
         this.Collections.email_folders = new EmailFolders()
 
         #View
-        this.Views.inboxView = new InboxView(collection: this.Collections.inbox)
+        this.Views.emailFolderView = new InboxView(collection: this.Collections.inbox)
+
         this.Views.emailFoldersView = new EmailFoldersTreeView(collection: this.Collections.email_folders)
         return
 
     index: ->
-        $("#app").html this.Views.inboxView.el
+        $("#app").html this.Views.emailFolderView.el
         this.Collections.inbox.fetch success: (collection, response, options) ->
             
-            EmailApp.Views.inboxView.render()
+            EmailApp.Views.emailFolderView.render()
 
             EmailApp.bind_collapsed_email_thread_functionality()
 
