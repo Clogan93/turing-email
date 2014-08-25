@@ -5,6 +5,9 @@ class StaticPagesController < ApplicationController
   end
 
   def inbox
+    inbox_label = GmailLabel.where(:gmail_account => current_user.gmail_accounts.first,
+                                   :label_id => 'INBOX').first
+    @email_threads = inbox_label.nil? ? [] : inbox_label.get_paginated_threads(params)
   end
 
   def email_threading_prototype

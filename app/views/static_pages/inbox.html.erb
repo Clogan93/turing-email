@@ -47,6 +47,9 @@
 					<a class="btn" href="#"><i class="icon-align-justify"></i></a>
 				</div>
 			</div> -->
+      <div id="pages" class="row">
+        <%= will_paginate @email_threads, :params => params %>
+      </div>
 			<div id="app" class="row"></div>
 			<div id="email" class="row"></div>
 		</div>

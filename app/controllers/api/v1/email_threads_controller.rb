@@ -16,12 +16,7 @@ class Api::V1::EmailThreadsController < ApiController
   def inbox
     inbox_label = GmailLabel.where(:gmail_account => current_user.gmail_accounts.first,
                                    :label_id => 'INBOX').first
-    @email_threads = []
-
-    if inbox_label
-      email_thread_ids = inbox_label.emails.pluck(:email_thread_id)
-      @email_threads = EmailThread.get_threads_from_ids(email_thread_ids)
-    end
+    @email_threads = inbox_label.nil? ? [] : inbox_label.get_paginated_threads(params)
 
     render 'api/v1/email_threads/index'
   end

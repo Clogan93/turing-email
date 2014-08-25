@@ -83,3 +83,6 @@ gem 'mail', '~> 2.5.4'
 
 # backbone
 gem 'backbone-rails', git: 'https://github.com/rubymaverick/backbone-rails.git'
+
+# paginate
+gem 'will_paginate', '~> 3.0'

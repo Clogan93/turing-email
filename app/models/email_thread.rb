@@ -7,7 +7,7 @@ class EmailThread < ActiveRecord::Base
   validates_presence_of(:user, :uid)
 
   def EmailThread.get_threads_from_ids(ids)
-    email_threads = EmailThread.includes(:emails).where(:id => ids).order('emails.date DESC')
+    email_threads = EmailThread.includes(:emails).where(:id => ids)
     return email_threads
   end
 end
