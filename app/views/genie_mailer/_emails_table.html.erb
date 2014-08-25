@@ -1,0 +1,24 @@
+<table border="1">
+  <tr>
+    <td></td>
+    <td>From</td>
+    <td>Subject</td>
+    <td>Date</td>
+    <% if include_auto_filed_folder %>
+      <td>Folder Moved To</td>
+    <% end %>
+  </tr>
+
+  <% (0...emails.count).each do |email_num| %>
+    <% email = emails[email_num] %>
+    <tr>
+      <td><%= email_num + 1 %></td>
+      <td><%= mail_to(email.from_address, email.from_name) %></td>
+      <td><%= email.subject %></td>
+      <td><%= email.date.to_s_local() %></td>
+      <% if include_auto_filed_folder %>
+        <td><%= email.auto_filed_folder.name %></td>
+      <% end %>
+    </tr>
+  <% end %>
+</table>

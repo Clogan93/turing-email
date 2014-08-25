@@ -204,6 +204,8 @@ class GmailAccount < ActiveRecord::Base
     log_console("APPLY #{gmail_label.name} TO #{email.uid}")
 
     begin
+      email_folder_mapping = nil
+
       email.with_lock do
         email_folder_mapping = EmailFolderMapping.new()
         email_folder_mapping.email = email

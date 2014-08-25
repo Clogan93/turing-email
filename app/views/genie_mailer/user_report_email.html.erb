@@ -1,0 +1,19 @@
+Here is your daily Turing Email Genie Report!<br />
+<br />
+
+The Genie found <span style="font-weight: bold;"><%= @important_emails.count %></span> important emails
+that require action and it filed away <span style="font-weight: bold;"><%= @auto_filed_emails.count %></span>
+unimportant emails!
+
+<br /><br />
+
+You have <span style="font-weight: bold;"><%= @important_emails.count %></span> important emails
+from yesterday that need replied to!
+
+<%= render('emails_table', :emails => @important_emails, :include_auto_filed_folder => false) %>
+
+<br />
+The Genie found <span style="font-weight: bold;"><%= @auto_filed_emails.count %></span>
+unimportant emails in your Inbox and neatly filed them away!
+
+<%= render('emails_table', :emails => @auto_filed_emails, :include_auto_filed_folder => true) %>

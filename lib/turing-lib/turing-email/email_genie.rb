@@ -11,7 +11,7 @@ class EmailGenie
                                    :label_id => 'INBOX').first
     return if inbox_label.nil?
 
-    emails = inbox_label.emails.where('date < ?', Time.now - 24.hours)
+    emails = inbox_label.emails.where('date < ?', Time.now - 7.hours)
 
     sent_label = GmailLabel.where(:gmail_account => gmail_account,
                                   :label_id => 'SENT').first

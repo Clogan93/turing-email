@@ -30,9 +30,15 @@ $config.http_errors = {
     :email_not_found => {:status_code => 620, :description => 'Email not found.'}
 }
 
+# globals
+
 $config.company_name = 'Turing Technology, Inc.'
 $config.service_name = 'Turing Email'
 $config.service_name_short = 'Turing'
+
+$config.default_time_zone = 'Pacific Time (US & Canada)'
+
+$config.smtp_helo_domain = $config.domain
 
 $config.email_domain = 'turinginc.com'
 
@@ -41,12 +47,15 @@ $config.email_validation_regex = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
 
 $config.support_email = "support@#{$config.email_domain}"
 $config.logs_email = "logs@#{$config.email_domain}"
+$config.no_reply_email = "noreply@#{$config.email_domain}"
 
 $config.support_email_name = "#{$config.service_name} (Support)"
 $config.logs_email_name = "#{$config.service_name} Logs (#{Rails.env})"
+$config.no_reply_email_name = $config.service_name
 
 $config.support_email_full = "#{$config.support_email_name} <#{$config.support_email}>"
 $config.logs_email_full = "#{$config.logs_email_name} <#{$config.logs_email}>"
+$config.no_reply_email_full = "#{$config.no_reply_email_name} <#{$config.no_reply_email}>"
 
 $config.error_message_repeat = "Please try again. If this keeps happening please email <a href=\"mailto:#{$config.support_email}\">#{$config.support_email}</a>"
 $config.error_message_default = "There was an error. #{$config.error_message_repeat}"

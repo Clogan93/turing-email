@@ -2,8 +2,10 @@ Rails.application.configure do
   config.heroku_app_name = 'turing-email-beta'
 
   config.domain = 'turing-email-beta.herokuapp.com'
-  config.url = "https://#{config.domain}"
-  config.api_url = "https://#{config.domain}"
+  config.http_host = config.domain
+
+  config.url = "https://#{config.http_host}"
+  config.api_url = "https://#{config.http_host}"
 
   config.mailgun_domain = 'beta.turingemail.com'
   

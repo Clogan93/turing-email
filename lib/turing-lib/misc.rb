@@ -17,6 +17,12 @@ class String
   end
 end
 
+class ActiveSupport::TimeWithZone
+  def to_s_local(time_zone_name: $config.default_time_zone, format: '%b %d at %l:%M %p')
+    return self.in_time_zone(time_zone_name).strftime(format)
+  end
+end
+
 def open_force_file(url)
   file = open(url)
 
