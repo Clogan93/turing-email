@@ -22,7 +22,7 @@ window.EmailView = Backbone.View.extend(
             <div class="email_body" <%= email_thread.emails.length > 1 && index < email_thread.emails.length - 1 ? \"style='display:none;'\" : \"\" %> >
                 <div class="row">
                     <div class="col-md-11">
-                        <%= email_info.email.text_part == null ? \"\" : "<pre>" + email_info.email.text_part + "</pre>" %>
+                        <pre><%= email_info.email.text_part == null ? \"\" : email_info.email.text_part %></pre>
                     </div>
                 </div>
                 <br />
