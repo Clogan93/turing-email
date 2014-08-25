@@ -59,8 +59,10 @@ task :email_genie_reports => :environment do
 
       sent_emails_not_replied_to = user.emails.where(:message_id => not_replied_to_message_ids)
     else
-      sent_emails_no_reply = []
+      sent_emails_not_replied_to = []
     end
+
+    log_console("FOUND #{sent_emails_not_replied_to.count} SENT emails AWAITING reply")
 
     auto_filed_emails = user.emails.where(:auto_filed => true, :auto_filed_reported => false).order(:date => :desc)
     log_console("FOUND #{auto_filed_emails.count} AUTO FILED emails")
