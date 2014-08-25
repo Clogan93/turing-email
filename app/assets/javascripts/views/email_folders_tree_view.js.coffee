@@ -20,12 +20,20 @@ window.EmailFoldersTreeView = Backbone.View.extend(
     append_list_data: (tree) ->
         label_html = "<ul>"
         for key, value of tree
+            label_has_children = Object.keys(value).length > 3
+            if value.num_unread_threads == 0
+                badge_string = ""
+            else
+                badge_string = value.num_unread_threads.toString()
             if value.label_type != "system"
-                label_html += "<li><a href='#label#" + value.label_id + "'>" + key + "<span class='badge'> " + value.num_unread_threads + "</span></a>"
+                if label_has_children
+                    label_html += "<li><span class='bullet_span'>‣ </span><a href='#label#" + value.label_id + "'>" + key + " <span class='badge'>" + badge_string + "</span></a>"
+                else
+                    label_html += "<li class='label_without_children'><a href='#label#" + value.label_id + "'>" + key + " <span class='badge'>" + badge_string + "</span></a>"
             delete value.label_type
             delete value.label_id
             delete value.num_unread_threads
-            if Object.keys(value).length > 0
+            if label_has_children
                 label_html += this.append_list_data(value)
             label_html += "</li>"
         label_html += "</ul>"
