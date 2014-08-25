@@ -4,7 +4,7 @@
 
 body
 {
-	background-color: rgb(101, 112, 122);
+	font-family: arial, sans-serif;
 }
 
 #inbox_label
@@ -28,7 +28,7 @@ body
 
 .wrapper
 {
-	background-color: rgb(249, 249, 249);
+	background-color: white;
 }
 
 h3
@@ -192,6 +192,7 @@ a.email_link
 		border-color: #ddd;
 		border-width: 1px;
 		border-top-style: solid;
+		background-color: rgb(243, 243, 243);
 	}
 
 	td {
@@ -245,4 +246,53 @@ a.email_link
 .label_without_children
 {
 	margin-left: 1px;
+}
+
+#preview_pane
+{
+	position: fixed;
+	background-color: white;
+	bottom: 0px;
+	height: 45%;
+	width: 100%;
+	overflow-y: scroll;
+
+	#resize_border
+	{
+		height: 3px;
+		width: 100%;
+		border-top: 1px solid #e5e5e5;
+		border-bottom: 1px solid #e5e5e5;
+		background-color: rgba(255,255,255,0.1);
+		cursor: row-resize;
+	}
+}
+
+pre
+{
+	background-color: white;
+}
+
+.email_information
+{
+	border-top: 1px solid #e5e5e5;
+	padding-top: 5px;
+}
+
+.email_subject
+{
+	padding: 15px 0px;
+	color: #222;
+	font-size: 18px;
+}
+
+.email
+{
+	padding-bottom: 20px;
+}
+
+.collapsed_email
+{
+	background-color: rgb(243, 243, 243);
+	cursor: pointer;
 }
