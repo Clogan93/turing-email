@@ -17,7 +17,7 @@ window.InboxView = Backbone.View.extend(
         return
 
     renderInitialPreviewPane: (email) ->
-        @$el.append "<div id='preview_pane'><div id='resize_border'></div><div id='email_content'></div></div>"
+        @$el.append "<div id='preview_pane'><div id='resize_border'></div><div id='preview_content'><div id='email_content'></div></div></div>"
 
         emailView = new EmailView(model: email)
         @$el.find("#email_content").append emailView.render().el
