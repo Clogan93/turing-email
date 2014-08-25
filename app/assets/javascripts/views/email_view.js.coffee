@@ -52,7 +52,6 @@ window.EmailView = Backbone.View.extend(
 
     render: ->
         @$el.html @template(@model.toJSON())
-        console.log @model.toJSON().email_thread.emails[0].email.text_part
         this
 
     remove: ->

@@ -12,7 +12,7 @@ window.EmailHeaderView = Backbone.View.extend(
                 <span class="email_snippet"><%= email_thread.emails[0].email.snippet %></span>
             </td>
             <td class="third_column">
-                <%= (new Date(email_thread.emails[0].email.date)).setHours((new Date(email_thread.emails[0].email.date)).getHours()+18) > Date.now() ? email_thread.emails[0].email.date.split("T")[1].substring(0, 5) : email_thread.emails[0].email.date.substring(0, 10) %>
+                <%= (new Date(email_thread.emails[0].email.date)).setHours((new Date(email_thread.emails[0].email.date)).getHours()+18) > Date.now() ? (new Date(email_thread.emails[0].email.date)).toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'}) : email_thread.emails[0].email.date.substring(0, 10) %>
             </td>
         </h3>
     </tr>
