@@ -178,7 +178,7 @@ class GmailAccount < ActiveRecord::Base
   end
 
   # polymorphic call
-  def move_email_to_folder(email, folder_name)
+  def move_email_to_folder(email, folder_name, set_auto_filed_folder = false)
     log_console("MOVING #{email.uid} TO #{folder_name}")
 
     gmail_label = GmailLabel.find_by(:gmail_account => self,
@@ -197,17 +197,23 @@ class GmailAccount < ActiveRecord::Base
       gmail_label.save!
     end
 
-    self.apply_label_to_email(email, gmail_label)
+    self.apply_label_to_email(email, gmail_label, set_auto_filed_folder)
   end
 
-  def apply_label_to_email(email, gmail_label)
+  def apply_label_to_email(email, gmail_label, set_auto_filed_folder = false)
     log_console("APPLY #{gmail_label.name} TO #{email.uid}")
 
     begin
-      email_folder_mapping = EmailFolderMapping.new()
-      email_folder_mapping.email = email
-      email_folder_mapping.email_folder = gmail_label
-      email_folder_mapping.save!
+      email_folder_mapping = nil
+
+      email.with_lock do
+        email_folder_mapping = EmailFolderMapping.new()
+        email_folder_mapping.email = email
+        email_folder_mapping.email_folder = gmail_label
+        email_folder_mapping.save!
+
+        email.auto_filed_folder = gmail_label if set_auto_filed_folder
+      end
 
       log_console("created email_folder_mapping.id=#{email_folder_mapping.id} FOR #{gmail_label.id}")
     rescue ActiveRecord::RecordNotUnique => unique_violation

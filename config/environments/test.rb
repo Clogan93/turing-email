@@ -1,9 +1,23 @@
 Rails.application.configure do
-  config.heroku_app_name = 'turing-website-test'
+  config.heroku_app_name = 'turing-email-test'
 
-  config.domain = "#{ENV.has_key?('LOCALHOST') ? ENV['LOCALHOST'] : 'localhost'}:4000"
-  config.url = "http://#{config.domain}"
-  config.api_url = "http://#{config.domain}"
+  config.domain = "#{ENV.has_key?('DOMAIN') ? ENV['DOMAIN'] : 'localhost'}"
+  config.http_port = "#{ENV.has_key?('HTTP_PORT') ? ENV['HTTP_PORT'] : '4000'}"
+  config.http_host = config.domain
+  config.http_host += ":#{config.http_port}" if config.http_port != '80'
+
+  config.url = "http://#{config.http_host}"
+  config.api_url = "http://#{config.http_host}"
+
+  config.mailgun_domain = 'dev.turingemail.com'
+
+  config.google_client_id = '900985518357-chpj6f40dertjuam39gn8i0bienk8v24.apps.googleusercontent.com'
+  config.google_secret = 'NzWBuq2I7Ci04vrElrFE7LQE'
+
+  config.mailgun_api_key = 'key-77f40750a8aa1f3b76d92bccba4e4e59'
+  config.mailgun_public_api_key = 'pubkey-9e325d313b41af58399aec7ef0084ba9'
+  config.mailgun_smtp_username = 'postmaster@dev.turingemail.com'
+  config.mailgun_smtp_password = '5ced9285272c96d6e49ec2105e087bcf'
 
   config.log_level = :info
 

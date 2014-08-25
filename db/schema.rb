@@ -70,6 +70,9 @@ ActiveRecord::Schema.define(version: 20140822053119) do
     t.string   "email_account_type"
     t.integer  "email_thread_id"
     t.boolean  "auto_filed",              default: false
+    t.boolean  "auto_filed_reported",     default: false
+    t.integer  "auto_filed_folder_id"
+    t.string   "auto_filed_folder_type"
     t.text     "uid"
     t.text     "message_id"
     t.text     "list_id"

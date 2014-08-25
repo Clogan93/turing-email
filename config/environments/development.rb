@@ -1,9 +1,13 @@
 Rails.application.configure do
   config.heroku_app_name = 'turing-email-dev'
 
-  config.domain = "#{ENV.has_key?('LOCALHOST') ? ENV['LOCALHOST'] : 'localhost'}:4000"
-  config.url = "http://#{config.domain}"
-  config.api_url = "http://#{config.domain}"
+  config.domain = "#{ENV.has_key?('DOMAIN') ? ENV['DOMAIN'] : 'localhost'}"
+  config.http_port = "#{ENV.has_key?('HTTP_PORT') ? ENV['HTTP_PORT'] : '4000'}"
+  config.http_host = config.domain
+  config.http_host += ":#{config.http_port}" if config.http_port != '80'
+
+  config.url = "http://#{config.http_host}"
+  config.api_url = "http://#{config.http_host}"
 
   config.mailgun_domain = 'dev.turingemail.com'
 
