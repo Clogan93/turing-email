@@ -27,6 +27,8 @@ window.EmailApp = new (Backbone.Router.extend(
             
             EmailApp.Views.inboxView.render()
 
+            EmailApp.bind_collapsed_email_thread_functionality()
+
             # Set the inbox count to the number of emails in the inbox.
             $("#inbox_count_badge").html collection.unreadCount()
 
@@ -34,6 +36,7 @@ window.EmailApp = new (Backbone.Router.extend(
 
         $("#email_folders").html this.Views.emailFoldersView.el
         this.Collections.email_folders.fetch  success: (collection, response, options) ->
+
             EmailApp.Views.emailFoldersView.render()
 
             $(".bullet_span").click ->
@@ -57,6 +60,9 @@ window.EmailApp = new (Backbone.Router.extend(
         $("#app").html this.Views.emailFolderView.el
         this.Collections.emailFolder.fetch  success: (collection, response, options) ->
             EmailApp.Views.emailFolderView.render()
+
+            EmailApp.bind_collapsed_email_thread_functionality()
+
             return
         return
 
@@ -67,6 +73,9 @@ window.EmailApp = new (Backbone.Router.extend(
         this.Views.emailView.render()
         $("#app").find("#email_content").html this.Views.emailView.el
 
+        this.bind_collapsed_email_thread_functionality()
+
+    bind_collapsed_email_thread_functionality: ->
         $(".email").click ->
             $(this).find(".email_body").show()
             $(this).removeClass("collapsed_email")
