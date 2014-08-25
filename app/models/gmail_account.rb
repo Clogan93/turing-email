@@ -99,11 +99,11 @@ class GmailAccount < ActiveRecord::Base
     self.save! if do_save
   end
 
-  def sync_email(inbox_only = false)
+  def sync_email(include_inbox: false, include_sent: false)
     log_console("SYNCING Gmail #{self.email}")
 
     if self.last_history_id_synced.nil?
-      self.sync_email_full(inbox_only)
+      self.sync_email_full(include_inbox: include_inbox, include_sent: include_sent)
     else
       self.sync_email_partial()
     end
@@ -221,7 +221,7 @@ class GmailAccount < ActiveRecord::Base
     end
   end
 
-  def sync_email_full(inbox_only = false)
+  def sync_email_full(include_inbox: false, include_sent: false)
     log_console("FULL SYNC with last_history_id_synced = #{self.last_history_id_synced}\n")
 
     nextPageToken = nil
@@ -231,9 +231,13 @@ class GmailAccount < ActiveRecord::Base
 
       log_console("SYNCING page = #{nextPageToken}")
 
-      if inbox_only
+      if include_inbox || include_sent
+        labelIds = []
+        labelIds.push('INBOX') if include_inbox
+        labelIds.push('SENT') if include_sent
+
         messages_list_data = self.gmail_client.messages_list('me', pageToken: nextPageToken,
-                                                             labelIds: ['INBOX'],
+                                                             labelIds: labelIds,
                                                              maxResults: Google::Misc::MAX_BATCH_REQUESTS)
       else
         messages_list_data = self.gmail_client.messages_list('me', pageToken: nextPageToken,
