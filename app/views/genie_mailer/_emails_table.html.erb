@@ -6,18 +6,18 @@
 <table border="1">
   <tr>
     <td></td>
-    <td><%= show_to ? 'To' : 'From' %></td>
-    <td>Subject</td>
-    <td>Date</td>
+    <td><span style="font-weight: bold;"><%= show_to ? 'To' : 'From' %></span></td>
+    <td><span style="font-weight: bold;">Subject</span></td>
+    <td><span style="font-weight: bold;">Date</span></td>
     <% if include_auto_filed_folder %>
-      <td>Folder Moved To</td>
+      <td><span style="font-weight: bold;">Folder Moved To</span></td>
     <% end %>
   </tr>
 
   <% (0...emails.count).each do |email_num| %>
     <% email = emails[email_num] %>
     <tr>
-      <td><%= email_num + 1 %></td>
+      <td><span style="font-weight: bold;"><%= email_num + 1 %></span></td>
       <td>
         <% if show_to %>
           <%= truncate(email.tos.to_s() + email.ccs.to_s() + email.bccs.to_s(), :length => max_sender_len) %>
