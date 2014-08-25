@@ -230,9 +230,19 @@ a.email_link
 #email_folders
 {
 	li {
-		padding: 3px 0px;
+		padding: 4px 0px;
 	}
 	ul ul {
 		padding-left: 20px;
 	}
+}
+
+.bullet_span
+{
+	cursor: pointer;
+}
+
+.label_without_children
+{
+	margin-left: 1px;
 }
