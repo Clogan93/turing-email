@@ -19,7 +19,7 @@ gem 'coffee-rails', '~> 4.0.0'
 # gem 'therubyracer',  platforms: :ruby
 
 # Use jquery as the JavaScript library
-gem 'jquery-rails'
+gem 'jquery-rails', '~> 3.1.1'
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
@@ -49,7 +49,8 @@ gem 'rails_12factor', '~> 0.0.2', group: [:production, :beta] if ENV['NOT_HEROKU
 gem 'heroku-deflater', '~> 0.5.3'
 
 # bootstrap
-gem 'bootstrap-sass', '~> 3.1.1'
+gem 'bootstrap-sass', '~> 3.2.0.1'
+gem 'autoprefixer-rails', '~> 3.0.0.20140821'
 
 # rabl
 gem 'rabl', '~> 0.9.3'
@@ -82,7 +83,7 @@ gem 'rest-client', '~> 1.7.2'
 gem 'mail', '~> 2.5.4'
 
 # backbone
-gem 'backbone-rails', git: 'https://github.com/rubymaverick/backbone-rails.git'
+gem 'backbone-rails', '~> 1.1.2'
 
 # paginate
 gem 'will_paginate', '~> 3.0'

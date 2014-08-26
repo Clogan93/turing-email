@@ -12,15 +12,18 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= turbolinks
+// require turbolinks
+//
 //= require backbone-rails
+//= require bootstrap-sprockets
+//
 //= require_tree ./models
 //= require_tree ./collections
 //= require_tree ./views
 //= require router
-//= require jquery-ui.min
 //= require jquery.hotkeys
 //= require keyboard_shortcuts
-//= require bootstrap
+//
+// require_tree .
 //
 // swagger-ui
