@@ -29,7 +29,7 @@
 		<div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
           	<br />
-          	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Compose</button>
+          	<button id="compose_button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#composeModal">Compose</button>
           	<li><h3 class="h3"><a href="<%= inbox_url %>">Inbox <span class="badge" id="inbox_count_badge"></span></a></h3></li>
           	<div id="email_folders"></div>
           </ul>
@@ -58,7 +58,7 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="composeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">

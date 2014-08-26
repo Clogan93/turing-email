@@ -19,6 +19,8 @@
 //= require_tree ./views
 //= require router
 //= require jquery-ui.min
+//= require jquery.hotkeys
+//= require keyboard_shortcuts
 //= require bootstrap
 //
 // swagger-ui
