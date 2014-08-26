@@ -27,9 +27,15 @@ window.EmailFoldersTreeView = Backbone.View.extend(
                 badge_string = value.num_unread_threads.toString()
             if value.label_type != "system"
                 if label_has_children
-                    label_html += "<li><span class='bullet_span'>‣ </span><a href='#label#" + value.label_id + "'>" + key + " <span class='badge'>" + badge_string + "</span></a>"
+                    if value.num_unread_threads > 0   
+                        label_html += "<li class='email_label_li contains_unread_emails'><span class='bullet_span'>‣ </span><a class='label_link' href='#label#" + value.label_id + "'>" + key + " <span class='badge'>" + badge_string + "</span></a>"
+                    else
+                        label_html += "<li class='email_label_li contains_no_unread_emails'><span class='bullet_span'>‣ </span><a class='label_link' href='#label#" + value.label_id + "'>" + key + " <span class='badge'>" + badge_string + "</span></a>"
                 else
-                    label_html += "<li class='label_without_children'><a href='#label#" + value.label_id + "'>" + key + " <span class='badge'>" + badge_string + "</span></a>"
+                    if value.num_unread_threads > 0
+                        label_html += "<li class='email_label_li label_without_children contains_unread_emails'><a class='label_link' href='#label#" + value.label_id + "'>" + key + " <span class='badge'>" + badge_string + "</span></a>"
+                    else
+                        label_html += "<li class='email_label_li label_without_children contains_no_unread_emails'><a class='label_link' href='#label#" + value.label_id + "'>" + key + " <span class='badge'>" + badge_string + "</span></a>"
             delete value.label_type
             delete value.label_id
             delete value.num_unread_threads

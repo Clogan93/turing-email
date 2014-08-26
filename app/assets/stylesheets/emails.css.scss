@@ -171,12 +171,19 @@ a.email_link
 .sidebar
 {
 	padding-left: 2%;
-	padding-top: 2.25%;
 }
 
 .navbar-brand
 {
 	font-size: 26px;
+}
+
+.nav-sidebar
+{
+	position: fixed;
+	height: 100%;
+	overflow-y: scroll;
+	overflow-x: hidden;
 }
 
 .page-header a
@@ -299,4 +306,29 @@ pre
 {
 	background-color: rgb(243, 243, 243);
 	cursor: pointer;
+}
+
+.bullet_span:hover
+{
+	background-color: rgb(238, 238, 238);
+}
+
+a.label_link
+{
+	color: black;
+}
+
+li.contains_unread_emails
+{
+	font-weight: bold;
+}
+
+li.contains_no_unread_emails
+{
+	font-weight: normal;;
+}
+
+a.label_link:hover
+{
+	background-color: rgb(238, 238, 238);
 }
