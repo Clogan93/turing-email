@@ -1,1 +1,0 @@
-window.InboxView = EmailFolderView.extend()

@@ -1,7 +1,7 @@
-TuringEmail.Views.Posts ||= {}
+TuringEmailApp.Views.EmailFolders ||= {}
 
-class TuringEmail.Views.Posts.PostView extends Backbone.View
-  template: JST["backbone/templates/posts/post"]
+class TuringEmailApp.Views.EmailFolders.EmailFolderView extends Backbone.View
+  template: JST["backbone/templates/email_folders/email_folder"]
 
   events:
     "click .destroy" : "destroy"

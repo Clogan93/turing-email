@@ -1,6 +1,6 @@
 <script type="text/javascript">
   $(function() {
-    EmailApp.start();
+    TuringEmailApp.start();
   });
 </script>
 
@@ -48,7 +48,7 @@
 				</div>
 			</div> -->
       <div id="pages" class="row">
-        <%= will_paginate @email_threads, :params => params %>
+        <%= will_paginate(@email_threads, :params => params) if @email_threads.count > 0 %>
       </div>
 			<div id="app" class="row"></div>
 			<div id="email" class="row"></div>

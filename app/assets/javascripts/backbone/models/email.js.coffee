@@ -1,8 +1,7 @@
-window.Email = Backbone.Model.extend(toggleStatus: ->
+class TuringEmailApp.Models.Email extends Backbone.Model
+  toggleStatus: ->
     if @get("seen") is false
-        @set seen: true
+      @set seen: true
     else
-        @set seen: false
+      @set seen: false
     @save()
-    return
-)
