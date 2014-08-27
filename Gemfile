@@ -83,7 +83,8 @@ gem 'rest-client', '~> 1.7.2'
 gem 'mail', '~> 2.5.4'
 
 # backbone
-gem 'backbone-rails', '~> 1.1.2'
+#gem 'backbone-rails', '~> 1.1.2'
+gem 'rails-backbone', '~> 1.1.2', git:'https://github.com/codebrew/backbone-rails'
 
 # paginate
 gem 'will_paginate', '~> 3.0'

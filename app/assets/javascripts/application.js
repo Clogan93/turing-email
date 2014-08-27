@@ -14,16 +14,18 @@
 //= require jquery_ujs
 // require turbolinks
 //
-//= require backbone-rails
 //= require bootstrap-sprockets
 //
-//= require_tree ./models
-//= require_tree ./collections
-//= require_tree ./views
-//= require router
-//= require jquery.hotkeys
-//= require keyboard_shortcuts
+//= require underscore
+//= require backbone
+//= require backbone_rails_sync
+//= require backbone_datalink
+//= require backbone/turing_email
 //
-// require_tree .
+//= require_tree ./models
+//= require_tree ./views
+//= require_tree ./collections
+//
+//= require_tree .
 //
 // swagger-ui
