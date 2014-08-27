@@ -12,7 +12,7 @@
 //
 //= require jquery
 //= require jquery_ujs
-// require turbolinks
+// require turbolinks - disabled because its breaking backbone
 //
 //= require bootstrap-sprockets
 //
@@ -21,9 +21,5 @@
 //= require backbone_rails_sync
 //= require backbone_datalink
 //= require backbone/turing_email
-//
-//= require_tree ./models
-//= require_tree ./views
-//= require_tree ./collections
 //
 //= require_tree .
