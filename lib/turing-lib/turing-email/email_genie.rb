@@ -1,10 +1,14 @@
 class EmailGenie
-  LISTS = { '<sales@optimizely.com>' => 'Sales',
-            '<press@optimizely.com>' => 'Press',
-            '<marketing@optimizely.com>' => 'Marketing',
-            '<visible-changes@optimizely.com>' => 'Visible Changes',
-            '<events@optimizely.com>' => 'Events',
-            '<archive@optimizely.com>' => 'Archive' }
+  LISTS = { '<sales.optimizely.com>' => 'Sales',
+            '<press.optimizely.com>' => 'Press',
+            '<marketing.optimizely.com>' => 'Marketing',
+            '<visible-changes.optimizely.com>' => 'Visible Changes',
+            '<events.optimizely.com>' => 'Events',
+            '<archive.optimizely.com>' => 'Archive',
+            '<team.optimizely.com>' => 'Team',
+            '<team-sf.optimizely.com>' => 'Team (SF)',
+            '<team-ams.optimizely.com>' => 'Team (AMS)',
+            '<rocketship.optimizely.com>' => 'Rocketship' }
 
   def EmailGenie.send_user_report_email(user)
     inbox_label = GmailLabel.where(:gmail_account => user.gmail_accounts.first,
@@ -73,7 +77,7 @@ class EmailGenie
   end
 
   def EmailGenie.email_is_unimportant(email, sent_label = nil)
-    if email.list_id && email.tos.downcase !~ /#{email.email_account.email}/
+    if email.list_id && email.tos && email.tos.downcase !~ /#{email.email_account.email}/
       log_console("UNIMPORTANT => list_id = #{email.list_id}")
       return true
     elsif EmailGenie.is_no_reply_address(email.reply_to_address) || EmailGenie.is_no_reply_address(email.from_address)
