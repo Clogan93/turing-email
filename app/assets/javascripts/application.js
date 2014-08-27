@@ -27,5 +27,3 @@
 //= require_tree ./collections
 //
 //= require_tree .
-//
-// swagger-ui

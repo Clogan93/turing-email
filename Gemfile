@@ -60,7 +60,6 @@ gem 'oj', '~> 2.7.2'
 
 # swagger
 gem 'swagger-docs'
-gem 'swagger-ui_rails'
 
 group :test do
   # rspec
