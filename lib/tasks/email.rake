@@ -14,7 +14,7 @@ task :sync_email_inbox_and_sent => :environment do
   GmailAccount.all.each do |gmail_account|
     log_console("PROCESSING account #{gmail_account.email}")
 
-    gmail_account.sync_email(include_inbox = true, include_sent = true)
+    gmail_account.sync_email(include_inbox: true, include_sent: true)
   end
 end
 
@@ -24,7 +24,7 @@ task :sync_email_inbox => :environment do
   GmailAccount.all.each do |gmail_account|
     log_console("PROCESSING account #{gmail_account.email}")
 
-    gmail_account.sync_email(include_inbox = true)
+    gmail_account.sync_email(include_inbox: true)
   end
 end
 
@@ -34,7 +34,7 @@ task :sync_email_sent => :environment do
   GmailAccount.all.each do |gmail_account|
     log_console("PROCESSING account #{gmail_account.email}")
 
-    gmail_account.sync_email(include_sent = true)
+    gmail_account.sync_email(include_sent: true)
   end
 end
 
