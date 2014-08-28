@@ -17,26 +17,26 @@ window.TuringEmailApp = new(Backbone.View.extend({
 
     @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection()
     @emailFoldersRouter = new TuringEmailApp.Routers.EmailFoldersRouter()
-    @emailFoldersTreeView = new TuringEmailApp.Views.EmailFolders.TreeView({
+    @emailFoldersTreeView = new TuringEmailApp.Views.EmailFolders.TreeView(
       el: $("#email_folders"),
       collection: @emailFolders
-    })
+    )
 
-    @emailFolders.fetch({
+    @emailFolders.fetch(
+      reset: true
+
       success: (collection, response, options) ->
-        TuringEmailApp.emailFoldersTreeView.render()
-
         $(".bullet_span").click ->
           $(this).parent().children("ul").children("li").toggle()
           
       error: (collection, response, options) ->
         alert("AHHH @emailFolders.fetch")
-    })
+    )
 
     @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
     @emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
     @emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView({
-        el: $("#app")
+        el: $("#emails_threads_list_view")
         collection: @emailThreads
     })
 

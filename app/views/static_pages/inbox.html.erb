@@ -7,7 +7,6 @@
 <div class="container-fluid">
 
 	<div class="row" style="height: 45px;">
-
 		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
 		  <div class="container">
 		    <div class="navbar-header">
@@ -21,40 +20,30 @@
 		    </div>
 		  </div>
 		</div>
-
 	</div>
 
 	<div class="row wrapper">
-
 		<div class="col-sm-3 col-md-2 sidebar">
-          <ul class="nav nav-sidebar">
-          	<br />
-          	<button id="compose_button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#composeModal">Compose</button>
-          	<li><h3 class="h3"><a href="<%= inbox_url %>">Inbox <span class="badge" id="inbox_count_badge"></span></a></h3></li>
-          	<div id="email_folders"></div>
-          </ul>
-        </div>
+      <ul class="nav nav-sidebar">
+        <br />
+        <button id="compose_button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#composeModal">Compose</button>
+        <li><h3 class="h3"><a href="<%= inbox_url %>">Inbox <span class="badge" id="inbox_count_badge"></span></a></h3></li>
+        <div id="email_folders"></div>
+      </ul>
+    </div>
 
 		<div class="col-md-10">
 			<div class="page-header">
 			  <h1 class="h1"><a href="<%= inbox_url %>">Inbox</a> <small>with advanced management features</small></h1>
 			</div>
-			<!-- <div class="btn-toolbar">
-				<div class="btn-group">
-					<a class="btn" href="#"><i class="icon-align-left"></i></a>
-					<a class="btn" href="#"><i class="icon-align-center"></i></a>
-					<a class="btn" href="#"><i class="icon-align-right"></i></a>
-					<a class="btn" href="#"><i class="icon-align-justify"></i></a>
-				</div>
-			</div> -->
+
       <div id="pages" class="row">
         <%= will_paginate(@email_threads, :params => params) if @email_threads.count > 0 %>
       </div>
-			<div id="app" class="row"></div>
+			<div id="emails_threads_list_view" class="row"></div>
 			<div id="email" class="row"></div>
 		</div>
 	</div>
-
 </div>
 
 <!-- Modal -->

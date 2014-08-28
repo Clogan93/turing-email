@@ -1,6 +1,6 @@
 class TuringEmailApp.Routers.EmailFoldersRouter extends Backbone.Router
   routes:
-    "label#:id": "show_folder"
+    "folder#:folder_id": "show_folder"
 
   show_folder: (folder_id) ->
     url = "/api/v1/email_threads/in_folder?folder_id=" + folder_id
@@ -10,7 +10,7 @@ class TuringEmailApp.Routers.EmailFoldersRouter extends Backbone.Router
     )
 
     TuringEmailApp.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView({
-      el: $("#app")
+      el: $("#emails_threads_list_view")
       collection: TuringEmailApp.emailThreads
     })
 
