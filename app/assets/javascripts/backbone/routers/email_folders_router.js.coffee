@@ -1,19 +1,20 @@
 class TuringEmailApp.Routers.EmailFoldersRouter extends Backbone.Router
-  initialize: (options) ->
-    @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection()
-    @emailFolders.reset options.emailFolders
-
   routes:
-    "email_folders"       : "index"
-    "email_folders#:id"   : "show"
-    "email_folders#.*"                  : "index"
+    "label#:id": "show_folder"
 
-  index: ->
-    @view = new TuringEmailApp.Views.EmailFolders.IndexView(collection: @email_folders)
-    $("#email_folders").html(@view.render().el)
-    
-  show: (id) ->
-    email_folder = @email_folders.get(id)
+  show_folder: (folder_id) ->
+    url = "/api/v1/email_threads/in_folder?folder_id=" + folder_id
+    console.log url
+    TuringEmailApp.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(
+      url: url
+    )
 
-    @view = new TuringEmailApp.Views.EmailFolders.ShowView(model: email_folder)
-    $("#email_folders").html(@view.render().el)
+    TuringEmailApp.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView({
+      el: $("#app")
+      collection: TuringEmailApp.emailThreads
+    })
+
+    TuringEmailApp.emailThreads.fetch(
+      success: (collection, response, options) ->
+        TuringEmailApp.emailThreadsListView.render()
+    )

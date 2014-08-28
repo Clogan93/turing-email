@@ -66,7 +66,6 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
         parent = parent[part]
     return tree
 
-
   destroy: () ->
     @model.destroy()
     this.remove()

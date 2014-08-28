@@ -10,7 +10,7 @@ class TuringEmailApp.Views.EmailFolders.IndexView extends Backbone.View
     @collection.each(@addOne)
 
   addOne: (emailFolder) =>
-    view = new TuringEmail.Views.EmailFolders.EmailFolderView({model : emailFolder})
+    view = new TuringEmailApp.Views.EmailFolders.EmailFolderView({model : emailFolder})
     @$("tbody").append(view.render().el)
 
   render: =>

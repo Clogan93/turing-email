@@ -11,21 +11,14 @@ window.TuringEmailApp = new(Backbone.View.extend({
   Collections: {}
   Routers: {}
 
-  initialize: ->
-    #Collections
-    #this.Collections.inbox = new Inbox()
-
-    #View
-    #this.Views.emailFolderView = new InboxView(collection: this.Collections.inbox)
-
   start: ->
     @user = new TuringEmailApp.Models.User()
     @user.fetch()
 
-    @emailFoldersRouter = new TuringEmailApp.Routers.EmailFoldersRouter({emailFolders: []})
     @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection()
+    @emailFoldersRouter = new TuringEmailApp.Routers.EmailFoldersRouter()
     @emailFoldersTreeView = new TuringEmailApp.Views.EmailFolders.TreeView({
-      el :$("#email_folders") ,
+      el: $("#email_folders"),
       collection: @emailFolders
     })
 
@@ -37,18 +30,26 @@ window.TuringEmailApp = new(Backbone.View.extend({
           $(this).parent().children("ul").children("li").toggle()
           
       error: (collection, response, options) ->
-        alert("AHHH")
+        alert("AHHH @emailFolders.fetch")
     })
-    
-#    $("#app").html this.Views.emailFolderView.el
-#    this.Collections.inbox.fetch success: (collection, response, options) ->
-#
-#      TuringEmailApp.Views.emailFolderView.render()
-#
-#      TuringEmailApp.bind_collapsed_email_thread_functionality()
-#
-#      # Set the inbox count to the number of emails in the inbox.
-#      $("#inbox_count_badge").html collection.unreadCount()  
+
+    @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
+    @emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
+    @emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView({
+        el: $("#app")
+        collection: @emailThreads
+    })
+
+    @emailThreads.fetch({
+      success: (collection, response, options) ->
+        TuringEmailApp.emailThreadsListView.render()
+
+        # Set the inbox count to the number of emails in the inbox.
+        $("#inbox_count_badge").html collection.unreadCount()
+
+      error: (collection, response, options) ->
+        alert("AHHH @emailThreads.fetch")
+    })
     
     #window.emailsRouter = new TuringEmailApp.Routers.EmailsRouter({emails: []})
 
