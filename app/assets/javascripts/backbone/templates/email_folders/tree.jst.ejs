@@ -1,3 +1,54 @@
 <%
+var template = JST["backbone/templates/email_folders/tree"];
 
+var badge_string, have_children, emailFolder, style, childName;
+
+emailFolder = node.emailFolder;
+
+if (emailFolder) {
+  have_children = Object.keys(node.children).length > 0;
+
+  if (emailFolder.num_unread_threads === 0) {
+    badge_string = "";
+  } else {
+    badge_string = emailFolder.num_unread_threads;
+  }
+
+  if (emailFolder.label_type !== "system") {
+    style = "";
+
+    if (!have_children) {
+      style += "label_without_children";
+    }
+
+    if (emailFolder.num_unread_threads > 0) {
+      style += " contains_unread_emails";
+    } else {
+      style += " contains_no_unread_emails";
+    }
+
+    style = style.trim()%>
+
+    <ul>
+      <li class="<%= style %>">
+        <% if (have_children) { %>
+          <span class="bullet_span">‣ </span>
+        <% } %>
+        <a class="label_link" href="#folder#<%= emailFolder.label_id %>">
+          <%= nodeName %> <span class="badge"><%= badge_string %></span>
+        </a><%
+  }
+
+  for (childName in node.children) {
+    child = node.children[childName] %>
+    <%= template({nodeName: childName, node: child}) %><%
+  }%>
+      </li>
+    </ul><%
+} else {
+  for (childName in node.children) {
+    child = node.children[childName];%>
+    <%= template({nodeName: childName, node: child}) %><%
+  }
+}
 %>

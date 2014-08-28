@@ -22,7 +22,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     emailView.bind_collapsed_email_thread_functionality()
 
   addOne: (email) ->
-    emailHeaderView = new TuringEmailApp.Views.EmailThreads.ListViewItem(model: email)
+    emailHeaderView = new TuringEmailApp.Views.EmailThreads.ListItemView(model: email)
     @$el.find("#email_table_body").append emailHeaderView.render().el
 
   destroy: () ->
