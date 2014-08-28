@@ -50,8 +50,6 @@ window.TuringEmailApp = new(Backbone.View.extend({
       error: (collection, response, options) ->
         alert("AHHH @emailThreads.fetch")
     })
-    
-    #window.emailsRouter = new TuringEmailApp.Routers.EmailsRouter({emails: []})
 
     Backbone.history.start()
 }))({el: document.body})

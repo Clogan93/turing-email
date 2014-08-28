@@ -8,3 +8,5 @@ class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
     emailView.render()
 
     $("#app").find("#email_content").html(emailView.el)
+
+    emailView.bind_collapsed_email_thread_functionality()

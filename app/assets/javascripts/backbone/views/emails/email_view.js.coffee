@@ -54,14 +54,13 @@ class TuringEmailApp.Views.Emails.EmailView extends Backbone.View
 
   render: ->
     @$el.html @template(@model.toJSON())
-    this.bind_collapsed_email_thread_functionality()
     return this
 
   bind_collapsed_email_thread_functionality: ->
     $(".email").click ->
       $(this).find(".email_body").show()
       $(this).removeClass("collapsed_email")
-      console.log $(this).siblings(".email").each ->
+      $(this).siblings(".email").each ->
         $(this).addClass "collapsed_email"
         $(this).find(".email_body").hide()
 
