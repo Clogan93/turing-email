@@ -16,14 +16,14 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
 
   retrieveEmail: (uid) ->
     modelToReturn = @filter((thread) ->
-      email = thread.get("emails")[0].email
+      email = thread.get("emails")[0]
       email.uid is uid
     )
     return modelToReturn[0]
 
   unreadCount: ->
     modelToCount = @filter((thread) ->
-      email = thread.get("emails")[0].email
+      email = thread.get("emails")[0]
       email.seen is false
     )
     return modelToCount.length

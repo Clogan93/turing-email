@@ -18,8 +18,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     @$el.append "<div id='preview_pane'><div id='resize_border'></div><div id='preview_content'><div id='email_content'></div></div></div>"
 
     emailView = new TuringEmailApp.Views.Emails.EmailView(model: email)
-    @$el.find("#email_content").append emailView.render().el
-    emailView.bind_collapsed_email_thread_functionality()
+    @$el.find("#email_content").append(emailView.render().el)
 
   addOne: (email) ->
     emailHeaderView = new TuringEmailApp.Views.EmailThreads.ListItemView(model: email)

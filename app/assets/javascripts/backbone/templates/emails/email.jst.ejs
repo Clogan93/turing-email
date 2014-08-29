@@ -1,0 +1,41 @@
+<div class="email_subject">
+  <%= emails[0].subject.trim() == "" ? "(no subject)" : emails[0].subject %>
+</div>
+
+<% _.each(emails, function(email, index) { %>
+  <div class="email<%= emails.length > 1 && index < emails.length - 1 ? " collapsed_email" : "" %>">
+    <div class="email_information">
+      <div class="col-md-3">
+        <%= email.from_name == "" ? email.from_address : email.from_name %>
+      </div>
+      <div class="col-md-4">
+        <%= email.snippet %>
+      </div>
+      <div class="col-md-2">
+        <%= email.date == null ? "" : email.date.substring(0, 10) %>
+      </div>
+    </div>
+    <br />
+    <br />
+    <br />
+    <div class="email_body" <%= emails.length > 1 && index < emails.length - 1 ? "style=\"display: none;\"" : "" %>>
+      <div class="row">
+        <div class="col-md-11">
+          <pre><%= email.text_part == null ? "" : email.text_part %></pre>
+        </div>
+      </div>
+      <br />
+      <br />
+      <br />
+      <div class="row">
+        <div class="col-md-2">
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Reply</button>
+        </div>
+        <div class="col-md-9">
+          <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">Forward</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<% }); %>
+<br />
