@@ -87,10 +87,10 @@ gem 'backbone-rails', git: 'https://github.com/rubymaverick/backbone-rails.git'
 # paginate
 gem 'will_paginate', '~> 3.0'
 
-#jasmine
-gem 'jasmine'
 
-#teaspoon
+
+# testing framework
 group :development, :test do
-  gem "teaspoon"
+  gem 'teaspoon', '~> 0.8.0'
+  gem 'jasmine', '~> 2.0.2'
 end
