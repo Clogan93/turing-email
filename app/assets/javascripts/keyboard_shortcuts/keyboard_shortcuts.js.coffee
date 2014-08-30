@@ -1,5 +1,5 @@
 
-class KeyboardShortcutHandler
+class @KeyboardShortcutHandler
 
     constructor: ->
         this.keyboard_shortcuts_are_turned_on = false
