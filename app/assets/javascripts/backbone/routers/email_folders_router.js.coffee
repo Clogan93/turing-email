@@ -9,7 +9,7 @@ class TuringEmailApp.Routers.EmailFoldersRouter extends Backbone.Router
     )
 
     TuringEmailApp.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView({
-      el: $("#emails_threads_list_view")
+      el: $("#email_table_body")
       collection: TuringEmailApp.emailThreads
     })
 

@@ -1,0 +1,25 @@
+<h3>
+  <td class="first_column">
+    <%= emails[0].from_name == null ? emails[0].from_address : emails[0].from_name %>
+  </td>
+  <td class="second_column">
+    <a href="#email_thread#<%= uid %>">
+      <%= emails[0].subject == "" ? "(no subject)" : emails[0].subject %>
+    </a>
+    <span class="email_snippet"><%= emails[0].snippet %></span>
+  </td>
+  <td class="third_column">
+    <%
+      var emailDate = new Date(emails[0].date);
+      var emailDatePlus18H = new Date(emails[0].date);
+
+      emailDatePlus18H.setHours(emailDate.getHours() + 18);
+
+      if (emailDatePlus18H > Date.now()) {%>
+        <%= emailDate.toLocaleTimeString(navigator.language, {hour: "2-digit", minute: "2-digit"}) %><%
+      } else {%>
+        <%= emails[0].date.substring(0, 10) %><%
+      }
+    %>
+  </td>
+</h3>

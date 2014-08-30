@@ -1,10 +1,11 @@
 class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
   routes:
-    "email#:uid": "show_email"
+    "email_thread#:uid": "showEmailThread"
 
-  show_email: (uid) ->
-    email = TuringEmailApp.emailThreads.retrieveEmail uid
-    emailView = new TuringEmailApp.Views.Emails.EmailView(model: email)
-    emailView.render()
-
-    $("#emails_threads_list_view").find("#email_content").html(emailView.el)
+  showEmailThread: (emailThreadUID) ->
+    emailThread = TuringEmailApp.emailThreads.getEmailThread(emailThreadUID)
+    emailThreadView = new TuringEmailApp.Views.Emails.EmailThreadView(
+      model: emailThread
+      el: $("#emails_threads_list_view").find("#email_content")
+    )
+    emailThreadView.render()

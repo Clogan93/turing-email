@@ -40,7 +40,21 @@
       <div id="pages" class="row">
         <%= will_paginate(@email_threads, :params => params) if @email_threads.count > 0 %>
       </div>
-			<div id="emails_threads_list_view" class="row"></div>
+			<div id="emails_threads_list_view" class="row">
+        <div class='table-responsive'>
+          <table class='table' id='email_table'>
+            <tbody id='email_table_body'>
+            </tbody>
+          </table>
+        </div>
+
+        <div id='preview_pane'>
+          <div id='resize_border'></div>
+          <div id='preview_content'>
+            <div id='email_content'></div>
+          </div>
+        </div>
+			</div>
 			<div id="email" class="row"></div>
 		</div>
 	</div>

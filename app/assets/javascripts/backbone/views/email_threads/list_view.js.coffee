@@ -2,27 +2,19 @@ TuringEmailApp.Views.EmailThreads ||= {}
 
 class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   initialize: ->
-    @collection.on "add", @addOne, this
-    @collection.on "reset", @addAll, this
+    @listenTo(@collection, "add", @addOne)
+    @listenTo(@collection, "reset", @addAll)
 
   render: ->
     @addAll()
-    this.renderInitialPreviewPane(@collection.first())
+
+  addOne: (thread) ->
+    listItemView = new TuringEmailApp.Views.EmailThreads.ListItemView(model: thread)
+    @$el.append(listItemView.render().el)
 
   addAll: ->
     @$el.empty()
-    @$el.append "<div class='table-responsive'><table class='table' id='email_table'><tbody id='email_table_body'>"
     @collection.forEach @addOne, this
-
-  renderInitialPreviewPane: (email) ->
-    @$el.append "<div id='preview_pane'><div id='resize_border'></div><div id='preview_content'><div id='email_content'></div></div></div>"
-
-    emailView = new TuringEmailApp.Views.Emails.EmailView(model: email)
-    @$el.find("#email_content").append(emailView.render().el)
-
-  addOne: (email) ->
-    emailHeaderView = new TuringEmailApp.Views.EmailThreads.ListItemView(model: email)
-    @$el.find("#email_table_body").append emailHeaderView.render().el
 
   destroy: () ->
     @model.destroy()

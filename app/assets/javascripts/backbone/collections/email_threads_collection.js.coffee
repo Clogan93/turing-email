@@ -3,7 +3,8 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
   url: "/api/v1/email_threads/inbox"
 
   initialize: (options) ->
-    @on "remove", @hideModel, this
+    @on("remove", @hideModel, this)
+
     page = getQuerystringNameValue("page")
 
     if (options?.url?)
@@ -12,18 +13,11 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
       @url = "/api/v1/email_threads/inbox?page=" + page
 
   hideModel: (model) ->
-    model.trigger "hide"
+    @model.trigger("hide")
 
-  retrieveEmail: (uid) ->
-    modelToReturn = @filter((thread) ->
-      email = thread.get("emails")[0]
-      email.uid is uid
+  getEmailThread: (emailThreadUID) ->
+    emailThreads = @filter((emailThread) ->
+      emailThread.get("uid") is emailThreadUID
     )
-    return modelToReturn[0]
 
-  unreadCount: ->
-    modelToCount = @filter((thread) ->
-      email = thread.get("emails")[0]
-      email.seen is false
-    )
-    return modelToCount.length
+    return if emailThreads.length > 0 then emailThreads[0] else null

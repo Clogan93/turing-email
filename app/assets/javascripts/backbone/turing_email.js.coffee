@@ -28,6 +28,10 @@ window.TuringEmailApp = new(Backbone.View.extend({
       success: (collection, response, options) ->
         $(".bullet_span").click ->
           $(this).parent().children("ul").children("li").toggle()
+
+        # Set the inbox count to the number of emails in the inbox.
+        inboxFolder = TuringEmailApp.emailFolders.getEmailFolder("INBOX")
+        $("#inbox_count_badge").html(inboxFolder.num_unread_threads) if inboxFolder?
           
       error: (collection, response, options) ->
         alert("AHHH @emailFolders.fetch")
@@ -36,16 +40,13 @@ window.TuringEmailApp = new(Backbone.View.extend({
     @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
     @emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
     @emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView({
-        el: $("#emails_threads_list_view")
+        el: $("#email_table_body")
         collection: @emailThreads
     })
 
     @emailThreads.fetch({
       success: (collection, response, options) ->
-        TuringEmailApp.emailThreadsListView.render()
-
-        # Set the inbox count to the number of emails in the inbox.
-        $("#inbox_count_badge").html collection.unreadCount()
+        TuringEmailApp.emailThreadsRouter.showEmailThread(collection.models[0].get("uid")) if collection.length > 0
 
       error: (collection, response, options) ->
         alert("AHHH @emailThreads.fetch")
