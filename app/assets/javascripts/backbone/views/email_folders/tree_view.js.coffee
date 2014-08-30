@@ -6,11 +6,19 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
   initialize: (options) ->
     @listenTo(@collection, "add", @render)
     @listenTo(@collection, "reset", @render)
+    @listenTo(@collection, "destroy", @remove)
+
+  remove: ->
+    @$el.remove()
 
   render: ->
     @generate_tree()
 
     @$el.html(@template(nodeName: "", node: @tree))
+
+    @$el.find(".bullet_span").click ->
+      $(this).parent().children("ul").children("li").toggle()
+
     return this
 
   generate_tree: ->

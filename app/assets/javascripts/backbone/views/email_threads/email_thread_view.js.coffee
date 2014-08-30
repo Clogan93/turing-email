@@ -4,19 +4,19 @@ class TuringEmailApp.Views.Emails.EmailThreadView extends Backbone.View
   template: JST["backbone/templates/email_threads/email_thread"]
 
   events:
-    "click a": "toggleStatus"
+    "click a": "setSeen"
 
   initialize: ->
     @listenTo(@model, "change", @render)
-    @listenTo(@model, "destroy", @remove)
+    @listenTo(@model, "hide destroy", @remove)
+
+  remove: ->
+    @$el.remove()
 
   render: ->
     @$el.html(@template(@model.toJSON()))
     @bindEmailClick()
     return this
-
-  remove: ->
-    @$el.remove()
 
   bindEmailClick: ->
     @$el.find(".email").click ->
@@ -27,5 +27,5 @@ class TuringEmailApp.Views.Emails.EmailThreadView extends Backbone.View
         $(this).addClass "collapsed_email"
         $(this).find(".email_body").hide()
 
-  toggleStatus: ->
-    @model.toggleStatus()
+  setSeen: ->
+    @model.setSeen()

@@ -6,15 +6,15 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
 
   initialize: ->
     @listenTo(@model, "change", @render)
-    @listenTo(@model, "destroy hide", @remove)
+    @listenTo(@model, "hide destroy", @remove)
+
+  remove: ->
+    @$el.remove()
 
   render: ->
     if TuringEmailApp.user.get("email") == @model.get("emails")[0].from_address
       @model.attributes.emails[0].from_name = "me"
 
-    @$el.html @template(@model.toJSON())
+    @$el.html(@template(@model.toJSON()))
 
     return this
-
-  remove: ->
-    @$el.remove()

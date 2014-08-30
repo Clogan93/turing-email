@@ -1,8 +1,8 @@
 class TuringEmailApp.Routers.EmailFoldersRouter extends Backbone.Router
   routes:
-    "folder#:folder_id": "show_folder"
+    "folder#:folder_id": "showFolder"
 
-  show_folder: (folder_id) ->
+  showFolder: (folder_id) ->
     url = "/api/v1/email_threads/in_folder?folder_id=" + folder_id
     TuringEmailApp.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(
       url: url
@@ -14,6 +14,8 @@ class TuringEmailApp.Routers.EmailFoldersRouter extends Backbone.Router
     })
 
     TuringEmailApp.emailThreads.fetch(
+      reset: true
+
       success: (collection, response, options) ->
-        TuringEmailApp.emailThreadsListView.render()
+        TuringEmailApp.emailThreadsRouter.showEmailThread(collection.models[0].get("uid")) if collection.length > 0
     )

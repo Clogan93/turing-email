@@ -3,7 +3,8 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
   url: "/api/v1/email_threads/inbox"
 
   initialize: (options) ->
-    @on("remove", @hideModel, this)
+    @on("remove", @hideModel)
+
 
     page = getQuerystringNameValue("page")
 
@@ -13,7 +14,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
       @url = "/api/v1/email_threads/inbox?page=" + page
 
   hideModel: (model) ->
-    @model.trigger("hide")
+    model.trigger("hide")
 
   getEmailThread: (emailThreadUID) ->
     emailThreads = @filter((emailThread) ->
