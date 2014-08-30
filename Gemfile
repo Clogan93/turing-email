@@ -89,3 +89,8 @@ gem 'will_paginate', '~> 3.0'
 
 #jasmine
 gem 'jasmine'
+
+#teaspoon
+group :development, :test do
+  gem "teaspoon"
+end

@@ -12,7 +12,8 @@
 #
 src_files:
   - assets/application.js
-  - assets/keyboard_shortcuts.js.coffee
+  - assets/keyboard_shortcuts.js
+  - assets/test_function.js
 
 # stylesheets
 #
