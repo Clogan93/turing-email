@@ -2,8 +2,8 @@ class TuringEmailApp.Routers.EmailFoldersRouter extends Backbone.Router
   routes:
     "folder#:folder_id": "showFolder"
 
-  showFolder: (folder_id) ->
-    url = "/api/v1/email_threads/in_folder?folder_id=" + folder_id
+  showFolder: (folder_id, useDefaultURL = false) ->
+    url = if useDefaultURL then undefined else "/api/v1/email_threads/in_folder?folder_id=" + folder_id
     TuringEmailApp.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(
       url: url
     )
