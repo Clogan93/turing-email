@@ -31,7 +31,7 @@ window.TuringEmailApp = new(Backbone.View.extend({
 
         # Set the inbox count to the number of emails in the inbox.
         inboxFolder = TuringEmailApp.emailFolders.getEmailFolder("INBOX")
-        $("#inbox_count_badge").html(inboxFolder.num_unread_threads) if inboxFolder?
+        $("#inbox_count_badge").html(inboxFolder.get("num_unread_threads")) if inboxFolder?
           
       error: (collection, response, options) ->
         alert("AHHH @emailFolders.fetch")
