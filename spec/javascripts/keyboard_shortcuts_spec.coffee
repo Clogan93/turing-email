@@ -1,4 +1,4 @@
-#= require keyboard_shortcuts
+#= require keyboard_shortcuts/keyboard_shortcuts
 
 describe "KeyboardShortcutHandler", ->
     ksh = undefined
