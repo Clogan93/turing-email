@@ -197,13 +197,13 @@ a.email_link
     overflow: hidden;
   }
 
-  .first_column
+  .email_from_column
   {
     min-width: 150px;
     max-width: 150px;
   }
 
-  .second_column
+  .email_subject_column
   {
     padding-left: 10px;
     width: 825px;
@@ -215,7 +215,7 @@ a.email_link
     }
   }
 
-  .third_column
+  .email_date_column
   {
     padding-left: 10px;
     width: 90px;

@@ -1,7 +1,16 @@
 <%
 var template = JST["backbone/templates/email_folders/tree"];
 
-var badge_string, have_children, emailFolder, style, childName;
+var renderChildren, emailFolder, have_children, badge_string, style;
+
+renderChildren = function() {
+  var childName;
+
+  for (childName in node.children) {
+    child = node.children[childName] %>
+    <%= template({nodeName: childName, node: child}) %><%
+  }
+}
 
 emailFolder = node.emailFolder;
 
@@ -39,16 +48,10 @@ if (emailFolder) {
         </a><%
   }
 
-  for (childName in node.children) {
-    child = node.children[childName] %>
-    <%= template({nodeName: childName, node: child}) %><%
-  }%>
+        renderChildren();%>
       </li>
     </ul><%
 } else {
-  for (childName in node.children) {
-    child = node.children[childName];%>
-    <%= template({nodeName: childName, node: child}) %><%
-  }
+  renderChildren();
 }
 %>
