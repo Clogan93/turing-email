@@ -8,10 +8,3 @@ describe "Email model", ->
 
 	            todo = new TuringEmailApp.Models.Email(title: "Rake leaves")
 	            expect(todo.get("title")).toEqual "Rake leaves"
-	            return
-
-	        return
-
-	    return
-
-    return

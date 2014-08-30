@@ -18,10 +18,6 @@ describe "EmailThreads collection", ->
         )
         @email_threads = new TuringEmailApp.Collections.EmailThreadsCollection()
         @email_thread_stub = sinon.stub(window, "EmailThread")
-        return
 
     afterEach ->
         @email_thread_stub.restore()
-        return
-
-    return

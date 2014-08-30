@@ -1,17 +1,9 @@
 describe "User model", ->
 
-	describe "supports basic Backbone model functionality", ->
+    describe "when instantiated with fetch", ->
 
-	    describe "when instantiated", ->
+        it "should exhibit an email attribute", ->
 
-	        it "should exhibit attributes", ->
-
-	            todo = new TuringEmailApp.Models.User(title: "Rake leaves")
-	            expect(todo.get("title")).toEqual "Rake leaves"
-	            return
-
-	        return
-
-	    return
-
-	return
+            todo = new TuringEmailApp.Models.User(title: "Rake leaves")
+            expect(todo.get("title")).toEqual "Rake leaves"
+            

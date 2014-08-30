@@ -18,10 +18,6 @@ describe "EmailFolders collection", ->
         )
         @email_folders = new TuringEmailApp.Collections.EmailFoldersCollection()
         @email_folder_stub = sinon.stub(window, "EmailFolder")
-        return
 
     afterEach ->
         @email_folder_stub.restore()
-        return
-
-    return

@@ -1,5 +1,3 @@
 describe "ListItemView", ->
-    it "loads the ListItemView template", ->
-        return
 
-    return
+    it "loads the ListItemView template", ->
