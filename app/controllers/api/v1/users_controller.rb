@@ -47,6 +47,12 @@ class Api::V1::UsersController < ApiController
     raise ex
   end
 
+  swagger_api :current do
+    summary 'Return the current user.'
+
+    response :ok
+  end
+
   def current
     @user = current_user
     render 'api/v1/users/show'
