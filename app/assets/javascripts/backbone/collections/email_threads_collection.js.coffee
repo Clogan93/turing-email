@@ -5,7 +5,6 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
   initialize: (options) ->
     @on("remove", @hideModel)
 
-
     page = getQuerystringNameValue("page")
 
     if (options?.url?)

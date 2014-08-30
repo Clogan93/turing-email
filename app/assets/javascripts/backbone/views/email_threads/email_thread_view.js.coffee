@@ -1,6 +1,6 @@
-TuringEmailApp.Views.Emails ||= {}
+TuringEmailApp.Views.EmailThreads ||= {}
 
-class TuringEmailApp.Views.Emails.EmailThreadView extends Backbone.View
+class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
   template: JST["backbone/templates/email_threads/email_thread"]
 
   events:
