@@ -8,7 +8,7 @@ describe "EmailThread model", ->
 
 	describe "should always support basic Backbone model functionality such as", ->
 
-	    describe "when instantiated", ->
+	    describe "when instantiated using fetch with data from the real server", ->
 
 	        it "should exhibit attributes", ->
 
