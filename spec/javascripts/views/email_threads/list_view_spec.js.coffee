@@ -1,3 +1,3 @@
 describe "ListView", ->
 
-    it "loads the ListView template", ->
+  it "loads the ListView template", ->

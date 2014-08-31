@@ -1,23 +1,23 @@
 describe "EmailThread model", ->
 
-	beforeEach ->
+  beforeEach ->
 
-	    @email_thread = new TuringEmailApp.Models.EmailThread()
-	    collection = url: "/api/v1/email_threads"
-	    @email_thread.collection = collection
+      @email_thread = new TuringEmailApp.Models.EmailThread()
+      collection = url: "/api/v1/email_threads"
+      @email_thread.collection = collection
 
-	describe "should always support basic Backbone model functionality such as", ->
+  describe "should always support basic Backbone model functionality such as", ->
 
-	    describe "when instantiated using fetch with data from the real server", ->
+      describe "when instantiated using fetch with data from the real server", ->
 
-	        it "should exhibit attributes", ->
+          it "should exhibit attributes", ->
 
-	            email_thread = new TuringEmailApp.Models.EmailThread(title: "Rake leaves")
-	            expect(email_thread.get("title")).toEqual "Rake leaves"
+              email_thread = new TuringEmailApp.Models.EmailThread(title: "Rake leaves")
+              expect(email_thread.get("title")).toEqual "Rake leaves"
 
-	describe "urls", ->
+  describe "urls", ->
 
-	    describe "when no id is set", ->
+      describe "when no id is set", ->
 
-	        it "should return the collection URL", ->
-	            expect(@email_thread.url()).toEqual "/api/v1/email_threads"
+          it "should return the collection URL", ->
+              expect(@email_thread.url()).toEqual "/api/v1/email_threads"
