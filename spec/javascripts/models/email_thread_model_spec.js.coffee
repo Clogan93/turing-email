@@ -1,5 +1,8 @@
 describe "EmailThread model", ->
 
+  it "should exist", ->
+    expect(TuringEmailApp.Models.EmailThread).toBeDefined()
+
   beforeEach ->
 
       @email_thread = new TuringEmailApp.Models.EmailThread()

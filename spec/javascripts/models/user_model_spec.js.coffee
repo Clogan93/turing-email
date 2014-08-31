@@ -2,6 +2,9 @@
 
 describe "User model", ->
 
+  it "should exist", ->
+    expect(TuringEmailApp.Models.User).toBeDefined()
+
   beforeEach ->
     @user = new TuringEmailApp.Models.User()
 
