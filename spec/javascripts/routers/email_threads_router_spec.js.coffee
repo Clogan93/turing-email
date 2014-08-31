@@ -1,3 +1,3 @@
 describe "EmailThreadsRouter", ->
 
-    describe "showEmailThread handler", ->
+  describe "showEmailThread handler", ->

@@ -1,3 +1,3 @@
 describe "EmailThreadView", ->
 
-    it "loads the EmailThread template", ->
+  it "loads the EmailThread template", ->

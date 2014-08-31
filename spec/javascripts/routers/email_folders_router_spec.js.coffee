@@ -1,3 +1,3 @@
 describe "EmailFoldersRouter", ->
 
-    describe "showFolder handler", ->
+  describe "showFolder handler", ->

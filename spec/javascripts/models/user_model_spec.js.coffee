@@ -2,6 +2,7 @@ describe "User model", ->
   beforeEach ->
     @user = new TuringEmailApp.Models.User()
 
+<<<<<<< HEAD
   describe "when instantiated using fetch with data from the real server", ->
     beforeEach ->
       #fixture.preload("user.fixture.json");
@@ -15,9 +16,22 @@ describe "User model", ->
       #@server.respondWith "GET", "/api/v1/users/current", @validResponse(@fixture)
       return
 
+    afterEach ->
+      #@server.restore()
+
     it "should make the correct request", ->
       console.log "Hello world number 2"
 
-    afterEach ->
-      #@server.restore()
-      return
+    # it "should make the correct request", ->
+    #     @user.fetch()
+    #     expect(@server.requests.length).toEqual 1
+    #     expect(@server.requests[0].method).toEqual "GET"
+    #     expect(@server.requests[0].url).toEqual "/api/v1/users/current"
+    #     return
+
+    # it "should parse the user from the response", ->
+    #     @user.fetch()
+    #     @server.respond()
+    #     expect(@user.length).toEqual @fixture.response.user.length
+    #     expect(@user.get(1).get("email")).toEqual @fixture.response.user[0].email
+    #     return

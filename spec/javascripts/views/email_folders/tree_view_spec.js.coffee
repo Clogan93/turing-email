@@ -1,3 +1,3 @@
 describe "TreeView", ->
 
-    it "loads the Tree template", ->
+  it "loads the Tree template", ->
