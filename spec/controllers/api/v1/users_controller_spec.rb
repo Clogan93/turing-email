@@ -24,7 +24,7 @@ describe Api::V1::UsersController, :type => :controller do
       post :create, :email => 'test@test.com', :password => 'Password1'
 
       expect(response).to have_http_status(:ok)
-      expect(response).to render_template('show')
+      expect(response).to render_template('api/v1/users/show')
     end
   end
 end

@@ -9,7 +9,7 @@ describe Api::V1::UsersController, :type => :request do
       get '/api/v1/users/current'
 
       expect(response).to have_http_status(:ok)
-      expect(response).to render_template('show')
+      expect(response).to render_template('api/v1/users/show')
 
       user_rendered = JSON.parse(response.body)
       expect(user_rendered['email']).to eq(user.email)
