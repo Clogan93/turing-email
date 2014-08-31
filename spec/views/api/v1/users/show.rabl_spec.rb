@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe 'api/v1/users/show', :type => :view do
-  it 'should render the email' do
+  it 'should render the user' do
     user = assign(:user, FactoryGirl.create(:user))
 
     render

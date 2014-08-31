@@ -6,7 +6,11 @@ module SpecHelpers
     expect(expected_attributes).to eq(keys)
 
     model_rendered.each do |key, value|
-      expect(model[key]).to eq(value)
+      if model.respond_to?(key)
+        expect(model.send(key)).to eq(value)
+      else
+        expect(model[key]).to eq(value)
+      end
     end
   end
 end
