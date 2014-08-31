@@ -2,7 +2,6 @@ describe "User model", ->
   beforeEach ->
     @user = new TuringEmailApp.Models.User()
 
-<<<<<<< HEAD
   describe "when instantiated using fetch with data from the real server", ->
     beforeEach ->
       #fixture.preload("user.fixture.json");
