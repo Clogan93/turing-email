@@ -1,9 +1,23 @@
+#= require sinon
+
 describe "User model", ->
+
+    beforeEach ->
+        @user = new TuringEmailApp.Models.User()
 
     describe "when instantiated using fetch with data from the real server", ->
 
-        it "should exhibit an email attribute", ->
+        beforeEach ->
+            console.log @fixtures
+            @fixture = @fixtures.User.valid
+            @fixtureEmail = @fixture.response.email
+            @server = sinon.fakeServer.create()
+            @server.respondWith "GET", "/api/v1/users/current", @validResponse(@fixture)
+            return
 
-            todo = new TuringEmailApp.Models.User(title: "Rake leaves")
-            expect(todo.get("title")).toEqual "Rake leaves"
-            
+        it "should make the correct request", ->
+            console.log "Hello world number 2"
+
+        afterEach ->
+            @server.restore()
+            return

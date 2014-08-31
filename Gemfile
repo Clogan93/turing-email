@@ -92,4 +92,5 @@ gem 'will_paginate', '~> 3.0'
 group :development, :test do
   gem 'teaspoon', '~> 0.8.0'
   gem 'jasmine', '~> 2.0.2'
+  gem 'sinon-rails', '~> 1.10.3'
 end
