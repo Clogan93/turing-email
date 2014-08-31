@@ -1,26 +1,70 @@
 describe "EmailThread model", ->
 
+  beforeEach ->
+    @email_thread = new TuringEmailApp.Models.EmailThread()
+    @email_thread.url = "/api/v1/email_threads"
+
   it "should exist", ->
     expect(TuringEmailApp.Models.EmailThread).toBeDefined()
 
-  beforeEach ->
+  it "should have the right url", ->
+    expect(@email_thread.url).toEqual '/api/v1/email_threads'
 
-      @email_thread = new TuringEmailApp.Models.EmailThread()
-      collection = url: "/api/v1/email_threads"
-      @email_thread.collection = collection
+  describe "when instantiated using fetch with data from the server", ->
 
-  describe "should always support basic Backbone model functionality such as", ->
+    beforeEach ->
+      @fixtures = fixture.load("email_thread.fixture.json", true);
 
-      describe "when instantiated using fetch with data from the real server", ->
+      @validEmailThread = @fixtures[0]["valid"]
 
-          it "should exhibit attributes", ->
+      @server = sinon.fakeServer.create()
+      @server.respondWith "GET", "/api/v1/email_threads", JSON.stringify(@validEmailThread)
+      return
 
-              email_thread = new TuringEmailApp.Models.EmailThread(title: "Rake leaves")
-              expect(email_thread.get("title")).toEqual "Rake leaves"
+    afterEach ->
+      @server.restore()
 
-  describe "urls", ->
+    it "should make the correct request", ->
+      @email_thread.fetch()
+      expect(@server.requests.length).toEqual 1
+      expect(@server.requests[0].method).toEqual "GET"
+      expect(@server.requests[0].url).toEqual "/api/v1/email_threads"
+      return
 
-      describe "when no id is set", ->
+    it "should parse the attributes from the response", ->
+      @email_thread.fetch()
+      @server.respond()
 
-          it "should return the collection URL", ->
-              expect(@email_thread.url()).toEqual "/api/v1/email_threads"
+      expect(@email_thread.get("emails")).toEqual @validEmailThread.emails
+      expect(@email_thread.get("uid")).toEqual @validEmailThread.uid
+      return
+
+    it "should have the attributes", ->
+      @email_thread.fetch()
+      @server.respond()
+
+      expect(@email_thread.get("uid")).toBeDefined()
+      expect(@email_thread.get("emails")).toBeDefined()
+      for email in @email_thread.get("emails")
+        expect(email.auto_filed).toBeDefined()
+        expect(email.uid).toBeDefined()
+        expect(email.message_id).toBeDefined()
+        expect(email.list_id).toBeDefined()
+        expect(email.seen).toBeDefined()
+        expect(email.snippet).toBeDefined()
+        expect(email.date).toBeDefined()
+
+        expect(email.from_name).toBeDefined()
+        expect(email.from_address).toBeDefined()
+        expect(email.sender_name).toBeDefined()
+        expect(email.sender_address).toBeDefined()
+        expect(email.reply_to_name).toBeDefined()
+        expect(email.reply_to_address).toBeDefined()
+
+        expect(email.tos).toBeDefined()
+        expect(email.ccs).toBeDefined()
+        expect(email.bccs).toBeDefined()
+        expect(email.subject).toBeDefined()
+        expect(email.html_part).toBeDefined()
+        expect(email.text_part).toBeDefined()
+        expect(email.body_text).toBeDefined()
