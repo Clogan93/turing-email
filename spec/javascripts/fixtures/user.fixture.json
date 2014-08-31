@@ -1,9 +1,7 @@
 {
-  "User": {
-    "valid": {
-      "status": "OK",
-      "version": "1.0",
-      "email": "test44@gmail.com"
-    }
-  }
+	"valid": {
+	  "status": "OK",
+	  "version": "1.0",
+	  "email": "test44@gmail.com"
+	}
 }

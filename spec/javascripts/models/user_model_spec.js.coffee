@@ -1,21 +1,26 @@
 describe "User model", ->
+  beforeEach ->
+    @user = new TuringEmailApp.Models.User()
 
   it "should exist", ->
     expect(TuringEmailApp.Models.User).toBeDefined()
 
-  beforeEach ->
-    @user = new TuringEmailApp.Models.User()
+  it "should have the right url", ->
+    expect(@user.url).toEqual '/api/v1/users/current'
 
-  describe "when instantiated using fetch with data from the real server", ->
+  describe "when instantiated using fetch with data from the server", ->
 
     beforeEach ->
       @fixtures = fixture.load("user.fixture.json", true);
 
-      @validUser = @fixtures[0]["User"]["valid"]
+      @validUser = @fixtures[0]["valid"]
 
       @server = sinon.fakeServer.create()
       @server.respondWith "GET", "/api/v1/users/current", JSON.stringify(@validUser)
       return
+
+    afterEach ->
+      @server.restore()
 
     it "should make the correct request", ->
         @user.fetch()
@@ -35,5 +40,17 @@ describe "User model", ->
       @server.respond()
       expect(@user.get("email")).toBeDefined()
 
+  describe "Validations", ->
+
+    attrs = {}
+ 
+    beforeEach ->
+      attrs =
+        email: 'test44@gmail.com'
+ 
     afterEach ->
-      @server.restore()
+      new_user = new TuringEmailApp.Models.User attrs
+      expect(new_user.isValid()).toBeFalsy()
+ 
+    it "should validate the presence of email", ->
+      attrs["email"] = null
