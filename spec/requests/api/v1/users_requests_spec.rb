@@ -3,6 +3,7 @@ require 'rails_helper'
 describe Api::V1::UsersController, :type => :request do
   context 'when the user is logged in' do
     let(:user) { FactoryGirl.create(:user) }
+    let!(:user_other) { FactoryGirl.create(:user) }
     before { post '/api/v1/sessions', :email => user.email, :password => user.password }
 
     it 'should return the current user info' do
@@ -13,10 +14,13 @@ describe Api::V1::UsersController, :type => :request do
 
       user_rendered = JSON.parse(response.body)
       expect(user_rendered['email']).to eq(user.email)
+      expect(user_rendered['email']).not_to eq(user_other.email)
     end
   end
 
   context 'when the user is NOT logged in' do
+    let(:user) { FactoryGirl.create(:user) }
+
     it 'should NOT return the current user info' do
       get '/api/v1/users/current'
 

@@ -13,7 +13,7 @@ describe Api::V1::EmailsController, :type => :request do
 
   context 'when the user is logged in' do
     let(:email) { FactoryGirl.create(:email) }
-    let(:email_other) { FactoryGirl.create(:email) }
+    let!(:email_other) { FactoryGirl.create(:email) }
     before { post '/api/v1/sessions', :email => email.user.email, :password => email.user.password }
 
     it 'should show the email' do
@@ -24,6 +24,7 @@ describe Api::V1::EmailsController, :type => :request do
 
       email_rendered = JSON.parse(response.body)
       expect(email_rendered['uid']).to eq(email.uid)
+      expect(email_rendered['uid']).not_to eq(email_other.uid)
     end
 
     it 'should NOT show the other email' do

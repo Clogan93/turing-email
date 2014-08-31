@@ -3,7 +3,7 @@ class Api::V1::EmailsController < ApiController
     signed_in_user(true)
   end
 
-  before_action :correct_user, only: [:show]
+  before_action :correct_user
 
   swagger_controller :users, 'Emails Controller'
 
