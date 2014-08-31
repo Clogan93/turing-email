@@ -1,23 +1,23 @@
-#= require sinon
-
 describe "User model", ->
+  beforeEach ->
+    @user = new TuringEmailApp.Models.User()
 
+  describe "when instantiated using fetch with data from the real server", ->
     beforeEach ->
-        @user = new TuringEmailApp.Models.User()
+      #fixture.preload("user.fixture.json");
+      @fixtures = fixture.load("user.fixture.json", true);
 
-    describe "when instantiated using fetch with data from the real server", ->
+      @validUser = @fixtures[0]["User"]["valid"]
+      console.log @validUser
+      console.log @validUser["status"]
 
-        beforeEach ->
-            console.log @fixtures
-            @fixture = @fixtures.User.valid
-            @fixtureEmail = @fixture.response.email
-            @server = sinon.fakeServer.create()
-            @server.respondWith "GET", "/api/v1/users/current", @validResponse(@fixture)
-            return
+      #@server = sinon.fakeServer.create()
+      #@server.respondWith "GET", "/api/v1/users/current", @validResponse(@fixture)
+      return
 
-        it "should make the correct request", ->
-            console.log "Hello world number 2"
+    it "should make the correct request", ->
+      console.log "Hello world number 2"
 
-        afterEach ->
-            @server.restore()
-            return
+    afterEach ->
+      #@server.restore()
+      return

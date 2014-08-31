@@ -90,7 +90,7 @@ gem 'will_paginate', '~> 3.0'
 
 # testing framework
 group :development, :test do
+  gem 'phantomjs', '~> 1.9.7.1'
   gem 'teaspoon', '~> 0.8.0'
-  gem 'jasmine', '~> 2.0.2'
   gem 'sinon-rails', '~> 1.10.3'
 end
