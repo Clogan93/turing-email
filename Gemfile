@@ -61,14 +61,6 @@ gem 'oj', '~> 2.7.2'
 # swagger
 gem 'swagger-docs'
 
-group :test do
-  # rspec
-  gem 'rspec-rails', '~> 3.0.1'
-
-  # factory girl
-  gem 'factory_girl_rails', '4.4.1'
-end
-
 # aws
 gem 'aws-sdk', '~> 1.45.0'
 
@@ -87,6 +79,14 @@ gem 'rails-backbone', '~> 1.1.2', git:'https://github.com/codebrew/backbone-rail
 
 # paginate
 gem 'will_paginate', '~> 3.0'
+
+group :development, :test do
+  # rspec
+  gem 'rspec-rails', '~> 3.0.1'
+
+  # factory girl
+  gem 'factory_girl_rails', '4.4.1'
+end
 
 # testing framework
 group :development, :test do
