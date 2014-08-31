@@ -3,35 +3,6 @@
   <head>
     <title>Turing Email</title>
     <link rel="shortcut icon" href="favicon.ico"/>
-    <script>
-      function getQuerystringNameValue(name) {
-        // For example... passing a name parameter of "name1" will return a value of "100", etc.
-        // page.htm?name1=100&name2=101&name3=102
-
-        var winURL = window.location.href;
-        var queryStringArray = winURL.split("?");
-
-        if (queryStringArray.length < 2) {
-          return null
-        }
-
-        var queryStringParamArray = queryStringArray[1].split("&");
-        var nameValue = null;
-
-        for ( var i=0; i<queryStringParamArray.length; i++ )
-        {
-          queryStringNameValueArray = queryStringParamArray[i].split("=");
-
-          if ( name == queryStringNameValueArray[0] )
-          {
-            nameValue = queryStringNameValueArray[1];
-          }
-        }
-
-        return nameValue;
-      }
-    </script>
-
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
     <%= csrf_meta_tags %>
