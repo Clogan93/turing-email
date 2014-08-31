@@ -1,14 +1,14 @@
 describe "EmailThread model", ->
 
   beforeEach ->
-    @email_thread = new TuringEmailApp.Models.EmailThread()
-    @email_thread.url = "/api/v1/email_threads"
+    @emailThread = new TuringEmailApp.Models.EmailThread()
+    @emailThread.url = "/api/v1/email_threads"
 
   it "should exist", ->
     expect(TuringEmailApp.Models.EmailThread).toBeDefined()
 
   it "should have the right url", ->
-    expect(@email_thread.url).toEqual '/api/v1/email_threads'
+    expect(@emailThread.url).toEqual '/api/v1/email_threads'
 
   describe "when instantiated using fetch with data from the server", ->
 
@@ -25,27 +25,27 @@ describe "EmailThread model", ->
       @server.restore()
 
     it "should make the correct request", ->
-      @email_thread.fetch()
+      @emailThread.fetch()
       expect(@server.requests.length).toEqual 1
       expect(@server.requests[0].method).toEqual "GET"
       expect(@server.requests[0].url).toEqual "/api/v1/email_threads"
       return
 
     it "should parse the attributes from the response", ->
-      @email_thread.fetch()
+      @emailThread.fetch()
       @server.respond()
 
-      expect(@email_thread.get("emails")).toEqual @validEmailThread.emails
-      expect(@email_thread.get("uid")).toEqual @validEmailThread.uid
+      expect(@emailThread.get("emails")).toEqual @validEmailThread.emails
+      expect(@emailThread.get("uid")).toEqual @validEmailThread.uid
       return
 
     it "should have the attributes", ->
-      @email_thread.fetch()
+      @emailThread.fetch()
       @server.respond()
 
-      expect(@email_thread.get("uid")).toBeDefined()
-      expect(@email_thread.get("emails")).toBeDefined()
-      for email in @email_thread.get("emails")
+      expect(@emailThread.get("uid")).toBeDefined()
+      expect(@emailThread.get("emails")).toBeDefined()
+      for email in @emailThread.get("emails")
         expect(email.auto_filed).toBeDefined()
         expect(email.uid).toBeDefined()
         expect(email.message_id).toBeDefined()

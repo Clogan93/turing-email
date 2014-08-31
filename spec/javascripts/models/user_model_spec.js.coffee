@@ -49,8 +49,8 @@ describe "User model", ->
         email: 'test44@gmail.com'
  
     afterEach ->
-      new_user = new TuringEmailApp.Models.User attrs
-      expect(new_user.isValid()).toBeFalsy()
+      newUser = new TuringEmailApp.Models.User attrs
+      expect(newUser.isValid()).toBeFalsy()
  
     it "should validate the presence of email", ->
       attrs["email"] = null
