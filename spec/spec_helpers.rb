@@ -1,15 +1,17 @@
 module SpecHelpers
-  def spec_validate_attributes(expected_attributes, model, model_rendered)
+  def spec_validate_attributes(expected_attributes, model, model_rendered, expected_attributes_to_skip = [])
     expected_attributes.sort!
 
     keys = model_rendered.keys.sort!
-    expect(expected_attributes).to eq(keys)
+    expect(keys).to eq(expected_attributes)
 
     model_rendered.each do |key, value|
+      next if expected_attributes.include?(key)
+
       if model.respond_to?(key)
-        expect(model.send(key)).to eq(value)
+        expect(value).to eq(model.send(key))
       else
-        expect(model[key]).to eq(value)
+        expect(value).to eq(model[key])
       end
     end
   end

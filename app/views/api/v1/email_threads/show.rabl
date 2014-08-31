@@ -1,4 +1,5 @@
 object @email_thread
+
 attributes :uid
 
 child(:emails) do

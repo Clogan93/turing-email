@@ -1,2 +1,3 @@
 object @user
+
 attributes :email
