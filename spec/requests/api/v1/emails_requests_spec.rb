@@ -4,7 +4,7 @@ describe Api::V1::EmailsController, :type => :request do
   let!(:email) { FactoryGirl.create(:email) }
   let!(:email_other) { FactoryGirl.create(:email) }
 
-  context 'when the user is NOT logged in' do
+  context 'when the user is NOT signed in' do
     it 'should NOT show the email' do
       get "/api/v1/emails/#{email.uid}"
 
@@ -12,7 +12,7 @@ describe Api::V1::EmailsController, :type => :request do
     end
   end
 
-  context 'when the user is logged in' do
+  context 'when the user is signed in' do
     before { post '/api/v1/sessions', :email => email.user.email, :password => email.user.password }
 
     it 'should show the email' do
@@ -33,7 +33,7 @@ describe Api::V1::EmailsController, :type => :request do
     end
   end
 
-  context 'when the other user is logged in' do
+  context 'when the other user is signed in' do
     before { post '/api/v1/sessions', :email => email_other.user.email, :password => email_other.user.password }
 
     it 'should show the other email' do

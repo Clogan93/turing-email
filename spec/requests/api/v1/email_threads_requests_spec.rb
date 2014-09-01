@@ -60,7 +60,7 @@ describe Api::V1::EmailThreadsController, :type => :request do
                   inbox_other, test_folder_other)
   end
 
-  context 'when the user is NOT logged in' do
+  context 'when the user is NOT signed in' do
     it 'should NOT show the inbox' do
       get '/api/v1/email_threads/inbox'
 
@@ -68,7 +68,7 @@ describe Api::V1::EmailThreadsController, :type => :request do
     end
   end
 
-  context 'when the user is logged in' do
+  context 'when the user is signed in' do
     before { post '/api/v1/sessions', :email => email_account.user.email, :password => email_account.user.password }
 
     it 'should show the inbox threads' do
@@ -110,7 +110,7 @@ describe Api::V1::EmailThreadsController, :type => :request do
     end
   end
 
-  context 'when the other user is logged in' do
+  context 'when the other user is signed in' do
     before { post '/api/v1/sessions', :email => email_account_other.user.email,
                                       :password => email_account_other.user.password }
 

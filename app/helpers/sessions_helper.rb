@@ -40,7 +40,7 @@ module SessionsHelper
   def signed_in_user(api = false)
     unless signed_in?
       if api
-        render :json => 'Not logged in.', :status => 401
+        render :json => 'Not signed in.', :status => 401
       else
         store_location
         redirect_to signin_url, flash: {:warning => 'Please sign in.'}

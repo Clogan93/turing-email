@@ -12,16 +12,20 @@ describe Api::V1::UsersController, :type => :controller do
   end
 
   context 'when the email is invalid' do
+    let(:user) { FactoryGirl.build(:user) }
+
     it 'should not create the account' do
-      post :create, :email => 'invalid_email', :password => 'Password1'
+      post :create, :email => 'invalid_email', :password => user.password
 
       expect(response).to have_http_status($config.http_errors[:invalid_email_or_password][:status_code])
     end
   end
 
   context 'when the email and password are valid' do
+    let(:user) { FactoryGirl.build(:user) }
+
     it 'should create the account' do
-      post :create, :email => 'test@test.com', :password => 'Password1'
+      post :create, :email => user.email, :password => user.password
 
       expect(response).to have_http_status(:ok)
       expect(response).to render_template('api/v1/users/show')

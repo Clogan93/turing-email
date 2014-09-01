@@ -1,7 +1,5 @@
 class UsersController < ApplicationController
   before_action :signed_in_user, except: [:new, :create]
-  before_action :correct_user,   only: [:edit, :update, :resend_verification_email]
-  before_action :admin_user?,    only: :destroy
 
   def new
     if signed_in?
@@ -42,17 +40,5 @@ class UsersController < ApplicationController
 
     flash.now[:danger] = $config.error_message_default.html_safe
     render 'new'
-  end
-
-  def destroy
-  end
-  
-  private
-
-  # Before filters
-  
-  def correct_user
-    @user = User.find_by(:id => params[:id])
-    redirect_to(root_url) unless current_user?(@user)
   end
 end

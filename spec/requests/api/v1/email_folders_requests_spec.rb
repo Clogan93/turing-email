@@ -6,7 +6,7 @@ describe Api::V1::EmailFoldersController, :type => :request do
   let!(:email_folders) { FactoryGirl.create_list(:gmail_label, 10, :gmail_account => gmail_account) }
   let!(:email_folders_other) { FactoryGirl.create_list(:gmail_label, 10, :gmail_account => gmail_account_other) }
 
-  context 'when the user is NOT logged in' do
+  context 'when the user is NOT signed in' do
     it 'should NOT show the email folders' do
       get '/api/v1/email_folders'
 
@@ -14,7 +14,7 @@ describe Api::V1::EmailFoldersController, :type => :request do
     end
   end
 
-  context 'when the user is logged in' do
+  context 'when the user is signed in' do
     before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
 
     it 'should show the email folders' do
@@ -38,7 +38,7 @@ describe Api::V1::EmailFoldersController, :type => :request do
     end
   end
 
-  context 'when the other user is logged in' do
+  context 'when the other user is signed in' do
     before { post '/api/v1/sessions', :email => gmail_account_other.user.email, :password => gmail_account_other.user.password }
 
     it 'should show the other email folders' do

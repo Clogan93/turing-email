@@ -2,8 +2,10 @@ require 'rails_helper'
 
 describe Api::V1::SessionsController, :type => :controller do
   context 'when the username and password is invalid' do
+    let(:user) { FactoryGirl.build(:user) }
+
     it 'should not login the user' do
-      post :create, post: {:email => 'test@blah.com', :password => 'asfasdf'}
+      post :create, :email => user.email, :password => user.password
 
       expect(response).to have_http_status(:unauthorized)
       expect(response.cookies['auth_key']).to eq(nil)
@@ -28,16 +30,14 @@ describe Api::V1::SessionsController, :type => :controller do
       post :create, :email => user.email, :password => user.password
 
       expect(response).to have_http_status(:ok)
+      expect(response).to render_template('api/v1/users/show')
       expect(response.cookies['auth_key']).to_not eq(nil)
     end
   end
 
-  context 'when the user is logged in' do
+  context 'when the user is signed in' do
     let(:user) { FactoryGirl.create(:user) }
-
-    before do
-      post :create, :email => user.email, :password => user.password
-    end
+    before { post :create, :email => user.email, :password => user.password }
 
     it 'should logout the user' do
       delete :destroy
@@ -47,7 +47,7 @@ describe Api::V1::SessionsController, :type => :controller do
     end
   end
 
-  context 'when there user is not logged in' do
+  context 'when there user is not signed in' do
     it 'logout should still succeed' do
       delete :destroy
 
