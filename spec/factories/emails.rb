@@ -3,16 +3,15 @@
 FactoryGirl.define do
   factory :email do
     before(:create) do |email|
-      email.email_account = FactoryGirl.create(:gmail_account, :user => email.user)
-      email.email_thread = FactoryGirl.create(:email_thread, :user => email.user)
-
-      email.auto_filed_folder = FactoryGirl.create(:gmail_label, :gmail_account => email.email_account)
+      email.email_account = FactoryGirl.create(:gmail_account, :user => email.user) if email.email_account.nil?
+      email.email_thread = FactoryGirl.create(:email_thread, :user => email.user) if email.email_thread.nil?
     end
 
     user
 
     auto_filed false
     auto_filed_reported false
+    auto_filed_folder nil
 
     sequence(:uid) { |n| "#{n}" }
     sequence(:message_id) { |n| "#{n}" }

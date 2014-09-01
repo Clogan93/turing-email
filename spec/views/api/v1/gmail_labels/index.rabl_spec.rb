@@ -8,13 +8,8 @@ describe 'api/v1/gmail_labels/index', :type => :view do
 
     gmail_labels_rendered = JSON.parse(rendered)
 
-    expected_attributes = %w(label_id name
-                             message_list_visibility label_list_visibility
-                             label_type
-                             num_threads num_unread_threads)
-
     gmail_labels.zip(gmail_labels_rendered).each do |gmail_label, gmail_label_rendered|
-      spec_validate_attributes(expected_attributes, gmail_label, gmail_label_rendered)
+      validate_gmail_label(gmail_label, gmail_label_rendered)
     end
   end
 end

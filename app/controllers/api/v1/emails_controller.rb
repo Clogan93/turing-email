@@ -5,12 +5,15 @@ class Api::V1::EmailsController < ApiController
 
   before_action :correct_user
 
-  swagger_controller :users, 'Emails Controller'
+  swagger_controller :emails, 'Emails Controller'
 
   swagger_api :show do
     summary 'Return email.'
 
+    param :path, :id, :string, :required, 'Email UID'
+
     response :ok
+    response $config.http_errors[:email_not_found][:status_code], $config.http_errors[:email_not_found][:description]
   end
 
   def show

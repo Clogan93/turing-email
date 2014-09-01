@@ -10,4 +10,9 @@ FactoryGirl.define do
     label_list_visibility true
     label_type 'user'
   end
+
+  factory :gmail_label_inbox, :parent => :gmail_label do
+    label_id 'INBOX'
+    name 'INBOX'
+  end
 end

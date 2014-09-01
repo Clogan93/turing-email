@@ -3,9 +3,9 @@ class Api::V1::EmailThreadsController < ApiController
     signed_in_user(true)
   end
 
-  before_action :correct_user, only: [:in_folder]
+  before_action :correct_user, except: [:inbox]
 
-  swagger_controller :users, 'Email Threads Controller'
+  swagger_controller :email_threads, 'Email Threads Controller'
 
   swagger_api :inbox do
     summary 'Return email threads in the inbox.'
@@ -24,7 +24,10 @@ class Api::V1::EmailThreadsController < ApiController
   swagger_api :in_folder do
     summary 'Return email threads in folder.'
 
+    param :query, :folder_id, :string, :required, 'Email Folder ID'
+
     response :ok
+    response $config.http_errors[:email_folder_not_found][:status_code], $config.http_errors[:email_folder_not_found][:description]
   end
 
   def in_folder

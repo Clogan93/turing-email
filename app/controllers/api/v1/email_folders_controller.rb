@@ -3,7 +3,7 @@ class Api::V1::EmailFoldersController < ApiController
     signed_in_user(true)
   end
 
-  swagger_controller :users, 'Email Folders Controller'
+  swagger_controller :email_folders, 'Email Folders Controller'
 
   swagger_api :index do
     summary 'Return folders in current account.'
