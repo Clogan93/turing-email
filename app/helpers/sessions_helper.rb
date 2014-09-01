@@ -1,4 +1,43 @@
 module SessionsHelper
+  def user_signin_attempt(email, password, api = false)
+    user = User.find_by_email(email)
+
+    if user
+      if user.login_attempt_count >= $config.max_login_attempts
+        if !api
+          flash[:danger] = 'Your account has been locked to protect your security. Please reset your password.'
+          redirect_to forgot_password_url
+        else
+          render :status => $config.http_errors[:account_locked][:status_code],
+                 :json => $config.http_errors[:account_locked][:description]
+        end
+
+        return
+      elsif user.authenticate(password)
+        sign_in user
+
+        if !api
+          redirect_back_or root_path
+        else
+          @user = user
+          render 'api/v1/users/show'
+        end
+
+        return
+      else
+        User.increment_counter(:login_attempt_count, user.id)
+      end
+    end
+
+    if !api
+      flash.now[:danger] = 'Invalid email/password combination'
+      render 'new'
+    else
+      render :json => 'Invalid email/password combination',
+             :status => 401
+    end
+  end
+
   def sign_in(user)
     auth_key = UserAuthKey.new_key
     encrypted_auth_key = UserAuthKey.encrypt(auth_key)

@@ -13,25 +13,7 @@ class Api::V1::SessionsController < ApiController
   end
   
   def create
-    @user = User.find_by_email(params[:email])
-
-    if @user
-      if @user.login_attempt_count >= $config.max_login_attempts
-        render :status => $config.http_errors[:account_locked][:status_code],
-               :json => $config.http_errors[:account_locked][:description]
-        return
-      elsif @user.authenticate(params[:password])
-        sign_in @user
-
-        render 'api/v1/users/show'
-        return
-      else
-        User.increment_counter(:login_attempt_count, @user.id)
-      end
-    end
-
-    render :json => 'Invalid email/password combination',
-           :status => 401
+    user_signin_attempt(params[:email], params[:password], true)
   end
 
   swagger_api :destroy do
