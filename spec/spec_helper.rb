@@ -16,6 +16,7 @@
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
 require 'spec_helpers'
+require 'capybara/rspec'
 
 RSpec.configure do |config|
   config.include SpecHelpers

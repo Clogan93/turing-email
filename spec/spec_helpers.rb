@@ -61,4 +61,15 @@ module SpecHelpers
       expect(model_keys_rendered.include?(model_unexpected.send(key))).to eq(false)
     end
   end
+
+  def capybara_signin_user(user)
+    visit '/'
+    click_link('Signin')
+
+    fill_in('Email', :with => user.email)
+    fill_in('Password', :with => user.password)
+    click_button('Login')
+
+    expect(page).to have_link('Signout')
+  end
 end

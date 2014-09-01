@@ -80,12 +80,12 @@ gem 'rails-backbone', '~> 1.1.2', git:'https://github.com/codebrew/backbone-rail
 # paginate
 gem 'will_paginate', '~> 3.0'
 
+# rails testing
 group :development, :test do
-  # rspec
   gem 'rspec-rails', '~> 3.0.1'
-
-  # factory girl
   gem 'factory_girl_rails', '4.4.1'
+  gem 'capybara', '~> 2.4.1'
+  gem 'selenium', '~> 0.2.11'
 end
 
 # testing framework
