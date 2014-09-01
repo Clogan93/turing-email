@@ -22,8 +22,8 @@ describe "ListItemView", ->
     beforeEach ->
       @fixtures = fixture.load("email_thread.fixture.json", "user.fixture.json", true)
 
-      @validEmailThread = @fixtures[0]["valid"]
       @validUser = @fixtures[1]["valid"]
+      @validEmailThread = @fixtures[0]["valid"]
 
       @server = sinon.fakeServer.create()
 
