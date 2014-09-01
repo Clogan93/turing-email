@@ -81,15 +81,20 @@ gem 'rails-backbone', '~> 1.1.2', git:'https://github.com/codebrew/backbone-rail
 gem 'will_paginate', '~> 3.0'
 
 # rails testing
+# keep in development for generators
 group :development, :test do
   gem 'rspec-rails', '~> 3.0.1'
   gem 'factory_girl_rails', '4.4.1'
+end
+
+group :test do
   gem 'capybara', '~> 2.4.1'
   gem 'selenium', '~> 0.2.11'
 end
 
-# testing framework
-group :development, :test do
+# Backbone testing framework
+group :test do
+  gem 'phantomjs', '~> 1.9.7.1'
   gem 'teaspoon', '~> 0.8.0'
-  gem 'jasmine', '~> 2.0.2'
+  gem 'sinon-rails', '~> 1.10.3'
 end
