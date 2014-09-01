@@ -45,8 +45,16 @@ module SpecHelpers
   end
 
   def verify_models_expected(models_expected, models_rendered, key)
-    models_expected.zip(models_rendered).each do |model_expected, model_rendered|
-      expect(model_rendered[key]).to eq(model_expected.send(key))
+    expect(models_rendered.length).to eq(models_expected.length)
+
+    model_keys_rendered = []
+
+    models_rendered.each do |model_rendered|
+      model_keys_rendered << model_rendered[key]
+    end
+
+    models_expected.each do |model_expected|
+      expect(model_keys_rendered.include?(model_expected.send(key))).to eq(true)
     end
   end
 
