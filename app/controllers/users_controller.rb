@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :signed_in_user, except: [:new, :create]
+  before_action :signed_in_user, except: [:new, :create, :reset_password]
 
   def new
     if signed_in?
@@ -40,5 +40,8 @@ class UsersController < ApplicationController
 
     flash.now[:danger] = $config.error_message_default.html_safe
     render 'new'
+  end
+
+  def reset_password
   end
 end

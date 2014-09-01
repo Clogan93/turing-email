@@ -59,7 +59,7 @@ describe SessionsController, :type => :controller do
 
       post :create, :session => { :email => user.email, :password => user.password }
 
-      expect(response).to redirect_to(forgot_password_path)
+      expect(response).to redirect_to(reset_password_path)
       expect(response.cookies['auth_key']).to eq(nil)
       expect(request.flash[:danger]).to match(/Your account has been locked/)
 
@@ -74,7 +74,7 @@ describe SessionsController, :type => :controller do
     it 'should not login the user' do
       post :create, :session => { :email => user.email, :password => user.password }
 
-      expect(response).to redirect_to(forgot_password_path)
+      expect(response).to redirect_to(reset_password_path)
       expect(response.cookies['auth_key']).to eq(nil)
       expect(request.flash[:danger]).to match(/Your account has been locked/)
     end

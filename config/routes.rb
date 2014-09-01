@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   resources :sessions, only: [:new, :create, :destroy]
 
   resources :users, only: [:new, :create]
-  match('/forgot_password', to: 'users#forgot_password', via: ['get', 'post'], as: :forgot_password)
+  match('/reset_password', to: 'users#reset_password', via: ['get', 'post'], as: :reset_password)
 
   match '/gmail_oauth2_callback', to: 'gmail_accounts#oauth2_callback', via: 'get'
   match '/gmail_oauth2_remove', to: 'gmail_accounts#oauth2_remove', via: 'delete', as: :gmail_oauth2_remove

@@ -6,7 +6,7 @@ module SessionsHelper
       if user.login_attempt_count >= $config.max_login_attempts
         if !api
           flash[:danger] = 'Your account has been locked to protect your security. Please reset your password.'
-          redirect_to forgot_password_url
+          redirect_to reset_password_url
         else
           render :status => $config.http_errors[:account_locked][:status_code],
                  :json => $config.http_errors[:account_locked][:description]

@@ -71,8 +71,7 @@ module SpecHelpers
   end
 
   def capybara_signin_user(user)
-    visit '/'
-    click_link('Signin')
+    visit '/signin'
 
     fill_in('Email', :with => user.email)
     fill_in('Password', :with => user.password)
