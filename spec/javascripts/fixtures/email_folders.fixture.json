@@ -31,7 +31,7 @@
     "label_list_visibility": "labelShow",
     "label_type": "user",
     "message_list_visibility": "show",
-    "name": "Google Calendar",
+    "name": "Calendar",
     "num_threads": 164,
     "num_unread_threads": 164
   },
@@ -58,7 +58,7 @@
     "label_list_visibility": "labelShow",
     "label_type": "user",
     "message_list_visibility": "show",
-    "name": "Personal Development/Social Media/google+",
+    "name": "google+",
     "num_threads": 213,
     "num_unread_threads": 213
   },
@@ -67,8 +67,17 @@
     "label_list_visibility": "labelShow",
     "label_type": "user",
     "message_list_visibility": "show",
-    "name": "Useful Sites/Mint",
+    "name": "Mint",
     "num_threads": 52,
     "num_unread_threads": 52
-  }]
+  }],
+  "additional": {
+    "label_id": "NEWLABEL",
+    "label_list_visibility": "labelShow",
+    "label_type": "user",
+    "message_list_visibility": "show",
+    "name": "NewLabel",
+    "num_threads": 3,
+    "num_unread_threads": 1
+  }
 }
