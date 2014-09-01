@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   root 'static_pages#home'
-  get '/inbox', to: 'static_pages#inbox'
+  get '/mail', to: 'static_pages#mail'
 
   resources :sessions, only: [:new, :create, :destroy]
 
