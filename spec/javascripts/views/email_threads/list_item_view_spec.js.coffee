@@ -44,15 +44,13 @@ describe "ListItemView", ->
       expect(@listItemView.el.nodeName).toEqual "TR"
 
     it "should render the from_name attribute", ->
-      console.log @emailThread
-      console.log @listItemView
-      expect(true).toEqual false
-
-    it "should render the from_address attribute", ->
-      expect(true).toEqual false
+      expect(@listItemView.$el.find('.email_from_column').text().trim()).toEqual @emailThread.get("emails")[0].from_name
 
     it "should render the subject attribute", ->
-      expect(true).toEqual false
+      expect(@listItemView.$el.find('.email_subject_column a').text().trim()).toEqual @emailThread.get("emails")[0].subject
 
     it "should render the snippet attribute", ->
-      expect(true).toEqual false
+      expect(@listItemView.$el.find('.email_snippet').text().trim()).toEqual @emailThread.get("emails")[0].snippet
+
+    it "should render the correct link for email thread", ->
+      expect(@listItemView.$el.find('a').attr("href")).toEqual "#email_thread#" + @emailThread.get("uid")
