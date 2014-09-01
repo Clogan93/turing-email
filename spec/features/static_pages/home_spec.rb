@@ -40,5 +40,17 @@ describe 'the home page', :type => :feature do
       expect(page).to_not have_link('Signin')
       expect(page).to_not have_link('Signup')
     end
+
+    context 'when the user has a Gmail account linked' do
+      let!(:gmail_account) { FactoryGirl.create(:gmail_account, :user => user) }
+
+      it 'should have the correct links' do
+        visit '/'
+
+        expect(page).to_not have_link('Link Gmail Account')
+        expect(page).to have_link('Change Gmail Account')
+        expect(page).to have_link('Unlink Gmail Account')
+      end
+    end
   end
 end
