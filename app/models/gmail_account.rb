@@ -10,6 +10,10 @@ class GmailAccount < ActiveRecord::Base
           :as => :google_api,
           :dependent => :destroy
 
+  has_many :email_threads,
+           :as => :email_account,
+           :dependent => :destroy
+
   has_many :emails,
            :as => :email_account,
            :dependent => :destroy
@@ -304,8 +308,10 @@ class GmailAccount < ActiveRecord::Base
       gmail_thread_id = gmail_data['threadId']
 
       email_thread = EmailThread.find_or_create_by!(:user => self.user,
+                                                    :email_account => self,
                                                     :uid => gmail_thread_id)
       email_thread.with_lock do
+        email_thread.email_account = self
         email.email_thread = email_thread
         email.save!
 

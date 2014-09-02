@@ -36,37 +36,24 @@ describe GmailLabel, :type => :model do
 
   context 'destroy' do
     let!(:email_account) { FactoryGirl.create(:gmail_account) }
-    let!(:folder) { FactoryGirl.create(:gmail_label, :gmail_account => email_account) }
+    let!(:email_folder) { FactoryGirl.create(:gmail_label, :gmail_account => email_account) }
     let!(:email_threads) { FactoryGirl.create_list(:email_thread,
                                                    SpecMisc::TINY_LIST_SIZE,
-                                                   :user => email_account.user) }
+                                                   :email_account => email_account) }
 
-    before do
-      @emails = []
-
-      email_threads.each do |email_thread|
-        @emails += FactoryGirl.create_list(:email, SpecMisc::TINY_LIST_SIZE,
-                                           :user => email_account.user,
-                                           :email_account => email_account,
-                                           :email_thread => email_thread)
-
-        email_thread.emails.each do |email|
-          FactoryGirl.create(:email_folder_mapping, :email => email, :email_folder => folder)
-        end
-      end
-    end
+    let!(:emails) { create_email_thread_emails(email_account, email_threads, email_folder) }
 
     it 'should destroy the email folder mappings but not the emails' do
-      expect(EmailThread.where(:user_id => email_account.user.id).count).to eq(email_threads.length)
-      expect(Email.where(:user_id => email_account.user.id).count).to eq(@emails.length)
-      expect(EmailFolderMapping.where(:email_id => email_account.emails.pluck(:id)).count).to eq(@emails.length)
+      expect(EmailThread.where(:user => email_account.user).count).to eq(email_threads.length)
+      expect(Email.where(:user => email_account.user).count).to eq(emails.length)
+      expect(EmailFolderMapping.where(:email_id => email_account.emails.pluck(:id)).count).to eq(emails.length)
       expect(email_account.gmail_labels.count).to eq(1)
 
-      expect(folder.emails.count).to eq(@emails.length)
-      expect(folder.destroy).not_to eq(false)
+      expect(email_folder.emails.count).to eq(emails.length)
+      expect(email_folder.destroy).not_to eq(false)
 
-      expect(EmailThread.where(:user_id => email_account.user.id).count).to eq(email_threads.length)
-      expect(Email.where(:user_id => email_account.user.id).count).to eq(@emails.length)
+      expect(EmailThread.where(:user => email_account.user).count).to eq(email_threads.length)
+      expect(Email.where(:user => email_account.user).count).to eq(emails.length)
       expect(EmailFolderMapping.where(:email_id => email_account.emails.pluck(:id)).count).to eq(0)
       expect(email_account.gmail_labels.count).to eq(0)
     end

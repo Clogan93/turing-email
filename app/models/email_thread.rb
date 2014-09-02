@@ -1,5 +1,6 @@
 class EmailThread < ActiveRecord::Base
   belongs_to :user
+  belongs_to :email_account, polymorphic: true
 
   has_many :emails,
            :dependent => :destroy

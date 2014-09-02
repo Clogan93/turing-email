@@ -56,13 +56,15 @@ ActiveRecord::Schema.define(version: 20140822053119) do
 
   create_table "email_threads", force: true do |t|
     t.integer  "user_id"
+    t.integer  "email_account_id"
+    t.string   "email_account_type"
     t.text     "uid"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   add_index "email_threads", ["uid"], name: "index_email_threads_on_uid", using: :btree
-  add_index "email_threads", ["user_id", "uid"], name: "index_email_threads_on_user_id_and_uid", unique: true, using: :btree
+  add_index "email_threads", ["user_id", "email_account_id", "uid"], name: "index_email_threads_on_user_id_and_email_account_id_and_uid", unique: true, using: :btree
 
   create_table "emails", force: true do |t|
     t.integer  "user_id"

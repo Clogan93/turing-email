@@ -4,6 +4,25 @@ module SpecMisc
   MEDIUM_LIST_SIZE = 10
   LARGE_LIST_SIZE = 20
 
+  def create_email_thread_emails(email_account, email_threads, email_folder = nil)
+    emails = []
+
+    email_threads.each do |email_thread|
+      emails += FactoryGirl.create_list(:email, SpecMisc::TINY_LIST_SIZE,
+                                        :user => email_account.user,
+                                        :email_account => email_account,
+                                        :email_thread => email_thread)
+
+      email_thread.emails.each do |email|
+        properties = { :email => email }
+        properties[:email_folder] = email_folder if email_folder
+        FactoryGirl.create(:email_folder_mapping, properties)
+      end
+    end
+
+    return emails
+  end
+
   def spec_validate_attributes(expected_attributes, model, model_rendered, expected_attributes_to_skip = [])
     expected_attributes.sort!
 
