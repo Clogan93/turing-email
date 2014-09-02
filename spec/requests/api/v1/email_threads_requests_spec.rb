@@ -10,14 +10,14 @@ describe Api::V1::EmailThreadsController, :type => :request do
   let!(:test_folder) { FactoryGirl.create(:gmail_label, :gmail_account => email_account) }
   let!(:test_folder_other) { FactoryGirl.create(:gmail_label, :gmail_account => email_account_other) }
 
-  let!(:email_threads_inbox) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :user => email_account.user) }
-  let!(:email_threads_inbox_other) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :user => email_account_other.user) }
+  let!(:email_threads_inbox) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => email_account) }
+  let!(:email_threads_inbox_other) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => email_account_other) }
 
-  let!(:email_threads_test) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :user => email_account.user) }
-  let!(:email_threads_test_other) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :user => email_account_other.user) }
+  let!(:email_threads_test) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => email_account) }
+  let!(:email_threads_test_other) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => email_account_other) }
 
-  let!(:email_threads_misc) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :user => email_account.user) }
-  let!(:email_threads_misc_other) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :user => email_account_other.user) }
+  let!(:email_threads_misc) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => email_account) }
+  let!(:email_threads_misc_other) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => email_account_other) }
 
   before(:each) do
     create_email_thread_emails(email_account, email_threads_inbox, inbox)

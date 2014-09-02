@@ -4,7 +4,7 @@ FactoryGirl.define do
   factory :email do
     before(:create) do |email|
       email.email_account = FactoryGirl.create(:gmail_account) if email.email_account.nil?
-      email.email_thread = FactoryGirl.create(:email_thread, :user => email.user) if email.email_thread.nil?
+      email.email_thread = FactoryGirl.create(:email_thread, :email_account => email.email_account) if email.email_thread.nil?
     end
 
     auto_filed false

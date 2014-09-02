@@ -1,7 +1,6 @@
 class CreateEmailThreads < ActiveRecord::Migration
   def change
     create_table :email_threads do |t|
-      t.belongs_to :user
       t.belongs_to :email_account, polymorphic: true
       t.text :uid
 
