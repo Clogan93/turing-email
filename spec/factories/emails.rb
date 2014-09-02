@@ -3,14 +3,7 @@
 FactoryGirl.define do
   factory :email do
     before(:create) do |email|
-      if email.user.nil?
-        if email.email_account
-          email.user = email.email_account.user
-        else
-          email.user = FactoryGirl.create(:user)
-        end
-      end
-
+      email.user = email.email_account ? email.email_account.user : FactoryGirl.create(:user) if email.user.nil?
       email.email_account = FactoryGirl.create(:gmail_account, :user => email.user) if email.email_account.nil?
       email.email_thread = FactoryGirl.create(:email_thread, :user => email.user) if email.email_thread.nil?
     end

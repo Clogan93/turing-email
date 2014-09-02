@@ -10,18 +10,18 @@ describe Api::V1::EmailThreadsController, :type => :request do
   let!(:test_folder) { FactoryGirl.create(:gmail_label, :gmail_account => email_account) }
   let!(:test_folder_other) { FactoryGirl.create(:gmail_label, :gmail_account => email_account_other) }
 
-  let!(:email_threads_inbox) { FactoryGirl.create_list(:email_thread, 5, :user => email_account.user) }
-  let!(:email_threads_inbox_other) { FactoryGirl.create_list(:email_thread, 5, :user => email_account_other.user) }
+  let!(:email_threads_inbox) { FactoryGirl.create_list(:email_thread, 3, :user => email_account.user) }
+  let!(:email_threads_inbox_other) { FactoryGirl.create_list(:email_thread, 3, :user => email_account_other.user) }
 
-  let!(:email_threads_test) { FactoryGirl.create_list(:email_thread, 5, :user => email_account.user) }
-  let!(:email_threads_test_other) { FactoryGirl.create_list(:email_thread, 5, :user => email_account_other.user) }
+  let!(:email_threads_test) { FactoryGirl.create_list(:email_thread, 3, :user => email_account.user) }
+  let!(:email_threads_test_other) { FactoryGirl.create_list(:email_thread, 3, :user => email_account_other.user) }
 
-  let!(:email_threads_misc) { FactoryGirl.create_list(:email_thread, 5, :user => email_account.user) }
-  let!(:email_threads_misc_other) { FactoryGirl.create_list(:email_thread, 5, :user => email_account_other.user) }
+  let!(:email_threads_misc) { FactoryGirl.create_list(:email_thread, 3, :user => email_account.user) }
+  let!(:email_threads_misc_other) { FactoryGirl.create_list(:email_thread, 3, :user => email_account_other.user) }
 
   def create_emails(email_account, email_threads, email_threads_test, email_threads_misc, inbox, test_folder)
     email_threads.each do |email_thread|
-      inbox_emails = FactoryGirl.create_list(:email, 5, :user => email_account.user,
+      inbox_emails = FactoryGirl.create_list(:email, 3, :user => email_account.user,
                                              :email_account => email_account,
                                              :email_thread => email_thread)
 
@@ -31,7 +31,7 @@ describe Api::V1::EmailThreadsController, :type => :request do
     end
 
     email_threads_test.each do |email_thread_test|
-      test_emails = FactoryGirl.create_list(:email, 5, :user => email_account.user,
+      test_emails = FactoryGirl.create_list(:email, 3, :user => email_account.user,
                                             :email_account => email_account,
                                             :email_thread => email_thread_test)
 
@@ -41,7 +41,7 @@ describe Api::V1::EmailThreadsController, :type => :request do
     end
 
     email_threads_misc.each do |email_thread_misc|
-      misc_emails = FactoryGirl.create_list(:email, 5, :user => email_account.user,
+      misc_emails = FactoryGirl.create_list(:email, 3, :user => email_account.user,
                                             :email_account => email_account,
                                             :email_thread => email_thread_misc)
 
