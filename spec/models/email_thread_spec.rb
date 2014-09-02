@@ -24,15 +24,15 @@ describe EmailThread, :type => :model do
 
     it 'should destroy the emails' do
       num_emails = emails.length
-      expect(Email.where(:user => email_account.user).count).to eq(num_emails)
+      expect(Email.where(:email_account => email_account).count).to eq(num_emails)
 
       email_threads.each do |email_thread|
         num_emails -= email_thread.emails.count
         expect(email_thread.destroy).not_to eq(false)
-        expect(Email.where(:user => email_account.user).count).to eq(num_emails)
+        expect(Email.where(:email_account => email_account).count).to eq(num_emails)
       end
 
-      expect(Email.where(:user => email_account.user).count).to eq(0)
+      expect(Email.where(:email_account => email_account).count).to eq(0)
     end
   end
 end

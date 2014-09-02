@@ -1,5 +1,4 @@
 class Email < ActiveRecord::Base
-  belongs_to :user
   belongs_to :email_account, polymorphic: true
   belongs_to :email_thread
 
@@ -7,7 +6,7 @@ class Email < ActiveRecord::Base
 
   has_many :email_folder_mappings,
            :dependent => :destroy
-  has_many :imap_folders, :through => :email_folder_mappings, :source => :email_folder, :source => 'ImapFolder'
+  has_many :imap_folders, :through => :email_folder_mappings, :source => :email_folder, :source_type => 'ImapFolder'
   has_many :gmail_labels, :through => :email_folder_mappings, :source => :email_folder, :source_type => 'GmailLabel'
 
   has_many :email_references,
@@ -94,6 +93,10 @@ class Email < ActiveRecord::Base
     end
 
     return false
+  end
+
+  def user
+    return self.email_account.user
   end
 
   def add_references(email_raw)

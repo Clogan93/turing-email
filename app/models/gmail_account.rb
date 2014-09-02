@@ -65,7 +65,6 @@ class GmailAccount < ActiveRecord::Base
   def init_email_from_gmail_data(email, gmail_data)
     GmailAccount.init_email_from_gmail_data(email, gmail_data)
 
-    email.user = self.user
     email.email_account = self
   end
 

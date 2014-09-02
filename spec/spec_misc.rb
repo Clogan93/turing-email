@@ -9,7 +9,6 @@ module SpecMisc
 
     email_threads.each do |email_thread|
       emails += FactoryGirl.create_list(:email, SpecMisc::TINY_LIST_SIZE,
-                                        :user => email_account.user,
                                         :email_account => email_account,
                                         :email_thread => email_thread)
 

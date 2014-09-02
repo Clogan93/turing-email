@@ -19,7 +19,7 @@ Rails.application.routes.draw do
       resources :users, only: [:create]
       match '/users/current', to: 'users#current', via: 'get'
 
-      resources :emails, only: [:show]
+      get '/emails/:email_account_type/:email_account_id/:email_id', to: 'emails#show'
       resources :email_folders, only: [:index]
       match '/email_threads/inbox', to: 'email_threads#inbox', via: 'get'
       match '/email_threads/in_folder', to: 'email_threads#in_folder', via: 'get'

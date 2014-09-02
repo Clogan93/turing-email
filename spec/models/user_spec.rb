@@ -84,13 +84,13 @@ describe User, :type => :model do
     it 'should destroy the associated user_auth_keys, gmail_accounts, and emails' do
       expect(UserAuthKey.where(:user => user).count).to eq(user_auth_keys.length)
       expect(GmailAccount.where(:user => user).count).to eq(email_accounts.length)
-      expect(Email.where(:user => user).count).to eq(emails.length)
+      expect(Email.where(:email_account => email_accounts[0]).count).to eq(emails.length)
 
       expect(user.destroy).not_to be(false)
 
       expect(UserAuthKey.where(:user => user).count).to eq(0)
       expect(GmailAccount.where(:user => user).count).to eq(0)
-      expect(Email.where(:user => user).count).to eq(0)
+      expect(Email.where(:email_account => email_accounts[0]).count).to eq(0)
     end
   end
 end

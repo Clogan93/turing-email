@@ -67,7 +67,6 @@ ActiveRecord::Schema.define(version: 20140822053119) do
   add_index "email_threads", ["user_id", "email_account_id", "uid"], name: "index_email_threads_on_user_id_and_email_account_id_and_uid", unique: true, using: :btree
 
   create_table "emails", force: true do |t|
-    t.integer  "user_id"
     t.integer  "email_account_id"
     t.string   "email_account_type"
     t.integer  "email_thread_id"
@@ -99,11 +98,11 @@ ActiveRecord::Schema.define(version: 20140822053119) do
     t.datetime "updated_at"
   end
 
+  add_index "emails", ["email_account_id", "email_account_type", "uid"], name: "index_emails_on_email_account_id_and_email_account_type_and_uid", unique: true, using: :btree
+  add_index "emails", ["email_account_id", "email_account_type"], name: "index_emails_on_email_account_id_and_email_account_type", using: :btree
   add_index "emails", ["email_thread_id"], name: "index_emails_on_email_thread_id", using: :btree
   add_index "emails", ["message_id"], name: "index_emails_on_message_id", using: :btree
   add_index "emails", ["uid"], name: "index_emails_on_uid", using: :btree
-  add_index "emails", ["user_id", "email_account_id", "message_id"], name: "index_emails_on_user_id_and_email_account_id_and_message_id", unique: true, using: :btree
-  add_index "emails", ["user_id", "email_account_id", "uid"], name: "index_emails_on_user_id_and_email_account_id_and_uid", unique: true, using: :btree
 
   create_table "gmail_accounts", force: true do |t|
     t.integer  "user_id"

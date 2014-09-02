@@ -11,4 +11,8 @@ class EmailThread < ActiveRecord::Base
     email_threads = EmailThread.includes(:emails).where(:id => ids)
     return email_threads
   end
+
+  def user
+    return self.email_account.user
+  end
 end

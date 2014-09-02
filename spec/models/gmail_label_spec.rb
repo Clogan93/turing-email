@@ -45,7 +45,7 @@ describe GmailLabel, :type => :model do
 
     it 'should destroy the email folder mappings but not the emails' do
       expect(EmailThread.where(:user => email_account.user).count).to eq(email_threads.length)
-      expect(Email.where(:user => email_account.user).count).to eq(emails.length)
+      expect(Email.where(:email_account => email_account).count).to eq(emails.length)
       expect(EmailFolderMapping.where(:email_id => email_account.emails.pluck(:id)).count).to eq(emails.length)
       expect(email_account.gmail_labels.count).to eq(1)
 
@@ -53,7 +53,7 @@ describe GmailLabel, :type => :model do
       expect(email_folder.destroy).not_to eq(false)
 
       expect(EmailThread.where(:user => email_account.user).count).to eq(email_threads.length)
-      expect(Email.where(:user => email_account.user).count).to eq(emails.length)
+      expect(Email.where(:email_account => email_account).count).to eq(emails.length)
       expect(EmailFolderMapping.where(:email_id => email_account.emails.pluck(:id)).count).to eq(0)
       expect(email_account.gmail_labels.count).to eq(0)
     end

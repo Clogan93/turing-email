@@ -6,7 +6,7 @@ describe Api::V1::EmailsController, :type => :request do
 
   context 'when the user is NOT signed in' do
     it 'should NOT show the email' do
-      get "/api/v1/emails/#{email.uid}"
+      get "/api/v1/emails/#{email.email_account_type}/#{email.email_account_id}/#{email.uid}"
 
       expect(response).to have_http_status(:unauthorized)
     end
@@ -16,8 +16,8 @@ describe Api::V1::EmailsController, :type => :request do
     before { post '/api/v1/sessions', :email => email.user.email, :password => email.user.password }
 
     it 'should show the email' do
-      get "/api/v1/emails/#{email.uid}"
-
+      get "/api/v1/emails/#{email.email_account_type}/#{email.email_account_id}/#{email.uid}"
+      
       expect(response).to have_http_status(:ok)
       expect(response).to render_template('api/v1/emails/show')
 
@@ -27,7 +27,7 @@ describe Api::V1::EmailsController, :type => :request do
     end
 
     it 'should NOT show the other email' do
-      get "/api/v1/emails/#{email_other.uid}"
+      get "/api/v1/emails/#{email_other.email_account_type}/#{email_other.email_account_id}/#{email_other.uid}"
 
       expect(response).to have_http_status($config.http_errors[:email_not_found][:status_code])
     end
@@ -37,7 +37,7 @@ describe Api::V1::EmailsController, :type => :request do
     before { post '/api/v1/sessions', :email => email_other.user.email, :password => email_other.user.password }
 
     it 'should show the other email' do
-      get "/api/v1/emails/#{email_other.uid}"
+      get "/api/v1/emails/#{email_other.email_account_type}/#{email_other.email_account_id}/#{email_other.uid}"
 
       expect(response).to have_http_status(:ok)
       expect(response).to render_template('api/v1/emails/show')
@@ -48,7 +48,7 @@ describe Api::V1::EmailsController, :type => :request do
     end
 
     it 'should NOT show the email' do
-      get "/api/v1/emails/#{email.uid}"
+      get "/api/v1/emails/#{email.email_account_type}/#{email.email_account_id}/#{email.uid}"
 
       expect(response).to have_http_status($config.http_errors[:email_not_found][:status_code])
     end
