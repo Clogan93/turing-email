@@ -103,15 +103,13 @@ class Email < ActiveRecord::Base
     return if email_raw.references.nil?
 
     if email_raw.references.class == String
-      EmailReference.find_or_create_by!(:email_account => self.email_account, :email => self,
-                                        :references_message_id => email_raw.references)
+      EmailReference.find_or_create_by!(:email => self, :references_message_id => email_raw.references)
       return
     end
 
     email_raw.references.each do |references_message_id|
       begin
-        EmailReference.find_or_create_by!(:email_account => self.email_account, :email => self,
-                                          :references_message_id => references_message_id)
+        EmailReference.find_or_create_by!(:email => self, :references_message_id => references_message_id)
       rescue ActiveRecord::RecordNotUnique
       end
     end
