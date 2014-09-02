@@ -5,9 +5,9 @@ FactoryGirl.define do
     before(:create) do |email|
       if email.user.nil?
         if email.email_account
-          email.user = FactoryGirl.create(:user)
-        else
           email.user = email.email_account.user
+        else
+          email.user = FactoryGirl.create(:user)
         end
       end
 
