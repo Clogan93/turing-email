@@ -74,4 +74,23 @@ describe User, :type => :model do
       end
     end
   end
+
+  context 'destroy' do
+    let!(:user) { FactoryGirl.create(:user) }
+    let!(:user_auth_keys) { FactoryGirl.create_list(:user_auth_key, SpecMisc::SMALL_LIST_SIZE, :user => user) }
+    let!(:email_accounts) { FactoryGirl.create_list(:gmail_account, SpecMisc::SMALL_LIST_SIZE, :user => user) }
+    let!(:emails) { FactoryGirl.create_list(:email, SpecMisc::SMALL_LIST_SIZE, :email_account => email_accounts[0]) }
+
+    it 'should destroy the associated user_auth_keys, gmail_accounts, and emails' do
+      expect(UserAuthKey.where(:user_id => user.id).count).to eq(user_auth_keys.length)
+      expect(GmailAccount.where(:user_id => user.id).count).to eq(email_accounts.length)
+      expect(Email.where(:user_id => user.id).count).to eq(emails.length)
+
+      expect(user.destroy).not_to be(false)
+
+      expect(UserAuthKey.where(:user_id => user.id).count).to eq(0)
+      expect(GmailAccount.where(:user_id => user.id).count).to eq(0)
+      expect(Email.where(:user_id => user.id).count).to eq(0)
+    end
+  end
 end

@@ -2,10 +2,10 @@ require 'rails_helper'
 
 describe 'api/v1/email_threads/index', :type => :view do
   it 'should render the email threads' do
-    email_threads = assign(:email_threads, FactoryGirl.create_list(:email_thread, 10))
+    email_threads = assign(:email_threads, FactoryGirl.create_list(:email_thread, SpecMisc::MEDIUM_LIST_SIZE))
 
     email_threads.each do |email_thread|
-      FactoryGirl.create_list(:email, 10, :email_thread => email_thread)
+      FactoryGirl.create_list(:email, SpecMisc::MEDIUM_LIST_SIZE, :email_thread => email_thread)
     end
 
     render

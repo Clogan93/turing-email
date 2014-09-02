@@ -3,8 +3,8 @@ require 'rails_helper'
 describe Api::V1::EmailFoldersController, :type => :request do
   let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
   let!(:gmail_account_other) { FactoryGirl.create(:gmail_account) }
-  let!(:email_folders) { FactoryGirl.create_list(:gmail_label, 10, :gmail_account => gmail_account) }
-  let!(:email_folders_other) { FactoryGirl.create_list(:gmail_label, 10, :gmail_account => gmail_account_other) }
+  let!(:email_folders) { FactoryGirl.create_list(:gmail_label, SpecMisc::MEDIUM_LIST_SIZE, :gmail_account => gmail_account) }
+  let!(:email_folders_other) { FactoryGirl.create_list(:gmail_label, SpecMisc::MEDIUM_LIST_SIZE, :gmail_account => gmail_account_other) }
 
   context 'when the user is NOT signed in' do
     it 'should NOT show the email folders' do

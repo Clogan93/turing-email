@@ -1,4 +1,9 @@
-module SpecHelpers
+module SpecMisc
+  TINY_LIST_SIZE = 3
+  SMALL_LIST_SIZE = 5
+  MEDIUM_LIST_SIZE = 10
+  LARGE_LIST_SIZE = 20
+
   def spec_validate_attributes(expected_attributes, model, model_rendered, expected_attributes_to_skip = [])
     expected_attributes.sort!
 
