@@ -13,8 +13,11 @@ class TuringEmailApp.Views.Reports.EmailVolumeReportView extends Backbone.View
   render: ->
     #Re-styling of other elements
     $("#inbox-page-header").hide()
+    $("#pages").hide()
+    $("#email_table").hide()
     $("#preview_pane").hide()
     $(".main_email_list_content").css("height", "100%");
 
+    console.log @model.toJSON()
     @$el.html(@template(@model.toJSON()))
     return this

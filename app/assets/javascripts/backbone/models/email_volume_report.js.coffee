@@ -1,0 +1,1 @@
+class TuringEmailApp.Models.EmailVolumeReport extends Backbone.Model
