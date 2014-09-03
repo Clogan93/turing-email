@@ -1,1 +1,70 @@
-<div>Hello world!</div>
+<% 
+  // Callback that creates and populates a data table,
+  // instantiates the pie chart, passes in the data and
+  // draws it.
+  function drawEmailVolumeCharts() {
+  	drawIncomingEmailVolumeChart();
+  	drawOutgoingEmailVolumeChart();
+  }
+
+  function drawIncomingEmailVolumeChart() {
+
+    // Create the data table.
+    var incoming_data = new google.visualization.DataTable();
+    incoming_data.addColumn('string', 'Person');
+    incoming_data.addColumn('number', 'Percentage');
+    incoming_data.addRows([
+      ['David Gobaud', 3],
+      ['Joe Blogs', 1],
+      ['John Smith', 1],
+      ['Marissa Mayer', 1],
+      ['Elon Musk', 2]
+    ]);
+
+    // Set chart options
+    var options = {'title':'Incoming Email Volume Chart',
+                   'width':500,
+                   'height':300};
+
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.visualization.PieChart(document.getElementById('incoming_email_volume_chart_div'));
+    chart.draw(incoming_data, options);
+  }
+
+  function drawOutgoingEmailVolumeChart() {
+
+    // Create the data table.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Person');
+    data.addColumn('number', 'Percentage');
+    data.addRows([
+      ['Edmund Curtis', 10],
+      ['Stuart Cohen', 4],
+      ['Nancy Rios', 3],
+      ['Pamela White', 1],
+      ['Joanne Park', 2]
+    ]);
+
+    // Set chart options
+    var options = {'title':'Outgoing Email Volume Chart',
+                   'width':500,
+                   'height':300};
+
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.visualization.PieChart(document.getElementById('outgoing_email_volume_chart_div'));
+    chart.draw(data, options);
+  }
+
+  // Load the Visualization API and the piechart package, and set a callback to run when the Google Visualization API is loaded.
+
+  setTimeout(function(){google.load('visualization', '1.0', {'callback':drawEmailVolumeCharts, 'packages':['corechart']})}, 1000);
+
+%>
+
+<div class="page-header">
+  <h1 class="h1">Reports <small>with advanced analytics</small></h1>
+</div>
+<div>
+	<div id="incoming_email_volume_chart_div" style="float: left;"></div>
+	<div id="outgoing_email_volume_chart_div" style="float: left;"></div>
+</div>

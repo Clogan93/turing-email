@@ -6,6 +6,6 @@ class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
     emailThread = TuringEmailApp.emailThreads.getEmailThread(emailThreadUID)
     emailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
       model: emailThread
-      el: $("#email_content")
+      el: $("#email_table_body")
     )
     emailThreadView.render()

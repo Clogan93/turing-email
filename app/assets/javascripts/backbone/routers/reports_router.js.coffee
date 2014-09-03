@@ -6,6 +6,6 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
     emailVolumeReport = new Backbone.Model()
     emailVolumeReportView = new TuringEmailApp.Views.Reports.EmailVolumeReportView(
       model: emailVolumeReport
-      el: $("#email_content")
+      el: $("#reports")
     )
     emailVolumeReportView.render()
