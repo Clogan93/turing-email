@@ -7,7 +7,9 @@ class CreateEmailThreads < ActiveRecord::Migration
       t.timestamps
     end
 
-    add_index :email_threads, [:user_id, :email_account_id, :uid], unique: true
+    add_index :email_threads, [:email_account_id, :email_account_type, :uid],
+              :unique => true, :name => 'index_email_threads_on_email_account_and_uid'
+    add_index :email_threads, [:email_account_id, :email_account_type]
     add_index :email_threads, :uid
   end
 end

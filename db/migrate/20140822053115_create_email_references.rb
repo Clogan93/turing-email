@@ -9,6 +9,6 @@ class CreateEmailReferences < ActiveRecord::Migration
     end
 
     add_index :email_references, :email_id
-    add_index :email_references, [:email_id, :references_message_id], unique: true
+    add_index :email_references, [:email_id, :references_message_id], :unique => true
   end
 end

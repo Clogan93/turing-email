@@ -89,7 +89,7 @@ end
 
 group :test do
   gem 'capybara', '~> 2.4.1'
-  gem 'selenium', '~> 0.2.11'
+  #gem 'selenium-webdriver', '~> 2.42.0'
 end
 
 # Backbone testing framework
