@@ -18,6 +18,5 @@ class TuringEmailApp.Views.Reports.EmailVolumeReportView extends Backbone.View
     $("#preview_pane").hide()
     $(".main_email_list_content").css("height", "100%");
 
-    console.log @model.toJSON()
     @$el.html(@template(@model.toJSON()))
     return this
