@@ -38,7 +38,7 @@ class UsersController < ApplicationController
     log_email_exception(ex)
     @user.destroy if @user
 
-    flash.now[:danger] = $config.error_message_default.html_safe
+    flash.now[:danger] = I18n.t(:error_message_default).html_safe
     render 'new'
   end
 

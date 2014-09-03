@@ -7,9 +7,9 @@ class GmailAccountsController < ApplicationController
 
     if error || code.nil?
       if error == 'access_denied'
-        flash[:danger] = "You did not grant #{$config.service_name_short} access to Gmail. Please try again."
+        flash[:danger] = I18n.t('gmail.access_not_granted')
       else
-        flash[:danger] = $config.error_message_default.html_safe
+        flash[:danger] = I18n.t(:error_message_default).html_safe
       end
 
       redirect_to(root_url)
@@ -50,12 +50,12 @@ class GmailAccountsController < ApplicationController
           gmail_account.save!
         end
 
-        flash[:success] = 'Gmail authenticated!'
+        flash[:success] = I18n.t('gmail.authenticated')
       rescue Exception => ex
         log_exception(false) { gmail_account.destroy! if created_gmail_account && gmail_account }
         log_exception(false) { token.destroy! if token }
 
-        flash[:danger] = $config.error_message_default.html_safe
+        flash[:danger] = I18n.t(:error_message_default).html_safe
         log_email_exception(ex)
       end
 
@@ -72,7 +72,7 @@ class GmailAccountsController < ApplicationController
       end
     end
 
-    flash[:success] = 'Your Gmail account has been unlinked.'
+    flash[:success] = flash[:success] = I18n.t('gmail.unlinked')
     redirect_to(root_url)
   end
 end

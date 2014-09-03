@@ -19,5 +19,18 @@
 # To learn more, please read the Rails Internationalization guide
 # available at http://guides.rubyonrails.org/i18n.html.
 
-en:
-  hello: "Hello world"
+en = {}
+
+en[:error_message_repeat] = 'Please try again.'
+                            ' If this keeps happening please email'
+                            " <a href=\"mailto:#{$config.support_email}\">#{$config.support_email}</a>."
+  
+en[:error_message_default] = "There was an error. #{en[:error_message_repeat]}"
+
+en[:gmail] = {
+  :access_not_granted => "You did not grant #{$config.service_name_short} access to Gmail. Please try again.",
+  :authenticated => 'Gmail authenticated!',
+  :unlinked => 'Your Gmail account has been unlinked.'
+}
+
+return {'en' => en}

@@ -3,6 +3,9 @@ module SpecMisc
   SMALL_LIST_SIZE = 5
   MEDIUM_LIST_SIZE = 10
   LARGE_LIST_SIZE = 20
+  
+  GMAIL_TEST_EMAIL = 'turingemailtest1@gmail.com'
+  GMAIL_TEST_PASSWORD = 'wZLcsS3XZUN3u2wy'
 
   def create_email_thread_emails(email_account, email_threads, email_folder = nil)
     emails = []
@@ -101,5 +104,20 @@ module SpecMisc
     click_button('Login')
 
     expect(page).to have_link('Signout')
+  end
+  
+  def capybara_link_gmail(user,
+                          gmail_email = SpecMisc::GMAIL_TEST_EMAIL,
+                          gmail_passowrd = SpecMisc::GMAIL_TEST_PASSWORD)
+    visit '/'
+    click_link 'Link Gmail Account'
+
+    fill_in('Email', :with => gmail_email)
+    fill_in('Password', :with => gmail_passowrd)
+    click_button('Sign in')
+    
+    sleep(3)
+    click_button('Accept')
+    expect(page).to have_content(I18n.t('gmail.authenticated'))
   end
 end

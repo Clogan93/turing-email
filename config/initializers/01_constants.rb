@@ -57,9 +57,6 @@ $config.support_email_full = "#{$config.support_email_name} <#{$config.support_e
 $config.logs_email_full = "#{$config.logs_email_name} <#{$config.logs_email}>"
 $config.no_reply_email_full = "#{$config.no_reply_email_name} <#{$config.no_reply_email}>"
 
-$config.error_message_repeat = "Please try again. If this keeps happening please email <a href=\"mailto:#{$config.support_email}\">#{$config.support_email}</a>"
-$config.error_message_default = "There was an error. #{$config.error_message_repeat}"
-
 $config.max_login_attempts = 5
 
 # mailgun
