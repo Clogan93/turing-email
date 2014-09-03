@@ -307,4 +307,19 @@ body
       height: 100%;
     }
   }
+
+  .main_email_list_content
+  {
+    position: fixed;
+    height: 52%;
+    overflow: scroll;
+    left: 16%;
+    width: 84%;
+  }
+
+  #email_content
+  {
+    max-width: 98%;
+  }
+
 }

@@ -34,5 +34,7 @@ window.TuringEmailApp = new(Backbone.View.extend({
     @emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
     @emailFoldersRouter.showFolder("INBOX", true)
 
+    @reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
+
     Backbone.history.start()
 }))({el: document.body})

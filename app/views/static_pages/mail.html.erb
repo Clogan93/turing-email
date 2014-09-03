@@ -32,15 +32,17 @@
       </ul>
     </div>
 
-		<div class="col-md-10">
+		<div class="col-md-10 main_email_list_content">
 			<div class="page-header">
 			  <h1 class="h1"><a href="<%= mail_url %>">Inbox</a> <small>with advanced management features</small></h1>
+			  <div><a href="#email_volume_report">Email Volume Report</a></div>
 			</div>
 
-      <div id="pages" class="row">
-        <%= will_paginate(@email_threads, :params => params) if @email_threads.count > 0 %>
-      </div>
-			<div id="emails_threads_list_view" class="row">
+	      <div id="pages" class="row">
+	        <%= will_paginate(@email_threads, :params => params) if @email_threads.count > 0 %>
+	      </div>
+
+	<div id="emails_threads_list_view" class="row">
         <div class='table-responsive'>
           <table class='table' id='email_table'>
             <tbody id='email_table_body'>
@@ -48,14 +50,15 @@
           </table>
         </div>
 
-        <div id='preview_pane'>
-          <div id='resize_border'></div>
-          <div id='preview_content'>
-            <div id='email_content'></div>
-          </div>
-        </div>
-			</div>
-			<div id="email" class="row"></div>
+	        <div id='preview_pane'>
+	          <div id='resize_border'></div>
+				<div id='preview_content'>
+					<div id='email_content'></div>
+				</div>
+		    </div>
+		</div>
+		<div id="email" class="row"></div>
+
 		</div>
 	</div>
 </div>
