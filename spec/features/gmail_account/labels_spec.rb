@@ -3,7 +3,7 @@ require 'rails_helper'
 describe 'Gmail labels support', :type => :feature, :js => true, :link_gmail_account => true do
   let!(:user) {  FactoryGirl.create(:user) }
   
-  it 'sync the labels' do
+  it 'should sync the labels' do
     gmail_account = user.gmail_accounts.first
     gmail_account.sync_labels()
     
