@@ -1,6 +1,5 @@
 require 'rails_helper'
 
-
 describe 'authenticating Gmail', :type => :feature, :js => true do
   let!(:user) {  FactoryGirl.create(:user) }
   before { capybara_signin_user(user) }
@@ -17,7 +16,7 @@ describe 'authenticating Gmail', :type => :feature, :js => true do
     expect(page).to have_content(I18n.t('gmail.access_not_granted'))
 
     click_link 'Link Gmail Account'
-    sleep(3)
+    sleep(2)
     click_button('Accept')
     expect(page).to have_content(I18n.t('gmail.authenticated'))
 

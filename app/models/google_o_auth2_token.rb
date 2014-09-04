@@ -32,33 +32,33 @@ class GoogleOAuth2Token < ActiveRecord::Base
     return api_client
   end
 
-  def refresh(o_auth2_client)
+  def refresh(o_auth2_base_client, force = false)
     # guard against simultaneous refreshes
 
     self.with_lock do
-      return if self.expires_at - Time.now >= 60.seconds
-
+      return if self.expires_at - Time.now >= 60.seconds && !force
+      
       log_console('REFRESHING TOKEN')
       self.log()
 
-      o_auth2_client.fetch_access_token!()
-      self.update(o_auth2_client)
+      o_auth2_base_client.fetch_access_token!()
+      self.update(o_auth2_base_client)
 
       log_console('TOKEN REFRESHED!')
       self.log()
     end
   end
 
-  def update(o_auth2_client, do_save = true)
+  def update(o_auth2_base_client, do_save = true)
     log_console('UPDATING TOKEN')
     self.log()
 
-    self.access_token = o_auth2_client.access_token
-    self.expires_in = o_auth2_client.expires_in
-    self.issued_at = o_auth2_client.issued_at
-    self.refresh_token = o_auth2_client.refresh_token
+    self.access_token = o_auth2_base_client.access_token
+    self.expires_in = o_auth2_base_client.expires_in
+    self.issued_at = o_auth2_base_client.issued_at
+    self.refresh_token = o_auth2_base_client.refresh_token
 
-    self.expires_at = Time.now + self.expires_in.seconds
+    self.expires_at = Time.at(self.issued_at).to_datetime + self.expires_in.seconds
 
     self.save! if do_save
 

@@ -112,12 +112,18 @@ module SpecMisc
     visit '/'
     click_link 'Link Gmail Account'
 
-    fill_in('Email', :with => gmail_email)
-    fill_in('Password', :with => gmail_passowrd)
-    click_button('Sign in')
-    
-    sleep(3)
-    click_button('Accept')
-    expect(page).to have_content(I18n.t('gmail.authenticated'))
+    if !has_field?('Email')
+      sleep(2)
+      click_button('Accept')
+      expect(page).to have_content(I18n.t('gmail.authenticated'))  
+    else
+      fill_in('Email', :with => gmail_email)
+      fill_in('Password', :with => gmail_passowrd)
+      click_button('Sign in')
+      
+      sleep(2)
+      click_button('Accept')
+      expect(page).to have_content(I18n.t('gmail.authenticated'))
+    end
   end
 end
