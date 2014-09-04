@@ -10,54 +10,53 @@ class GoogleOAuth2Token < ActiveRecord::Base
     log_exception(false) { RestClient.get("https://accounts.google.com/o/oauth2/revoke?token=#{self.access_token}") }
   }
 
-  def oauth2_base_client()
-    oauth2_base_client = Google::OAuth2Client.base_client($config.google_client_id, $config.google_secret)
+  def o_auth2_base_client()
+    o_auth2_base_client = Google::OAuth2Client.base_client($config.google_client_id, $config.google_secret)
 
-    oauth2_base_client.access_token = self.access_token
-    oauth2_base_client.expires_in = self.expires_in
-    oauth2_base_client.issued_at = Time.at(self.issued_at)
-    oauth2_base_client.refresh_token = self.refresh_token
+    o_auth2_base_client.access_token = self.access_token
+    o_auth2_base_client.expires_in = self.expires_in
+    o_auth2_base_client.issued_at = Time.at(self.issued_at)
+    o_auth2_base_client.refresh_token = self.refresh_token
 
-    self.refresh(oauth2_base_client)
+    self.refresh(o_auth2_base_client)
 
-    return oauth2_base_client
+    return o_auth2_base_client
   end
 
   def api_client()
-    oauth2_base_client = self.oauth2_base_client()
+    o_auth2_base_client = self.o_auth2_base_client()
 
     api_client = Google::APIClient.new(:application_name => $config.service_name)
-    api_client.authorization = oauth2_base_client
+    api_client.authorization = o_auth2_base_client
 
     return api_client
   end
 
-  def refresh(oauth2_client)
+  def refresh(o_auth2_client)
     # guard against simultaneous refreshes
 
     self.with_lock do
-      #if oauth2_client.expired?
       return if self.expires_at - Time.now >= 60.seconds
 
       log_console('REFRESHING TOKEN')
       self.log()
 
-      oauth2_client.fetch_access_token!()
-      self.update(oauth2_client)
+      o_auth2_client.fetch_access_token!()
+      self.update(o_auth2_client)
 
       log_console('TOKEN REFRESHED!')
       self.log()
     end
   end
 
-  def update(oauth2_client, do_save = true)
+  def update(o_auth2_client, do_save = true)
     log_console('UPDATING TOKEN')
     self.log()
 
-    self.access_token = oauth2_client.access_token
-    self.expires_in = oauth2_client.expires_in
-    self.issued_at = oauth2_client.issued_at
-    self.refresh_token = oauth2_client.refresh_token
+    self.access_token = o_auth2_client.access_token
+    self.expires_in = o_auth2_client.expires_in
+    self.issued_at = o_auth2_client.issued_at
+    self.refresh_token = o_auth2_client.refresh_token
 
     self.expires_at = Time.now + self.expires_in.seconds
 

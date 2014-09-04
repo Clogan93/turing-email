@@ -7,8 +7,8 @@ Rails.application.routes.draw do
   resources :users, only: [:new, :create]
   match('/reset_password', to: 'users#reset_password', via: ['get', 'post'], as: :reset_password)
 
-  match '/gmail_oauth2_callback', to: 'gmail_accounts#oauth2_callback', via: 'get'
-  match '/gmail_oauth2_remove', to: 'gmail_accounts#oauth2_remove', via: 'delete', as: :gmail_oauth2_remove
+  match '/gmail_oauth2_callback', to: 'gmail_accounts#o_auth2_callback', via: 'get'
+  match '/gmail_o_auth2_remove', to: 'gmail_accounts#o_auth2_remove', via: 'delete'
 
   match '/signup',  to: 'users#new',        via: 'get'
   match '/signin',  to: 'sessions#new',     via: 'get'

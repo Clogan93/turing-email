@@ -1,7 +1,7 @@
 class GmailAccountsController < ApplicationController
   before_action :signed_in_user
 
-  def oauth2_callback
+  def o_auth2_callback
     error = params[:error]
     code = params[:code]
 
@@ -25,14 +25,14 @@ class GmailAccountsController < ApplicationController
             gmail_account.google_o_auth2_token = nil
           end
 
-          oauth2_base_client = Google::OAuth2Client.base_client($config.google_client_id, $config.google_secret)
-          oauth2_base_client.redirect_uri = gmail_oauth2_callback_url
-          oauth2_base_client.code = code
-          oauth2_base_client.fetch_access_token!()
+          o_auth2_base_client = Google::OAuth2Client.base_client($config.google_client_id, $config.google_secret)
+          o_auth2_base_client.redirect_uri = gmail_oauth2_callback_url
+          o_auth2_base_client.code = code
+          o_auth2_base_client.fetch_access_token!()
 
           # don't save because no GmailAccount yet to set to required google_api attribute.
-          google_oauth2_token = GoogleOAuth2Token.new()
-          google_oauth2_token.update(oauth2_base_client, false)
+          google_o_auth2_token = GoogleOAuth2Token.new()
+          google_o_auth2_token.update(o_auth2_base_client, false)
 
           # don't assign google_o_auth2_token yet because it hasn't been saved so no ID.
           if gmail_account.nil?
@@ -41,12 +41,12 @@ class GmailAccountsController < ApplicationController
             gmail_account = GmailAccount.new()
             gmail_account.user = current_user
           end
-          gmail_account.refresh_user_info(google_oauth2_token.api_client())
+          gmail_account.refresh_user_info(google_o_auth2_token.api_client())
 
-          google_oauth2_token.google_api = gmail_account
-          google_oauth2_token.save!
+          google_o_auth2_token.google_api = gmail_account
+          google_o_auth2_token.save!
 
-          gmail_account.google_o_auth2_token = google_oauth2_token
+          gmail_account.google_o_auth2_token = google_o_auth2_token
           gmail_account.save!
         end
 
@@ -63,7 +63,7 @@ class GmailAccountsController < ApplicationController
     end
   end
 
-  def oauth2_remove
+  def o_auth2_remove
     current_user.with_lock do
       gmail_account = current_user.gmail_accounts.first
       if gmail_account && gmail_account.google_o_auth2_token

@@ -18,10 +18,6 @@ class GmailAccount < ActiveRecord::Base
            :as => :email_account,
            :dependent => :destroy
 
-  has_many :email_references,
-           :as => :email_account,
-           :dependent => :destroy
-
   has_many :email_in_reply_tos,
            :as => :email_account,
            :dependent => :destroy
@@ -92,8 +88,8 @@ class GmailAccount < ActiveRecord::Base
 
   def refresh_user_info(api_client = nil, do_save = true)
     api_client = self.google_o_auth2_token.api_client() if api_client.nil?
-    oauth2_client = Google::OAuth2Client.new(api_client)
-    userinfo_data = oauth2_client.userinfo_get()
+    o_auth2_client = Google::OAuth2Client.new(api_client)
+    userinfo_data = o_auth2_client.userinfo_get()
 
     self.google_id = userinfo_data['id']
     self.email = userinfo_data['email'].downcase
