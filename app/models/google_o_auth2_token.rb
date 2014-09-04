@@ -7,8 +7,8 @@ class GoogleOAuth2Token < ActiveRecord::Base
 
   before_destroy {
     log_console('DESTROYING GoogleOAuth2Token!!')
-    log_exception(false) { RestClient.get("https://accounts.google.com/o/oauth2/revoke?token=#{self.refresh_token}") }
-    log_exception(false) { RestClient.get("https://accounts.google.com/o/oauth2/revoke?token=#{self.access_token}") }
+    log_exception(false) { RestClient.get("https://accounts.google.com/o/oauth2/revoke?token=#{self.refresh_token}") if self.refresh_token != 'factory' }
+    log_exception(false) { RestClient.get("https://accounts.google.com/o/oauth2/revoke?token=#{self.access_token}") if self.access_token != 'factory' }
   }
 
   def o_auth2_base_client()

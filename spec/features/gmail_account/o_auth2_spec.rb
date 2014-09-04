@@ -14,6 +14,7 @@ describe 'authenticating Gmail', :type => :feature, :js => true do
       click_button('Sign in')
     end
 
+    sleep(2)
     click_button('Cancel')
     expect(page).to have_content(I18n.t('gmail.access_not_granted'))
 
