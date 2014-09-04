@@ -4,7 +4,7 @@ describe 'Gmail emails support', :type => :feature, :js => true, :link_gmail_acc
   let!(:user) {  FactoryGirl.create(:user) }
   let!(:gmail_account) { user.gmail_accounts.first }
   
-  it 'should sync the emails' do
+  it 'should sync emails' do
     gmail_account.sync_email()
 
     inbox_emails = [
@@ -58,5 +58,62 @@ describe 'Gmail emails support', :type => :feature, :js => true, :link_gmail_acc
           'text_part' => "test send\n" }
     ]
     verify_emails_in_gmail_label(gmail_account, 'SENT', sent_emails)
+
+    # make sure partial sync works
+    num_emails = user.emails.count
+    gmail_account.sync_email()
+    expect(user.emails.count).to eq(num_emails)
+  end
+  
+  it 'should download emails' do
+    email_expected = { 'from_name' => 'David Gobaud',
+                       'from_address' => 'david@turinginc.com',
+                       'tos' => 'turingemailtest1@gmail.com',
+                       'ccs' => nil,
+                       'subject' => 'inbox email',
+                       'html_part' => "<div dir=\"ltr\"><br></div>\n",
+                       'text_part' => '' }
+
+    gmail_id = '1483e7904ff1e39c'
+
+    mime_data = gmail_account.mime_data_from_gmail_id(gmail_id)
+    email = Email.email_from_mime_data(mime_data)
+    verify_email(email, email_expected)
+
+    gmail_data = gmail_account.gmail_data_from_gmail_id(gmail_id)
+    email = GmailAccount.email_from_gmail_data(gmail_data)
+    verify_email(email, email_expected)
+
+    email_raw = gmail_account.email_raw_from_gmail_id(gmail_id)
+    email = Email.email_from_email_raw(email_raw)
+    verify_email(email, email_expected)
+    
+    email = gmail_account.email_from_gmail_id(gmail_id)
+    verify_email(email, email_expected)
+
+    gmail_data = gmail_account.gmail_data_from_gmail_id(gmail_id)
+    mime_data = GmailAccount.mime_data_from_gmail_data(gmail_data)
+    email = Email.email_from_mime_data(mime_data)
+    verify_email(email, email_expected)
+
+    gmail_data = gmail_account.gmail_data_from_gmail_id(gmail_id)
+    email_raw = GmailAccount.email_raw_from_gmail_data(gmail_data)
+    email = Email.email_from_email_raw(email_raw)
+    verify_email(email, email_expected)
+
+    gmail_data = gmail_account.gmail_data_from_gmail_id(gmail_id)
+    email = GmailAccount.email_from_gmail_data(gmail_data)
+    verify_email(email, email_expected)
+  end
+  
+  it 'should move emails to a folder' do
+    email = FactoryGirl.create(:email, :email_account => gmail_account)
+
+    label_names = email.gmail_labels.pluck(:name)
+    expect(label_names).not_to include('Test Label')
+    
+    gmail_account.move_email_to_folder(email, 'Test Label')
+    label_names = email.gmail_labels.pluck(:name)
+    expect(label_names).to include('Test Label')
   end
 end

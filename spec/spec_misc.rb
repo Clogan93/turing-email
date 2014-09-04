@@ -96,13 +96,17 @@ module SpecMisc
     end
   end
   
-  def verify_emails_in_gmail_label(gmail_account, label_id, expected_emails)
+  def verify_email(email, email_expected)
+    email_expected.each { |k, v| expect(email.send(k)).to eq(v) }
+  end
+  
+  def verify_emails_in_gmail_label(gmail_account, label_id, emails_expected)
     label = gmail_account.gmail_labels.find_by_label_id(label_id)
     emails = label.emails.order(:date)
-    expect(emails.count).to eq(expected_emails.length)
+    expect(emails.count).to eq(emails_expected.length)
 
-    emails.zip(expected_emails).each do |email, expected_email|
-      expected_email.each { |k, v| expect(email.send(k)).to eq(v) }
+    emails.zip(emails_expected).each do |email, email_expected|
+      verify_email(email, email_expected)
     end
   end
 

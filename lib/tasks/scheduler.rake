@@ -1,6 +1,6 @@
 require 'open-uri'
 
-desc "This task is called by the Heroku scheduler add-on."
+desc 'This task is called by the Heroku scheduler add-on.'
 
 task :keep_dyno_alive => :environment do
   begin
