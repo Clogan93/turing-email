@@ -1,0 +1,32 @@
+<%
+	function drawChart() {
+    var data = google.visualization.arrayToDataTable([
+      ['Year', 'Sales', 'Expenses'],
+      ['2004',  1000,      400],
+      ['2005',  1170,      460],
+      ['2006',  660,       1120],
+      ['2007',  1030,      540]
+    ]);
+
+    var options = {
+      title: 'Word Count',
+      vAxis: {title: 'Words',  titleTextStyle: {color: 'red'}}
+    };
+
+    var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+
+    chart.draw(data, options);
+  }
+
+  setTimeout(function() {
+    google.load('visualization', '1.0',
+                {'callback': function() {drawChart(); },
+                'packages':['corechart']}
+                )
+  }, 1000);
+%>
+
+<div class="page-header">
+  <h1 class="h1">Reports <small>word count</small></h1>
+</div>
+<div id="chart_div" style="width: 900px; height: 500px;"></div>

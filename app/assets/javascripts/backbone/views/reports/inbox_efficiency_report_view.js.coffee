@@ -1,7 +1,7 @@
 TuringEmailApp.Views.Reports ||= {}
 
-class TuringEmailApp.Views.Reports.EmailVolumeReportView extends Backbone.View
-  template: JST["backbone/templates/reports/email_volume_report"]
+class TuringEmailApp.Views.Reports.InboxEfficiencyReportView extends Backbone.View
+  template: JST["backbone/templates/reports/inbox_efficiency_report"]
 
   initialize: ->
     @listenTo(@model, "change", @render)
