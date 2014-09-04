@@ -302,8 +302,7 @@ class GmailAccount < ActiveRecord::Base
     begin
       gmail_thread_id = gmail_data['threadId']
 
-      email_thread = EmailThread.find_or_create_by!(:user => self.user,
-                                                    :email_account => self,
+      email_thread = EmailThread.find_or_create_by!(:email_account => self,
                                                     :uid => gmail_thread_id)
       email_thread.with_lock do
         email_thread.email_account = self

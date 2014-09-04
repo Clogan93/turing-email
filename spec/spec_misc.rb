@@ -95,6 +95,16 @@ module SpecMisc
       expect(model_keys_rendered.include?(model_unexpected.send(key))).to eq(false)
     end
   end
+  
+  def verify_emails_in_gmail_label(gmail_account, label_id, expected_emails)
+    label = gmail_account.gmail_labels.find_by_label_id(label_id)
+    emails = label.emails.order(:date)
+    expect(emails.count).to eq(expected_emails.length)
+
+    emails.zip(expected_emails).each do |email, expected_email|
+      expected_email.each { |k, v| expect(email.send(k)).to eq(v) }
+    end
+  end
 
   def capybara_signin_user(user)
     visit '/signin'
