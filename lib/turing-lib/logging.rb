@@ -34,7 +34,11 @@ end
 def log_console(message, job = nil)
   return job.log_console_wrapper(message) if job
 
-  Rails.logger.info(message)
+  if Rails.env.test?
+    puts(message)
+  else
+    Rails.logger.info(message)
+  end
 rescue
   log_email('log_console ERROR!!', message, false)
 end

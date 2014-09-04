@@ -51,6 +51,14 @@ RSpec.configure do |config|
     DatabaseCleaner.clean
   end
 
+  config.before(:each, :link_gmail_account => true) do
+    capybara_signin_user(user)
+    capybara_link_gmail(user)
+  end
+
+  config.after(:each, :link_gmail_account => true) do
+    expect(user.destroy).not_to be(false)
+  end
 
   # RSpec Rails can automatically mix in different behaviours to your tests
   # based on their file location, for example enabling you to call `get` and

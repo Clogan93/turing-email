@@ -1,11 +1,7 @@
 require 'rails_helper'
 
-describe 'Google OAuth 2 token refreshing', :type => :feature, :js => true do
+describe 'Google OAuth 2 token refreshing', :type => :feature, :js => true, :link_gmail_account => true do
   let!(:user) {  FactoryGirl.create(:user) }
-  before {
-    capybara_signin_user(user)
-    capybara_link_gmail(user)
-  }
   
   it 'should not refresh the token when it has not expired' do
     google_o_auth2_token = user.gmail_accounts.first.google_o_auth2_token

@@ -6,6 +6,7 @@ class GoogleOAuth2Token < ActiveRecord::Base
   validates_presence_of(:expires_at)
 
   before_destroy {
+    log_console('DESTROYING GoogleOAuth2Token!!')
     log_exception(false) { RestClient.get("https://accounts.google.com/o/oauth2/revoke?token=#{self.refresh_token}") }
     log_exception(false) { RestClient.get("https://accounts.google.com/o/oauth2/revoke?token=#{self.access_token}") }
   }
