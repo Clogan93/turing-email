@@ -29,9 +29,29 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
       title : "Outgoing Email Volume Chart"
     }
 
+  loadAttachmentsReportSampleData: (attachmentsReport) ->
+    attachmentsReport.set "data", { 
+      attachmentData : [
+        ['Year', 'Sent', 'Received'],
+        ['docs',  10,      1],
+        ['pdfs',  15,      4],
+        ['images',  6,       11],
+        ['zip',  10,      5]
+      ]
+    }
+
+  loadSummaryAnalyticsReportSampleData: (summaryAnalyticsReport) ->
+    summaryAnalyticsReport.set "number_of_conversations", 824
+    summaryAnalyticsReport.set "number_of_emails_received", 1039
+    summaryAnalyticsReport.set "number_of_emails_sent", 203
+
+  loadInboxEfficiencyReportSampleData: (inboxEfficiencyReport) ->
+    inboxEfficiencyReport.set "average_response_time_in_minutes", 7.5
+    inboxEfficiencyReport.set "percent_archived", 71.2
+
   showEmailVolumeReport: ->
     emailVolumeReport = new TuringEmailApp.Models.EmailVolumeReport()
-    this.loadEmailVolumeReportSampleData emailVolumeReport
+    @.loadEmailVolumeReportSampleData emailVolumeReport
     emailVolumeReportView = new TuringEmailApp.Views.Reports.EmailVolumeReportView(
       model: emailVolumeReport
       el: $("#reports")
@@ -40,6 +60,7 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
 
   showAttachmentsReport: ->
     attachmentsReport = new TuringEmailApp.Models.AttachmentsReport()
+    @.loadAttachmentsReportSampleData attachmentsReport
     attachmentsReportView = new TuringEmailApp.Views.Reports.AttachmentsReportView(
       model: attachmentsReport
       el: $("#reports")
@@ -56,6 +77,7 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
 
   showInboxEfficiencyReport: ->
     inboxEfficiencyReport = new TuringEmailApp.Models.InboxEfficiencyReport()
+    @.loadInboxEfficiencyReportSampleData inboxEfficiencyReport
     inboxEfficiencyReportView = new TuringEmailApp.Views.Reports.InboxEfficiencyReportView(
       model: inboxEfficiencyReport
       el: $("#reports")
@@ -72,6 +94,7 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
 
   showSummaryAnalyticsReport: ->
     summaryAnalyticsReport = new TuringEmailApp.Models.SummaryAnalyticsReport()
+    @.loadSummaryAnalyticsReportSampleData summaryAnalyticsReport
     summaryAnalyticsReportView = new TuringEmailApp.Views.Reports.SummaryAnalyticsReportView(
       model: summaryAnalyticsReport
       el: $("#reports")

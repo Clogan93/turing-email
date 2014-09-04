@@ -1,13 +1,7 @@
 <%
-	function drawChart() {
+	function drawChart(attachmentData) {
 
-	  var data = google.visualization.arrayToDataTable([
-	    ['Year', 'Sent', 'Received'],
-	    ['docs',  10,      1],
-	    ['pdfs',  15,      4],
-	    ['images',  6,       11],
-	    ['zip',  10,      5]
-	  ]);
+	  var data = google.visualization.arrayToDataTable(attachmentData);
 
 	  var options = {
 	    title: 'Attachments',
@@ -23,7 +17,7 @@
 
   setTimeout(function() {
     google.load('visualization', '1.0',
-                {'callback': function() {drawChart(); },
+                {'callback': function() {drawChart(data.attachmentData); },
                 'packages':['corechart']}
                 )
   }, 1000);
