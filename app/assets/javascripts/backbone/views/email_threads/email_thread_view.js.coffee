@@ -14,6 +14,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     @$el.remove()
 
   render: ->
+    $("#email-folder-mail-header").hide()
     @$el.html(@template(@model.toJSON()))
     @bindEmailClick()
     return this
