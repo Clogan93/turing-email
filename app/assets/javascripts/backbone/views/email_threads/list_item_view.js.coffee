@@ -15,6 +15,15 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     if TuringEmailApp.user.get("email") == @model.get("emails")[0].from_address
       @model.attributes.emails[0].from_name = "me"
 
+    if @model.get("emails")[0].seen
+        @.$el.addClass("unread")
+    else
+      @.$el.addClass("read")
+
     @$el.html(@template(@model.toJSON()))
+
+    $(".i-checks").iCheck
+      checkboxClass: "icheckbox_square-green"
+      radioClass: "iradio_square-green"
 
     return this
