@@ -32,18 +32,26 @@
                     <div class="file-manager">
                         <button id="compose_button" type="button" class="btn btn-block btn-primary compose-mail" data-toggle="modal" data-target="#composeModal">Compose Email</button>
                         <div class="space-25"></div>
+
                         <h5>Folders</h5>
+
                         <ul class="folder-list m-b-md" style="padding: 0">
                             <li><a href="/mail2"> <i class="fa fa-inbox "></i> Inbox <span class="label label-warning pull-right" id="inbox_count_badge"></span> </a></li>
-                            <li><a href="mailbox.html"> <i class="fa fa-envelope-o"></i> Sent Mail</a></li>
-                            <li><a href="mailbox.html"> <i class="fa fa-certificate"></i> Important</a></li>
-                            <li><a href="mailbox.html"> <i class="fa fa-file-text-o"></i> Drafts <span class="label label-danger pull-right">2</span></a></li>
-                            <li><a href="mailbox.html"> <i class="fa fa-trash-o"></i> Trash</a></li>
+                            <li><a href="#folder#SENT"> <i class="fa fa-envelope-o"></i> Sent Mail</a></li>
+                            <li><a href="#folder#DRAFT"> <i class="fa fa-file-text-o"></i> Drafts</a></li>
+                            <li><a href="#folder#TRASH"> <i class="fa fa-trash-o"></i> Trash</a></li>
                         </ul>
+
                         <h5>Categories</h5>
 
                         <ul class="category-list" style="padding: 0">
                             <div id="email_folders"></div>
+                        </ul>
+
+                        <h5>Reports</h5>
+                        <br />
+
+                        <ul class="category-list" id="reports_list" style="padding: 0">
                             <div><a href="#attachments_report">Attachments Report</a></div>
                             <div><a href="#email_volume_report">Email Volume Report</a></div>
                             <div><a href="#inbox_efficiency_report">Inbox Efficiency Report</a></div>
@@ -81,7 +89,7 @@
                 <div id="pages" class="row pull-right">
                   <%= will_paginate(@email_threads, :params => params) if @email_threads.count > 0 %>
                 </div>
-                <a href="/mail2"><button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="left" title="Refresh inbox"><i class="fa fa-refresh"></i> Refresh</button></a>
+                <a href="/mail2" id="refresh_link"><button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="left" title="Refresh inbox"><i class="fa fa-refresh"></i> Refresh</button></a>
                 <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Mark as read"><i class="fa fa-eye"></i> </button>
                 <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Mark as important"><i class="fa fa-exclamation"></i> </button>
                 <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Move to trash"><i class="fa fa-trash-o"></i> </button>

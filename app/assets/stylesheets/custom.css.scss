@@ -15,6 +15,7 @@ body
     white-space: -o-pre-wrap; /* Opera */
     white-space: pre-wrap; /* CSS3 - Text module (Candidate Recommendation) http://www.w3.org/TR/css3-text/#white-space */
     word-wrap: break-word; /* IE 5.5+ */
+    overflow-y: hidden;
   }
 
   #logo
@@ -191,9 +192,10 @@ body
     left: 350px;
   }
 
-  a.label_link
+  a.label_link, #reports_list a
   {
-    color: black;
+    color: #666666;
+    font-weight: normal;
   }
 
   a.label_link:hover
@@ -332,4 +334,14 @@ body
 .table-mail .mail-date
 {
   font-size: 12px;
+}
+
+a#refresh_link
+{
+  color: black;
+}
+
+#reports_list div
+{
+  padding: 5px 0px;
 }
