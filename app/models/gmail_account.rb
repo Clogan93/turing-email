@@ -249,6 +249,7 @@ class GmailAccount < ActiveRecord::Base
       messages_data.each { |message_data| gmail_ids.push(message_data['id']) }
 
       self.sync_gmail_ids(gmail_ids)
+      sleep(1)
 
       nextPageToken = messages_list_data['nextPageToken']
       break if nextPageToken.nil?

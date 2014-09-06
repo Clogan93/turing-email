@@ -31,6 +31,10 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
         body_height_adjusted_string = body_height_adjusted.toString() + "px"
         @$el.find("#email_iframe" + index.toString()).css("height", body_height_adjusted_string)
 
+        @$el.find("#email_iframe" + index.toString()).contents().find("body").find("a").click (event) ->
+          event.preventDefault()
+          alert $(@).attr("href")
+
   bindEmailClick: ->
     @$el.find(".email").click ->
       $(this).find(".email_body").show()
