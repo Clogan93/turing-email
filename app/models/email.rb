@@ -1,13 +1,14 @@
 class Email < ActiveRecord::Base
-  belongs_to :user
   belongs_to :email_account, polymorphic: true
   belongs_to :email_thread
+  
+  belongs_to :ip_info
 
   belongs_to :auto_filed_folder, polymorphic: true
 
   has_many :email_folder_mappings,
            :dependent => :destroy
-  has_many :imap_folders, :through => :email_folder_mappings, :source => :email_folder, :source => 'ImapFolder'
+  has_many :imap_folders, :through => :email_folder_mappings, :source => :email_folder, :source_type => 'ImapFolder'
   has_many :gmail_labels, :through => :email_folder_mappings, :source => :email_folder, :source_type => 'GmailLabel'
 
   has_many :email_references,
@@ -37,6 +38,9 @@ class Email < ActiveRecord::Base
 
   def Email.email_from_email_raw(email_raw)
     email = Email.new
+    
+    ip = Email.get_sender_ip(email_raw)
+    email.ip_info = IpInfo.from_ip(ip) if ip
 
     email.message_id = email_raw.message_id
     email.list_id = email_raw.header['List-ID'].decoded.force_utf8(true) if email_raw.header['List-ID']
@@ -64,6 +68,38 @@ class Email < ActiveRecord::Base
     email.has_calendar_attachment = Email.part_has_calendar_attachment(email_raw)
 
     return email
+  end
+
+  def Email.get_sender_ip(email_raw)
+    headers = parse_email_headers(email_raw.header.raw_source)
+    headers.reverse!
+    
+    headers.each do |header|
+      if header.name.downcase == 'x-originating-ip'
+        m = header.value.match(/\[(#{$config.ip_regex})\]/)
+        
+        if m
+          log_console("FOUND IP #{m[1]} IN X-Originating-IP=#{header.value}")
+          return m[1]
+        end
+      elsif header.name.downcase == 'received'
+        m = header.value.match(/from.*\[(#{$config.ip_regex})\]/)
+        
+        if m
+          log_console("FOUND IP #{m[1]} IN RECEIVED=#{header.value}")
+          return m[1]
+        end
+      elsif header.name.downcase == 'received-spf'
+        m = header.value.match(/client-ip=(#{$config.ip_regex})/)
+
+        if m
+          log_console("FOUND IP #{m[1]} IN RECEIVED-SPF=#{header.value}")
+          return m[1]
+        end
+      end
+    end
+    
+    return nil
   end
 
   def Email.parse_address_header(address_header, address_string = nil)
@@ -96,19 +132,21 @@ class Email < ActiveRecord::Base
     return false
   end
 
+  def user
+    return self.email_account.user
+  end
+
   def add_references(email_raw)
     return if email_raw.references.nil?
 
     if email_raw.references.class == String
-      EmailReference.find_or_create_by!(:email_account => self.email_account, :email => self,
-                                        :references_message_id => email_raw.references)
+      EmailReference.find_or_create_by!(:email => self, :references_message_id => email_raw.references)
       return
     end
 
     email_raw.references.each do |references_message_id|
       begin
-        EmailReference.find_or_create_by!(:email_account => self.email_account, :email => self,
-                                          :references_message_id => references_message_id)
+        EmailReference.find_or_create_by!(:email => self, :references_message_id => references_message_id)
       rescue ActiveRecord::RecordNotUnique
       end
     end

@@ -1,6 +1,32 @@
-module SpecHelpers
+module SpecMisc
+  TINY_LIST_SIZE = 3
+  SMALL_LIST_SIZE = 5
+  MEDIUM_LIST_SIZE = 10
+  LARGE_LIST_SIZE = 20
+  
+  GMAIL_TEST_EMAIL = 'turingemailtest1@gmail.com'
+  GMAIL_TEST_PASSWORD = 'wZLcsS3XZUN3u2wy'
+
+  def create_email_thread_emails(email_account, email_threads, email_folder = nil)
+    emails = []
+
+    email_threads.each do |email_thread|
+      emails += FactoryGirl.create_list(:email, SpecMisc::TINY_LIST_SIZE,
+                                        :email_account => email_account,
+                                        :email_thread => email_thread)
+
+      email_thread.emails.each do |email|
+        properties = { :email => email }
+        properties[:email_folder] = email_folder if email_folder
+        FactoryGirl.create(:email_folder_mapping, properties)
+      end
+    end
+
+    return emails
+  end
+
   def spec_validate_attributes(expected_attributes, model, model_rendered, expected_attributes_to_skip = [])
-    expected_attributes.sort!
+    expected_attributes = expected_attributes.sort
 
     keys = model_rendered.keys.sort!
     expect(keys).to eq(expected_attributes)
@@ -43,6 +69,16 @@ module SpecHelpers
                              num_threads num_unread_threads)
     spec_validate_attributes(expected_attributes, gmail_label, gmail_label_rendered)
   end
+  
+  def validate_ip_info(ip_info, ip_info_rendered)
+    expected_attributes = %w(ip
+                             country_code country_name
+                             region_code region_name
+                             city zipcode
+                             latitude longitude
+                             metro_code area_code)
+    spec_validate_attributes(expected_attributes, ip_info, ip_info_rendered)
+  end
 
   def verify_models_expected(models_expected, models_rendered, key)
     expect(models_rendered.length).to eq(models_expected.length)
@@ -69,6 +105,20 @@ module SpecHelpers
       expect(model_keys_rendered.include?(model_unexpected.send(key))).to eq(false)
     end
   end
+  
+  def verify_email(email, email_expected)
+    email_expected.each { |k, v| expect(email.send(k)).to eq(v) }
+  end
+  
+  def verify_emails_in_gmail_label(gmail_account, label_id, emails_expected)
+    label = gmail_account.gmail_labels.find_by_label_id(label_id)
+    emails = label.emails.order(:date)
+    expect(emails.count).to eq(emails_expected.length)
+
+    emails.zip(emails_expected).each do |email, email_expected|
+      verify_email(email, email_expected)
+    end
+  end
 
   def capybara_signin_user(user)
     visit '/signin'
@@ -78,5 +128,26 @@ module SpecHelpers
     click_button('Login')
 
     expect(page).to have_link('Signout')
+  end
+  
+  def capybara_link_gmail(user,
+                          gmail_email = SpecMisc::GMAIL_TEST_EMAIL,
+                          gmail_passowrd = SpecMisc::GMAIL_TEST_PASSWORD)
+    visit '/'
+    click_link 'Link Gmail Account'
+
+    if !has_field?('Email')
+      sleep(2)
+      click_button('Accept')
+      expect(page).to have_content(I18n.t('gmail.authenticated'))  
+    else
+      fill_in('Email', :with => gmail_email)
+      fill_in('Password', :with => gmail_passowrd)
+      click_button('Sign in')
+      
+      sleep(2)
+      click_button('Accept')
+      expect(page).to have_content(I18n.t('gmail.authenticated'))
+    end
   end
 end

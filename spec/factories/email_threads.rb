@@ -2,7 +2,7 @@
 
 FactoryGirl.define do
   factory :email_thread do
-    user
+    association :email_account, :factory => :gmail_account
     sequence(:uid) { |n| "#{n}" }
   end
 end

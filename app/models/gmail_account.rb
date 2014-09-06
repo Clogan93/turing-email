@@ -10,11 +10,11 @@ class GmailAccount < ActiveRecord::Base
           :as => :google_api,
           :dependent => :destroy
 
-  has_many :emails,
+  has_many :email_threads,
            :as => :email_account,
            :dependent => :destroy
 
-  has_many :email_references,
+  has_many :emails,
            :as => :email_account,
            :dependent => :destroy
 
@@ -61,7 +61,6 @@ class GmailAccount < ActiveRecord::Base
   def init_email_from_gmail_data(email, gmail_data)
     GmailAccount.init_email_from_gmail_data(email, gmail_data)
 
-    email.user = self.user
     email.email_account = self
   end
 
@@ -89,8 +88,8 @@ class GmailAccount < ActiveRecord::Base
 
   def refresh_user_info(api_client = nil, do_save = true)
     api_client = self.google_o_auth2_token.api_client() if api_client.nil?
-    oauth2_client = Google::OAuth2Client.new(api_client)
-    userinfo_data = oauth2_client.userinfo_get()
+    o_auth2_client = Google::OAuth2Client.new(api_client)
+    userinfo_data = o_auth2_client.userinfo_get()
 
     self.google_id = userinfo_data['id']
     self.email = userinfo_data['email'].downcase
@@ -303,9 +302,10 @@ class GmailAccount < ActiveRecord::Base
     begin
       gmail_thread_id = gmail_data['threadId']
 
-      email_thread = EmailThread.find_or_create_by!(:user => self.user,
+      email_thread = EmailThread.find_or_create_by!(:email_account => self,
                                                     :uid => gmail_thread_id)
       email_thread.with_lock do
+        email_thread.email_account = self
         email.email_thread = email_thread
         email.save!
 
@@ -317,7 +317,7 @@ class GmailAccount < ActiveRecord::Base
 
       self.sync_email_labels(email, gmail_data['labelIds'])
     rescue ActiveRecord::RecordNotUnique => unique_violation
-      raise unique_violation if unique_violation.message !~ /index_emails_on_user_id_and_email_account_id_and_message_id/
+      raise unique_violation if unique_violation.message !~ /index_emails_on_email_account_type_and_email_account_id_and_uid/
 
       email = Email.find_by_uid(gmail_data['id'])
       raise 'AHHHHHHHHHH unique_violation but NO email?!' if email.nil?

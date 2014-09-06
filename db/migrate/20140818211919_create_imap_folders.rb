@@ -8,7 +8,9 @@ class CreateImapFolders < ActiveRecord::Migration
       t.timestamps
     end
 
-    add_index :imap_folders, [:email_account_id, :name], unique: true
-    add_index :imap_folders, :email_account_id
+    add_index :imap_folders, [:email_account_id, :email_account_type, :name],
+                             :unique => true, :name =>  'index_imap_folders_on_email_account_and_name'
+    add_index :imap_folders, [:email_account_id, :email_account_type],
+                             :name =>  'index_imap_folders_on_email_account'
   end
 end

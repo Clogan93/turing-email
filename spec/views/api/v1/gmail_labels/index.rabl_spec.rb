@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe 'api/v1/gmail_labels/index', :type => :view do
   it 'should render the Gmail labels' do
-    gmail_labels = assign(:gmail_labels, FactoryGirl.create_list(:gmail_label, 25))
+    gmail_labels = assign(:gmail_labels, FactoryGirl.create_list(:gmail_label, SpecMisc::LARGE_LIST_SIZE))
 
     render
 

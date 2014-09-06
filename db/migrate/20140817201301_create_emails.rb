@@ -1,9 +1,10 @@
 class CreateEmails < ActiveRecord::Migration
   def change
     create_table :emails do |t|
-      t.belongs_to :user
       t.belongs_to :email_account, polymorphic: true
       t.belongs_to :email_thread
+      
+      t.belongs_to :ip_info
 
       t.boolean :auto_filed, :default => false
       t.boolean :auto_filed_reported, :default => false
@@ -34,8 +35,8 @@ class CreateEmails < ActiveRecord::Migration
       t.timestamps
     end
 
-    add_index :emails, [:user_id, :email_account_id, :message_id], unique: true
-    add_index :emails, [:user_id, :email_account_id, :uid], unique: true
+    add_index :emails, [:email_account_type, :email_account_id, :uid], :unique => true
+    add_index :emails, [:email_account_type, :email_account_id]
     add_index :emails, :uid
     add_index :emails, :message_id
     add_index :emails, :email_thread_id

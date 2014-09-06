@@ -1,4 +1,4 @@
-desc "Sync all email accounts"
+desc 'Sync all email accounts'
 
 task :sync_email => :environment do
   GmailAccount.all.each do |gmail_account|
@@ -8,7 +8,7 @@ task :sync_email => :environment do
   end
 end
 
-desc "Sync all email accounts - inbox and sent folders only"
+desc 'Sync all email accounts - inbox and sent folders only'
 
 task :sync_email_inbox_and_sent => :environment do
   GmailAccount.all.each do |gmail_account|
@@ -18,7 +18,7 @@ task :sync_email_inbox_and_sent => :environment do
   end
 end
 
-desc "Sync all email accounts - inbox folder only"
+desc 'Sync all email accounts - inbox folder only'
 
 task :sync_email_inbox => :environment do
   GmailAccount.all.each do |gmail_account|
@@ -28,7 +28,7 @@ task :sync_email_inbox => :environment do
   end
 end
 
-desc "Sync all email accounts - sent folder only"
+desc 'Sync all email accounts - sent folder only'
 
 task :sync_email_sent => :environment do
   GmailAccount.all.each do |gmail_account|
@@ -38,7 +38,7 @@ task :sync_email_sent => :environment do
   end
 end
 
-desc "Sync all email accounts - labels only"
+desc 'Sync all email accounts - labels only'
 
 task :sync_labels => :environment do
   GmailAccount.all.each do |gmail_account|
@@ -48,7 +48,7 @@ task :sync_labels => :environment do
   end
 end
 
-desc "Run the genie on all email accounts"
+desc 'Run the genie on all email accounts'
 
 task :email_genie => :environment do
   GmailAccount.all.each do |gmail_account|
@@ -58,7 +58,7 @@ task :email_genie => :environment do
   end
 end
 
-desc "Run genie reports for all accounts"
+desc 'Run genie reports for all accounts'
 
 task :email_genie_reports => :environment do
   User.all.each do |user|

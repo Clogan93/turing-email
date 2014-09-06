@@ -11,7 +11,7 @@ FactoryGirl.define do
     user
 
     sequence(:google_id) { |n| "#{n}" }
-    email { user.email }
+    sequence(:email) { |n| "email#{n}@gmail.com" }
     verified_email true
 
     last_history_id_synced nil

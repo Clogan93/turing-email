@@ -1,14 +1,14 @@
 class User < ActiveRecord::Base
   has_secure_password
   
-  has_many :user_auth_key,
+  has_many :user_auth_keys,
            :dependent => :destroy
 
   has_many :gmail_accounts,
            :dependent => :destroy
 
   has_many :emails,
-           :dependent => :destroy
+           :through => :gmail_accounts
 
   validates :email,
             :format     => { with: $config.email_validation_regex },

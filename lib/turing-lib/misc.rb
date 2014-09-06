@@ -38,6 +38,16 @@ def open_force_file(url)
   return file
 end
 
+def parse_email_headers(raw_headers)
+  unfolded_headers = raw_headers.gsub(/#{Mail::Patterns::CRLF}#{Mail::Patterns::WSP}+/, ' ').gsub(/#{Mail::Patterns::WSP}+/, ' ')
+  split_headers = unfolded_headers.split(Mail::Patterns::CRLF)
+  
+  headers = []
+  split_headers.each { |header| headers << Mail::Field.new(header, nil, nil) }
+  
+  return headers
+end
+
 def cleanse_email(email)
   return nil if email.nil?
   return email.strip.downcase

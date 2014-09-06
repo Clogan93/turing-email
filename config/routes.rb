@@ -8,8 +8,8 @@ Rails.application.routes.draw do
   resources :users, only: [:new, :create]
   match('/reset_password', to: 'users#reset_password', via: ['get', 'post'], as: :reset_password)
 
-  match '/gmail_oauth2_callback', to: 'gmail_accounts#oauth2_callback', via: 'get'
-  match '/gmail_oauth2_remove', to: 'gmail_accounts#oauth2_remove', via: 'delete', as: :gmail_oauth2_remove
+  match '/gmail_oauth2_callback', to: 'gmail_accounts#o_auth2_callback', via: 'get'
+  match '/gmail_o_auth2_remove', to: 'gmail_accounts#o_auth2_remove', via: 'delete'
 
   match '/signup',  to: 'users#new',        via: 'get'
   match '/signin',  to: 'sessions#new',     via: 'get'
@@ -20,7 +20,9 @@ Rails.application.routes.draw do
       resources :users, only: [:create]
       match '/users/current', to: 'users#current', via: 'get'
 
-      resources :emails, only: [:show]
+      get '/emails/:email_account_type/:email_account_id/:email_id', to: 'emails#show'
+      get '/emails/ip_stats', to: 'emails#ip_stats'
+      
       resources :email_folders, only: [:index]
       match '/email_threads/inbox', to: 'email_threads#inbox', via: 'get'
       match '/email_threads/in_folder', to: 'email_threads#in_folder', via: 'get'

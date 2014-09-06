@@ -3,7 +3,7 @@ class Api::V1::EmailThreadsController < ApiController
     signed_in_user(true)
   end
 
-  before_action :correct_user, except: [:inbox]
+  before_action :correct_user, :except => [:inbox]
 
   swagger_controller :email_threads, 'Email Threads Controller'
 

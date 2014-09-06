@@ -12,5 +12,8 @@ class CreateGoogleOAuth2Tokens < ActiveRecord::Migration
 
       t.timestamps
     end
+
+    add_index :google_o_auth2_tokens, [:google_api_id, :google_api_type],
+                                      name: 'index_google_o_auth2_tokens_on_google_api'
   end
 end

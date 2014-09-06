@@ -10,54 +10,23 @@ describe Api::V1::EmailThreadsController, :type => :request do
   let!(:test_folder) { FactoryGirl.create(:gmail_label, :gmail_account => email_account) }
   let!(:test_folder_other) { FactoryGirl.create(:gmail_label, :gmail_account => email_account_other) }
 
-  let!(:email_threads_inbox) { FactoryGirl.create_list(:email_thread, 5, :user => email_account.user) }
-  let!(:email_threads_inbox_other) { FactoryGirl.create_list(:email_thread, 5, :user => email_account_other.user) }
+  let!(:email_threads_inbox) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => email_account) }
+  let!(:email_threads_inbox_other) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => email_account_other) }
 
-  let!(:email_threads_test) { FactoryGirl.create_list(:email_thread, 5, :user => email_account.user) }
-  let!(:email_threads_test_other) { FactoryGirl.create_list(:email_thread, 5, :user => email_account_other.user) }
+  let!(:email_threads_test) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => email_account) }
+  let!(:email_threads_test_other) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => email_account_other) }
 
-  let!(:email_threads_misc) { FactoryGirl.create_list(:email_thread, 5, :user => email_account.user) }
-  let!(:email_threads_misc_other) { FactoryGirl.create_list(:email_thread, 5, :user => email_account_other.user) }
-
-  def create_emails(email_account, email_threads, email_threads_test, email_threads_misc, inbox, test_folder)
-    email_threads.each do |email_thread|
-      inbox_emails = FactoryGirl.create_list(:email, 5, :user => email_account.user,
-                                             :email_account => email_account,
-                                             :email_thread => email_thread)
-
-      inbox_emails.each do |inbox_email|
-        FactoryGirl.create(:email_folder_mapping, :email => inbox_email, :email_folder => inbox)
-      end
-    end
-
-    email_threads_test.each do |email_thread_test|
-      test_emails = FactoryGirl.create_list(:email, 5, :user => email_account.user,
-                                            :email_account => email_account,
-                                            :email_thread => email_thread_test)
-
-      test_emails.each do |test_email|
-        FactoryGirl.create(:email_folder_mapping, :email => test_email, :email_folder => test_folder)
-      end
-    end
-
-    email_threads_misc.each do |email_thread_misc|
-      misc_emails = FactoryGirl.create_list(:email, 5, :user => email_account.user,
-                                            :email_account => email_account,
-                                            :email_thread => email_thread_misc)
-
-      misc_emails.each do |misc_email|
-        FactoryGirl.create(:email_folder_mapping, :email => misc_email)
-      end
-    end
-  end
+  let!(:email_threads_misc) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => email_account) }
+  let!(:email_threads_misc_other) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => email_account_other) }
 
   before(:each) do
-    create_emails(email_account,
-                  email_threads_inbox, email_threads_test, email_threads_misc,
-                  inbox, test_folder)
-    create_emails(email_account_other,
-                  email_threads_inbox_other, email_threads_test_other, email_threads_misc_other,
-                  inbox_other, test_folder_other)
+    create_email_thread_emails(email_account, email_threads_inbox, inbox)
+    create_email_thread_emails(email_account, email_threads_test, test_folder)
+    create_email_thread_emails(email_account, email_threads_misc)
+
+    create_email_thread_emails(email_account_other, email_threads_inbox_other, inbox_other)
+    create_email_thread_emails(email_account_other, email_threads_test_other, test_folder_other)
+    create_email_thread_emails(email_account_other, email_threads_misc_other)
   end
 
   context 'when the user is NOT signed in' do
