@@ -16,8 +16,20 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
   render: ->
     $("#email-folder-mail-header").hide()
     @$el.html(@template(@model.toJSON()))
+
+    @render_genie_report()
+
     @bindEmailClick()
-    return this
+    return 
+
+  render_genie_report: ->
+    for email, index in @model.get("emails")
+      if email.subject is "Turing Email - Your daily Genie Report!"
+        @$el.find("#email_iframe" + index.toString()).contents().find("body").append(email.html_part);
+        body_height = @$el.find("#email_iframe" + index.toString()).contents().find("body").css("height")
+        body_height_adjusted = parseInt(body_height.replace("px","")) + 25
+        body_height_adjusted_string = body_height_adjusted.toString() + "px"
+        @$el.find("#email_iframe" + index.toString()).css("height", body_height_adjusted_string)
 
   bindEmailClick: ->
     @$el.find(".email").click ->
