@@ -21,6 +21,7 @@ Rails.application.routes.draw do
 
       get '/emails/:email_account_type/:email_account_id/:email_id', to: 'emails#show'
       get '/emails/ip_stats', to: 'emails#ip_stats'
+      get '/emails/volume_report', to: 'emails#volume_report'
       
       resources :email_folders, only: [:index]
       match '/email_threads/inbox', to: 'email_threads#inbox', via: 'get'

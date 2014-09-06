@@ -3,7 +3,7 @@ class Api::V1::EmailsController < ApiController
     signed_in_user(true)
   end
 
-  before_action :correct_user, :except => [:ip_stats]
+  before_action :correct_user, :except => [:ip_stats, :volume_report]
 
   swagger_controller :emails, 'Emails Controller'
 
@@ -39,6 +39,37 @@ class Api::V1::EmailsController < ApiController
       @email_ip_stats.push({ :num_emails => num_emails,
                              :ip_info =>ip_info })
     end
+  end
+
+  swagger_api :volume_report do
+    summary 'Return email volume report stats.'
+
+    response :ok
+  end
+  
+  def volume_report
+    sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
+    
+    received_emails = current_user.emails.where('"emails"."id" NOT IN (?)', sent_label.emails.pluck(:id))
+    sent_emails = current_user.emails.where('"emails"."id" IN (?)', sent_label.emails.pluck(:id))
+
+    volume_report_stats = {
+      :received_emails_per_month =>
+          received_emails.group("DATE_TRUNC('month', date)").order('date_trunc_month_date DESC').limit(6).count,
+      :received_emails_per_week =>
+          received_emails.group("DATE_TRUNC('week', date)").order('date_trunc_week_date DESC').limit(4).count,
+      :received_emails_per_day =>
+        received_emails.group("DATE_TRUNC('day', date)").order('date_trunc_day_date DESC').limit(30).count,
+
+      :sent_emails_per_month =>
+          sent_emails.group("DATE_TRUNC('month', date)").order('date_trunc_month_date DESC').limit(6).count,
+      :sent_emails_per_week =>
+        sent_emails.group("DATE_TRUNC('week', date)").order('date_trunc_week_date DESC').limit(4).count,
+      :sent_emails_per_day =>
+        sent_emails.group("DATE_TRUNC('day', date)").order('date_trunc_day_date DESC').limit(30).count
+    }
+    
+    render :json => volume_report_stats
   end
 
   private
