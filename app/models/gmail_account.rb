@@ -317,7 +317,7 @@ class GmailAccount < ActiveRecord::Base
 
       self.sync_email_labels(email, gmail_data['labelIds'])
     rescue ActiveRecord::RecordNotUnique => unique_violation
-      raise unique_violation if unique_violation.message !~ /index_emails_on_user_id_and_email_account_id_and_message_id/
+      raise unique_violation if unique_violation.message !~ /index_emails_on_email_account_type_and_email_account_id_and_uid/
 
       email = Email.find_by_uid(gmail_data['id'])
       raise 'AHHHHHHHHHH unique_violation but NO email?!' if email.nil?

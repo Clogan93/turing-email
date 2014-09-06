@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140822053119) do
+ActiveRecord::Schema.define(version: 20140905063050) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -66,6 +66,7 @@ ActiveRecord::Schema.define(version: 20140822053119) do
     t.integer  "email_account_id"
     t.string   "email_account_type"
     t.integer  "email_thread_id"
+    t.integer  "ip_info_id"
     t.boolean  "auto_filed",              default: false
     t.boolean  "auto_filed_reported",     default: false
     t.integer  "auto_filed_folder_id"
@@ -153,6 +154,24 @@ ActiveRecord::Schema.define(version: 20140822053119) do
 
   add_index "imap_folders", ["email_account_id", "email_account_type", "name"], name: "index_imap_folders_on_email_account_and_name", unique: true, using: :btree
   add_index "imap_folders", ["email_account_id", "email_account_type"], name: "index_imap_folders_on_email_account", using: :btree
+
+  create_table "ip_infos", force: true do |t|
+    t.inet     "ip"
+    t.text     "country_code"
+    t.text     "country_name"
+    t.text     "region_code"
+    t.text     "region_name"
+    t.text     "city"
+    t.text     "zipcode"
+    t.text     "latitude"
+    t.text     "longitude"
+    t.text     "metro_code"
+    t.text     "area_code"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "ip_infos", ["ip"], name: "index_ip_infos_on_ip", unique: true, using: :btree
 
   create_table "user_auth_keys", force: true do |t|
     t.integer  "user_id"

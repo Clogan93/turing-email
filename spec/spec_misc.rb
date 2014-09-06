@@ -26,7 +26,7 @@ module SpecMisc
   end
 
   def spec_validate_attributes(expected_attributes, model, model_rendered, expected_attributes_to_skip = [])
-    expected_attributes.sort!
+    expected_attributes = expected_attributes.sort
 
     keys = model_rendered.keys.sort!
     expect(keys).to eq(expected_attributes)
@@ -68,6 +68,16 @@ module SpecMisc
                              label_type
                              num_threads num_unread_threads)
     spec_validate_attributes(expected_attributes, gmail_label, gmail_label_rendered)
+  end
+  
+  def validate_ip_info(ip_info, ip_info_rendered)
+    expected_attributes = %w(ip
+                             country_code country_name
+                             region_code region_name
+                             city zipcode
+                             latitude longitude
+                             metro_code area_code)
+    spec_validate_attributes(expected_attributes, ip_info, ip_info_rendered)
   end
 
   def verify_models_expected(models_expected, models_rendered, key)

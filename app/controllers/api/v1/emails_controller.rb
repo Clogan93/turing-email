@@ -3,7 +3,7 @@ class Api::V1::EmailsController < ApiController
     signed_in_user(true)
   end
 
-  before_action :correct_user
+  before_action :correct_user, :except => [:ip_stats]
 
   swagger_controller :emails, 'Emails Controller'
 
@@ -19,6 +19,26 @@ class Api::V1::EmailsController < ApiController
   end
 
   def show
+  end
+
+  swagger_api :ip_stats do
+    summary 'Return email sender IP stats.'
+
+    response :ok
+  end
+
+  def ip_stats
+    email_ip_info_counts = current_user.emails.group(:ip_info_id).count
+    ip_infos = IpInfo.where(:id => email_ip_info_counts.keys)
+    
+    @email_ip_stats = []
+    
+    ip_infos.each do |ip_info|
+      num_emails = email_ip_info_counts[ip_info.id]
+      
+      @email_ip_stats.push({ :num_emails => num_emails,
+                             :ip_info =>ip_info })
+    end
   end
 
   private

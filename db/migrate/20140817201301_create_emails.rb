@@ -3,6 +3,8 @@ class CreateEmails < ActiveRecord::Migration
     create_table :emails do |t|
       t.belongs_to :email_account, polymorphic: true
       t.belongs_to :email_thread
+      
+      t.belongs_to :ip_info
 
       t.boolean :auto_filed, :default => false
       t.boolean :auto_filed_reported, :default => false

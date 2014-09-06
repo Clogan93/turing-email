@@ -1,6 +1,8 @@
 class Email < ActiveRecord::Base
   belongs_to :email_account, polymorphic: true
   belongs_to :email_thread
+  
+  belongs_to :ip_info
 
   belongs_to :auto_filed_folder, polymorphic: true
 
@@ -36,6 +38,9 @@ class Email < ActiveRecord::Base
 
   def Email.email_from_email_raw(email_raw)
     email = Email.new
+    
+    ip = Email.get_sender_ip(email_raw)
+    email.ip_info = IpInfo.from_ip(ip) if ip
 
     email.message_id = email_raw.message_id
     email.list_id = email_raw.header['List-ID'].decoded.force_utf8(true) if email_raw.header['List-ID']
@@ -63,6 +68,38 @@ class Email < ActiveRecord::Base
     email.has_calendar_attachment = Email.part_has_calendar_attachment(email_raw)
 
     return email
+  end
+
+  def Email.get_sender_ip(email_raw)
+    headers = parse_email_headers(email_raw.header.raw_source)
+    headers.reverse!
+    
+    headers.each do |header|
+      if header.name.downcase == 'x-originating-ip'
+        m = header.value.match(/\[(#{$config.ip_regex})\]/)
+        
+        if m
+          log_console("FOUND IP #{m[1]} IN X-Originating-IP=#{header.value}")
+          return m[1]
+        end
+      elsif header.name.downcase == 'received'
+        m = header.value.match(/from.*\[(#{$config.ip_regex})\]/)
+        
+        if m
+          log_console("FOUND IP #{m[1]} IN RECEIVED=#{header.value}")
+          return m[1]
+        end
+      elsif header.name.downcase == 'received-spf'
+        m = header.value.match(/client-ip=(#{$config.ip_regex})/)
+
+        if m
+          log_console("FOUND IP #{m[1]} IN RECEIVED-SPF=#{header.value}")
+          return m[1]
+        end
+      end
+    end
+    
+    return nil
   end
 
   def Email.parse_address_header(address_header, address_string = nil)

@@ -44,6 +44,7 @@ $config.email_domain = 'turinginc.com'
 
 #$config.password_validation_regex = /\A(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}\z/
 $config.email_validation_regex = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
+$config.ip_regex = /\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+/
 
 $config.support_email = "support@#{$config.email_domain}"
 $config.logs_email = "logs@#{$config.email_domain}"
