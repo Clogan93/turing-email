@@ -35,12 +35,16 @@ class EmailGenie
       sent_emails_email_ids = sent_emails_ids_transposed[0]
       sent_emails_message_ids = sent_emails_ids_transposed[1]
 
-      replied_to_message_ids = EmailInReplyTo.where(:email => user.emails,
-                                                    :in_reply_to_message_id => sent_emails_message_ids).
-          pluck(:in_reply_to_message_id)
-      not_replied_to_message_ids = sent_emails_message_ids - replied_to_message_ids
+      if sent_emails_message_ids.nil?
+        sent_emails_not_replied_to = []
+      else
+        replied_to_message_ids = EmailInReplyTo.where(:email => user.emails,
+                                                      :in_reply_to_message_id => sent_emails_message_ids).
+            pluck(:in_reply_to_message_id)
+        not_replied_to_message_ids = sent_emails_message_ids - replied_to_message_ids
 
-      sent_emails_not_replied_to = user.emails.where(:message_id => not_replied_to_message_ids)
+        sent_emails_not_replied_to = user.emails.where(:message_id => not_replied_to_message_ids)
+      end
     else
       sent_emails_not_replied_to = []
     end

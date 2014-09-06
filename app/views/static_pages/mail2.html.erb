@@ -68,9 +68,6 @@
         <div class="col-lg-9 animated fadeInRight">
             <div class="mail-box-header" id="email-folder-mail-header">
             </div>
-            <div id="pages" class="row pull-right">
-              <%= will_paginate(@email_threads, :params => params) if @email_threads.count > 0 %>
-            </div>
           <div class="mail-box">
             <div id="reports"></div>
             <table class="table table-hover table-mail">
