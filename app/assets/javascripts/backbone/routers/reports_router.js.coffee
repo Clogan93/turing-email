@@ -49,28 +49,6 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
       ]
     }
 
-  loadTopSendersAndRecipientsReportSampleData: (topSendersAndRecipientsReport) ->
-    topSendersAndRecipientsReport.set "incomingEmailData", { 
-      people : [
-        ['David Gobaud', 3],
-        ['Joe Blogs', 1],
-        ['John Smith', 1],
-        ['Marissa Mayer', 1],
-        ['Elon Musk', 2]
-      ],
-      title : "Incoming Email Volume Chart"
-    }
-    topSendersAndRecipientsReport.set "outgoingEmailData", {
-      people : [
-        ['Edmund Curtis', 10],
-        ['Stuart Cohen', 4],
-        ['Nancy Rios', 3],
-        ['Pamela White', 1],
-        ['Joanne Park', 2]
-      ],
-      title : "Outgoing Email Volume Chart"
-    }
-
   loadSummaryAnalyticsReportSampleData: (summaryAnalyticsReport) ->
     summaryAnalyticsReport.set "number_of_conversations", 824
     summaryAnalyticsReport.set "number_of_emails_received", 1039
@@ -264,12 +242,32 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
 
   showTopSendersAndRecipientsReport: ->
     topSendersAndRecipientsReport = new TuringEmailApp.Models.TopSendersAndRecipientsReport()
-    @.loadTopSendersAndRecipientsReportSampleData topSendersAndRecipientsReport
-    topSendersAndRecipientsReportView = new TuringEmailApp.Views.Reports.TopSendersAndRecipientsReportView(
-      model: topSendersAndRecipientsReport
-      el: $("#reports")
+    topSendersAndRecipientsReport.fetch(
+      success: (model, response, options) =>
+        incomingEmailData = { 
+          people : [],
+          title : "Incoming Email Volume Chart"
+        }
+        for recipientAddress, count of model.get("top_recipients")
+          incomingEmailData.people.push([recipientAddress, count])
+        console.log incomingEmailData
+        model.set "incomingEmailData", incomingEmailData
+
+        outgoingEmailData = { 
+          people : [],
+          title : "Outgoing Email Volume Chart"
+        }
+        for senderAddress, count of model.get("top_senders")
+          outgoingEmailData.people.push([senderAddress, count])
+        console.log outgoingEmailData
+        model.set "outgoingEmailData", outgoingEmailData
+
+        topSendersAndRecipientsReportView = new TuringEmailApp.Views.Reports.TopSendersAndRecipientsReportView(
+          model: topSendersAndRecipientsReport
+          el: $("#reports")
+        )
+        topSendersAndRecipientsReportView.render()
     )
-    topSendersAndRecipientsReportView.render()
 
   showWordCountReport: ->
     wordCountReport = new TuringEmailApp.Models.WordCountReport()
