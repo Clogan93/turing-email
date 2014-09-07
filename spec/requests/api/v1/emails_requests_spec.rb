@@ -114,6 +114,8 @@ describe Api::V1::EmailsController, :type => :request do
 
     it 'should return top contact stats' do
       get '/api/v1/emails/top_contacts'
+      
+      puts response.body
     end
   end
 end

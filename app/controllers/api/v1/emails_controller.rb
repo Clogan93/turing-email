@@ -49,7 +49,7 @@ class Api::V1::EmailsController < ApiController
   
   def volume_report
     sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
-    sent_emails_ids = sent_label.emails.pluck(:id)
+    sent_emails_ids = sent_label ? sent_label.emails.pluck(:id) : []
     
     volume_report_stats = {
       :received_emails_per_month =>
@@ -89,7 +89,7 @@ class Api::V1::EmailsController < ApiController
   
   def top_contacts
     sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
-    sent_emails_ids = sent_label.emails.pluck(:id)
+    sent_emails_ids = sent_label ? sent_label.emails.pluck(:id) : []
 
     top_contacts_stats = {
         :top_senders => current_user.emails.where('"emails"."id" NOT IN (?)', sent_emails_ids).
