@@ -104,26 +104,6 @@ class Email < ActiveRecord::Base
     return nil
   end
 
-  def Email.parse_address_header(address_header, address_string = nil)
-    name = address = nil
-
-    if address_header
-      log_exception(true) { name = address_header.tree.addresses[0].name }
-      log_exception(true) { address = address_header.tree.addresses[0].address }
-    end
-
-    if name.nil? ||address.nil?
-      if address_string =~ /.* <.*>/
-        name = address_string.match(/(.*) <.*>/)[0] if name.nil?
-        address = address_string.match(/(.*) <.*>/)[1] if address.nil?
-      else
-        address = address_string if address.nil?
-      end
-    end
-
-    return name, address
-  end
-
   def Email.part_has_calendar_attachment(part)
     return true if part.content_type =~ /text\/calendar/i
 
