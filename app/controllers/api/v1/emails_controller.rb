@@ -101,6 +101,12 @@ class Api::V1::EmailsController < ApiController
 
     render :json => top_contacts_stats
   end
+
+  swagger_api :attachments_report do
+    summary 'Return attachments report stats.'
+
+    response :ok
+  end
   
   def attachments_report
     content_type_counts = EmailAttachment.where(:email => current_user.emails).group(:content_type).
