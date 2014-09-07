@@ -115,6 +115,30 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
     )
     attachmentsReportView.render()
 
+  prepareDailyEmailVolumeDataOutput: (model) ->
+    received_emails_per_day = model.get("received_emails_per_day")
+    sent_emails_per_day = model.get("sent_emails_per_day")
+    data_output = []
+    data_output.push(['Day', 'Received', 'Sent'])
+    current_day = new Date()
+    start = new Date()
+    start.setDate(start.getDate() - 30);
+    while start < current_day
+      date_string = start.getMonth() + "/" + start.getDay() + "/" + start.getFullYear()
+      console.log date_string
+      newDate = start.setDate(start.getDate() + 1);
+      start = new Date(newDate);
+
+      received_on_this_day = 0
+      if date_string of received_emails_per_day
+        received_on_this_day = received_emails_per_day[date_string]
+      sent_on_this_day = 0
+      if date_string of sent_emails_per_day
+        sent_on_this_day = sent_emails_per_day[date_string]
+
+      data_output.push([date_string, received_on_this_day, sent_on_this_day])
+    return data_output
+
   showEmailVolumeReport: ->
     emailVolumeReport = new TuringEmailApp.Models.EmailVolumeReport()
     @.loadEmailVolumeReportSampleData emailVolumeReport
@@ -122,18 +146,10 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
       success: (model, response, options) ->
         #Prepare daily email volume data.
 
-        current_day = new Date()
-        d = current_day
-        for num_days in [0...30]
-          d.setDate(d.getDate()-num_days)
-          utc_string = d.toUTCString()
-          d.setHours(0)
-          console.log utc_string.replace "GMT", "-0000"
+        data_output = @prepareDailyEmailVolumeDataOutput()
 
         console.log "Hello"
-        console.log model.get("received_emails_per_day")
-        console.log model.get("sent_emails_per_day")
-        console.log model
+        console.log data_output
         console.log "world!"
 
         dailyEmailVolumeData = { 
