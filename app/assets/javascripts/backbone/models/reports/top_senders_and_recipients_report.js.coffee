@@ -1,0 +1,1 @@
+class TuringEmailApp.Models.TopSendersAndRecipientsReport extends Backbone.Model

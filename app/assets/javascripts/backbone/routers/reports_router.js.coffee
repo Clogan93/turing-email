@@ -3,10 +3,11 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
     "attachments_report": "showAttachmentsReport"
     "email_volume_report": "showEmailVolumeReport"
     "geo_report": "showGeoReport"
-    "threads_report": "showThreadsReport"
     "inbox_efficiency_report": "showInboxEfficiencyReport"
-    "word_count_report": "showWordCountReport"
+    "threads_report": "showThreadsReport"
+    "top_senders_and_recipients_report": "showTopSendersAndRecipientsReport"
     "summary_analytics_report": "showSummaryAnalyticsReport"
+    "word_count_report": "showWordCountReport"
 
   loadAttachmentsReportSampleData: (attachmentsReport) ->
     attachmentsReport.set "data", { 
@@ -20,7 +21,36 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
     }
 
   loadEmailVolumeReportSampleData: (emailVolumeReport) ->
-    emailVolumeReport.set "incomingEmailData", { 
+    emailVolumeReport.set "dailyEmailVolumeData", { 
+      data : [
+        ['Day', 'Received', 'Sent'],
+        ['2013',  1000,      400],
+        ['2014',  1170,      460],
+        ['2015',  660,       1120],
+        ['2016',  1030,      540]
+      ]
+    }
+    emailVolumeReport.set "weeklyEmailVolumeData", {
+      data : [
+        ['Week', 'Received', 'Sent'],
+        ['2013',  1000,      400],
+        ['2014',  1170,      460],
+        ['2015',  660,       1120],
+        ['2016',  1030,      540]
+      ]
+    }
+    emailVolumeReport.set "monthlyEmailVolumeData", {
+      data : [
+        ['Month', 'Received', 'Sent'],
+        ['2013',  1000,      400],
+        ['2014',  1170,      460],
+        ['2015',  660,       1120],
+        ['2016',  1030,      540]
+      ]
+    }
+
+  loadTopSendersAndRecipientsReportSampleData: (topSendersAndRecipientsReport) ->
+    topSendersAndRecipientsReport.set "incomingEmailData", { 
       people : [
         ['David Gobaud', 3],
         ['Joe Blogs', 1],
@@ -30,7 +60,7 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
       ],
       title : "Incoming Email Volume Chart"
     }
-    emailVolumeReport.set "outgoingEmailData", {
+    topSendersAndRecipientsReport.set "outgoingEmailData", {
       people : [
         ['Edmund Curtis', 10],
         ['Stuart Cohen', 4],
@@ -39,19 +69,6 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
         ['Joanne Park', 2]
       ],
       title : "Outgoing Email Volume Chart"
-    }
-
-  loadGeoReportSampleData: (geoReport) ->
-    geoReport.set "data", { 
-      geoData : [
-        ['Country', 'Popularity'],
-        ['Germany', 200],
-        ['United States', 300],
-        ['Brazil', 400],
-        ['Canada', 500],
-        ['France', 600],
-        ['RU', 700]
-      ]
     }
 
   loadSummaryAnalyticsReportSampleData: (summaryAnalyticsReport) ->
@@ -101,11 +118,60 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
   showEmailVolumeReport: ->
     emailVolumeReport = new TuringEmailApp.Models.EmailVolumeReport()
     @.loadEmailVolumeReportSampleData emailVolumeReport
-    emailVolumeReportView = new TuringEmailApp.Views.Reports.EmailVolumeReportView(
-      model: emailVolumeReport
-      el: $("#reports")
+    emailVolumeReport.fetch(
+      success: (model, response, options) ->
+        #Prepare daily email volume data.
+
+        current_day = new Date()
+        d = current_day
+        for num_days in [0...30]
+          d.setDate(d.getDate()-num_days)
+          console.log d
+
+
+        console.log "Hello"
+        console.log model.get("received_emails_per_day")
+        console.log model.get("sent_emails_per_day")
+        console.log model
+        console.log "world!"
+
+        dailyEmailVolumeData = { 
+          data : [
+            ['Day', 'Received', 'Sent'],
+            ['2013',  1000,      400],
+            ['2014',  1170,      460],
+            ['2015',  660,       1120],
+            ['2016',  1030,      540]
+          ]
+        }
+        weeklyEmailVolumeData = {
+          data : [
+            ['Week', 'Received', 'Sent'],
+            ['March 1st',  1000,      400],
+            ['March 8th',  1170,      460],
+            ['March 15th',  660,       1120],
+            ['March 22nd',  1030,      540]
+          ]
+        }
+        monthlyEmailVolumeData = {
+          data : [
+            ['Month', 'Received', 'Sent'],
+            ['January',  1000,      400],
+            ['February',  1170,      460],
+            ['March',  660,       1120],
+            ['Apri',  1030,      540]
+          ]
+        }
+        # for key, geoDataPoint of model.attributes
+        #   data.geoData.push([geoDataPoint["ip_info"]["city"], geoDataPoint["num_emails"]])
+        # model.set "data", data
+
+        emailVolumeReportView = new TuringEmailApp.Views.Reports.EmailVolumeReportView(
+          model: model
+          el: $("#reports")
+        )
+        emailVolumeReportView.render()
     )
-    emailVolumeReportView.render()
 
   showGeoReport: ->
     geoReport = new TuringEmailApp.Models.GeoReport()
@@ -118,7 +184,6 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
         }
         for key, geoDataPoint of model.attributes
           data.geoData.push([geoDataPoint["ip_info"]["city"], geoDataPoint["num_emails"]])
-        console.log data
         model.set "data", data
 
         geoReportView = new TuringEmailApp.Views.Reports.GeoReportView(
@@ -127,15 +192,6 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
         )
         geoReportView.render()
     )
-
-  showThreadsReport: ->
-    threadsReport = new TuringEmailApp.Models.ThreadsReport()
-    @.loadThreadsReportSampleData threadsReport
-    threadsReportView = new TuringEmailApp.Views.Reports.ThreadsReportView(
-      model: threadsReport
-      el: $("#reports")
-    )
-    threadsReportView.render()
 
   showInboxEfficiencyReport: ->
     inboxEfficiencyReport = new TuringEmailApp.Models.InboxEfficiencyReport()
@@ -146,15 +202,6 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
     )
     inboxEfficiencyReportView.render()
 
-  showWordCountReport: ->
-    wordCountReport = new TuringEmailApp.Models.WordCountReport()
-    @.loadWordCountReportSampleData wordCountReport
-    wordCountReportView = new TuringEmailApp.Views.Reports.WordCountReportView(
-      model: wordCountReport
-      el: $("#reports")
-    )
-    wordCountReportView.render()
-
   showSummaryAnalyticsReport: ->
     summaryAnalyticsReport = new TuringEmailApp.Models.SummaryAnalyticsReport()
     @.loadSummaryAnalyticsReportSampleData summaryAnalyticsReport
@@ -163,3 +210,30 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
       el: $("#reports")
     )
     summaryAnalyticsReportView.render()
+
+  showThreadsReport: ->
+    threadsReport = new TuringEmailApp.Models.ThreadsReport()
+    @.loadThreadsReportSampleData threadsReport
+    threadsReportView = new TuringEmailApp.Views.Reports.ThreadsReportView(
+      model: threadsReport
+      el: $("#reports")
+    )
+    threadsReportView.render()
+
+  showTopSendersAndRecipientsReport: ->
+    topSendersAndRecipientsReport = new TuringEmailApp.Models.TopSendersAndRecipientsReport()
+    @.loadTopSendersAndRecipientsReportSampleData topSendersAndRecipientsReport
+    topSendersAndRecipientsReportView = new TuringEmailApp.Views.Reports.TopSendersAndRecipientsReportView(
+      model: topSendersAndRecipientsReport
+      el: $("#reports")
+    )
+    topSendersAndRecipientsReportView.render()
+
+  showWordCountReport: ->
+    wordCountReport = new TuringEmailApp.Models.WordCountReport()
+    @.loadWordCountReportSampleData wordCountReport
+    wordCountReportView = new TuringEmailApp.Views.Reports.WordCountReportView(
+      model: wordCountReport
+      el: $("#reports")
+    )
+    wordCountReportView.render()
