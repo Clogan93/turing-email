@@ -1,11 +1,23 @@
 class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
   routes:
-    "email_volume_report": "showEmailVolumeReport"
     "attachments_report": "showAttachmentsReport"
+    "email_volume_report": "showEmailVolumeReport"
+    "geo_report": "showGeoReport"
     "threads_report": "showThreadsReport"
     "inbox_efficiency_report": "showInboxEfficiencyReport"
     "word_count_report": "showWordCountReport"
     "summary_analytics_report": "showSummaryAnalyticsReport"
+
+  loadAttachmentsReportSampleData: (attachmentsReport) ->
+    attachmentsReport.set "data", { 
+      attachmentData : [
+        ['Year', 'Sent', 'Received'],
+        ['docs',  10,      1],
+        ['pdfs',  15,      4],
+        ['images',  6,       11],
+        ['zip',  10,      5]
+      ]
+    }
 
   loadEmailVolumeReportSampleData: (emailVolumeReport) ->
     emailVolumeReport.set "incomingEmailData", { 
@@ -18,7 +30,7 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
       ],
       title : "Incoming Email Volume Chart"
     }
-    emailVolumeReport.set "outgoingEmailData", { 
+    emailVolumeReport.set "outgoingEmailData", {
       people : [
         ['Edmund Curtis', 10],
         ['Stuart Cohen', 4],
@@ -29,14 +41,16 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
       title : "Outgoing Email Volume Chart"
     }
 
-  loadAttachmentsReportSampleData: (attachmentsReport) ->
-    attachmentsReport.set "data", { 
-      attachmentData : [
-        ['Year', 'Sent', 'Received'],
-        ['docs',  10,      1],
-        ['pdfs',  15,      4],
-        ['images',  6,       11],
-        ['zip',  10,      5]
+  loadGeoReportSampleData: (geoReport) ->
+    geoReport.set "data", { 
+      geoData : [
+        ['Country', 'Popularity'],
+        ['Germany', 200],
+        ['United States', 300],
+        ['Brazil', 400],
+        ['Canada', 500],
+        ['France', 600],
+        ['RU', 700]
       ]
     }
 
@@ -75,6 +89,15 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
       ]
     }
 
+  showAttachmentsReport: ->
+    attachmentsReport = new TuringEmailApp.Models.AttachmentsReport()
+    @.loadAttachmentsReportSampleData attachmentsReport
+    attachmentsReportView = new TuringEmailApp.Views.Reports.AttachmentsReportView(
+      model: attachmentsReport
+      el: $("#reports")
+    )
+    attachmentsReportView.render()
+
   showEmailVolumeReport: ->
     emailVolumeReport = new TuringEmailApp.Models.EmailVolumeReport()
     @.loadEmailVolumeReportSampleData emailVolumeReport
@@ -84,14 +107,26 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
     )
     emailVolumeReportView.render()
 
-  showAttachmentsReport: ->
-    attachmentsReport = new TuringEmailApp.Models.AttachmentsReport()
-    @.loadAttachmentsReportSampleData attachmentsReport
-    attachmentsReportView = new TuringEmailApp.Views.Reports.AttachmentsReportView(
-      model: attachmentsReport
-      el: $("#reports")
+  showGeoReport: ->
+    geoReport = new TuringEmailApp.Models.GeoReport()
+    geoReport.fetch(
+      success: (model, response, options) ->
+        data = { 
+          geoData : [
+            ['City', 'Popularity']
+          ]
+        }
+        for key, geoDataPoint of model.attributes
+          data.geoData.push([geoDataPoint["ip_info"]["city"], geoDataPoint["num_emails"]])
+        console.log data
+        model.set "data", data
+
+        geoReportView = new TuringEmailApp.Views.Reports.GeoReportView(
+          model: model
+          el: $("#reports")
+        )
+        geoReportView.render()
     )
-    attachmentsReportView.render()
 
   showThreadsReport: ->
     threadsReport = new TuringEmailApp.Models.ThreadsReport()

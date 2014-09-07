@@ -13,7 +13,8 @@ class TuringEmailApp.Views.Reports.ThreadsReportView extends Backbone.View
   #TODO: consolidate into a single function for views.
   #TODO: re-factor mail.html.erb so that this is not longer necessary.
   restyle_other_elements: ->
-    $("#inbox-page-header").hide()
+    $(".mail-box-header").hide()
+    $("table.table-mail").hide()
     $("#pages").hide()
     $("#email_table").hide()
     $("#preview_pane").hide()

@@ -1,7 +1,7 @@
 TuringEmailApp.Views.Reports ||= {}
 
-class TuringEmailApp.Views.Reports.EmailVolumeReportView extends Backbone.View
-  template: JST["backbone/templates/reports/email_volume_report"]
+class TuringEmailApp.Views.Reports.GeoReportView extends Backbone.View
+  template: JST["backbone/templates/reports/geo_report"]
 
   initialize: ->
     @listenTo(@model, "change", @render)
@@ -23,5 +23,5 @@ class TuringEmailApp.Views.Reports.EmailVolumeReportView extends Backbone.View
   render: ->
     this.restyle_other_elements()
 
-    @$el.html(@template(@model.toJSON()))
+    @$el.html(@template(@model.get("data")))
     return this
