@@ -116,87 +116,82 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
     attachmentsReportView.render()
 
   prepareDailyEmailVolumeDataOutput: (model) ->
-    received_emails_per_day = model.get("received_emails_per_day")
-    sent_emails_per_day = model.get("sent_emails_per_day")
-    data_output = []
-    data_output.push(['Day', 'Received', 'Sent'])
-    current_day = new Date(Date.now())
+    receivedEmailsPerDay = model.get("received_emails_per_day")
+    sentEmailsPerDay = model.get("sent_emails_per_day")
+    dataOutput = []
+    dataOutput.push(['Day', 'Received', 'Sent'])
+    currentDay = new Date(Date.now())
     start = new Date(Date.now())
     start.setDate(start.getDate() - 30)
-    while start < current_day
-      date_string = start.getMonth() + 1 + "/" + start.getDate() + "/" + start.getFullYear()
+    while start < currentDay
+      dateString = start.getMonth() + 1 + "/" + start.getDate() + "/" + start.getFullYear()
       newDate = start.setDate(start.getDate() + 1)
       start = new Date(newDate)
 
-      received_on_this_day = 0
-      if date_string of received_emails_per_day
-        received_on_this_day = received_emails_per_day[date_string]
-      sent_on_this_day = 0
-      if date_string of sent_emails_per_day
-        sent_on_this_day = sent_emails_per_day[date_string]
+      receivedOnThisDay = 0
+      if dateString of receivedEmailsPerDay
+        receivedOnThisDay = receivedEmailsPerDay[dateString]
+      sentOnThisDay = 0
+      if dateString of sentEmailsPerDay
+        sentOnThisDay = sentEmailsPerDay[dateString]
 
-      data_output.push([date_string, received_on_this_day, sent_on_this_day])
-    return data_output
+      dataOutput.push([dateString, receivedOnThisDay, sentOnThisDay])
+    return dataOutput
 
   prepareWeeklyEmailVolumeDataOutput: (model) ->
-    received_emails_per_week = model.get("received_emails_per_week")
-    sent_emails_per_week = model.get("sent_emails_per_week")
-    data_output = []
-    data_output.push(['Week', 'Received', 'Sent'])
-    current_day = new Date(Date.now())
+    receivedEmailsPerWeek = model.get("received_emails_per_week")
+    sentEmailsPerWeek = model.get("sent_emails_per_week")
+    dataOutput = []
+    dataOutput.push(['Week', 'Received', 'Sent'])
+    currentDay = new Date(Date.now())
     start = new Date(Date.now())
-    # Go to the start of the week.
-    start.setDate(start.getDate() - start.getDay() + 1)
-    # Go back 12 weeks.
-    start.setDate(start.getDate() - 12 * 7)
-    while start < current_day
-      date_string = start.getMonth() + 1 + "/" + start.getDate() + "/" + start.getFullYear()
+    start.setDate(start.getDate() - start.getDay() + 1) # Go to the start of the week.
+    numberOfDaysToGoBack = 12 * 7
+    start.setDate(start.getDate() - numberOfDaysToGoBack)
+    while start < currentDay
+      dateString = start.getMonth() + 1 + "/" + start.getDate() + "/" + start.getFullYear()
       newDate = start.setDate(start.getDate() + 7)
       start = new Date(newDate)
 
-      received_on_this_week = 0
-      if date_string of received_emails_per_week
-        received_on_this_week = received_emails_per_week[date_string]
-      sent_on_this_week = 0
-      if date_string of sent_emails_per_week
-        sent_on_this_week = sent_emails_per_week[date_string]
+      receivedOnThisWeek = 0
+      if dateString of receivedEmailsPerWeek
+        receivedOnThisWeek = receivedEmailsPerWeek[dateString]
+      sentOnThisWeek = 0
+      if dateString of sentEmailsPerWeek
+        sentOnThisWeek = sentEmailsPerWeek[dateString]
 
-      data_output.push([date_string, received_on_this_week, sent_on_this_week])
-    return data_output
+      dataOutput.push([dateString, receivedOnThisWeek, sentOnThisWeek])
+    return dataOutput
 
   prepareMonthlyEmailVolumeDataOutput: (model) ->
-    received_emails_per_month = model.get("received_emails_per_month")
-    console.log received_emails_per_month
-    sent_emails_per_month = model.get("sent_emails_per_month")
-    console.log sent_emails_per_month
-    data_output = []
-    data_output.push(['Month', 'Received', 'Sent'])
-    stop_date = new Date(Date.now())
-    stop_date.setMonth(stop_date.getMonth() + 1)
+    receivedEmailsPerMonth = model.get("received_emails_per_month")
+    sentEmailsPerMonth = model.get("sent_emails_per_month")
+    dataOutput = []
+    dataOutput.push(['Month', 'Received', 'Sent'])
+    stopDate = new Date(Date.now())
+    stopDate.setMonth(stopDate.getMonth() + 1)
     start = new Date(Date.now())
     start.setDate(start.getDate() - 356)
-    while start < stop_date
-      date_string = start.getMonth() + 1 + "/1/" + start.getFullYear()
-      console.log date_string
+    while start < stopDate
+      dateString = start.getMonth() + 1 + "/1/" + start.getFullYear()
       newDate = start.setMonth(start.getMonth() + 1)
       start = new Date(newDate)
 
-      received_on_this_month = 0
-      if date_string of received_emails_per_month
-        received_on_this_month = received_emails_per_month[date_string]
-      sent_on_this_month = 0
-      if date_string of sent_emails_per_month
-        sent_on_this_month = sent_emails_per_month[date_string]
+      receivedOnThisMonth = 0
+      if dateString of receivedEmailsPerMonth
+        receivedOnThisMonth = receivedEmailsPerMonth[dateString]
+      sentOnThisMonth = 0
+      if dateString of sentEmailsPerMonth
+        sentOnThisMonth = sentEmailsPerMonth[dateString]
 
-      data_output.push([date_string, received_on_this_month, sent_on_this_month])
-    return data_output
+      dataOutput.push([dateString, receivedOnThisMonth, sentOnThisMonth])
+    return dataOutput
 
   showEmailVolumeReport: ->
     emailVolumeReport = new TuringEmailApp.Models.EmailVolumeReport()
     @.loadEmailVolumeReportSampleData emailVolumeReport
     emailVolumeReport.fetch(
       success: (model, response, options) =>
-        #Prepare daily email volume data.
 
         dailyEmailVolumeData = { 
           data : @prepareDailyEmailVolumeDataOutput(model)
@@ -212,10 +207,6 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
           data : @prepareMonthlyEmailVolumeDataOutput(model)
         }
         model.set "monthlyEmailVolumeData", monthlyEmailVolumeData
-
-        # for key, geoDataPoint of model.attributes
-        #   data.geoData.push([geoDataPoint["ip_info"]["city"], geoDataPoint["num_emails"]])
-        # model.set "data", data
 
         emailVolumeReportView = new TuringEmailApp.Views.Reports.EmailVolumeReportView(
           model: model
