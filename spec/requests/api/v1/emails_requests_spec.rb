@@ -1,10 +1,10 @@
 require 'rails_helper'
 
 describe Api::V1::EmailsController, :type => :request do
-  let!(:email) { FactoryGirl.create(:email) }
-  let!(:email_other) { FactoryGirl.create(:email) }
-
   context 'when the user is NOT signed in' do
+    let!(:email) { FactoryGirl.create(:email) }
+    let!(:email_other) { FactoryGirl.create(:email) }
+    
     it 'should NOT show the email' do
       get "/api/v1/emails/#{email.email_account_type}/#{email.email_account_id}/#{email.uid}"
 
@@ -13,6 +13,9 @@ describe Api::V1::EmailsController, :type => :request do
   end
 
   context 'when the user is signed in' do
+    let!(:email) { FactoryGirl.create(:email) }
+    let!(:email_other) { FactoryGirl.create(:email) }
+    
     before { post '/api/v1/sessions', :email => email.user.email, :password => email.user.password }
 
     it 'should show the email' do
@@ -34,6 +37,9 @@ describe Api::V1::EmailsController, :type => :request do
   end
 
   context 'when the other user is signed in' do
+    let!(:email) { FactoryGirl.create(:email) }
+    let!(:email_other) { FactoryGirl.create(:email) }
+    
     before { post '/api/v1/sessions', :email => email_other.user.email, :password => email_other.user.password }
 
     it 'should show the other email' do
@@ -90,32 +96,38 @@ describe Api::V1::EmailsController, :type => :request do
 
   context 'top_contacts' do
     let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
+    let!(:sent_folder) { FactoryGirl.create(:gmail_label_sent, :gmail_account => gmail_account) }
     
-    let(:emails_tiny) { FactoryGirl.create_list(:email, SpecMisc::TINY_LIST_SIZE, :email_account => gmail_account) }
-    let(:emails_small) { FactoryGirl.create_list(:email, SpecMisc::SMALL_LIST_SIZE, :email_account => gmail_account) }
-    let(:emails_medium) { FactoryGirl.create_list(:email, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account) }
-    
-    let(:person_tiny) { FactoryGirl.create(:person, :email_account => gmail_account) }
-    let(:person_small) { FactoryGirl.create(:person, :email_account => gmail_account) }
-    let(:person_medium) { FactoryGirl.create(:person, :email_account => gmail_account) }
+    let(:email_thread_sent) { FactoryGirl.create(:email_thread, :email_account => gmail_account) }
+    let(:sender_counts) { [SpecMisc::MEDIUM_LIST_SIZE, SpecMisc::SMALL_LIST_SIZE, SpecMisc::TINY_LIST_SIZE] }
+    let(:senders) { [] }
     
     before {
-      emails_tiny.each { |email| FactoryGirl.create(:email_recipient, :email => email, :person => person_tiny,
-                                                    :recipient_type => EmailRecipient.recipient_types[:to]) }
+      sender_counts.each do |sender_count|
+        emails_sent = FactoryGirl.create_list(:email, sender_count, :email_thread => email_thread_sent)
+        person = FactoryGirl.create(:person, :email_account => gmail_account)
 
-      emails_small.each { |email| FactoryGirl.create(:email_recipient, :email => email, :person => person_small,
-                                                     :recipient_type => EmailRecipient.recipient_types[:to]) }
+        emails.each do |email|
+          FactoryGirl.create(:email_recipient, :email => email, :person => person,
+                             :recipient_type => EmailRecipient.recipient_types[:to])
 
-      emails_medium.each { |email| FactoryGirl.create(:email_recipient, :email => email, :person => person_medium,
-                                                      :recipient_type => EmailRecipient.recipient_types[:to]) }
+          FactoryGirl.create(:email_folder_mapping, :email => email, :email_folder => sent_folder)
+        end
+      end
     }
 
     before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
 
     it 'should return top contact stats' do
       get '/api/v1/emails/top_contacts'
+
+      top_contacts_stats = JSON.parse(response.body)
       
-      puts response.body
+      top_recipients = top_contacts_stats['top_recipients']
+      
+      top_recipients.zip(people).each do |top_recipient, person|
+        expect(top_recipient[0]).to eq(person.email_address)
+      end
     end
   end
 end
