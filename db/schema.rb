@@ -11,10 +11,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140906072855) do
+ActiveRecord::Schema.define(version: 20140907071100) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "email_attachments", force: true do |t|
+    t.integer  "email_id"
+    t.text     "filename"
+    t.text     "content_type"
+    t.integer  "file_size"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "email_folder_mappings", force: true do |t|
     t.integer  "email_id"

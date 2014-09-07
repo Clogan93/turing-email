@@ -196,4 +196,64 @@ describe Api::V1::EmailsController, :type => :request do
       end
     end
   end
+  
+  context 'attachments_report' do
+    let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
+    before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
+
+    context 'no attachents' do
+      it 'should return attachments report stats' do
+        get '/api/v1/emails/attachments_report'
+
+        attachments_report_stats = JSON.parse(response.body)
+
+        expect(attachments_report_stats['average_file_size']).to eq(0)
+        expect(attachments_report_stats['content_type_stats']).to eq({})
+      end
+    end
+
+    context 'with attachents' do
+      let!(:email) { FactoryGirl.create(:email, :email_account => gmail_account) }
+      let!(:email_attachments) { FactoryGirl.create_list(:email_attachment, SpecMisc::SMALL_LIST_SIZE, :email => email) }
+      let!(:jpeg_file_size) { 50 }
+      let!(:email_attachments_jpegs) { FactoryGirl.create_list(:email_attachment, SpecMisc::SMALL_LIST_SIZE,
+                                                               :email => email,
+                                                               :content_type => 'image/jpeg', :file_size => jpeg_file_size) }
+      let!(:bmp_1_size) { 2 }
+      let!(:bmp_2_size) { 4 }
+      let!(:email_attachment_bmp_1) { FactoryGirl.create(:email_attachment, :email => email,
+                                                         :content_type => 'image/bmp', :file_size => bmp_1_size) }
+      let!(:email_attachment_bmp_2) { FactoryGirl.create(:email_attachment, :email => email,
+                                                         :content_type => 'image/bmp', :file_size => bmp_2_size) }
+      
+      it 'should return attachments report stats' do
+        get '/api/v1/emails/attachments_report'
+        
+        attachments_report_stats = JSON.parse(response.body)
+        default = email_attachments.first
+        jpeg = email_attachments_jpegs.first
+
+        average_file_size_expected = (default.file_size * email_attachments.length +
+                                      jpeg.file_size * email_attachments_jpegs.length +
+                                      bmp_1_size + bmp_2_size) /
+                                     (email_attachments.length + email_attachments_jpegs.length + 2) 
+        expect(attachments_report_stats['average_file_size']).to eq(average_file_size_expected)
+
+        content_type_stats = attachments_report_stats['content_type_stats']
+        expect(content_type_stats.length).to eq(3)
+        
+        default_stats = content_type_stats[default.content_type]
+        expect(default_stats['average_file_size']).to eq(default.file_size)
+        expect(default_stats['num_attachments']).to eq(email_attachments.length)
+
+        jpeg_stats = content_type_stats[jpeg.content_type]
+        expect(jpeg_stats['average_file_size']).to eq(jpeg.file_size)
+        expect(jpeg_stats['num_attachments']).to eq(email_attachments_jpegs.length)
+
+        bmp_stats = content_type_stats[email_attachment_bmp_1.content_type]
+        expect(bmp_stats['average_file_size']).to eq((bmp_1_size + bmp_2_size) / 2)
+        expect(bmp_stats['num_attachments']).to eq(2)
+      end
+    end
+  end
 end

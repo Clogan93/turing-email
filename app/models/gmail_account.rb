@@ -317,6 +317,7 @@ class GmailAccount < ActiveRecord::Base
           email.add_references(email_raw)
           email.add_in_reply_tos(email_raw)
           email.add_recipients(email_raw)
+          email.add_attachments(email_raw)
         end
       end
 

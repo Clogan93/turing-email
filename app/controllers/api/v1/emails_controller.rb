@@ -3,7 +3,7 @@ class Api::V1::EmailsController < ApiController
     signed_in_user(true)
   end
 
-  before_action :correct_user, :except => [:ip_stats, :volume_report, :top_contacts]
+  before_action :correct_user, :except => [:ip_stats, :volume_report, :top_contacts, :attachments_report]
 
   swagger_controller :emails, 'Emails Controller'
 
@@ -101,6 +101,34 @@ class Api::V1::EmailsController < ApiController
 
     render :json => top_contacts_stats
   end
+  
+  def attachments_report
+    content_type_counts = EmailAttachment.where(:email => current_user.emails).group(:content_type).
+                                          order('count_all DESC').limit(10).count
+    
+    if content_type_counts.length > 0
+      content_type_sizes = EmailAttachment.where(:email => current_user.emails,
+                                                 :content_type => content_type_counts.keys).
+                                           group(:content_type).average(:file_size)
+    else
+      content_type_sizes = {}
+    end
+    
+    content_type_stats = {}
+    content_type_counts.each do |content_type, num_attachments|
+      content_type_stats[content_type] = {
+          :num_attachments => num_attachments,
+          :average_file_size => content_type_sizes[content_type].to_i
+      }
+    end
+
+    attachments_report_stats = {
+        :average_file_size => EmailAttachment.where(:email => current_user.emails).average(:file_size).to_i,
+        :content_type_stats => content_type_stats
+    }
+
+    render :json => attachments_report_stats
+  end
 
   private
 
@@ -111,7 +139,7 @@ class Api::V1::EmailsController < ApiController
                            :email_account_id => params[:email_account_id],
                            :uid => params[:email_id])
 
-    if @email.user != current_user
+    if @email.nil? || @email.user != current_user
       render :status => $config.http_errors[:email_not_found][:status_code],
              :json => $config.http_errors[:email_not_found][:description]
       return
