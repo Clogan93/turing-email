@@ -87,4 +87,33 @@ describe Api::V1::EmailsController, :type => :request do
       validate_ip_info(ip_infos[1], email_ip_stats_2['ip_info'])
     end
   end
+
+  context 'top_contacts' do
+    let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
+    
+    let(:emails_tiny) { FactoryGirl.create_list(:email, SpecMisc::TINY_LIST_SIZE, :email_account => gmail_account) }
+    let(:emails_small) { FactoryGirl.create_list(:email, SpecMisc::SMALL_LIST_SIZE, :email_account => gmail_account) }
+    let(:emails_medium) { FactoryGirl.create_list(:email, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account) }
+    
+    let(:person_tiny) { FactoryGirl.create(:person, :email_account => gmail_account) }
+    let(:person_small) { FactoryGirl.create(:person, :email_account => gmail_account) }
+    let(:person_medium) { FactoryGirl.create(:person, :email_account => gmail_account) }
+    
+    before {
+      emails_tiny.each { |email| FactoryGirl.create(:email_recipient, :email => email, :person => person_tiny,
+                                                    :recipient_type => EmailRecipient.recipient_types[:to]) }
+
+      emails_small.each { |email| FactoryGirl.create(:email_recipient, :email => email, :person => person_small,
+                                                     :recipient_type => EmailRecipient.recipient_types[:to]) }
+
+      emails_medium.each { |email| FactoryGirl.create(:email_recipient, :email => email, :person => person_medium,
+                                                      :recipient_type => EmailRecipient.recipient_types[:to]) }
+    }
+
+    before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
+
+    it 'should return top contact stats' do
+      get '/api/v1/emails/top_contacts'
+    end
+  end
 end

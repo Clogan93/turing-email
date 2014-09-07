@@ -49,31 +49,36 @@ class Api::V1::EmailsController < ApiController
   
   def volume_report
     sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
+    sent_emails_ids = sent_label.emails.pluck(:id)
     
-    received_emails = current_user.emails.where('"emails"."id" NOT IN (?)', sent_label.emails.pluck(:id))
-    sent_emails = current_user.emails.where('"emails"."id" IN (?)', sent_label.emails.pluck(:id))
-
     volume_report_stats = {
       :received_emails_per_month =>
-          received_emails.group("DATE_TRUNC('month', date)").order('date_trunc_month_date DESC').limit(6).count,
+          current_user.emails.where('"emails"."id" NOT IN (?)', sent_emails_ids).
+                       group("DATE_TRUNC('month', date)").order('date_trunc_month_date DESC').limit(6).count,
       :received_emails_per_week =>
-          received_emails.group("DATE_TRUNC('week', date)").order('date_trunc_week_date DESC').limit(4).count,
+          current_user.emails.where('"emails"."id" NOT IN (?)', sent_emails_ids).
+                       group("DATE_TRUNC('week', date)").order('date_trunc_week_date DESC').limit(4).count,
       :received_emails_per_day =>
-        received_emails.group("DATE_TRUNC('day', date)").order('date_trunc_day_date DESC').limit(30).count,
+          current_user.emails.where('"emails"."id" NOT IN (?)', sent_emails_ids).
+                       group("DATE_TRUNC('day', date)").order('date_trunc_day_date DESC').limit(30).count,
 
       :sent_emails_per_month =>
-          sent_emails.group("DATE_TRUNC('month', date)").order('date_trunc_month_date DESC').limit(6).count,
+          current_user.emails.where('"emails"."id" IN (?)', sent_emails_ids).
+                       group("DATE_TRUNC('month', date)").order('date_trunc_month_date DESC').limit(6).count,
       :sent_emails_per_week =>
-        sent_emails.group("DATE_TRUNC('week', date)").order('date_trunc_week_date DESC').limit(4).count,
+          current_user.emails.where('"emails"."id" IN (?)', sent_emails_ids).
+                       group("DATE_TRUNC('week', date)").order('date_trunc_week_date DESC').limit(4).count,
       :sent_emails_per_day =>
-        sent_emails.group("DATE_TRUNC('day', date)").order('date_trunc_day_date DESC').limit(30).count
+          current_user.emails.where('"emails"."id" IN (?)', sent_emails_ids).
+                       group("DATE_TRUNC('day', date)").order('date_trunc_day_date DESC').limit(30).count
     }
 
-    volume_report_stats = volume_report_stats.map do |stat, data|
-      { stat => data.map { |date, num_emails| { date.rfc2822 => num_emails } } }
+    volume_report_stats_rfc2822 = {}
+    volume_report_stats.each do |stat, data|
+      volume_report_stats_rfc2822[stat] = data.map { |date, num_emails| { date.rfc2822 => num_emails } }
     end
     
-    render :json => volume_report_stats
+    render :json => volume_report_stats_rfc2822
   end
 
   swagger_api :top_contacts do
@@ -84,13 +89,12 @@ class Api::V1::EmailsController < ApiController
   
   def top_contacts
     sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
+    sent_emails_ids = sent_label.emails.pluck(:id)
 
-    received_emails = current_user.emails.where('"emails"."id" NOT IN (?)', sent_label.emails.pluck(:id))
-    sent_emails = current_user.emails.where('"emails"."id" IN (?)', sent_label.emails.pluck(:id))
-    
     top_contacts_stats = {
-        :top_senders => received_emails.group(:from_address).order('count_all DESC').limit(10).count,
-        :top_recipients => EmailRecipient.where(:email => sent_emails).joins(:person).group(:email_address).
+        :top_senders => current_user.emails.where('"emails"."id" NOT IN (?)', sent_emails_ids).
+                                            group(:from_address).order('count_all DESC').limit(10).count,
+        :top_recipients => EmailRecipient.where(:email => sent_emails_ids).joins(:person).group(:email_address).
                                           order('count_all DESC').limit(10).count
     }
 
