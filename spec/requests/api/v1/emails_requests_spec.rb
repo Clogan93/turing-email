@@ -94,39 +94,165 @@ describe Api::V1::EmailsController, :type => :request do
     end
   end
 
+  context 'volume_report' do
+    let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
+    before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
+
+    context 'no senders or recipients' do
+      it 'should return top contact stats' do
+        get '/api/v1/emails/volume_report'
+
+        volume_report_stats = JSON.parse(response.body)
+
+        expect(volume_report_stats[:received_emails_per_month]).to eq(nil)
+        expect(volume_report_stats[:received_emails_per_week]).to eq(nil)
+        expect(volume_report_stats[:received_emails_per_day]).to eq(nil)
+
+        expect(volume_report_stats[:sent_emails_per_month]).to eq(nil)
+        expect(volume_report_stats[:sent_emails_per_week]).to eq(nil)
+        expect(volume_report_stats[:sent_emails_per_day]).to eq(nil)
+      end
+    end
+  end
+  
   context 'top_contacts' do
     let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
-    let!(:sent_folder) { FactoryGirl.create(:gmail_label_sent, :gmail_account => gmail_account) }
+    before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
     
-    let(:email_thread_sent) { FactoryGirl.create(:email_thread, :email_account => gmail_account) }
-    let(:sender_counts) { [SpecMisc::MEDIUM_LIST_SIZE, SpecMisc::SMALL_LIST_SIZE, SpecMisc::TINY_LIST_SIZE] }
-    let(:senders) { [] }
+    context 'no senders or recipients' do      
+      it 'should return top contact stats' do
+        get '/api/v1/emails/top_contacts'
+
+        top_contacts_stats = JSON.parse(response.body)
+
+        top_recipients = top_contacts_stats['top_recipients']
+        expect(top_recipients).to eq({})
+
+        top_senders = top_contacts_stats['top_senders']
+        expect(top_senders).to eq({})
+      end
+    end
     
-    before {
-      sender_counts.each do |sender_count|
-        emails_sent = FactoryGirl.create_list(:email, sender_count, :email_thread => email_thread_sent)
+    context 'with senders and recipients' do
+      let!(:sent_folder) { FactoryGirl.create(:gmail_label_sent, :gmail_account => gmail_account) }
+
+      let(:recipient_counts) { [SpecMisc::MEDIUM_LIST_SIZE, SpecMisc::SMALL_LIST_SIZE, SpecMisc::TINY_LIST_SIZE] }
+      let(:recipients) { [] }
+
+      let(:sender_counts)  { [SpecMisc::MEDIUM_LIST_SIZE, SpecMisc::SMALL_LIST_SIZE, SpecMisc::TINY_LIST_SIZE] }
+      let(:senders) { [] }
+      
+      def generate_top_contact_emails(num_emails, folder = nil)
         person = FactoryGirl.create(:person, :email_account => gmail_account)
+        emails = FactoryGirl.create_list(:email, num_emails, :email_account => gmail_account,
+                                         :from_address => person.email_address)
 
         emails.each do |email|
           FactoryGirl.create(:email_recipient, :email => email, :person => person,
                              :recipient_type => EmailRecipient.recipient_types[:to])
 
-          FactoryGirl.create(:email_folder_mapping, :email => email, :email_folder => sent_folder)
+          properties = { :email => email }
+          properties[:email_folder] = folder if folder
+          FactoryGirl.create(:email_folder_mapping, properties)
+        end
+        
+        return emails, person
+      end
+
+      before {
+        recipient_counts.each do |recipient_count|
+          emails_sent, person = generate_top_contact_emails(recipient_count, sent_folder)
+          recipients << {:emails_sent => emails_sent, :person => person}
+        end
+        
+        sender_counts.each do |sender_count|
+          emails_received, person = generate_top_contact_emails(sender_count)
+          senders << {:emails_received => emails_received, :person => person}
+        end
+      }
+
+      before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
+
+      it 'should return top contact stats' do
+        get '/api/v1/emails/top_contacts'
+
+        top_contacts_stats = JSON.parse(response.body)
+
+        top_recipients = top_contacts_stats['top_recipients']
+        expect(top_recipients.keys.length).to eq(recipients.length)
+        
+        top_recipients.zip(recipients).each do |top_recipient, recipient|
+          expect(top_recipient[0]).to eq(recipient[:person].email_address)
+          expect(top_recipient[1]).to eq(recipient[:emails_sent].length)
+        end
+
+        top_senders = top_contacts_stats['top_senders']
+        expect(top_senders.keys.length).to eq(senders.length)
+        
+        top_senders.zip(senders).each do |top_sender, sender|
+          expect(top_sender[0]).to eq(sender[:person].email_address)
+          expect(top_sender[1]).to eq(sender[:emails_received].length)
         end
       end
-    }
-
+    end
+  end
+  
+  context 'attachments_report' do
+    let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
     before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
 
-    it 'should return top contact stats' do
-      get '/api/v1/emails/top_contacts'
+    context 'no attachents' do
+      it 'should return attachments report stats' do
+        get '/api/v1/emails/attachments_report'
 
-      top_contacts_stats = JSON.parse(response.body)
+        attachments_report_stats = JSON.parse(response.body)
+
+        expect(attachments_report_stats['average_file_size']).to eq(0)
+        expect(attachments_report_stats['content_type_stats']).to eq({})
+      end
+    end
+
+    context 'with attachents' do
+      let!(:email) { FactoryGirl.create(:email, :email_account => gmail_account) }
+      let!(:email_attachments) { FactoryGirl.create_list(:email_attachment, SpecMisc::SMALL_LIST_SIZE, :email => email) }
+      let!(:jpeg_file_size) { 50 }
+      let!(:email_attachments_jpegs) { FactoryGirl.create_list(:email_attachment, SpecMisc::SMALL_LIST_SIZE,
+                                                               :email => email,
+                                                               :content_type => 'image/jpeg', :file_size => jpeg_file_size) }
+      let!(:bmp_1_size) { 2 }
+      let!(:bmp_2_size) { 4 }
+      let!(:email_attachment_bmp_1) { FactoryGirl.create(:email_attachment, :email => email,
+                                                         :content_type => 'image/bmp', :file_size => bmp_1_size) }
+      let!(:email_attachment_bmp_2) { FactoryGirl.create(:email_attachment, :email => email,
+                                                         :content_type => 'image/bmp', :file_size => bmp_2_size) }
       
-      top_recipients = top_contacts_stats['top_recipients']
-      
-      top_recipients.zip(people).each do |top_recipient, person|
-        expect(top_recipient[0]).to eq(person.email_address)
+      it 'should return attachments report stats' do
+        get '/api/v1/emails/attachments_report'
+        
+        attachments_report_stats = JSON.parse(response.body)
+        default = email_attachments.first
+        jpeg = email_attachments_jpegs.first
+
+        average_file_size_expected = (default.file_size * email_attachments.length +
+                                      jpeg.file_size * email_attachments_jpegs.length +
+                                      bmp_1_size + bmp_2_size) /
+                                     (email_attachments.length + email_attachments_jpegs.length + 2) 
+        expect(attachments_report_stats['average_file_size']).to eq(average_file_size_expected)
+
+        content_type_stats = attachments_report_stats['content_type_stats']
+        expect(content_type_stats.length).to eq(3)
+        
+        default_stats = content_type_stats[default.content_type]
+        expect(default_stats['average_file_size']).to eq(default.file_size)
+        expect(default_stats['num_attachments']).to eq(email_attachments.length)
+
+        jpeg_stats = content_type_stats[jpeg.content_type]
+        expect(jpeg_stats['average_file_size']).to eq(jpeg.file_size)
+        expect(jpeg_stats['num_attachments']).to eq(email_attachments_jpegs.length)
+
+        bmp_stats = content_type_stats[email_attachment_bmp_1.content_type]
+        expect(bmp_stats['average_file_size']).to eq((bmp_1_size + bmp_2_size) / 2)
+        expect(bmp_stats['num_attachments']).to eq(2)
       end
     end
   end

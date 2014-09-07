@@ -19,6 +19,9 @@ class Email < ActiveRecord::Base
 
   has_many :email_in_reply_tos,
            :dependent => :destroy
+  
+  has_many :email_attachments,
+           :dependent => :destroy
 
   validates_presence_of(:email_account, :uid, :message_id, :email_thread_id)
 
@@ -150,6 +153,29 @@ class Email < ActiveRecord::Base
       rescue ActiveRecord::RecordNotUnique
       end
     end
+  end
+  
+  # TODO write test
+  def add_attachments(email_raw)
+    if !email_raw.multipart? && email_raw.content_type && email_raw.content_type !~ /text/i
+      self.add_attachment(email_raw)
+    end
+
+    email_raw.attachments.each do |attachment|
+      self.add_attachment(attachment)
+    end
+  end
+
+  # TODO write test
+  def add_attachment(attachment)
+    email_attachment = EmailAttachment.new
+    
+    email_attachment.email = self
+    email_attachment.filename = attachment.filename
+    email_attachment.content_type = attachment.content_type.split(';')[0].strip if attachment.content_type
+    email_attachment.file_size = attachment.decoded.length
+    
+    email_attachment.save!
   end
   
   def add_recipients(email_raw)
