@@ -127,8 +127,8 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
         for num_days in [0...30]
           d.setDate(d.getDate()-num_days)
           utc_string = d.toUTCString()
+          d.setHours(0)
           console.log utc_string.replace "GMT", "-0000"
-
 
         console.log "Hello"
         console.log model.get("received_emails_per_day")
