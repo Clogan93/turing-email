@@ -120,12 +120,11 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
     sent_emails_per_day = model.get("sent_emails_per_day")
     data_output = []
     data_output.push(['Day', 'Received', 'Sent'])
-    current_day = new Date()
-    start = new Date()
-    start.setDate(start.getDate() - 30);
+    current_day = new Date(Date.now())
+    start = new Date(Date.now())
+    start.setDate(start.getDate() - 30)
     while start < current_day
-      date_string = start.getMonth() + "/" + start.getDay() + "/" + start.getFullYear()
-      console.log date_string
+      date_string = start.getMonth() + 1 + "/" + start.getDate() + "/" + start.getFullYear()
       newDate = start.setDate(start.getDate() + 1);
       start = new Date(newDate);
 
@@ -143,24 +142,19 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
     emailVolumeReport = new TuringEmailApp.Models.EmailVolumeReport()
     @.loadEmailVolumeReportSampleData emailVolumeReport
     emailVolumeReport.fetch(
-      success: (model, response, options) ->
+      success: (model, response, options) =>
         #Prepare daily email volume data.
 
-        data_output = @prepareDailyEmailVolumeDataOutput()
+        daily_email_volume_data_output = @prepareDailyEmailVolumeDataOutput(model)
 
         console.log "Hello"
-        console.log data_output
+        console.log daily_email_volume_data_output
         console.log "world!"
 
         dailyEmailVolumeData = { 
-          data : [
-            ['Day', 'Received', 'Sent'],
-            ['2013',  1000,      400],
-            ['2014',  1170,      460],
-            ['2015',  660,       1120],
-            ['2016',  1030,      540]
-          ]
+          data : daily_email_volume_data_output
         }
+        model.set "dailyEmailVolumeData", dailyEmailVolumeData
         weeklyEmailVolumeData = {
           data : [
             ['Week', 'Received', 'Sent'],
