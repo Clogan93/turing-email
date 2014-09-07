@@ -12,40 +12,11 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
   loadAttachmentsReportSampleData: (attachmentsReport) ->
     attachmentsReport.set "data", { 
       attachmentData : [
-        ['Year', 'Sent', 'Received'],
-        ['docs',  10,      1],
-        ['pdfs',  15,      4],
-        ['images',  6,       11],
-        ['zip',  10,      5]
-      ]
-    }
-
-  loadEmailVolumeReportSampleData: (emailVolumeReport) ->
-    emailVolumeReport.set "dailyEmailVolumeData", { 
-      data : [
-        ['Day', 'Received', 'Sent'],
-        ['2013',  1000,      400],
-        ['2014',  1170,      460],
-        ['2015',  660,       1120],
-        ['2016',  1030,      540]
-      ]
-    }
-    emailVolumeReport.set "weeklyEmailVolumeData", {
-      data : [
-        ['Week', 'Received', 'Sent'],
-        ['2013',  1000,      400],
-        ['2014',  1170,      460],
-        ['2015',  660,       1120],
-        ['2016',  1030,      540]
-      ]
-    }
-    emailVolumeReport.set "monthlyEmailVolumeData", {
-      data : [
-        ['Month', 'Received', 'Sent'],
-        ['2013',  1000,      400],
-        ['2014',  1170,      460],
-        ['2015',  660,       1120],
-        ['2016',  1030,      540]
+        ['Attachment Type', 'Number of attachments'],
+        ['docs',  10],
+        ['pdfs',  15],
+        ['images',  6],
+        ['zip',  10]
       ]
     }
 
@@ -84,14 +55,62 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
       ]
     }
 
+  translateContentType: (attachmentdata, header) ->
+    newAttachmentsData = {}
+    newAttachmentsData["Document"] = 0
+    for attachmentData in attachmentdata
+      content_type_parts = attachmentData[0].split("/")
+      value = attachmentData[1]
+      if content_type_parts[0] is "image"
+        if newAttachmentsData["Images"]?
+          newAttachmentsData["Images"] += value
+        else 
+          newAttachmentsData["Images"] = value
+      else
+        last_index = parseInt(content_type_parts.length) - 1
+        content_type = content_type_parts[last_index]
+        switch content_type
+          when "ics" then newAttachmentsData["Calendar Invite"] = value
+          when "pdf" then newAttachmentsData["PDF"] = value
+          when "vnd.openxmlformats-officedocument.presentationml.presentation" then newAttachmentsData["Presentation"] = value
+          when "vnd.openxmlformats-officedocument.spreadsheetml.sheet" then newAttachmentsData["Spreadsheet"] = value
+          when "msword" then newAttachmentsData["Document"] += value
+          when "vnd.openxmlformats-officedocument.wordprocessingml.document" then newAttachmentsData["Document"] += value
+          when "zip" then newAttachmentsData["ZIP"] = value
+          when "octet-stream" then newAttachmentsData["Binary"] = value
+          else newAttachmentsData[content_type] = value; console.log content_type
+    attachmentdata = []
+    attachmentdata.push(header)
+    for key, value of newAttachmentsData
+      attachmentdata.push([key, value])
+    return attachmentdata
+
   showAttachmentsReport: ->
     attachmentsReport = new TuringEmailApp.Models.AttachmentsReport()
-    @.loadAttachmentsReportSampleData attachmentsReport
-    attachmentsReportView = new TuringEmailApp.Views.Reports.AttachmentsReportView(
-      model: attachmentsReport
-      el: $("#reports")
+    attachmentsReport.fetch(
+      success: (model, response, options) =>
+
+        data = { 
+          numAttachmentsData : []
+          averageFileSizeAttachmentsData : []
+        }
+
+        for content_type, stats of model.get("content_type_stats")
+          data.numAttachmentsData.push([content_type, stats.num_attachments])
+          data.averageFileSizeAttachmentsData.push([content_type, stats.average_file_size])
+
+        data.numAttachmentsData = @translateContentType data.numAttachmentsData, ['Attachment Type', 'Number of attachments']
+        data.averageFileSizeAttachmentsData = @translateContentType data.averageFileSizeAttachmentsData, ['Attachment Type', 'Average File Size']
+
+        attachmentsReport.set "data", data
+
+        attachmentsReportView = new TuringEmailApp.Views.Reports.AttachmentsReportView(
+          model: model
+          el: $("#reports")
+        )
+        attachmentsReportView.render()
+
     )
-    attachmentsReportView.render()
 
   prepareDailyEmailVolumeDataOutput: (model) ->
     receivedEmailsPerDay = model.get("received_emails_per_day")
@@ -167,7 +186,6 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
 
   showEmailVolumeReport: ->
     emailVolumeReport = new TuringEmailApp.Models.EmailVolumeReport()
-    @.loadEmailVolumeReportSampleData emailVolumeReport
     emailVolumeReport.fetch(
       success: (model, response, options) =>
 

@@ -1,15 +1,21 @@
 <%
-	function drawChart(attachmentData) {
+	function drawCharts(numAttachmentsData, averageFileSizeAttachmentsData) {
+		drawChart(numAttachmentsData, 'num_attachments_chart_div', "Number of Attachments", "Number of Attachments");
+		drawChart(averageFileSizeAttachmentsData, 'average_file_size_chart_div', "Attachment File Size", "Average File Size");
+	}
+
+	function drawChart(attachmentData, divId, chartTitle, vAxisTitle) {
 
 	  var data = google.visualization.arrayToDataTable(attachmentData);
 
 	  var options = {
-	    title: 'Attachments',
+	    title: chartTitle,
+	    legend: {position: 'none'},
 	    hAxis: {title: 'Attachment Type', titleTextStyle: {color: 'black'}},
-	    vAxis: {title: 'Number of Attachments', titleTextStyle: {color: 'black'}}
+	    vAxis: {title: vAxisTitle, titleTextStyle: {color: 'black'}}
 	  };
 
-	  var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+	  var chart = new google.visualization.ColumnChart(document.getElementById(divId));
 
 	  chart.draw(data, options);
 
@@ -17,7 +23,7 @@
 
   setTimeout(function() {
     google.load('visualization', '1.0',
-                {'callback': function() {drawChart(data.attachmentData); },
+                {'callback': function() {drawCharts(data.numAttachmentsData, data.averageFileSizeAttachmentsData); },
                 'packages':['corechart']}
                 )
   }, 1000);
@@ -26,4 +32,5 @@
 <div class="page-header">
   <h1 class="h1">Reports <small>attachments</small></h1>
 </div>
-<div id="chart_div" style="width: 900px; height: 500px;"></div>
+<div id="num_attachments_chart_div" style="width: 900px; height: 500px;"></div>
+<div id="average_file_size_chart_div" style="width: 900px; height: 500px;"></div>
