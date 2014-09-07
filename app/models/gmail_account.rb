@@ -17,6 +17,10 @@ class GmailAccount < ActiveRecord::Base
   has_many :emails,
            :as => :email_account,
            :dependent => :destroy
+  
+  has_many :people,
+           :as => :email_account,
+           :dependent => :destroy
 
   has_many :email_in_reply_tos,
            :as => :email_account,
@@ -313,6 +317,7 @@ class GmailAccount < ActiveRecord::Base
         email.with_lock do
           email.add_references(email_raw)
           email.add_in_reply_tos(email_raw)
+          email.add_recipients(email_raw)
         end
       end
 

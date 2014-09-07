@@ -1,6 +1,8 @@
 class IpInfo < ActiveRecord::Base
   has_many :emails
   
+  validates_presence_of(:ip)
+  
   def IpInfo.from_ip(ip)
     ip_info = IpInfo.find_by_ip(ip)
     
