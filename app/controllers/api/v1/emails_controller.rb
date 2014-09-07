@@ -54,20 +54,20 @@ class Api::V1::EmailsController < ApiController
     volume_report_stats = {
       :received_emails_per_month =>
           current_user.emails.where('"emails"."id" NOT IN (?)', sent_emails_ids).
-                       group("DATE_TRUNC('month', date)").order('date_trunc_month_date DESC').limit(6).count,
+                       group("DATE_TRUNC('month', date)").order('date_trunc_month_date DESC').limit(12).count,
       :received_emails_per_week =>
           current_user.emails.where('"emails"."id" NOT IN (?)', sent_emails_ids).
-                       group("DATE_TRUNC('week', date)").order('date_trunc_week_date DESC').limit(4).count,
+                       group("DATE_TRUNC('week', date)").order('date_trunc_week_date DESC').limit(12).count,
       :received_emails_per_day =>
           current_user.emails.where('"emails"."id" NOT IN (?)', sent_emails_ids).
                        group("DATE_TRUNC('day', date)").order('date_trunc_day_date DESC').limit(30).count,
 
       :sent_emails_per_month =>
           current_user.emails.where('"emails"."id" IN (?)', sent_emails_ids).
-                       group("DATE_TRUNC('month', date)").order('date_trunc_month_date DESC').limit(6).count,
+                       group("DATE_TRUNC('month', date)").order('date_trunc_month_date DESC').limit(12).count,
       :sent_emails_per_week =>
           current_user.emails.where('"emails"."id" IN (?)', sent_emails_ids).
-                       group("DATE_TRUNC('week', date)").order('date_trunc_week_date DESC').limit(4).count,
+                       group("DATE_TRUNC('week', date)").order('date_trunc_week_date DESC').limit(12).count,
       :sent_emails_per_day =>
           current_user.emails.where('"emails"."id" IN (?)', sent_emails_ids).
                        group("DATE_TRUNC('day', date)").order('date_trunc_day_date DESC').limit(30).count

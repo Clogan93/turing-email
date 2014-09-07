@@ -96,37 +96,82 @@ describe Api::V1::EmailsController, :type => :request do
 
   context 'top_contacts' do
     let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
-    let!(:sent_folder) { FactoryGirl.create(:gmail_label_sent, :gmail_account => gmail_account) }
+    before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
     
-    let(:email_thread_sent) { FactoryGirl.create(:email_thread, :email_account => gmail_account) }
-    let(:sender_counts) { [SpecMisc::MEDIUM_LIST_SIZE, SpecMisc::SMALL_LIST_SIZE, SpecMisc::TINY_LIST_SIZE] }
-    let(:senders) { [] }
+    context 'no senders or recipients' do      
+      it 'should return top contact stats' do
+        get '/api/v1/emails/top_contacts'
+
+        top_contacts_stats = JSON.parse(response.body)
+
+        top_recipients = top_contacts_stats['top_recipients']
+        expect(top_recipients).to eq({})
+
+        top_senders = top_contacts_stats['top_senders']
+        expect(top_senders).to eq({})
+      end
+    end
     
-    before {
-      sender_counts.each do |sender_count|
-        emails_sent = FactoryGirl.create_list(:email, sender_count, :email_thread => email_thread_sent)
+    context 'with senders and recipients' do
+      let!(:sent_folder) { FactoryGirl.create(:gmail_label_sent, :gmail_account => gmail_account) }
+
+      let(:recipient_counts) { [SpecMisc::MEDIUM_LIST_SIZE, SpecMisc::SMALL_LIST_SIZE, SpecMisc::TINY_LIST_SIZE] }
+      let(:recipients) { [] }
+
+      let(:sender_counts)  { [SpecMisc::MEDIUM_LIST_SIZE, SpecMisc::SMALL_LIST_SIZE, SpecMisc::TINY_LIST_SIZE] }
+      let(:senders) { [] }
+      
+      def generate_top_contact_emails(num_emails, folder = nil)
         person = FactoryGirl.create(:person, :email_account => gmail_account)
+        emails = FactoryGirl.create_list(:email, num_emails, :email_account => gmail_account,
+                                         :from_address => person.email_address)
 
         emails.each do |email|
           FactoryGirl.create(:email_recipient, :email => email, :person => person,
                              :recipient_type => EmailRecipient.recipient_types[:to])
 
-          FactoryGirl.create(:email_folder_mapping, :email => email, :email_folder => sent_folder)
+          properties = { :email => email }
+          properties[:email_folder] = folder if folder
+          FactoryGirl.create(:email_folder_mapping, properties)
         end
+        
+        return emails, person
       end
-    }
 
-    before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
+      before {
+        recipient_counts.each do |recipient_count|
+          emails_sent, person = generate_top_contact_emails(recipient_count, sent_folder)
+          recipients << {:emails_sent => emails_sent, :person => person}
+        end
+        
+        sender_counts.each do |sender_count|
+          emails_received, person = generate_top_contact_emails(sender_count)
+          senders << {:emails_received => emails_received, :person => person}
+        end
+      }
 
-    it 'should return top contact stats' do
-      get '/api/v1/emails/top_contacts'
+      before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
 
-      top_contacts_stats = JSON.parse(response.body)
-      
-      top_recipients = top_contacts_stats['top_recipients']
-      
-      top_recipients.zip(people).each do |top_recipient, person|
-        expect(top_recipient[0]).to eq(person.email_address)
+      it 'should return top contact stats' do
+        get '/api/v1/emails/top_contacts'
+
+        top_contacts_stats = JSON.parse(response.body)
+
+        top_recipients = top_contacts_stats['top_recipients']
+        expect(top_recipients.keys.length).to eq(recipients.length)
+        
+        top_recipients.zip(recipients).each do |top_recipient, recipient|
+          expect(top_recipient[0]).to eq(recipient[:person].email_address)
+          expect(top_recipient[1]).to eq(recipient[:emails_sent].length)
+        end
+
+        top_senders = top_contacts_stats['top_senders']
+        expect(top_senders.keys.length).to eq(senders.length)
+        
+        top_senders.zip(senders).each do |top_sender, sender|
+          expect(top_sender[0]).to eq(sender[:person].email_address)
+          expect(top_sender[1]).to eq(sender[:emails_received].length)
+        end
       end
     end
   end
