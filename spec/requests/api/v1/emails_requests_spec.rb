@@ -94,6 +94,27 @@ describe Api::V1::EmailsController, :type => :request do
     end
   end
 
+  context 'volume_report' do
+    let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
+    before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
+
+    context 'no senders or recipients' do
+      it 'should return top contact stats' do
+        get '/api/v1/emails/volume_report'
+
+        volume_report_stats = JSON.parse(response.body)
+
+        expect(volume_report_stats[:received_emails_per_month]).to eq(nil)
+        expect(volume_report_stats[:received_emails_per_week]).to eq(nil)
+        expect(volume_report_stats[:received_emails_per_day]).to eq(nil)
+
+        expect(volume_report_stats[:sent_emails_per_month]).to eq(nil)
+        expect(volume_report_stats[:sent_emails_per_week]).to eq(nil)
+        expect(volume_report_stats[:sent_emails_per_day]).to eq(nil)
+      end
+    end
+  end
+  
   context 'top_contacts' do
     let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
     before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
