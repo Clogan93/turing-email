@@ -11,13 +11,16 @@ class Email < ActiveRecord::Base
   has_many :imap_folders, :through => :email_folder_mappings, :source => :email_folder, :source_type => 'ImapFolder'
   has_many :gmail_labels, :through => :email_folder_mappings, :source => :email_folder, :source_type => 'GmailLabel'
 
+  has_many :email_recipients,
+           :dependent => :destroy
+  
   has_many :email_references,
            :dependent => :destroy
 
   has_many :email_in_reply_tos,
            :dependent => :destroy
 
-  validates_presence_of(:user, :email_account, :uid, :message_id, :email_thread_id)
+  validates_presence_of(:email_account, :uid, :message_id, :email_thread_id)
 
   def Email.email_raw_from_mime_data(mime_data)
     mail_data_file = Tempfile.new('turing')
@@ -46,16 +49,15 @@ class Email < ActiveRecord::Base
     email.list_id = email_raw.header['List-ID'].decoded.force_utf8(true) if email_raw.header['List-ID']
     email.date = email_raw.date
 
-    from_string = email_raw.from ? email_raw.from[0] : nil
-    email.from_name, email.from_address = Email.parse_address_header(email_raw.header['from'], from_string)
-    email.from_address = email_raw.from_addrs[0] if email.from_address.nil?
+    from_addr = email_raw[:from].addrs[0] if email_raw[:from]
+    email.from_name, email.from_address = from_addr.display_name, from_addr.address if from_addr
 
-    sender_string = email_raw.sender ? email_raw.sender[0] : nil
-    email.sender_name, email.sender_address = Email.parse_address_header(email_raw.header['sender'], sender_string)
+    sender_addr = email_raw[:sender].addrs[0] if email_raw[:sender]
+    email.sender_name, email.sender_address = sender_addr.display_name, sender_addr.address if sender_addr
 
-    reply_to_string = email_raw.reply_to ? email_raw.reply_to[0] : nil
-    email.reply_to_name, email.reply_to_address = Email.parse_address_header(email_raw.header['reply_to'], reply_to_string)
-
+    reply_to_addr = email_raw[:reply_to].addrs[0] if email_raw[:reply_to]
+    email.reply_to_name, email.reply_to_address = reply_to_addr.display_name, reply_to_addr.address if reply_to_addr
+    
     email.tos = email_raw.to.join('; ') if !email_raw.to.blank?
     email.ccs = email_raw.cc.join('; ') if !email_raw.cc.blank?
     email.bccs = email_raw.bcc.join('; ') if !email_raw.bcc.blank?
@@ -165,6 +167,45 @@ class Email < ActiveRecord::Base
       begin
         EmailInReplyTo.find_or_create_by!(:email_account => self.email_account, :email => self,
                                           :in_reply_to_message_id => in_reply_to_message_id)
+      rescue ActiveRecord::RecordNotUnique
+      end
+    end
+  end
+  
+  def add_recipients(email_raw)
+    if email_raw[:to]
+      email_raw[:to].addrs.each { |to_addr| self.add_recipient(to_addr, EmailRecipient.recipient_types[:to]) }
+    end
+    
+    if email_raw[:cc]
+      email_raw[:cc].addrs.each { |cc_addr| self.add_recipient(cc_addr, EmailRecipient.recipient_types[:cc]) }
+    end
+
+    if email_raw[:bcc]
+      email_raw[:bcc].addrs.each { |cc_addr| self.add_recipient(cc_addr, EmailRecipient.recipient_types[:bcc]) }
+    end
+  end
+  
+  def add_recipient(addr, recipient_type)
+    name, email_address = addr.display_name, addr.address
+
+    person = nil
+    while person.nil?
+      begin
+        person = Person.find_or_create_by!(:email_account => self.email_account,
+                                           :email_address => cleanse_email(email_address))
+      rescue ActiveRecord::RecordNotUnique
+      end
+    end
+
+    person.name = name
+    person.save!
+
+    email_recipient = nil
+    while email_recipient.nil?
+      begin
+        email_recipient = EmailRecipient.find_or_create_by!(:email => self, :person => person,
+                                                            :recipient_type => recipient_type)
       rescue ActiveRecord::RecordNotUnique
       end
     end

@@ -29,9 +29,6 @@ FactoryGirl.define do
     reply_to_name 'Reply To Name'
     reply_to_address 'reply_to@address.com'
     
-    tos 'to@turinginc.com'
-    ccs 'ccs@turinginc.com'
-    bccs 'bccs@turinginc.com'
     sequence(:subject) { |n| "Test Subject #{n}" }
     
     html_part '<html>Test email text</html>'

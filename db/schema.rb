@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140905063050) do
+ActiveRecord::Schema.define(version: 20140906072855) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,6 +39,17 @@ ActiveRecord::Schema.define(version: 20140905063050) do
   add_index "email_in_reply_tos", ["email_account_id", "email_account_type"], name: "index_email_in_reply_tos_on_email_account", using: :btree
   add_index "email_in_reply_tos", ["email_id", "in_reply_to_message_id"], name: "index_email_in_reply_tos_on_email_id_and_in_reply_to_message_id", unique: true, using: :btree
   add_index "email_in_reply_tos", ["email_id"], name: "index_email_in_reply_tos_on_email_id", using: :btree
+
+  create_table "email_recipients", force: true do |t|
+    t.integer  "email_id"
+    t.integer  "person_id"
+    t.integer  "recipient_type", default: 0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "email_recipients", ["email_id", "person_id", "recipient_type"], name: "index_email_recipients_on_email_and_person_and_recipient_type", unique: true, using: :btree
+  add_index "email_recipients", ["email_id"], name: "index_email_recipients_on_email_id", using: :btree
 
   create_table "email_references", force: true do |t|
     t.integer  "email_id"
@@ -172,6 +183,17 @@ ActiveRecord::Schema.define(version: 20140905063050) do
   end
 
   add_index "ip_infos", ["ip"], name: "index_ip_infos_on_ip", unique: true, using: :btree
+
+  create_table "people", force: true do |t|
+    t.integer  "email_account_id"
+    t.string   "email_account_type"
+    t.text     "name"
+    t.text     "email_address"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "people", ["email_account_id", "email_account_type", "email_address"], name: "index_people_on_email_account_and_email_address", unique: true, using: :btree
 
   create_table "user_auth_keys", force: true do |t|
     t.integer  "user_id"

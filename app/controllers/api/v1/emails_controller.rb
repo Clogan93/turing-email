@@ -3,7 +3,7 @@ class Api::V1::EmailsController < ApiController
     signed_in_user(true)
   end
 
-  before_action :correct_user, :except => [:ip_stats, :volume_report]
+  before_action :correct_user, :except => [:ip_stats, :volume_report, :top_contacts]
 
   swagger_controller :emails, 'Emails Controller'
 
@@ -68,8 +68,33 @@ class Api::V1::EmailsController < ApiController
       :sent_emails_per_day =>
         sent_emails.group("DATE_TRUNC('day', date)").order('date_trunc_day_date DESC').limit(30).count
     }
+
+    volume_report_stats = volume_report_stats.map do |stat, data|
+      { stat => data.map { |date, num_emails| { date.rfc2822 => num_emails } } }
+    end
     
     render :json => volume_report_stats
+  end
+
+  swagger_api :top_contacts do
+    summary 'Return top contacts.'
+
+    response :ok
+  end
+  
+  def top_contacts
+    sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
+
+    received_emails = current_user.emails.where('"emails"."id" NOT IN (?)', sent_label.emails.pluck(:id))
+    sent_emails = current_user.emails.where('"emails"."id" IN (?)', sent_label.emails.pluck(:id))
+    
+    top_contacts_stats = {
+        :top_senders => received_emails.group(:from_address).order('count_all DESC').limit(10).count,
+        :top_recipients => EmailRecipient.where(:email => sent_emails).joins(:person).group(:email_address).
+                                          order('count_all DESC').limit(10).count
+    }
+
+    render :json => top_contacts_stats
   end
 
   private
