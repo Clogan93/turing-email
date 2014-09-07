@@ -5,6 +5,6 @@ FactoryGirl.define do
     email
     person
 
-    recipient_type EmailRecipient.recipients_types[:to]
+    recipient_type EmailRecipient.recipient_types[:to]
   end
 end
