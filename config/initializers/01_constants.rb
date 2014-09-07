@@ -60,6 +60,8 @@ $config.no_reply_email_full = "#{$config.no_reply_email_name} <#{$config.no_repl
 
 $config.max_login_attempts = 5
 
+$config.volume_report_date_format = '%-m/%-d/%Y'
+
 # mailgun
 $config.mailgun_smtp_server = 'smtp.mailgun.org'
 $config.mailgun_api_url_base = "https://api:#{$config.mailgun_api_key}@api.mailgun.net/v2"

@@ -20,13 +20,13 @@ describe Api::V1::EmailThreadsController, :type => :request do
   let!(:email_threads_misc_other) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => email_account_other) }
 
   before(:each) do
-    create_email_thread_emails(email_account, email_threads_inbox, inbox)
-    create_email_thread_emails(email_account, email_threads_test, test_folder)
-    create_email_thread_emails(email_account, email_threads_misc)
+    create_email_thread_emails(email_threads_inbox, inbox)
+    create_email_thread_emails(email_threads_test, test_folder)
+    create_email_thread_emails(email_threads_misc)
 
-    create_email_thread_emails(email_account_other, email_threads_inbox_other, inbox_other)
-    create_email_thread_emails(email_account_other, email_threads_test_other, test_folder_other)
-    create_email_thread_emails(email_account_other, email_threads_misc_other)
+    create_email_thread_emails(email_threads_inbox_other, inbox_other)
+    create_email_thread_emails(email_threads_test_other, test_folder_other)
+    create_email_thread_emails(email_threads_misc_other)
   end
 
   context 'when the user is NOT signed in' do

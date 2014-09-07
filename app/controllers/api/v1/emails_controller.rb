@@ -50,6 +50,7 @@ class Api::V1::EmailsController < ApiController
   def volume_report
     sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
     sent_emails_ids = sent_label ? sent_label.emails.pluck(:id) : [-1]
+    sent_emails_ids = [-1] if sent_emails_ids.empty?
     
     volume_report_stats = {
       :received_emails_per_month =>
@@ -76,7 +77,7 @@ class Api::V1::EmailsController < ApiController
     volume_report_stats_short = {}
     volume_report_stats.each do |stat, data|
       volume_report_stats_short[stat] = {}
-      data.each { |date, num_emails| volume_report_stats_short[stat][date.strftime('%-m/%-d/%Y')] = num_emails }
+      data.each { |date, num_emails| volume_report_stats_short[stat][date.strftime($config.volume_report_date_format)] = num_emails }
     end
     
     render :json => volume_report_stats_short
@@ -91,6 +92,7 @@ class Api::V1::EmailsController < ApiController
   def top_contacts
     sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
     sent_emails_ids = sent_label ? sent_label.emails.pluck(:id) : [-1]
+    sent_emails_ids = [-1] if sent_emails_ids.empty?
 
     top_contacts_stats = {
         :top_senders => current_user.emails.where('"emails"."id" NOT IN (?)', sent_emails_ids).
