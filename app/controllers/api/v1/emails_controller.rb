@@ -49,7 +49,7 @@ class Api::V1::EmailsController < ApiController
   
   def volume_report
     sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
-    sent_emails_ids = sent_label ? sent_label.emails.pluck(:id) : []
+    sent_emails_ids = sent_label ? sent_label.emails.pluck(:id) : [-1]
     
     volume_report_stats = {
       :received_emails_per_month =>
@@ -73,12 +73,13 @@ class Api::V1::EmailsController < ApiController
                        group("DATE_TRUNC('day', date)").order('date_trunc_day_date DESC').limit(30).count
     }
 
-    volume_report_stats_rfc2822 = {}
+    volume_report_stats_short = {}
     volume_report_stats.each do |stat, data|
-      volume_report_stats_rfc2822[stat] = data.map { |date, num_emails| { date.rfc2822 => num_emails } }
+      volume_report_stats_short[stat] = {}
+      data.each { |date, num_emails| volume_report_stats_short[stat][date.strftime('%-m/%-d/%Y')] = num_emails }
     end
     
-    render :json => volume_report_stats_rfc2822
+    render :json => volume_report_stats_short
   end
 
   swagger_api :top_contacts do
@@ -89,7 +90,7 @@ class Api::V1::EmailsController < ApiController
   
   def top_contacts
     sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
-    sent_emails_ids = sent_label ? sent_label.emails.pluck(:id) : []
+    sent_emails_ids = sent_label ? sent_label.emails.pluck(:id) : [-1]
 
     top_contacts_stats = {
         :top_senders => current_user.emails.where('"emails"."id" NOT IN (?)', sent_emails_ids).

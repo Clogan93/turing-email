@@ -15,4 +15,9 @@ FactoryGirl.define do
     label_id 'INBOX'
     name 'INBOX'
   end
+
+  factory :gmail_label_sent, :parent => :gmail_label do
+    label_id 'SENT'
+    name 'SENT'
+  end
 end
