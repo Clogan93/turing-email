@@ -191,7 +191,14 @@ class Api::V1::EmailsController < ApiController
 
     render :json => list_report_stats
   end
-  
+
+  swagger_api :threads_report do
+    summary 'Return threads report stats.'
+
+    response :ok
+  end
+
+  # TODO write test
   def threads_report
     @average_thread_length = current_user.emails.count / current_user.gmail_accounts.first.email_threads.count
     @top_email_threads = EmailThread.where(:id => current_user.emails.group(:email_thread_id).order('count_all DESC').limit(10).count.keys)
