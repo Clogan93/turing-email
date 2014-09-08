@@ -3,7 +3,7 @@ class Api::V1::EmailsController < ApiController
     signed_in_user(true)
   end
 
-  before_action :correct_user, :except => [:ip_stats, :volume_report, :top_contacts, :attachments_report]
+  before_action :correct_user, :except => [:ip_stats, :volume_report, :top_contacts, :attachments_report, :lists_report]
 
   swagger_controller :emails, 'Emails Controller'
 
@@ -144,10 +144,52 @@ class Api::V1::EmailsController < ApiController
   
   def lists_report
     # average number of emails per day per list
-    # percent of emails in each list that are replied to
     # average thread length for each list
     # total number of emails per list
+    # total number of email threads per list
+    
+    # percent of emails in each list that are replied to
     # percent of emails that you send that are replied to
+
+    list_report_stats = {}
+
+    list_report_stats[:lists_email_daily_average] =
+        current_user.emails.where('list_id IS NOT NULL').group(:list_id).order('daily_average DESC').
+                     pluck('list_id, COUNT(*) / GREATEST(1, EXTRACT(day FROM now() - MIN(date))) AS daily_average')
+
+    list_report_stats[:emails_per_list] =
+        current_user.emails.where('list_id IS NOT NULL').group(:list_id).order('emails_per_list DESC').
+                     pluck('list_id, COUNT(*) AS emails_per_list')
+    
+    list_report_stats[:email_threads_per_list] = 
+        current_user.emails.where('list_id IS NOT NULL').group(:list_id).order('email_threads_per_list DESC').
+                     pluck('list_id, COUNT(DISTINCT email_thread_id) AS email_threads_per_list')
+    
+    list_report_stats[:email_threads_replied_to_per_list] =
+        current_user.emails.where('list_id IS NOT NULL').having('COUNT(*) > 1').group(:list_id, :email_thread_id).
+                     order('email_threads_replied_to_per_list DESC').
+                     pluck('list_id, COUNT(*) AS email_threads_replied_to_per_list')
+    
+    sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
+    if sent_label
+      list_report_stats[:sent_emails_per_list] = 
+          sent_label.emails.where('list_id IS NOT NULL').group(:list_id).
+                     order('sent_emails_per_list DESC').
+                     pluck('list_id, COUNT(*) AS sent_emails_per_list')
+      
+      sent_list_email_message_ids = sent_label.emails.where('list_id IS NOT NULL').pluck(:message_id)
+
+      list_report_stats[:sent_emails_replied_to_per_list] = 
+          current_user.emails.joins(:email_in_reply_tos).
+                       where('"email_in_reply_tos"."in_reply_to_message_id" IN (?)', sent_list_email_message_ids).
+                       group(:list_id).order('sent_emails_replied_to_per_list DESC').
+                       pluck('list_id, COUNT(DISTINCT "email_in_reply_tos"."in_reply_to_message_id") AS sent_emails_replied_to_per_list')
+    else
+      list_report_stats[:sent_emails_per_list] = []
+      list_report_stats[:sent_emails_replied_to_per_list] = []
+    end
+
+    render :json => list_report_stats
   end
 
   private
