@@ -4,6 +4,7 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
     "attachments_report": "showAttachmentsReport"
     "email_volume_report": "showEmailVolumeReport"
     "geo_report": "showGeoReport"
+    "impact_report": "showImpactReport"
     "inbox_efficiency_report": "showInboxEfficiencyReport"
     "lists_report": "showListsReport"
     "threads_report": "showThreadsReport"
@@ -201,6 +202,18 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
           el: $(target_element)
         )
         geoReportView.render()
+    )
+
+  showImpactReport: (target_element="#reports") ->
+    impactReport = new TuringEmailApp.Models.ImpactReport()
+    impactReport.fetch(
+      success: (model, response, options) =>
+        console.log model
+        impactReportView = new TuringEmailApp.Views.Reports.ImpactReportView(
+          model: impactReport
+          el: $(target_element)
+        )
+        impactReportView.render()
     )
 
   showInboxEfficiencyReport: (target_element="#reports") ->
