@@ -52,14 +52,20 @@ class Email < ActiveRecord::Base
     email.list_id = email_raw.header['List-ID'].decoded.force_utf8(true) if email_raw.header['List-ID']
     email.date = email_raw.date
 
-    from_addr = email_raw[:from].addrs[0] if email_raw[:from]
-    email.from_name, email.from_address = from_addr.display_name, from_addr.address if from_addr
+    froms_parsed = parse_email_address_field(email_raw, :from)
+    if froms_parsed.length > 0
+      email.from_name, email.from_address = froms_parsed[0][:display_name], froms_parsed[0][:address]
+    end
 
-    sender_addr = email_raw[:sender].addrs[0] if email_raw[:sender]
-    email.sender_name, email.sender_address = sender_addr.display_name, sender_addr.address if sender_addr
+    senders_parsed = parse_email_address_field(email_raw, :sender)
+    if senders_parsed.length > 0
+      email.sender_name, email.sender_address = senders_parsed[0][:display_name], senders_parsed[0][:address]
+    end
 
-    reply_to_addr = email_raw[:reply_to].addrs[0] if email_raw[:reply_to]
-    email.reply_to_name, email.reply_to_address = reply_to_addr.display_name, reply_to_addr.address if reply_to_addr
+    reply_tos_parsed = parse_email_address_field(email_raw, :reply_to)
+    if reply_tos_parsed.length > 0
+      email.reply_to_name, email.reply_to_address = reply_tos_parsed[0][:display_name], reply_tos_parsed[0][:address]
+    end
     
     email.tos = email_raw.to.join('; ') if !email_raw.to.blank?
     email.ccs = email_raw.cc.join('; ') if !email_raw.cc.blank?
@@ -179,22 +185,17 @@ class Email < ActiveRecord::Base
   end
   
   def add_recipients(email_raw)
-    if email_raw[:to]
-      email_raw[:to].addrs.each { |to_addr| self.add_recipient(to_addr, EmailRecipient.recipient_types[:to]) }
-    end
-    
-    if email_raw[:cc]
-      email_raw[:cc].addrs.each { |cc_addr| self.add_recipient(cc_addr, EmailRecipient.recipient_types[:cc]) }
-    end
+    tos_parsed = parse_email_address_field(email_raw, :to)
+    tos_parsed.each { |to| self.add_recipient(to[:display_name], to[:address], EmailRecipient.recipient_types[:to]) }
 
-    if email_raw[:bcc]
-      email_raw[:bcc].addrs.each { |cc_addr| self.add_recipient(cc_addr, EmailRecipient.recipient_types[:bcc]) }
-    end
+    ccs_parsed = parse_email_address_field(email_raw, :cc)
+    ccs_parsed.each { |cc| self.add_recipient(cc[:display_name], cc[:address], EmailRecipient.recipient_types[:cc]) }
+
+    bccs_parsed = parse_email_address_field(email_raw, :bcc)
+    bccs_parsed.each { |bcc| self.add_recipient(bcc[:display_name], bcc[:address], EmailRecipient.recipient_types[:bcc]) }
   end
   
-  def add_recipient(addr, recipient_type)
-    name, email_address = addr.display_name, addr.address
-
+  def add_recipient(name, email_address, recipient_type)
     person = nil
     while person.nil?
       begin

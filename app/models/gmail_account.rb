@@ -56,6 +56,13 @@ class GmailAccount < ActiveRecord::Base
     email.uid = gmail_data['id']
     email.snippet = gmail_data['snippet']
   end
+  
+  def delete_o_auth2_token
+    if self.google_o_auth2_token
+      self.google_o_auth2_token.destroy()
+      self.google_o_auth2_token = nil
+    end
+  end
 
   def gmail_client()
     @gmail_client = Google::GmailClient.new(self.google_o_auth2_token.api_client) if @gmail_client.nil?

@@ -38,6 +38,43 @@ def open_force_file(url)
   return file
 end
 
+def parse_email_string(email_string)
+  display_name = email_address = nil
+  
+  if email_string =~ /.* <(.*)>?/
+    display_name = email_string.match(/(.*) <(.*)>?/)[1]
+    email_address = email_string.match(/(.*) <(.*)>?/)[2]
+  else
+    email_address = address_string
+  end
+  
+  return { :display_name => display_name, :address => email_address }
+end
+
+def parse_email_address_field(email_raw, field)
+  emails_parsed = []
+
+  if email_raw[field] && email_raw[field].field.class != Mail::UnstructuredField
+    email_raw[field].addrs.each do |addr|
+      emails_parsed << { :display_name => addr.display_name, :address => addr.address }
+    end
+  else
+    email_field = email_raw.send(field)
+    
+    if email_field
+      if email_field.class == String
+        emails_parsed << parse_email_string(email_field)
+      else
+        email_field.each do |email_string|
+          emails_parsed << parse_email_string(email_string)
+        end
+      end
+    end
+  end
+
+  return emails_parsed
+end
+
 def parse_email_headers(raw_headers)
   unfolded_headers = raw_headers.gsub(/#{Mail::Patterns::CRLF}#{Mail::Patterns::WSP}+/, ' ').gsub(/#{Mail::Patterns::WSP}+/, ' ')
   split_headers = unfolded_headers.split(Mail::Patterns::CRLF)

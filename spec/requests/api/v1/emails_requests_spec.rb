@@ -6,7 +6,7 @@ describe Api::V1::EmailsController, :type => :request do
     let!(:email_other) { FactoryGirl.create(:email) }
     
     it 'should NOT show the email' do
-      get "/api/v1/emails/#{email.email_account_type}/#{email.email_account_id}/#{email.uid}"
+      get "/api/v1/emails/show/#{email.uid}"
 
       expect(response).to have_http_status(:unauthorized)
     end
@@ -19,7 +19,7 @@ describe Api::V1::EmailsController, :type => :request do
     before { post '/api/v1/sessions', :email => email.user.email, :password => email.user.password }
 
     it 'should show the email' do
-      get "/api/v1/emails/#{email.email_account_type}/#{email.email_account_id}/#{email.uid}"
+      get "/api/v1/emails/show/#{email.uid}"
       
       expect(response).to have_http_status(:ok)
       expect(response).to render_template('api/v1/emails/show')
@@ -30,7 +30,7 @@ describe Api::V1::EmailsController, :type => :request do
     end
 
     it 'should NOT show the other email' do
-      get "/api/v1/emails/#{email_other.email_account_type}/#{email_other.email_account_id}/#{email_other.uid}"
+      get "/api/v1/emails/show/#{email_other.uid}"
 
       expect(response).to have_http_status($config.http_errors[:email_not_found][:status_code])
     end
@@ -43,7 +43,7 @@ describe Api::V1::EmailsController, :type => :request do
     before { post '/api/v1/sessions', :email => email_other.user.email, :password => email_other.user.password }
 
     it 'should show the other email' do
-      get "/api/v1/emails/#{email_other.email_account_type}/#{email_other.email_account_id}/#{email_other.uid}"
+      get "/api/v1/emails/show/#{email_other.uid}"
 
       expect(response).to have_http_status(:ok)
       expect(response).to render_template('api/v1/emails/show')
@@ -54,7 +54,7 @@ describe Api::V1::EmailsController, :type => :request do
     end
 
     it 'should NOT show the email' do
-      get "/api/v1/emails/#{email.email_account_type}/#{email.email_account_id}/#{email.uid}"
+      get "/api/v1/emails/show/#{email.uid}"
 
       expect(response).to have_http_status($config.http_errors[:email_not_found][:status_code])
     end
@@ -130,7 +130,7 @@ describe Api::V1::EmailsController, :type => :request do
     context 'with emails' do
       let!(:sent_folder) { FactoryGirl.create(:gmail_label_sent, :gmail_account => gmail_account) }
       
-      let!(:today) { DateTime.now }
+      let!(:today) { DateTime.now.utc }
       let!(:last_month) { today - 1.month }
       
       let!(:emails_received_today) { FactoryGirl.create_list(:email, SpecMisc::TINY_LIST_SIZE,

@@ -40,6 +40,21 @@ describe Api::V1::EmailThreadsController, :type => :request do
   context 'when the user is signed in' do
     before { post '/api/v1/sessions', :email => email_account.user.email, :password => email_account.user.password }
 
+    it 'should show a thread' do
+      email_thread = email_threads_test.first
+      
+      get "/api/v1/email_threads/show/#{email_thread.uid}"
+      email_thread_rendered = JSON.parse(response.body)
+      validate_email_thread(email_thread, email_thread_rendered)
+    end
+    
+    it 'should NOT show other thread' do
+      email_thread_other = email_threads_test_other.first
+      get "/api/v1/email_threads/show/#{email_thread_other.uid}"
+      
+      expect(response).to have_http_status($config.http_errors[:email_thread_not_found][:status_code])
+    end
+    
     it 'should show the inbox threads' do
       get '/api/v1/email_threads/inbox'
 
