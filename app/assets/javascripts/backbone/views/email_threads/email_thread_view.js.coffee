@@ -33,7 +33,13 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
 
         @$el.find("#email_iframe" + index.toString()).contents().find("body").find("a").click (event) ->
           event.preventDefault()
-          alert $(@).attr("href")
+          #window.location.href = "/mail2" # + $(@).attr("href")
+          $('#composeModal').modal()
+          subject = "Re: " + $(@).text()
+          $('#composeModal #subject_input').val(subject)
+          reply_link = $(@).parent().parent().find('a[href^="mailto:"]').attr("href").replace "mailto:", ""
+          $('#composeModal #to_input').val(reply_link)
+          $('#composeModal #compose_email_body').focus()
 
   bindEmailClick: ->
     @$el.find(".email").click ->
