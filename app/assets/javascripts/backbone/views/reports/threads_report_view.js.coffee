@@ -10,18 +10,8 @@ class TuringEmailApp.Views.Reports.ThreadsReportView extends Backbone.View
   remove: ->
     @$el.remove()
 
-  #TODO: consolidate into a single function for views.
-  #TODO: re-factor mail.html.erb so that this is not longer necessary.
-  restyle_other_elements: ->
-    $(".mail-box-header").hide()
-    $("table.table-mail").hide()
-    $("#pages").hide()
-    $("#email_table").hide()
-    $("#preview_pane").hide()
-    $(".main_email_list_content").css("height", "100%");
-
   render: ->
-    this.restyle_other_elements()
+    TuringEmailApp.reportsRouter.restyle_other_elements()
 
     @$el.html(@template(@model.toJSON()))
     return this

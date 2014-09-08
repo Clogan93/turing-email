@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   root 'static_pages#home'
   get '/mail', to: 'static_pages#mail'
   get '/mail2', to: 'static_pages#mail2'
+  get '/analytics', to: 'static_pages#analytics'
 
   resources :sessions, only: [:new, :create, :destroy]
 

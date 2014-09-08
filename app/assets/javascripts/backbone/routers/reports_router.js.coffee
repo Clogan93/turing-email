@@ -269,3 +269,12 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
       el: $("#reports")
     )
     wordCountReportView.render()
+
+  #TODO: re-factor mail.html.erb so that this is not longer necessary.
+  restyle_other_elements: ->
+    $(".mail-box-header").hide()
+    $("table.table-mail").hide()
+    $("#pages").hide()
+    $("#email_table").hide()
+    $("#preview_pane").hide()
+    $(".main_email_list_content").css("height", "100%")
