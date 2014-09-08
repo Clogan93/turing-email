@@ -10,8 +10,6 @@ class Api::V1::EmailsController < ApiController
   swagger_api :show do
     summary 'Return email.'
 
-    param :path, :email_account_type, :string, :required, 'Email Account Type'
-    param :path, :email_account_id, :string, :required, 'Email Account ID'
     param :path, :email_uid, :string, :required, 'Email UID'
 
     response :ok
@@ -50,6 +48,7 @@ class Api::V1::EmailsController < ApiController
   def volume_report
     sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
     sent_emails_ids = sent_label ? sent_label.emails.pluck(:id) : [-1]
+    sent_emails_ids = [-1] if sent_emails_ids.empty?
     
     volume_report_stats = {
       :received_emails_per_month =>
@@ -76,7 +75,7 @@ class Api::V1::EmailsController < ApiController
     volume_report_stats_short = {}
     volume_report_stats.each do |stat, data|
       volume_report_stats_short[stat] = {}
-      data.each { |date, num_emails| volume_report_stats_short[stat][date.strftime('%-m/%-d/%Y')] = num_emails }
+      data.each { |date, num_emails| volume_report_stats_short[stat][date.strftime($config.volume_report_date_format)] = num_emails }
     end
     
     render :json => volume_report_stats_short
@@ -91,6 +90,7 @@ class Api::V1::EmailsController < ApiController
   def top_contacts
     sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
     sent_emails_ids = sent_label ? sent_label.emails.pluck(:id) : [-1]
+    sent_emails_ids = [-1] if sent_emails_ids.empty?
 
     top_contacts_stats = {
         :top_senders => current_user.emails.where('"emails"."id" NOT IN (?)', sent_emails_ids).
@@ -136,16 +136,29 @@ class Api::V1::EmailsController < ApiController
     render :json => attachments_report_stats
   end
 
+  swagger_api :lists_report do
+    summary 'Return lists report stats.'
+
+    response :ok
+  end
+  
+  def lists_report
+    # average number of emails per day per list
+    # percent of emails in each list that are replied to
+    # average thread length for each list
+    # total number of emails per list
+    # percent of emails that you send that are replied to
+  end
+
   private
 
   # Before filters
 
   def correct_user
-    @email = Email.find_by(:email_account_type => params[:email_account_type],
-                           :email_account_id => params[:email_account_id],
-                           :uid => params[:email_id])
+    @email = Email.find_by(:email_account => current_user.gmail_accounts.first,
+                           :uid => params[:email_uid])
 
-    if @email.nil? || @email.user != current_user
+    if @email.nil?
       render :status => $config.http_errors[:email_not_found][:status_code],
              :json => $config.http_errors[:email_not_found][:description]
       return

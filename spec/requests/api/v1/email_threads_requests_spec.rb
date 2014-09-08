@@ -20,13 +20,13 @@ describe Api::V1::EmailThreadsController, :type => :request do
   let!(:email_threads_misc_other) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => email_account_other) }
 
   before(:each) do
-    create_email_thread_emails(email_account, email_threads_inbox, inbox)
-    create_email_thread_emails(email_account, email_threads_test, test_folder)
-    create_email_thread_emails(email_account, email_threads_misc)
+    create_email_thread_emails(email_threads_inbox, inbox)
+    create_email_thread_emails(email_threads_test, test_folder)
+    create_email_thread_emails(email_threads_misc)
 
-    create_email_thread_emails(email_account_other, email_threads_inbox_other, inbox_other)
-    create_email_thread_emails(email_account_other, email_threads_test_other, test_folder_other)
-    create_email_thread_emails(email_account_other, email_threads_misc_other)
+    create_email_thread_emails(email_threads_inbox_other, inbox_other)
+    create_email_thread_emails(email_threads_test_other, test_folder_other)
+    create_email_thread_emails(email_threads_misc_other)
   end
 
   context 'when the user is NOT signed in' do
@@ -40,6 +40,21 @@ describe Api::V1::EmailThreadsController, :type => :request do
   context 'when the user is signed in' do
     before { post '/api/v1/sessions', :email => email_account.user.email, :password => email_account.user.password }
 
+    it 'should show a thread' do
+      email_thread = email_threads_test.first
+      
+      get "/api/v1/email_threads/show/#{email_thread.uid}"
+      email_thread_rendered = JSON.parse(response.body)
+      validate_email_thread(email_thread, email_thread_rendered)
+    end
+    
+    it 'should NOT show other thread' do
+      email_thread_other = email_threads_test_other.first
+      get "/api/v1/email_threads/show/#{email_thread_other.uid}"
+      
+      expect(response).to have_http_status($config.http_errors[:email_thread_not_found][:status_code])
+    end
+    
     it 'should show the inbox threads' do
       get '/api/v1/email_threads/inbox'
 

@@ -27,7 +27,8 @@ $config.http_errors = {
 
     :email_folder_not_found => {:status_code => 610, :description => 'Email folder not found.'},
 
-    :email_not_found => {:status_code => 620, :description => 'Email not found.'}
+    :email_not_found => {:status_code => 620, :description => 'Email not found.',},
+    :email_thread_not_found => {:status_code => 630, :description => 'Email Thread not found.'}
 }
 
 # globals
@@ -59,6 +60,8 @@ $config.logs_email_full = "#{$config.logs_email_name} <#{$config.logs_email}>"
 $config.no_reply_email_full = "#{$config.no_reply_email_name} <#{$config.no_reply_email}>"
 
 $config.max_login_attempts = 5
+
+$config.volume_report_date_format = '%-m/%-d/%Y'
 
 # mailgun
 $config.mailgun_smtp_server = 'smtp.mailgun.org'

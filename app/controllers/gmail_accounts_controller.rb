@@ -20,9 +20,10 @@ class GmailAccountsController < ApplicationController
       begin
         current_user.with_lock do
           gmail_account = current_user.gmail_accounts.first
-          if gmail_account && gmail_account.google_o_auth2_token
-            gmail_account.google_o_auth2_token.destroy()
-            gmail_account.google_o_auth2_token = nil
+          if gmail_account
+            gmail_account.delete_o_auth2_token()
+            gmail_account.last_history_id_synced = nil
+            gmail_account.save!
           end
 
           o_auth2_base_client = Google::OAuth2Client.base_client($config.google_client_id, $config.google_secret)
@@ -66,9 +67,10 @@ class GmailAccountsController < ApplicationController
   def o_auth2_remove
     current_user.with_lock do
       gmail_account = current_user.gmail_accounts.first
-      if gmail_account && gmail_account.google_o_auth2_token
-        gmail_account.google_o_auth2_token.destroy()
-        gmail_account.google_o_auth2_token = nil
+      if gmail_account
+        gmail_account.delete_o_auth2_token()
+        gmail_account.last_history_id_synced = nil
+        gmail_account.save!
       end
     end
 

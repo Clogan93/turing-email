@@ -7,12 +7,11 @@ module SpecMisc
   GMAIL_TEST_EMAIL = 'turingemailtest1@gmail.com'
   GMAIL_TEST_PASSWORD = 'wZLcsS3XZUN3u2wy'
 
-  def create_email_thread_emails(email_account, email_threads, email_folder = nil)
+  def create_email_thread_emails(email_threads, email_folder = nil)
     emails = []
 
     email_threads.each do |email_thread|
       emails += FactoryGirl.create_list(:email, SpecMisc::TINY_LIST_SIZE,
-                                        :email_account => email_account,
                                         :email_thread => email_thread)
 
       email_thread.emails.each do |email|
