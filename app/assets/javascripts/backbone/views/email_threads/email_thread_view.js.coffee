@@ -31,15 +31,18 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
         body_height_adjusted_string = body_height_adjusted.toString() + "px"
         @$el.find("#email_iframe" + index.toString()).css("height", body_height_adjusted_string)
 
-        @$el.find("#email_iframe" + index.toString()).contents().find("body").find("a").click (event) ->
+        @$el.find("#email_iframe" + index.toString()).contents().find("body").find('a[href^="#email_thread"]').click (event) ->
           event.preventDefault()
-          #window.location.href = "/mail2" # + $(@).attr("href")
           $('#composeModal').modal()
           subject = "Re: " + $(@).text()
           $('#composeModal #subject_input').val(subject)
           reply_link = $(@).parent().parent().find('a[href^="mailto:"]').attr("href").replace "mailto:", ""
           $('#composeModal #to_input').val(reply_link)
-          $('#composeModal #compose_email_body').focus()
+
+          thread_elements = $(@).attr("href").split("#")
+          thread_id = thread_elements[thread_elements.length - 1]
+          $.get "/api/v1/email_threads/show/" + thread_id, (data) ->
+            $('#composeModal #compose_email_body').val("\n\n\n\n" + data.emails[data.emails.length - 1].text_part)
 
   bindEmailClick: ->
     @$el.find(".email").click ->
