@@ -50,7 +50,7 @@ class Api::V1::EmailThreadsController < ApiController
   swagger_api :show do
     summary 'Return email thread.'
 
-    param :path, :email_thread_uid, :string, :required, 'Email UID'
+    param :path, :email_thread_uid, :string, :required, 'Email Thread UID'
 
     response :ok
     response $config.http_errors[:email_thread_not_found][:status_code],
