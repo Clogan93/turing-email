@@ -5,7 +5,8 @@ class Api::V1::EmailsController < ApiController
 
   before_action :correct_user, :except => [:ip_stats, :volume_report,
                                            :contacts_report, :attachments_report,
-                                           :lists_report, :threads_report]
+                                           :lists_report, :threads_report,
+                                           :folders_report, :impact_report]
 
   swagger_controller :emails, 'Emails Controller'
 
@@ -201,7 +202,63 @@ class Api::V1::EmailsController < ApiController
   # TODO write test
   def threads_report
     @average_thread_length = current_user.emails.count / current_user.gmail_accounts.first.email_threads.count
-    @top_email_threads = EmailThread.where(:id => current_user.emails.group(:email_thread_id).order('count_all DESC').limit(10).count.keys)
+    
+    @top_email_threads = EmailThread.where(:id => current_user.emails.group(:email_thread_id).
+                                     order('count_all DESC').limit(10).count.keys)
+  end
+
+  swagger_api :folders_report do
+    summary 'Return folders report stats.'
+
+    response :ok
+  end
+
+  # TODO write test
+  def folders_report
+    folders_report_stats = {}
+    
+    num_emails = current_user.emails.count
+    inbox_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('INBOX')
+    unread_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('UNREAD')
+    sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
+    draft_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('DRAFT')
+    trash_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('TRASH')
+    spam_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SPAM')
+    starred_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('STARRED')
+    
+    folders_report_stats[:percent_inbox] = inbox_label ? inbox_label.emails.count / num_emails.to_f : 0
+    folders_report_stats[:percent_unread] = unread_label ? unread_label.emails.count / num_emails.to_f : 0
+    folders_report_stats[:percent_sent] = sent_label ? sent_label.emails.count / num_emails.to_f : 0
+    folders_report_stats[:percent_draft] = sent_label ? draft_label.emails.count / num_emails.to_f : 0
+    folders_report_stats[:percent_trash] = sent_label ? trash_label.emails.count / num_emails.to_f : 0
+    folders_report_stats[:percent_spam] = sent_label ? spam_label.emails.count / num_emails.to_f : 0
+    folders_report_stats[:percent_starred] = sent_label ? starred_label.emails.count / num_emails.to_f : 0
+
+    render :json => folders_report_stats
+  end
+
+  swagger_api :impact_report do
+    summary 'Return impact report stats.'
+
+    response :ok
+  end
+
+  # TODO write test
+  def impact_report
+    impact_report_stats = {}
+
+    sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
+
+    sent_email_message_ids = sent_label.emails.pluck(:message_id)
+
+    sent_emails_replied_to = current_user.emails.joins(:email_in_reply_tos).
+                                          where('"email_in_reply_tos"."in_reply_to_message_id" IN (?)',
+                                                sent_email_message_ids).
+                                          pluck('COUNT(DISTINCT "email_in_reply_tos"."in_reply_to_message_id")')[0]
+
+    impact_report_stats[:percent_sent_emails_replied_to] = sent_emails_replied_to / sent_label.emails.count.to_f
+    
+    render :json => impact_report_stats
   end
 
   private

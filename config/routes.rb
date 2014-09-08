@@ -26,6 +26,8 @@ Rails.application.routes.draw do
       get '/emails/attachments_report', to: 'emails#attachments_report'
       get '/emails/lists_report', to: 'emails#lists_report'
       get '/emails/threads_report', to: 'emails#threads_report'
+      get '/emails/folders_report', to: 'emails#folders_report'
+      get '/emails/impact_report', to: 'emails#impact_report'
       
       resources :email_folders, only: [:index]
 
