@@ -5,6 +5,7 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
     "email_volume_report": "showEmailVolumeReport"
     "geo_report": "showGeoReport"
     "inbox_efficiency_report": "showInboxEfficiencyReport"
+    "lists_report": "showListsReport"
     "threads_report": "showThreadsReport"
     "top_senders_and_recipients_report": "showTopSendersAndRecipientsReport"
     "summary_analytics_report": "showSummaryAnalyticsReport"
@@ -22,19 +23,6 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
   loadInboxEfficiencyReportSampleData: (inboxEfficiencyReport) ->
     inboxEfficiencyReport.set "average_response_time_in_minutes", 7.5
     inboxEfficiencyReport.set "percent_archived", 71.2
-
-  loadThreadsReportSampleData: (threadsReport) ->
-    threadsReport.set "data", { 
-      threadsData : [
-        ['Age', 'Weight'],
-        [ 8,      12],
-        [ 4,      5.5],
-        [ 11,     14],
-        [ 4,      5],
-        [ 3,      3.5],
-        [ 6.5,    7]
-      ]
-    }
 
   loadWordCountReportSampleData: (wordCountReport) ->
     wordCountReport.set "data", { 
@@ -224,6 +212,17 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
     )
     inboxEfficiencyReportView.render()
 
+  showListsReport: (target_element="#reports") ->
+    listsReport = new TuringEmailApp.Models.ListsReport()
+    listsReport.fetch(
+      success: (model, response, options) =>
+        listsReportView = new TuringEmailApp.Views.Reports.ListsReportView(
+          model: listsReport
+          el: $(target_element)
+        )
+        listsReportView.render()
+    )
+
   showSummaryAnalyticsReport: (target_element="#reports") ->
     summaryAnalyticsReport = new TuringEmailApp.Models.SummaryAnalyticsReport()
     @.loadSummaryAnalyticsReportSampleData summaryAnalyticsReport
@@ -233,15 +232,16 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
     )
     summaryAnalyticsReportView.render()
 
-
   showThreadsReport: (target_element="#reports") ->
     threadsReport = new TuringEmailApp.Models.ThreadsReport()
-    @.loadThreadsReportSampleData threadsReport
-    threadsReportView = new TuringEmailApp.Views.Reports.ThreadsReportView(
-      model: threadsReport
-      el: $(target_element)
+    threadsReport.fetch(
+      success: (model, response, options) =>
+        threadsReportView = new TuringEmailApp.Views.Reports.ThreadsReportView(
+          model: threadsReport
+          el: $(target_element)
+        )
+        threadsReportView.render()
     )
-    threadsReportView.render()
 
   showTopSendersAndRecipientsReport: (target_element="#reports") ->
     topSendersAndRecipientsReport = new TuringEmailApp.Models.TopSendersAndRecipientsReport()

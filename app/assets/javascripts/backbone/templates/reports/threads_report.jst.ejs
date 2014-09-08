@@ -1,27 +1,11 @@
-<%
-  function drawChart(threadsData) {
-    var data = google.visualization.arrayToDataTable(threadsData);
-
-    var options = {
-      title: 'Thread Length Distribution',
-      vAxis: {title: 'Number of words', minValue: 0, maxValue: 15},
-      legend: 'none'
-    };
-
-    var chart = new google.visualization.ScatterChart(document.getElementById('threads_chart_div'));
-
-    chart.draw(data, options);
-  }
-
-  setTimeout(function() {
-    google.load('visualization', '1.0',
-                {'callback': function() {drawChart(data.threadsData); },
-                'packages':['corechart']}
-                )
-  }, 1000);
-%>
-
 <div class="page-header">
   <h1 class="h1">Reports <small>threads</small></h1>
 </div>
-<div id="threads_chart_div" style="width: 900px; height: 500px;"></div>
+<h4 class="h4">Average Thread Length: <small><%= average_thread_length %></small></h4>
+<br />
+<h4 class="h4">Top Email Threads</h4>
+<ul>
+  <% for(var i=0; i < top_email_threads.length; i++) {%>
+     <li><a href="#email_thread#<%= top_email_threads[i].uid %>"><%= top_email_threads[i].emails[0].subject %></a></li>
+  <% } %>
+</ul>
