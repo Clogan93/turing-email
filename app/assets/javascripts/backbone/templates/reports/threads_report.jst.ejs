@@ -8,7 +8,7 @@
       legend: 'none'
     };
 
-    var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+    var chart = new google.visualization.ScatterChart(document.getElementById('threads_chart_div'));
 
     chart.draw(data, options);
   }
@@ -24,4 +24,4 @@
 <div class="page-header">
   <h1 class="h1">Reports <small>threads</small></h1>
 </div>
-<div id="chart_div" style="width: 900px; height: 500px;"></div>
+<div id="threads_chart_div" style="width: 900px; height: 500px;"></div>
