@@ -3,7 +3,9 @@ class Api::V1::EmailsController < ApiController
     signed_in_user(true)
   end
 
-  before_action :correct_user, :except => [:ip_stats, :volume_report, :contacts_report, :attachments_report, :lists_report]
+  before_action :correct_user, :except => [:ip_stats, :volume_report,
+                                           :contacts_report, :attachments_report,
+                                           :lists_report, :threads_report]
 
   swagger_controller :emails, 'Emails Controller'
 
@@ -147,15 +149,8 @@ class Api::V1::EmailsController < ApiController
     response :ok
   end
   
+  # TODO write test
   def lists_report
-    # average number of emails per day per list
-    # average thread length for each list
-    # total number of emails per list
-    # total number of email threads per list
-    
-    # percent of emails in each list that are replied to
-    # percent of emails that you send that are replied to
-
     list_report_stats = {}
 
     list_report_stats[:lists_email_daily_average] =
@@ -195,6 +190,11 @@ class Api::V1::EmailsController < ApiController
     end
 
     render :json => list_report_stats
+  end
+  
+  def threads_report
+    @average_thread_length = current_user.emails.count / current_user.gmail_accounts.first.email_threads.count
+    @top_email_threads = EmailThread.where(:id => current_user.emails.group(:email_thread_id).order('count_all DESC').limit(10).count.keys)
   end
 
   private
