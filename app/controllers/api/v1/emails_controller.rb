@@ -3,7 +3,7 @@ class Api::V1::EmailsController < ApiController
     signed_in_user(true)
   end
 
-  before_action :correct_user, :except => [:ip_stats, :volume_report, :top_contacts, :attachments_report, :lists_report]
+  before_action :correct_user, :except => [:ip_stats, :volume_report, :contacts_report, :attachments_report, :lists_report]
 
   swagger_controller :emails, 'Emails Controller'
 
@@ -81,25 +81,30 @@ class Api::V1::EmailsController < ApiController
     render :json => volume_report_stats_short
   end
 
-  swagger_api :top_contacts do
-    summary 'Return top contacts.'
+  swagger_api :contacts_report do
+    summary 'Return contacts report stats.'
 
     response :ok
   end
   
-  def top_contacts
+  def contacts_report
     sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
     sent_emails_ids = sent_label ? sent_label.emails.pluck(:id) : [-1]
     sent_emails_ids = [-1] if sent_emails_ids.empty?
 
-    top_contacts_stats = {
+    contacts_report_stats = {
         :top_senders => current_user.emails.where('"emails"."id" NOT IN (?)', sent_emails_ids).
                                             group(:from_address).order('count_all DESC').limit(10).count,
         :top_recipients => EmailRecipient.where(:email => sent_emails_ids).joins(:person).group(:email_address).
-                                          order('count_all DESC').limit(10).count
+                                          order('count_all DESC').limit(10).count,
+        
+        :bottom_senders => current_user.emails.where('"emails"."id" NOT IN (?)', sent_emails_ids).
+            group(:from_address).order('count_all ASC').limit(10).count,
+        :bottom_recipients => EmailRecipient.where(:email => sent_emails_ids).joins(:person).group(:email_address).
+            order('count_all ASC').limit(10).count
     }
 
-    render :json => top_contacts_stats
+    render :json => contacts_report_stats
   end
 
   swagger_api :attachments_report do

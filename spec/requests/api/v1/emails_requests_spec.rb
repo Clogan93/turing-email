@@ -202,20 +202,20 @@ describe Api::V1::EmailsController, :type => :request do
     end
   end
   
-  context 'top_contacts' do
+  context 'contacts_report' do
     let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
     before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
     
     context 'no senders or recipients' do      
       it 'should return top contact stats' do
-        get '/api/v1/emails/top_contacts'
+        get '/api/v1/emails/contacts_report'
 
-        top_contacts_stats = JSON.parse(response.body)
+        contacts_report = JSON.parse(response.body)
 
-        top_recipients = top_contacts_stats['top_recipients']
+        top_recipients = contacts_report['top_recipients']
         expect(top_recipients).to eq({})
 
-        top_senders = top_contacts_stats['top_senders']
+        top_senders = contacts_report['top_senders']
         expect(top_senders).to eq({})
       end
     end
@@ -261,11 +261,11 @@ describe Api::V1::EmailsController, :type => :request do
       before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
 
       it 'should return top contact stats' do
-        get '/api/v1/emails/top_contacts'
+        get '/api/v1/emails/contacts_report'
 
-        top_contacts_stats = JSON.parse(response.body)
+        contacts_report_stats = JSON.parse(response.body)
 
-        top_recipients = top_contacts_stats['top_recipients']
+        top_recipients = contacts_report_stats['top_recipients']
         expect(top_recipients.keys.length).to eq(recipients.length)
         
         top_recipients.zip(recipients).each do |top_recipient, recipient|
@@ -273,12 +273,28 @@ describe Api::V1::EmailsController, :type => :request do
           expect(top_recipient[1]).to eq(recipient[:emails_sent].length)
         end
 
-        top_senders = top_contacts_stats['top_senders']
+        top_senders = contacts_report_stats['top_senders']
         expect(top_senders.keys.length).to eq(senders.length)
         
         top_senders.zip(senders).each do |top_sender, sender|
           expect(top_sender[0]).to eq(sender[:person].email_address)
           expect(top_sender[1]).to eq(sender[:emails_received].length)
+        end
+
+        bottom_recipients = contacts_report_stats['bottom_recipients']
+        expect(bottom_recipients.keys.length).to eq(recipients.length)
+
+        bottom_recipients.zip(recipients.reverse).each do |bottom_recipient, recipient|
+          expect(bottom_recipient[0]).to eq(recipient[:person].email_address)
+          expect(bottom_recipient[1]).to eq(recipient[:emails_sent].length)
+        end
+
+        bottom_senders = contacts_report_stats['bottom_senders']
+        expect(bottom_senders.keys.length).to eq(senders.length)
+
+        bottom_senders.zip(senders.reverse).each do |bottom_sender, sender|
+          expect(bottom_sender[0]).to eq(sender[:person].email_address)
+          expect(bottom_sender[1]).to eq(sender[:emails_received].length)
         end
       end
     end
