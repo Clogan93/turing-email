@@ -13,5 +13,6 @@ class TuringEmailApp.Views.Reports.ListsReportView extends Backbone.View
   render: ->
     TuringEmailApp.reportsRouter.restyle_other_elements()
 
+    console.log @model.toJSON()
     @$el.html(@template(@model.toJSON()))
     return this
