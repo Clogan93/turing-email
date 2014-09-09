@@ -1,15 +1,16 @@
 <div id="wrapper">
 
-    <div id="page-wrapper" class="gray-bg">
+  <div id="page-wrapper" class="gray-bg">
+
     <div class="row border-bottom">
-    <nav class="navbar navbar-static-top white-bg" role="navigation" style="margin-bottom: 0">
-    <div class="navbar-header">
-        <form role="search" class="navbar-form-custom" method="post" action="search_results.html">
+      <nav class="navbar navbar-static-top white-bg" role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header">
+          <form role="search" class="navbar-form-custom" method="post" action="search_results.html">
             <div class="form-group">
-                <input type="text" placeholder="Search for something..." class="form-control" name="top-search" id="top-search">
+              <input type="text" placeholder="Search for something..." class="form-control" name="top-search" id="top-search">
             </div>
-        </form>
-    </div>
+          </form>
+        </div>
         <ul class="nav navbar-top-links navbar-right">
             <li>
                 <span class="m-r-sm text-muted welcome-message">Welcome to Turing.</span>
@@ -20,8 +21,21 @@
                 </a>
             </li>
         </ul>
+      </nav>
 
-    </nav>
+      <div class="dropdown">
+        <a data-toggle="dropdown" href="#"></a>
+        <div class="dropdown-menu" id="email_filter_dropdown">
+          <form>
+            <input type="text" class="form-control" id="toInput" placeholder="To"/>
+            <input type="text" class="form-control" placeholder="From"/>
+            <input type="text" class="form-control" placeholder="Subject"/>
+            <input type="text" class="form-control" placeholder="List Name"/>
+            <button type="submit" class="btn btn-primary">Create filter with these conditions</button>
+          </form>
+        </div>
+      </div>
+
     </div>
 
     <div class="wrapper wrapper-content">
@@ -63,6 +77,16 @@
                               <div><a href="#top_senders_and_recipients_report">Top Senders And Recipients Report</a></div>
                           </ul>
 
+                          <br />
+
+                          <h5>Filters</h5>
+
+                          <br />
+
+                          <ul class="category-list" id="reports_list" style="padding: 0">
+                              <div class="create_filter">Create Filter</div>
+                          </ul>
+
                           <div class="clearfix"></div>
                       </div>
                   </div>
@@ -87,8 +111,8 @@
         </div>
     </div>
 
-    </div>
-    </div>
+  </div>
+
 </div>
 
 <!-- Modal -->
@@ -117,6 +141,6 @@
 
 <script type="text/javascript">
   $(function() {
-  TuringEmailApp.start();
+    TuringEmailApp.start();
   });
 </script>
