@@ -50,22 +50,26 @@ end
 
 desc 'Run the genie on all email accounts'
 
-task :email_genie => :environment do
+task :email_genie, [:demo] => :environment do |t, args|
+  args.with_defaults(:demo => false)
+  
   GmailAccount.all.each do |gmail_account|
     log_console("PROCESSING account #{gmail_account.email}")
 
-    EmailGenie.process_gmail_account(gmail_account)
+    EmailGenie.process_gmail_account(gmail_account, args.demo)
   end
 end
 
 desc 'Run genie reports for all accounts'
 
-task :email_genie_reports => :environment do
+task :email_genie_reports, [:demo] => :environment do |t, args|
+  args.with_defaults(:demo => false)
+  
   User.all.each do |user|
     begin
       log_console("PROCESSING user #{user.email}")
 
-      EmailGenie.send_user_report_email(user)
+      EmailGenie.send_user_report_email(user, args.demo)
     rescue Exception => ex
       log_email_exception(ex)
     end

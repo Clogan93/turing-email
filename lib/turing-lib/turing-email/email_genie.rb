@@ -10,13 +10,14 @@ class EmailGenie
             '<team-ams.optimizely.com>' => 'Team (AMS)',
             '<rocketship.optimizely.com>' => 'Rocketship' }
 
-  def EmailGenie.send_user_report_email(user)
+  def EmailGenie.send_user_report_email(user, demo = false)
     inbox_label = GmailLabel.where(:gmail_account => user.gmail_accounts.first,
                                    :label_id => 'INBOX').first
     if inbox_label
-      important_emails = inbox_label.emails
-      .where('date < ? AND date > ?', Time.now - 7.hours, Time.now - 7.hours - 24.hours)
-      .order(:date => :desc)
+      where_clause = demo ? ['date > ?', Time.now - 24.hours] :
+                            ['date < ? AND date > ?', Time.now - 7.hours, Time.now - 7.hours - 24.hours]
+                     
+      important_emails = inbox_label.emails.where(where_clause).order(:date => :desc)
     else
       important_emails = []
     end
@@ -55,12 +56,12 @@ class EmailGenie
     auto_filed_emails.update_all(:auto_filed_reported => true)
   end
 
-  def EmailGenie.process_gmail_account(gmail_account)
+  def EmailGenie.process_gmail_account(gmail_account, demo = false)
     inbox_label = GmailLabel.where(:gmail_account => gmail_account,
                                    :label_id => 'INBOX').first
     return if inbox_label.nil?
 
-    emails = inbox_label.emails.where('date < ?', Time.now - 7.hours)
+    emails = demo ? inbox_label.emails : inbox_label.emails.where('date < ?', Time.now - 7.hours)
 
     sent_label = GmailLabel.where(:gmail_account => gmail_account,
                                   :label_id => 'SENT').first
