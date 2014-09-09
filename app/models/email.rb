@@ -86,6 +86,8 @@ class Email < ActiveRecord::Base
     headers.reverse!
     
     headers.each do |header|
+      next if header.name.nil? || header.value.nil?
+
       if header.name.downcase == 'x-originating-ip'
         m = header.value.match(/\[(#{$config.ip_regex})\]/)
         
