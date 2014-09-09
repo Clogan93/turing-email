@@ -36,16 +36,12 @@ ActiveRecord::Schema.define(version: 20140907071100) do
   add_index "email_folder_mappings", ["email_id", "email_folder_id", "email_folder_type"], name: "index_email_folder_mappings_on_email_id_and_email_folder", unique: true, using: :btree
 
   create_table "email_in_reply_tos", force: true do |t|
-    t.integer  "email_account_id"
-    t.string   "email_account_type"
     t.integer  "email_id"
     t.text     "in_reply_to_message_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "email_in_reply_tos", ["email_account_id", "email_account_type", "in_reply_to_message_id"], name: "index_email_in_reply_tos_ea_and_irtm_id", using: :btree
-  add_index "email_in_reply_tos", ["email_account_id", "email_account_type"], name: "index_email_in_reply_tos_on_email_account", using: :btree
   add_index "email_in_reply_tos", ["email_id", "in_reply_to_message_id"], name: "index_email_in_reply_tos_on_email_id_and_in_reply_to_message_id", unique: true, using: :btree
   add_index "email_in_reply_tos", ["email_id"], name: "index_email_in_reply_tos_on_email_id", using: :btree
 

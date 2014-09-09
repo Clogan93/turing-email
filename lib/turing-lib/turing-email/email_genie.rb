@@ -78,7 +78,10 @@ class EmailGenie
   end
 
   def EmailGenie.email_is_unimportant(email, sent_label = nil)
-    if email.subject && email.subject =~ /^Automatic Reply|Out of Office/i
+    if email.from_address == email.email_account.user.email || email.from_address == email.email_account.email
+      log_console("UNIMPORTANT => email.from_address = #{email.from_address}")
+      return true
+    elsif email.subject && email.subject =~ /^Automatic Reply|Out of Office/i
       log_console("UNIMPORTANT => subject = #{email.subject}")
       return true
     elsif email.list_id && email.tos && email.tos.downcase !~ /#{email.email_account.email}/
@@ -138,6 +141,14 @@ class EmailGenie
       else
         email.email_account.move_email_to_folder(email, 'List Emails', true)
       end
+    elsif email.subject && email.subject =~ /^Automatic Reply|Out of Office/i
+      email.email_account.move_email_to_folder(email, 'Unimportant/Automatic Replies', true)
+    elsif email.from_address == 'calendar-notification@google.com' ||
+          email.sender_address == 'calendar-notification@google.com' ||
+          email.has_calendar_attachment
+      email.email_account.move_email_to_folder(email, 'Unimportant/Calendar', true)
+    elsif email.from_address == email.email_account.user.email || email.from_address == email.email_account.email
+      email.email_account.move_email_to_folder(email, 'Unimportant/Notes to Self', true)
     else
       email.email_account.move_email_to_folder(email, 'Unimportant', true)
     end
