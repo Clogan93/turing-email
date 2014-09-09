@@ -149,15 +149,13 @@ class Email < ActiveRecord::Base
     return if email_raw.in_reply_to.nil?
 
     if email_raw.in_reply_to.class == String
-      EmailInReplyTo.find_or_create_by!(:email_account => self.email_account, :email => self,
-                                        :in_reply_to_message_id => email_raw.in_reply_to)
+      EmailInReplyTo.find_or_create_by!(:email => self, :in_reply_to_message_id => email_raw.in_reply_to)
       return
     end
 
     email_raw.in_reply_to.each do |in_reply_to_message_id|
       begin
-        EmailInReplyTo.find_or_create_by!(:email_account => self.email_account, :email => self,
-                                          :in_reply_to_message_id => in_reply_to_message_id)
+        EmailInReplyTo.find_or_create_by!(:email => self, :in_reply_to_message_id => in_reply_to_message_id)
       rescue ActiveRecord::RecordNotUnique
       end
     end

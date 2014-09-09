@@ -72,32 +72,69 @@ class EmailGenie
       if EmailGenie.email_is_unimportant(email, sent_label)
         log_console("#{email.uid} is UNIMPORTANT!!")
 
-        EmailGenie.auto_file(email, inbox_label)
+        EmailGenie.auto_file(email, inbox_label, sent_label)
       end
     end
   end
 
+  def EmailGenie.is_no_reply_address(address)
+    return (address =~ /.*no-?reply.*@.*/) != nil
+  end
+  
+  def EmailGenie.is_no_reply_email(email)
+    return EmailGenie.is_no_reply_address(email.reply_to_address) || EmailGenie.is_no_reply_address(email.from_address)
+  end
+  
+  def EmailGenie.is_calendar_email(email)
+    return email.from_address == 'calendar-notification@google.com' ||
+           email.sender_address == 'calendar-notification@google.com' ||
+           email.has_calendar_attachment
+  end
+  
+  def EmailGenie.is_email_note_to_self(email)
+    return email.from_address =~ /^(#{email.user.email}|#{email.email_account.email})$/i &&
+           email.email_recipients.count == 1 &&
+           email.email_recipients[0].person.email_address =~ /^(#{email.user.email}|#{email.email_account.email})$/i
+  end
+  
+  def EmailGenie.is_automatic_reply_email(email)
+    return email.subject && email.subject =~ /^(Automatic Reply|Out of Office)/i
+  end
+
+  def EmailGenie.is_unimportant_list_email(email)
+    return email.list_id && email.tos && email.tos.downcase !~ /#{email.email_account.email}/
+  end
+  
+  def EmailGenie.is_completed_conversation_email(email, sent_label = nil)
+    return email.seen && sent_label &&
+           EmailInReplyTo.find_by(:email => sent_label.emails, :in_reply_to_message_id => email.message_id)
+  end
+  
+  def EmailGenie.is_unimportant_group_email(email)
+    return email.email_recipients.count >= 5
+  end
+
   def EmailGenie.email_is_unimportant(email, sent_label = nil)
-    if email.from_address == email.email_account.user.email || email.from_address == email.email_account.email
-      log_console("UNIMPORTANT => email.from_address = #{email.from_address}")
-      return true
-    elsif email.subject && email.subject =~ /^Automatic Reply|Out of Office/i
-      log_console("UNIMPORTANT => subject = #{email.subject}")
-      return true
-    elsif email.list_id && email.tos && email.tos.downcase !~ /#{email.email_account.email}/
-      log_console("UNIMPORTANT => list_id = #{email.list_id}")
-      return true
-    elsif EmailGenie.is_no_reply_address(email.reply_to_address) || EmailGenie.is_no_reply_address(email.from_address)
-      log_console("UNIMPORTANT => NOREPLY = #{email.reply_to_address} #{email.from_address}")
-      return true
-    elsif email.from_address == 'calendar-notification@google.com' ||
-          email.sender_address == 'calendar-notification@google.com' ||
-          email.has_calendar_attachment
+    if EmailGenie.is_calendar_email(email)
       log_console("UNIMPORTANT => Calendar!")
       return true
-    elsif email.seen && EmailInReplyTo.find_by(:email_account => email.email_account,
-                                               :in_reply_to_message_id => email.message_id)
-      log_console("UNIMPORTANT => Email SEEN AND replied too!")
+    elsif EmailGenie.is_email_note_to_self(email)
+      log_console("UNIMPORTANT => email.from_address = #{email.from_address} email.tos = #{email.tos}")
+      return true
+    elsif EmailGenie.is_automatic_reply_email(email)
+      log_console("UNIMPORTANT => subject = #{email.subject}")
+      return true
+    elsif EmailGenie.is_unimportant_list_email(email)
+      log_console("UNIMPORTANT => list_id = #{email.list_id}")
+      return true
+    elsif EmailGenie.is_completed_conversation_email(email, sent_label)
+      log_console("UNIMPORTANT => Email SEEN AND replied to!")
+      return true
+    elsif EmailGenie.is_unimportant_group_email(email)
+      log_console("UNIMPORTANT => GROUP EMAIL! email_recipients.count = #{email.email_recipients.count}")
+      return true
+    elsif EmailGenie.is_no_reply_email(email)
+      log_console("UNIMPORTANT => NOREPLY = #{email.reply_to_address} #{email.from_address}")
       return true
     elsif sent_label
       reply_address = email.reply_to_address ? email.reply_to_address : email.from_address
@@ -116,44 +153,46 @@ class EmailGenie
     return false
   end
 
-  def EmailGenie.is_no_reply_address(address)
-    return (address =~ /.*no-?reply.*@.*/) != nil
-  end
-
-  def EmailGenie.auto_file(email, inbox_folder)
+  def EmailGenie.auto_file(email, inbox_folder, sent_label = nil)
     log_console("AUTO FILING! #{email.uid}")
 
     EmailFolderMapping.destroy_all(:email => email, :email_folder => inbox_folder)
 
-    if email.list_id
+    if EmailGenie.is_calendar_email(email)
+      email.email_account.move_email_to_folder(email, 'Unimportant/Calendar', true)
+    elsif EmailGenie.is_email_note_to_self(email)
+      email.email_account.move_email_to_folder(email, 'Unimportant/Notes to Self', true)
+    elsif EmailGenie.is_automatic_reply_email(email)
+      email.email_account.move_email_to_folder(email, 'Unimportant/Automatic Replies', true)
+    elsif EmailGenie.is_unimportant_list_email(email)
       log_console("Found list_id=#{email.list_id}")
 
-      if EmailGenie::LISTS.keys.include?(email.list_id.downcase)
-        email.email_account.move_email_to_folder(email, EmailGenie::LISTS[email.list_id.downcase], true)
-      elsif email.from_address == 'notifications@github.com'
-        subfolder = email.list_id
-
-        if subfolder =~ /.* <.*>/
-          subfolder = subfolder.match(/(.*) <.*>/)[0]
-        end
-
-        email.email_account.move_email_to_folder(email, "GitHub/#{subfolder}", true)
-      else
-        email.email_account.move_email_to_folder(email, 'List Emails', true)
-      end
-    elsif email.subject && email.subject =~ /^Automatic Reply|Out of Office/i
-      email.email_account.move_email_to_folder(email, 'Unimportant/Automatic Replies', true)
-    elsif email.from_address == 'calendar-notification@google.com' ||
-          email.sender_address == 'calendar-notification@google.com' ||
-          email.has_calendar_attachment
-      email.email_account.move_email_to_folder(email, 'Unimportant/Calendar', true)
-    elsif email.from_address == email.email_account.user.email || email.from_address == email.email_account.email
-      email.email_account.move_email_to_folder(email, 'Unimportant/Notes to Self', true)
+      EmailGenie.auto_file_list_email(email)
+    elsif EmailGenie.is_completed_conversation_email(email, sent_label)
+      email.email_account.move_email_to_folder(email, 'Unimportant/Completed Conversations', true)
+    elsif EmailGenie.is_unimportant_group_email(email)
+      email.email_account.move_email_to_folder(email, 'Unimportant/Group Conversations', true)
     else
       email.email_account.move_email_to_folder(email, 'Unimportant', true)
     end
 
     email.auto_filed = true
     email.save!
+  end
+
+  def EmailGenie.auto_file_list_email(email)
+    if EmailGenie::LISTS.keys.include?(email.list_id.downcase)
+      email.email_account.move_email_to_folder(email, EmailGenie::LISTS[email.list_id.downcase], true)
+    elsif email.from_address == 'notifications@github.com'
+      subfolder = email.list_id
+
+      if subfolder =~ /.* <.*>/
+        subfolder = subfolder.match(/(.*) <.*>/)[0]
+      end
+
+      email.email_account.move_email_to_folder(email, "GitHub/#{subfolder}", true)
+    else
+      email.email_account.move_email_to_folder(email, 'List Emails', true)
+    end
   end
 end
