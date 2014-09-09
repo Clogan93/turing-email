@@ -77,7 +77,10 @@ class EmailGenie
   end
 
   def EmailGenie.email_is_unimportant(email, sent_label = nil)
-    if email.list_id && email.tos && email.tos.downcase !~ /#{email.email_account.email}/
+    if email.subject && email.subject =~ /^Automatic Reply|Out of Office/i
+      log_console("UNIMPORTANT => subject = #{email.subject}")
+      return true
+    elsif email.list_id && email.tos && email.tos.downcase !~ /#{email.email_account.email}/
       log_console("UNIMPORTANT => list_id = #{email.list_id}")
       return true
     elsif EmailGenie.is_no_reply_address(email.reply_to_address) || EmailGenie.is_no_reply_address(email.from_address)
