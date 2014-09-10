@@ -7,7 +7,7 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
     "inbox_efficiency_report": "showInboxEfficiencyReport"
     "lists_report": "showListsReport"
     "threads_report": "showThreadsReport"
-    "top_senders_and_recipients_report": "showContactsReport"
+    "top_contacts": "showContactsReport"
     "summary_analytics_report": "showSummaryAnalyticsReport"
     "word_count_report": "showWordCountReport"
 
@@ -92,13 +92,12 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
       dateString = startDate.getMonth() + 1 + "/" + day_text + "/" + startDate.getFullYear()
       newDate = startDate.setDate(startDate.getDate() + timeJump)
       startDate = new Date(newDate)
-      receivedOnThisDay = 0
 
+      receivedOnThisDay = 0
       if dateString of receivedEmails
         receivedOnThisDay = receivedEmails[dateString]
 
       sentOnThisDay = 0
-
       if dateString of sentEmails
         sentOnThisDay = sentEmails[dateString]
       
@@ -227,6 +226,7 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
           data.geoData.push([geoDataPoint["ip_info"]["city"], geoDataPoint["num_emails"]])
           
         model.set "data", data
+
         geoReportView = new TuringEmailApp.Views.Reports.GeoReportView(
           model: model
           el: $(target_element)
