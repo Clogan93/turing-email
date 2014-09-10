@@ -13,6 +13,9 @@ class User < ActiveRecord::Base
   validates :email,
             :format     => { with: $config.email_validation_regex },
             :allow_nil => true
+  
+  has_many :genie_rules,
+           :dependent => :destroy
 
   before_validation {
     self.email = cleanse_email(self.email) if self.email
