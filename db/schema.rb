@@ -226,7 +226,8 @@ ActiveRecord::Schema.define(version: 20140910050150) do
     t.boolean  "admin"
     t.text     "email"
     t.text     "password_digest"
-    t.integer  "login_attempt_count", default: 0
+    t.integer  "login_attempt_count",  default: 0
+    t.boolean  "has_genie_report_ran", default: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end

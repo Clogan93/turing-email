@@ -7,6 +7,8 @@ class CreateUsers < ActiveRecord::Migration
       t.text :password_digest
 
       t.integer :login_attempt_count, :default => 0
+      
+      t.boolean :has_genie_report_ran, :default => false
 
       t.timestamps
     end

@@ -10,6 +10,9 @@ class User < ActiveRecord::Base
   has_many :emails,
            :through => :gmail_accounts
 
+  has_many :email_threads,
+           :through => :gmail_accounts
+
   validates :email,
             :format     => { with: $config.email_validation_regex },
             :allow_nil => true
