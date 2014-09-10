@@ -75,3 +75,27 @@ task :email_genie_reports, [:demo] => :environment do |t, args|
     end
   end
 end
+
+desc 'Reset the genie for testing purposes'
+
+task :email_genie_reset => :environment do
+  User.all.each do |user|
+    begin
+      inbox_label = GmailLabel.where(:gmail_account => user.gmail_accounts.first,
+                                     :label_id => 'INBOX').first
+      
+      email_ids_auto_filed = user.emails.where(:auto_filed => true).pluck(:id)
+      log_console("FOUND #{email_ids_auto_filed.length} AUTO FILED!!")
+
+      EmailFolderMapping.where(:email => email_ids_auto_filed).destroy_all
+      
+      email_ids_auto_filed.each { |email_id| EmailFolderMapping.find_or_create_by(:email_folder => inbox_label,
+                                                                                  :email_id => email_id) }
+      
+      Email.where(:id => email_ids_auto_filed).update_all(:auto_filed => false, :auto_filed_reported => false,
+                                                          :auto_filed_folder_id => nil, :auto_filed_folder_type => nil)
+    rescue Exception => ex
+      log_email_exception(ex)
+    end
+  end
+end
