@@ -6,9 +6,6 @@ describe "ReportsRouter", ->
     try
       TuringEmailApp.start()
 
-  it "has a analytics route and points to the showAnalytics method", ->
-    expect(@router.routes["analytics"]).toEqual "showAnalytics"
-
   it "has a attachments_report route and points to the showAttachmentsReport method", ->
     expect(@router.routes["attachments_report"]).toEqual "showAttachmentsReport"
 
@@ -30,8 +27,8 @@ describe "ReportsRouter", ->
   it "has a threads_report route and points to the showThreadsReport method", ->
     expect(@router.routes["threads_report"]).toEqual "showThreadsReport"
 
-  it "has a top_senders_and_recipients_report route and points to the showTopSendersAndRecipientsReport method", ->
-    expect(@router.routes["top_senders_and_recipients_report"]).toEqual "showTopSendersAndRecipientsReport"
+  it "has a top_contacts route and points to the showContactsReport method", ->
+    expect(@router.routes["top_contacts"]).toEqual "showContactsReport"
 
   it "has a summary_analytics_report route and points to the showSummaryAnalyticsReport method", ->
     expect(@router.routes["summary_analytics_report"]).toEqual "showSummaryAnalyticsReport"
@@ -40,4 +37,4 @@ describe "ReportsRouter", ->
     expect(@router.routes["word_count_report"]).toEqual "showWordCountReport"
 
   it "Has the right number of routes", ->
-    expect(_.size(@router.routes)).toEqual 11
+    expect(_.size(@router.routes)).toEqual 10
