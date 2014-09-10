@@ -22,10 +22,6 @@ class GmailAccount < ActiveRecord::Base
            :as => :email_account,
            :dependent => :destroy
 
-  has_many :email_in_reply_tos,
-           :as => :email_account,
-           :dependent => :destroy
-
   has_many :gmail_labels,
            :dependent => :destroy
 

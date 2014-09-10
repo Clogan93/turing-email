@@ -1,5 +1,5 @@
 class StaticPagesController < ApplicationController
-  before_action :signed_in_user,   only: [:inbox]
+  before_action :signed_in_user, :except => [:home]
 
   def home
   end
