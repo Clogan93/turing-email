@@ -44,7 +44,7 @@ describe "EmailThreadView", ->
       expect(@emailThreadView.el.nodeName).toEqual "DIV"
 
     it "should render the subject attribute", ->
-      expect(@emailThreadView.$el.find('.email_subject').text().trim()).toEqual @emailThread.get("emails")[0].subject
+      expect(@emailThreadView.$el.find('#email_subject').text().trim()).toEqual @emailThread.get("emails")[0].subject
 
     it "should render the attributes of all the email threads", ->
       #Set up lists

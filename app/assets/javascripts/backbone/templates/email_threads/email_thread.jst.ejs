@@ -10,7 +10,7 @@
     <div class="mail-tools tooltip-demo m-t-md">
 
         <h3>
-            <span class="font-noraml">Subject: </span><%= emails[0].subject.trim() == "" ? "(no subject)" : emails[0].subject %>
+            <span class="font-noraml">Subject: </span><span id="email_subject"><%= emails[0].subject.trim() == "" ? "(no subject)" : emails[0].subject %></span>
         </h3>
         <h5>
             <span class="pull-right font-noraml">10:15AM 02 FEB 2014</span>
