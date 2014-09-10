@@ -21,7 +21,7 @@ $ ->
     return false
 
   $("#filter_form").submit ->
-    url = "/create_filter"
+    url = "/api/v1/genie_rules.json"
     $.ajax
       type: "POST"
       url: url
@@ -29,5 +29,7 @@ $ ->
       success: (data) ->
         alert data # show response from the php script.
         return
+
+    $('.dropdown a').trigger('click.bs.dropdown')
 
     false # avoid to execute the actual submit of the form.

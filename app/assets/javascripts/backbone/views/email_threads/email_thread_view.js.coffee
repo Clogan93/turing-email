@@ -23,8 +23,11 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     return 
 
   render_genie_report: ->
+    console.log "render_genie_report"
     for email, index in @model.get("emails")
+      console.log "render_genie_report loop"
       if email.subject is "Turing Email - Your daily Genie Report!"
+        console.log "render_genie_report conditional"
         @$el.find("#email_iframe" + index.toString()).contents().find("body").append(email.html_part);
         body_height = @$el.find("#email_iframe" + index.toString()).contents().find("body").css("height")
         body_height_adjusted = parseInt(body_height.replace("px","")) + 25
@@ -43,6 +46,20 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
           thread_id = thread_elements[thread_elements.length - 1]
           $.get "/api/v1/email_threads/show/" + thread_id, (data) ->
             $('#composeModal #compose_email_body').val("\n\n\n\n" + data.emails[data.emails.length - 1].text_part)
+
+        @$el.find("#email_iframe" + index.toString()).contents().find("body").find('a[href^="#from_address"]').click (event) ->
+          event.preventDefault()
+          $("#email_filter_from").val($(@).attr("href").split("=")[1])
+          $(window).scrollTop($('.navbar-header').position().top)
+          $('.dropdown a').trigger('click.bs.dropdown')
+          return false
+
+        @$el.find("#email_iframe" + index.toString()).contents().find("body").find('a[href^="#list_id"]').click (event) ->
+          event.preventDefault()
+          $("#email_filter_list").val($(@).attr("href").split("=")[1])
+          $(window).scrollTop($('.navbar-header').position().top)
+          $('.dropdown a').trigger('click.bs.dropdown')
+          return false
 
   bindEmailClick: ->
     @$el.find(".email").click ->
