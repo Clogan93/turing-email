@@ -50,14 +50,17 @@ $config.ip_regex = /\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+/
 $config.support_email = "support@#{$config.email_domain}"
 $config.logs_email = "logs@#{$config.email_domain}"
 $config.no_reply_email = "noreply@#{$config.email_domain}"
+$config.genie_email = "genie@#{$config.email_domain}"
 
 $config.support_email_name = "#{$config.service_name} (Support)"
 $config.logs_email_name = "#{$config.service_name} Logs (#{Rails.env})"
 $config.no_reply_email_name = $config.service_name
+$config.genie_email_name = 'Turing'
 
 $config.support_email_full = "#{$config.support_email_name} <#{$config.support_email}>"
 $config.logs_email_full = "#{$config.logs_email_name} <#{$config.logs_email}>"
 $config.no_reply_email_full = "#{$config.no_reply_email_name} <#{$config.no_reply_email}>"
+$config.genie_email_full = "#{$config.genie_email_name} <#{$config.genie_email}>"
 
 $config.max_login_attempts = 5
 

@@ -2,6 +2,7 @@ class GenieMailer < ActionMailer::Base
   layout 'mail'
 
   def user_report_email(user, important_emails, auto_filed_emails, sent_emails_not_replied_to)
+    @user = user
     @important_emails = important_emails
     @auto_filed_emails = auto_filed_emails
     @sent_emails_not_replied_to = sent_emails_not_replied_to

@@ -1,9 +1,22 @@
-Here is your daily Turing Email Genie Report!<br />
-<br />
+<% if !@user.has_genie_report_ran %>
+  <% @user.has_genie_report_ran = true
+     @user.save! %>
 
-The Genie found <span style="font-weight: bold;"><%= @important_emails.count %></span> important emails
-that require action and it filed away <span style="font-weight: bold;"><%= @auto_filed_emails.count %></span>
-unimportant emails!
+  Good morning! I am Turing, the Email Genie. Every night I work to help you keep your inbox clean
+  by organizing it and alerting you to important emails that you missed.
+  <br /><br />
+  Last night I found <span style="font-weight: bold;"><%= @auto_filed_emails.length %> unimportant emails</span>
+  clogging your inbox so I neatly filed them away into folders (see below for details).
+  I also found <span style="font-weight: bold;"><%= @important_emails.length %> important emails</span>
+  received yesterday that you have not replied to yet and
+  <span style="font-weight: bold;"><%= @sent_emails_not_replied_to.length %>emails that you sent that have not
+  received a reply yet</span> - you might want to follow up! You can find additional information below.
+  If you have any questions please feel free to contact me anytime at <%= mail_to($config.genie_email) %>.
+<% else %>
+  Good morning! Last night I found <span style="font-weight: bold;"><%= @important_emails.count %></span> important emails
+  that require action and filed away <span style="font-weight: bold;"><%= @auto_filed_emails.count %></span>
+  unimportant emails!
+<% end %>
 
 <br /><br />
 
