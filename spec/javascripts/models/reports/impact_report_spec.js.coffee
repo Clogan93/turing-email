@@ -41,6 +41,5 @@ describe "Impact report model", ->
       @impact_report.fetch()
       @server.respond()
 
-      expect(@impact_report.get("percent_sent_emails_replied_to")).toEqual @impactReport.percent_sent_emails_replied_to
       expect(@impact_report.get("percent_sent_emails_replied_to")).toBeDefined()
       return
