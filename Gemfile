@@ -77,9 +77,6 @@ gem 'mail', '~> 2.5.4'
 #gem 'backbone-rails', '~> 1.1.2'
 gem 'rails-backbone', '~> 1.1.2', git:'https://github.com/codebrew/backbone-rails'
 
-# paginate
-gem 'will_paginate', '~> 3.0'
-
 # rails testing
 # keep in development for generators
 group :development, :test do
