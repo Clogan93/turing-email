@@ -1,0 +1,59 @@
+<div class="page-header">
+  <h1 class="h1">Reports <small>lists</small></h1>
+</div>
+<div id="list_report_statistics">
+  <h4 class="h4">Lists email daily average</h4>
+  <table>
+    <% for(var i=0; i < lists_email_daily_average.length; i++) {%>
+      <tr>
+        <td><%= lists_email_daily_average[i][0].replace("<", "").replace(">", "") %></td>
+        <td><%= lists_email_daily_average[i][1] %></a></td>
+      </tr>
+    <% } %>
+  </table>
+  <h4 class="h4">Emails per list</h4>
+  <table>
+    <% for(var i=0; i < emails_per_list.length; i++) {%>
+      <tr>
+        <td><%= emails_per_list[i][0].replace("<", "").replace(">", "") %></td>
+        <td><%= emails_per_list[i][1] %></a></td>
+      </tr>
+    <% } %>
+  </table>
+  <h4 class="h4">Email threads per list</h4>
+  <table>
+    <% for(var i=0; i < email_threads_per_list.length; i++) {%>
+      <tr>
+        <td><%= email_threads_per_list[i][0].replace("<", "").replace(">", "") %></td>
+        <td><%= email_threads_per_list[i][1] %></a></td>
+      </tr>
+    <% } %>
+  </table>
+  <h4 class="h4">Email threads replied to per list</h4>
+  <table>
+    <% for(var i=0; i < email_threads_replied_to_per_list.length; i++) {%>
+      <tr>
+        <td><%= email_threads_replied_to_per_list[i][0].replace("<", "").replace(">", "") %></td>
+        <td><%= email_threads_replied_to_per_list[i][1] %></a></td>
+      </tr>
+    <% } %>
+  </table>
+  <h4 class="h4">Sent emails per list</h4>
+  <table>
+    <% for(var i=0; i < sent_emails_per_list.length; i++) {%>
+      <tr>
+        <td><%= sent_emails_per_list[i][0].replace("<", "").replace(">", "") %></td>
+        <td><%= sent_emails_per_list[i][1] %></a></td>
+      </tr>
+    <% } %>
+  </table>
+  <h4 class="h4">Sent emails replied to per list</h4>
+  <table>
+    <% for(var i=0; i < sent_emails_replied_to_per_list.length; i++) {%>
+      <tr>
+        <td><%= sent_emails_replied_to_per_list[i][0].replace("<", "").replace(">", "") %></td>
+        <td><%= sent_emails_replied_to_per_list[i][1] %></a></td>
+      </tr>
+    <% } %>
+  </table>
+</div>

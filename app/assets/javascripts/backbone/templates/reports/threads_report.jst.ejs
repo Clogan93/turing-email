@@ -1,0 +1,11 @@
+<div class="page-header">
+  <h1 class="h1">Reports <small>threads</small></h1>
+</div>
+<h4 class="h4">Average Thread Length: <small><%= average_thread_length %></small></h4>
+<br />
+<h4 class="h4">Top Email Threads</h4>
+<ul>
+  <% for(var i=0; i < top_email_threads.length; i++) {%>
+     <li><a href="#email_thread#<%= top_email_threads[i].uid %>"><%= top_email_threads[i].emails[0].subject %></a></li>
+  <% } %>
+</ul>

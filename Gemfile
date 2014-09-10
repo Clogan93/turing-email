@@ -99,3 +99,5 @@ group :test do
   gem 'teaspoon', '~> 0.8.0'
   gem 'sinon-rails', '~> 1.10.3'
 end
+
+gem 'eco', '~> 1.0.0'

@@ -1,85 +1,87 @@
 <script type="text/javascript">
   $(function() {
-    TuringEmailApp.start();
+  TuringEmailApp.start();
   });
 </script>
 
 <div class="container-fluid">
-
-	<div class="row" style="height: 45px;">
-		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-		  <div class="container">
-		    <div class="navbar-header">
-		      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-		        <span class="sr-only">Toggle navigation</span>
-		        <span class="icon-bar"></span>
-		        <span class="icon-bar"></span>
-		        <span class="icon-bar"></span>
-		      </button>
-		      <a class="navbar-brand" href="#">Turing</a>
-		    </div>
-		  </div>
-		</div>
-	</div>
-
-	<div class="row wrapper">
-		<div class="col-sm-3 col-md-2 sidebar">
+  <div class="row" style="height: 45px;">
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Turing</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row wrapper">
+    <div class="col-sm-3 col-md-2 sidebar">
       <ul class="nav nav-sidebar">
         <br />
         <button id="compose_button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#composeModal">Compose</button>
         <li><h3 class="h3"><a href="<%= mail_url %>">Inbox <span class="badge" id="inbox_count_badge"></span></a></h3></li>
         <div id="email_folders"></div>
+        <div><a href="#attachments_report">Attachments Report</a></div>
+        <div><a href="#email_volume_report">Email Volume Report</a></div>
+        <div><a href="#inbox_efficiency_report">Inbox Efficiency Report</a></div>
+        <div><a href="#summary_analytics_report">Summary Analytics Report</a></div>
+        <div><a href="#threads_report">Threads Report</a></div>
+        <div><a href="#word_count_report">Word Count Report</a></div>
       </ul>
     </div>
-
-		<div class="col-md-10">
-			<div class="page-header">
-			  <h1 class="h1"><a href="<%= mail_url %>">Inbox</a> <small>with advanced management features</small></h1>
-			</div>
-
-      <div id="pages" class="row">
-        <%= will_paginate(@email_threads, :params => params) if @email_threads.count > 0 %>
+    <div class="col-md-10 main_email_list_content">
+      <div class="page-header" id="inbox-page-header">
+        <h1 class="h1"><a href="<%= mail_url %>">Inbox</a> <small>with advanced management features</small></h1>
       </div>
-			<div id="emails_threads_list_view" class="row">
+      <div id="pages" class="row">
+      <%= will_paginate(@email_threads, :params => params) if @email_threads.count > 0 %>
+      </div>
+      <div id="emails_threads_list_view" class="row">
+        <div id="reports"></div>
         <div class='table-responsive'>
           <table class='table' id='email_table'>
             <tbody id='email_table_body'>
             </tbody>
           </table>
         </div>
-
         <div id='preview_pane'>
           <div id='resize_border'></div>
           <div id='preview_content'>
             <div id='email_content'></div>
           </div>
         </div>
-			</div>
-			<div id="email" class="row"></div>
-		</div>
-	</div>
+      </div>
+      <div id="email" class="row"></div>
+    </div>
+  </div>
 </div>
 
 <!-- Modal -->
 <div class="modal fade" id="composeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-				<h4 class="modal-title" id="myModalLabel">Compose</h4>
-			</div>
-			<form id="compose_form">
-				<div class="modal-body">
-						<input type="text" class="form-control" placeholder="To"/><br />
-						<input type="text" class="form-control" placeholder="CC"/><br />
-						<input type="text" class="form-control" placeholder="Subject"/><br />
-						<textarea class="form-control" rows="8"></textarea>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					<button type="submit" class="btn btn-primary">Send</button>
-				</div>
-			</form>
-		</div>
-	</div>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">Compose</h4>
+      </div>
+      <form id="compose_form">
+        <div class="modal-body">
+            <input type="text" class="form-control" placeholder="To"/><br />
+            <input type="text" class="form-control" placeholder="CC"/><br />
+            <input type="text" class="form-control" placeholder="Subject"/><br />
+            <textarea class="form-control" rows="8"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Send</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

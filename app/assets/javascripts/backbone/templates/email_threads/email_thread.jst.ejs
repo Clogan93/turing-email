@@ -1,41 +1,70 @@
-<div class="email_subject">
-  <%= emails[0].subject.trim() == "" ? "(no subject)" : emails[0].subject %>
+<div class="mail-box-header">
+    <div class="pull-right tooltip-demo">
+        <a href="mail_compose.html" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Reply"><i class="fa fa-reply"></i> Reply</a>
+        <a href="#" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Print email"><i class="fa fa-print"></i> </a>
+        <a href="mailbox.html" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Move to trash"><i class="fa fa-trash-o"></i> </a>
+    </div>
+    <h2>
+        View Message
+    </h2>
+    <div class="mail-tools tooltip-demo m-t-md">
+
+        <h3>
+            <span class="font-noraml">Subject: </span><%= emails[0].subject.trim() == "" ? "(no subject)" : emails[0].subject %>
+        </h3>
+        <h5>
+            <span class="pull-right font-noraml">10:15AM 02 FEB 2014</span>
+            <span class="font-noraml">From: </span><%= emails[0].from_name == "" ? emails[0].from_address : emails[0].from_name %>
+        </h5>
+    </div>
 </div>
 
-<% _.each(emails, function(email, index) { %>
-  <div class="email<%= emails.length > 1 && index < emails.length - 1 ? " collapsed_email" : "" %>">
-    <div class="email_information">
-      <div class="col-md-3">
-        <%= email.from_name == "" ? email.from_address : email.from_name %>
-      </div>
-      <div class="col-md-4">
-        <%= email.snippet %>
-      </div>
-      <div class="col-md-2">
-        <%= email.date == null ? "" : email.date.substring(0, 10) %>
-      </div>
+  <div class="mail-box">
+
+    <div class="mail-body">
+
+      <% _.each(emails, function(email, index) { %>
+        <div class="email<%= emails.length > 1 && index < emails.length - 1 ? " collapsed_email" : "" %>">
+          <div class="email_information">
+            <div class="col-md-3">
+              <%= email.from_name == "" ? email.from_address : email.from_name %>
+            </div>
+            <div class="col-md-4">
+              <%= email.snippet %>
+            </div>
+            <div class="col-md-2">
+              <%= email.date == null ? "" : email.date.substring(0, 10) %>
+            </div>
+          </div>
+          <br />
+          <br />
+          <br />
+          <div class="email_body" <%= emails.length > 1 && index < emails.length - 1 ? "style=\"display: none;\"" : "" %>>
+            <div class="row">
+              <div class="col-md-11">
+                <%
+                  if(email.subject.trim() == "Turing Email - Your daily Genie Report!") {
+                    %>
+                    <iframe id="email_iframe<%= index %>" style="width: 100%; height: 350px;"></iframe><%
+                  } else {%>
+                    <pre><%= email.text_part == null ? "" : email.text_part %></pre><%
+                  }
+                %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+
     </div>
-    <br />
-    <br />
-    <br />
-    <div class="email_body" <%= emails.length > 1 && index < emails.length - 1 ? "style=\"display: none;\"" : "" %>>
-      <div class="row">
-        <div class="col-md-11">
-          <pre><%= email.text_part == null ? "" : email.text_part %></pre>
-        </div>
-      </div>
-      <br />
-      <br />
-      <br />
-      <div class="row">
-        <div class="col-md-2">
-          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Reply</button>
-        </div>
-        <div class="col-md-9">
-          <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">Forward</button>
-        </div>
-      </div>
+
+    <div class="mail-body text-right tooltip-demo">
+            <a class="btn btn-sm btn-white" href="mail_compose.html"><i class="fa fa-reply"></i> Reply</a>
+            <a class="btn btn-sm btn-white" href="mail_compose.html"><i class="fa fa-arrow-right"></i> Forward</a>
+            <button title="" data-placement="top" data-toggle="tooltip" type="button" data-original-title="Print" class="btn btn-sm btn-white"><i class="fa fa-print"></i> Print</button>
+            <button title="" data-placement="top" data-toggle="tooltip" data-original-title="Trash" class="btn btn-sm btn-white"><i class="fa fa-trash-o"></i> Remove</button>
     </div>
-  </div>
-<% }); %>
-<br />
+
+  <div class="clearfix"></div>
+
+</div>

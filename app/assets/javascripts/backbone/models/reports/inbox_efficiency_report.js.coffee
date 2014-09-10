@@ -1,0 +1,1 @@
+class TuringEmailApp.Models.InboxEfficiencyReport extends Backbone.Model
