@@ -19,3 +19,15 @@ $ ->
   $(".create_filter").click ->
     $('.dropdown a').trigger('click.bs.dropdown')
     return false
+
+  $("#filter_form").submit ->
+    url = "/create_filter"
+    $.ajax
+      type: "POST"
+      url: url
+      data: $("#filter_form").serialize() # serializes the form's elements.
+      success: (data) ->
+        alert data # show response from the php script.
+        return
+
+    false # avoid to execute the actual submit of the form.
