@@ -16,6 +16,7 @@ class TuringEmailApp.Routers.EmailFoldersRouter extends Backbone.Router
     TuringEmailApp.emailThreads.fetch(
       reset: true
 
-      success: (collection, response, options) ->
+      # reenable when we have preview pane
+      #success: (collection, response, options) ->
         #TuringEmailApp.emailThreadsRouter.showEmailThread(collection.models[0].get("uid")) if collection.length > 0
     )

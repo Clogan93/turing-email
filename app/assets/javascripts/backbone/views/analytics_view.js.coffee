@@ -1,7 +1,7 @@
 TuringEmailApp.Views.Reports ||= {}
 
 class TuringEmailApp.Views.Reports.AnalyticsView extends Backbone.View
-  template: JST["backbone/templates/reports/analytics"]
+  template: JST["backbone/templates/analytics"]
 
   initialize: ->
     return
@@ -19,6 +19,6 @@ class TuringEmailApp.Views.Reports.AnalyticsView extends Backbone.View
     TuringEmailApp.reportsRouter.showGeoReport "#geo_report"
     TuringEmailApp.reportsRouter.showListsReport "#lists_report"
     TuringEmailApp.reportsRouter.showThreadsReport "#threads_report"
-    TuringEmailApp.reportsRouter.showTopSendersAndRecipientsReport "#top_senders_and_recipients_report"
+    TuringEmailApp.reportsRouter.showContactsReport "#contacts_report"
 
     return this

@@ -1,7 +1,7 @@
 TuringEmailApp.Views.Reports ||= {}
 
-class TuringEmailApp.Views.Reports.TopSendersAndRecipientsReportView extends Backbone.View
-  template: JST["backbone/templates/reports/top_senders_and_recipients_report"]
+class TuringEmailApp.Views.Reports.ContactsReportView extends Backbone.View
+  template: JST["backbone/templates/reports/contacts_report"]
 
   initialize: ->
     @listenTo(@model, "change", @render)

@@ -6,10 +6,10 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @$el.remove()
 
   setup_toolbar_buttons: ->
-    @.setup_read()
-    @.setup_trash()
-    @.setup_go_left()
-    @.setup_go_right()
+    @setup_read()
+    @setup_trash()
+    @setup_go_left()
+    @setup_go_right()
 
   setup_read: ->
     @$el.find("i.fa-eye").parent().click ->
@@ -29,5 +29,5 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
   render: ->
     @$el.html(@template())
-    @.setup_toolbar_buttons()
+    @setup_toolbar_buttons()
     return this

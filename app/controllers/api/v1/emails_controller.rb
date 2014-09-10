@@ -170,25 +170,49 @@ class Api::V1::EmailsController < ApiController
         current_user.emails.where('list_id IS NOT NULL').having('COUNT(*) > 1').group(:list_id, :email_thread_id).
                      order('email_threads_replied_to_per_list DESC').
                      pluck('list_id, COUNT(*) AS email_threads_replied_to_per_list')
-    
+
+    list_report_stats[:sent_emails_per_list] = []
+    list_report_stats[:sent_emails_replied_to_per_list] = []
+
+=begin
     sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
     if sent_label
+      list_ids = current_user.emails.where('list_id IS NOT NULL').pluck('DISTINCT list_id')
+      list_ids_parsed = list_ids.map { |list_id| parse_email_string(list_id) }
+      
+      list_email_addresses = list_ids_parsed.map do |list_id_parsed|
+        list_address_parsed = parse_email_list_address(list_id_parsed[:address].downcase)
+        "#{list_address_parsed[:name]}@#{list_address_parsed[:domain]}"
+      end
+
+      email_ids_to_lists = EmailRecipient.joins(:person).where('"people"."email_address" IN (?)', list_email_addresses).pluck(:email_id)
+      list_report_stats[:sent_emails_per_list] = sent_label.emails.where(:id => email_ids_to_lists).
+                                                            where('list_id IS NOT NULL').
+                                                            group(:list_id).order('sent_emails_per_list DESC').
+                                                            pluck('list_id, COUNT(*) AS sent_emails_per_list')
+=begin
       list_report_stats[:sent_emails_per_list] = 
           sent_label.emails.where('list_id IS NOT NULL').group(:list_id).
                      order('sent_emails_per_list DESC').
                      pluck('list_id, COUNT(*) AS sent_emails_per_list')
-      
+=end
+=begin  
       sent_list_email_message_ids = sent_label.emails.where('list_id IS NOT NULL').pluck(:message_id)
 
-      list_report_stats[:sent_emails_replied_to_per_list] = 
-          current_user.emails.joins(:email_in_reply_tos).
-                       where('"email_in_reply_tos"."in_reply_to_message_id" IN (?)', sent_list_email_message_ids).
-                       group(:list_id).order('sent_emails_replied_to_per_list DESC').
-                       pluck('list_id, COUNT(DISTINCT "email_in_reply_tos"."in_reply_to_message_id") AS sent_emails_replied_to_per_list')
+      if sent_list_email_message_ids.length > 0
+        list_report_stats[:sent_emails_replied_to_per_list] = 
+            current_user.emails.joins(:email_in_reply_tos).
+                         where('"email_in_reply_tos"."in_reply_to_message_id" IN (?)', sent_list_email_message_ids).
+                         group(:list_id).order('sent_emails_replied_to_per_list DESC').
+                         pluck('list_id, COUNT(DISTINCT "email_in_reply_tos"."in_reply_to_message_id") AS sent_emails_replied_to_per_list')
+      else
+        list_report_stats[:sent_emails_replied_to_per_list] = []
+      end
     else
       list_report_stats[:sent_emails_per_list] = []
       list_report_stats[:sent_emails_replied_to_per_list] = []
     end
+=end
 
     render :json => list_report_stats
   end

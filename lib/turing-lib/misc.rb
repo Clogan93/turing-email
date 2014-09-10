@@ -38,19 +38,45 @@ def open_force_file(url)
   return file
 end
 
+# TODO write tests
 def parse_email_string(email_string)
-  display_name = email_address = nil
+  display_name = nil
   
-  if email_string =~ /.* <(.*)>?/
-    display_name = email_string.match(/(.*) <(.*)>?/)[1]
-    email_address = email_string.match(/(.*) <(.*)>?/)[2]
+  m = email_string.match(/(.*) ?<([^>]*)>?/)
+  
+  if m
+    display_name = m[1].strip
+    email_address = m[2].strip
   else
-    email_address = address_string
+    email_address = email_string
   end
   
   return { :display_name => display_name, :address => email_address }
 end
 
+# TODO write tests
+def parse_email_list_address(email_list_address)
+  m = email_list_address.match(/([^@]+)@(.+)/)
+  
+  if m
+    name = m[1]
+    domain = m[2]
+  else
+    m = email_list_address.match(/(.*)\.([^\.]+\.[^\.]+)/)
+    
+    if m
+      name = m[1]
+      domain = m[2]
+    else
+      name = email_list_address
+      domain = nil
+    end
+  end
+  
+  return { :name => name, :domain => domain }
+end
+
+# TODO write tests
 def parse_email_address_field(email_raw, field)
   emails_parsed = []
 

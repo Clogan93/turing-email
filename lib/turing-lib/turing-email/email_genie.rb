@@ -185,15 +185,17 @@ class EmailGenie
   end
 
   def EmailGenie.auto_file_list_email(email)
+    list_id_parsed = parse_email_string(email.list_id)
+    subfolder = list_id_parsed[:display_name]
+
+    if subfolder.blank?
+      list_address_parsed = parse_email_list_address(list_id_parsed[:address])
+      subfolder = list_address_parsed[:name]
+    end
+    
     if EmailGenie::LISTS.keys.include?(email.list_id.downcase)
       email.email_account.move_email_to_folder(email, EmailGenie::LISTS[email.list_id.downcase], true)
     elsif email.from_address == 'notifications@github.com'
-      subfolder = email.list_id
-
-      if subfolder =~ /.* <.*>/
-        subfolder = subfolder.match(/(.*) <.*>/)[0]
-      end
-
       email.email_account.move_email_to_folder(email, "GitHub/#{subfolder}", true)
     else
       email.email_account.move_email_to_folder(email, 'List Emails', true)

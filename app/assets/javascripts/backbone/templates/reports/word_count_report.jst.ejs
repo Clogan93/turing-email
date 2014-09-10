@@ -1,6 +1,5 @@
 <%
   function drawChart(wordCountData) {
-
     var data = google.visualization.arrayToDataTable(wordCountData);
 
     var options = {
@@ -12,18 +11,17 @@
     var chart = new google.visualization.ColumnChart(document.getElementById('word_count_chart_div'));
 
     chart.draw(data, options);
-
   }
 
   setTimeout(function() {
     google.load('visualization', '1.0',
                 {'callback': function() {drawChart(data.wordCountData); },
-                'packages':['corechart']}
-                )
+                'packages':['corechart']})
   }, 1000);
 %>
 
 <div class="page-header">
   <h1 class="h1">Reports <small>word count</small></h1>
 </div>
+
 <div id="word_count_chart_div" style="width: 900px; height: 500px;"></div>
