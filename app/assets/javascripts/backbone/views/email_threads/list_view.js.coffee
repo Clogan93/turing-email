@@ -30,8 +30,11 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     report_email = null
     @$el.find("td.mail-ontact a").each ->
       text_value = $(@).text()
+      
       if text_value is "Turing Email"
         report_email = $(@).parent().parent()
+    
     if report_email?
       report_email.remove()
-      $("#email_table_body").prepend("<tr height='59px;' class='" + report_email.attr("class") + "'>" + report_email.html() + "</tr>")
+      $("#email_table_body").prepend("<tr height='59px;' class='" + report_email.attr("class") + "'>" +
+                                     report_email.html() + "</tr>")

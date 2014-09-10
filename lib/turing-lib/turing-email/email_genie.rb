@@ -69,14 +69,15 @@ class EmailGenie
 
     sent_label = GmailLabel.where(:gmail_account => gmail_account,
                                   :label_id => 'SENT').first
-
+    top_lists_email_daily_average = Email.lists_email_daily_average(gmail_account.user, limit = 10).transpose()[0]
+    
     emails.each do |email|
       log_console("PROCESSING #{email.uid}")
 
-      if EmailGenie.email_is_unimportant(email, sent_label)
+      if EmailGenie.email_is_unimportant(email, sent_label: sent_label)
         log_console("#{email.uid} is UNIMPORTANT!!")
-
-        EmailGenie.auto_file(email, inbox_label, sent_label)
+    
+        EmailGenie.auto_file(email, inbox_label, sent_label: sent_label, top_lists_email_daily_average: top_lists_email_daily_average)
       end
     end
   end
@@ -118,7 +119,14 @@ class EmailGenie
     return email.email_recipients.count >= 5
   end
 
-  def EmailGenie.email_is_unimportant(email, sent_label = nil)
+  def EmailGenie.email_is_unimportant(email, sent_label: nil)
+    email.user.genie_rules.each do |genie_rule|
+      return false if genie_rule.from_address && genie_rule.from_address = email.from_address
+      return false if genie_rule.to_address && email.email_recipients.joins(:person).pluck(:email_address).include?(genie_rule.to_address)
+      return false if genie_rule.subject && email.subject =~ /.*#{genie_rule.subject}.*/i
+      return false if genie_rule.list_id && email.list_id == genie_rule.list_id
+    end
+    
     if EmailGenie.is_calendar_email(email)
       log_console("UNIMPORTANT => Calendar!")
       return true
@@ -157,7 +165,7 @@ class EmailGenie
     return false
   end
 
-  def EmailGenie.auto_file(email, inbox_folder, sent_label = nil)
+  def EmailGenie.auto_file(email, inbox_folder, sent_label: nil, top_lists_email_daily_average: nil)
     log_console("AUTO FILING! #{email.uid}")
 
     EmailFolderMapping.destroy_all(:email => email, :email_folder => inbox_folder)
@@ -171,7 +179,7 @@ class EmailGenie
     elsif EmailGenie.is_unimportant_list_email(email)
       log_console("Found list_id=#{email.list_id}")
 
-      EmailGenie.auto_file_list_email(email)
+      EmailGenie.auto_file_list_email(email, top_lists_email_daily_average: top_lists_email_daily_average)
     elsif EmailGenie.is_completed_conversation_email(email, sent_label)
       email.email_account.move_email_to_folder(email, 'Unimportant/Completed Conversations', true)
     elsif EmailGenie.is_unimportant_group_email(email)
@@ -184,17 +192,21 @@ class EmailGenie
     email.save!
   end
 
-  def EmailGenie.auto_file_list_email(email)
+  def EmailGenie.auto_file_list_email(email, top_lists_email_daily_average: nil)
+    list_id_parsed = parse_email_string(email.list_id)
+    subfolder = list_id_parsed[:display_name]
+
+    if subfolder.blank?
+      list_address_parsed = parse_email_list_address(list_id_parsed[:address])
+      subfolder = list_address_parsed[:name]
+    end
+    
     if EmailGenie::LISTS.keys.include?(email.list_id.downcase)
       email.email_account.move_email_to_folder(email, EmailGenie::LISTS[email.list_id.downcase], true)
     elsif email.from_address == 'notifications@github.com'
-      subfolder = email.list_id
-
-      if subfolder =~ /.* <.*>/
-        subfolder = subfolder.match(/(.*) <.*>/)[0]
-      end
-
       email.email_account.move_email_to_folder(email, "GitHub/#{subfolder}", true)
+    elsif top_lists_email_daily_average.include?(email.list_id)
+      email.email_account.move_email_to_folder(email, "List Emails/#{subfolder}", true)
     else
       email.email_account.move_email_to_folder(email, 'List Emails', true)
     end

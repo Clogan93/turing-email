@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140907071100) do
+ActiveRecord::Schema.define(version: 20140910050150) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -116,6 +116,18 @@ ActiveRecord::Schema.define(version: 20140907071100) do
   add_index "emails", ["email_thread_id"], name: "index_emails_on_email_thread_id", using: :btree
   add_index "emails", ["message_id"], name: "index_emails_on_message_id", using: :btree
   add_index "emails", ["uid"], name: "index_emails_on_uid", using: :btree
+
+  create_table "genie_rules", force: true do |t|
+    t.integer  "user_id"
+    t.text     "from_address"
+    t.text     "to_address"
+    t.text     "subject"
+    t.text     "list_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "genie_rules", ["from_address", "to_address", "subject", "list_id"], name: "index_genie_rules_on_everything", unique: true, using: :btree
 
   create_table "gmail_accounts", force: true do |t|
     t.integer  "user_id"

@@ -1,7 +1,6 @@
 Rails.application.routes.draw do
   root 'static_pages#home'
   get '/mail', to: 'static_pages#mail'
-  get '/mail2', to: 'static_pages#mail2'
   get '/analytics', to: 'static_pages#analytics'
 
   resources :sessions, only: [:new, :create, :destroy]
@@ -21,6 +20,9 @@ Rails.application.routes.draw do
       resources :users, only: [:create]
       match '/users/current', to: 'users#current', via: 'get'
 
+      resources :sessions, only: [:create]
+      match '/signout', to: 'sessions#destroy', via: 'delete'
+
       get '/emails/show/:email_uid', to: 'emails#show'
       get '/emails/ip_stats', to: 'emails#ip_stats'
       get '/emails/volume_report', to: 'emails#volume_report'
@@ -37,8 +39,7 @@ Rails.application.routes.draw do
       match '/email_threads/inbox', to: 'email_threads#inbox', via: 'get'
       match '/email_threads/in_folder', to: 'email_threads#in_folder', via: 'get'
       
-      resources :sessions, only: [:create]
-      match '/signout', to: 'sessions#destroy', via: 'delete'
+      resources :genie_rules, only: [:create]
     end
   end
 

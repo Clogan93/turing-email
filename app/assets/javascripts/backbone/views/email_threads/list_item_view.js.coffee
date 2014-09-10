@@ -16,9 +16,9 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
       @model.attributes.emails[0].from_name = "me"
 
     if @model.get("emails")[0].seen
-        @.$el.addClass("unread")
+        @$el.addClass("unread")
     else
-      @.$el.addClass("read")
+      @$el.addClass("read")
 
     @$el.html(@template(@model.toJSON()))
 

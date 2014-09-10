@@ -31,6 +31,13 @@
       <td><%= email.date.to_s_local() %></td>
       <% if include_auto_filed_folder %>
         <td><%= email.auto_filed_folder.name %></td>
+        <td>
+          <% if email.list_id %>
+            <%= link_to('Never Autofile', "#list_id=#{email.list_id}") %>
+          <% else %>
+            <%= link_to('Never Autofile', "#from_address=#{email.from_address}") %>
+          <% end %>
+        </td>
       <% end %>
     </tr>
   <% end %>

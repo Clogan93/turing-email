@@ -25,6 +25,16 @@ class Email < ActiveRecord::Base
 
   validates_presence_of(:email_account, :uid, :message_id, :email_thread_id)
 
+  def Email.lists_email_daily_average(user, limit = nil)
+    if limit
+      return user.emails.where('list_id IS NOT NULL').group(:list_id).order('daily_average DESC').limit(limit).
+                  pluck('list_id, COUNT(*) / GREATEST(1, EXTRACT(day FROM now() - MIN(date))) AS daily_average')
+    else
+      return user.emails.where('list_id IS NOT NULL').group(:list_id).order('daily_average DESC').
+                  pluck('list_id, COUNT(*) / GREATEST(1, EXTRACT(day FROM now() - MIN(date))) AS daily_average')
+    end
+  end
+  
   def Email.email_raw_from_mime_data(mime_data)
     mail_data_file = Tempfile.new('turing')
     mail_data_file.binmode

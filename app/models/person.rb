@@ -5,4 +5,8 @@ class Person < ActiveRecord::Base
            :dependent => :destroy
 
   validates_presence_of(:email_address)
+
+  before_validation {
+    self.email_address = cleanse_email(self.email_address) if self.email_address
+  }
 end
