@@ -119,6 +119,13 @@ class EmailGenie
   end
 
   def EmailGenie.email_is_unimportant(email, sent_label = nil)
+    email.user.genie_rules.each do |genie_rule|
+      return false if genie_rule.from_address && genie_rule.from_address = email.from_address
+      return false if genie_rule.to_address && email.email_recipients.joins(:person).pluck(:email_address).include?(genie_rule.to_address)
+      return false if genie_rule.subject && email.subject =~ /.*#{genie_rule.subject}.*/i
+      return false if genie_rule.list_id && email.list_id == genie_rule.list_id
+    end
+    
     if EmailGenie.is_calendar_email(email)
       log_console("UNIMPORTANT => Calendar!")
       return true
