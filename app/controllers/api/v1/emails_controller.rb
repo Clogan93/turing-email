@@ -154,9 +154,7 @@ class Api::V1::EmailsController < ApiController
   def lists_report
     list_report_stats = {}
 
-    list_report_stats[:lists_email_daily_average] =
-        current_user.emails.where('list_id IS NOT NULL').group(:list_id).order('daily_average DESC').
-                     pluck('list_id, COUNT(*) / GREATEST(1, EXTRACT(day FROM now() - MIN(date))) AS daily_average')
+    list_report_stats[:lists_email_daily_average] = Email.lists_email_daily_average(current_user)
 
     list_report_stats[:emails_per_list] =
         current_user.emails.where('list_id IS NOT NULL').group(:list_id).order('emails_per_list DESC').
