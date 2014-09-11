@@ -2,56 +2,63 @@ describe "AttachmentsReportView", ->
 
   beforeEach ->
     @attachmentsReport = new TuringEmailApp.Models.AttachmentsReport()
-    @attachmentsReportView = new TuringEmailApp.Views.Reports.AttachmentsReportView(
-      model: @attachmentsReport
-    )
     TuringEmailApp.user = new TuringEmailApp.Models.User()
     TuringEmailApp.reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
+    @attachmentsReportView = null
 
-  it "should be defined", ->
-    expect(TuringEmailApp.Views.Reports.AttachmentsReportView).toBeDefined()
- 
-  it "should have the right model", ->
-    expect(@attachmentsReportView.model).toEqual @attachmentsReport
+  describe "when render is called", ->
 
-  it "loads the attachment report template", ->
-    expect(@attachmentsReportView.template).toEqual JST["backbone/templates/reports/attachments_report"]
+    beforeEach ->
+      @fixtures = fixture.load("reports/attachments_report.fixture.json", "user.fixture.json", true)
 
-  # describe "when render is called", ->
+      @validUser = @fixtures[1]["valid"]
+      @attachmentsReportFixture = @fixtures[0]
 
-  #   beforeEach ->
-  #     @fixtures = fixture.load("reports/attachments_report.fixture.json", "user.fixture.json", true)
+      @server = sinon.fakeServer.create()
 
-  #     @validUser = @fixtures[1]["valid"]
-  #     @attachmentsReportFixture = @fixtures[0]
+      @server.respondWith "GET", "/api/v1/users/current", JSON.stringify(@validUser)
+      TuringEmailApp.user.fetch()
+      @server.respond()
 
-  #     @server = sinon.fakeServer.create()
+      @server.respondWith "GET", "/api/v1/emails/attachments_report", JSON.stringify(@attachmentsReportFixture)
 
-  #     @server.respondWith "GET", "/api/v1/users/current", JSON.stringify(@validUser)
-  #     TuringEmailApp.user.fetch()
-  #     @server.respond()
+      @attachmentsReport.fetch(
+        success: (model, response, options) =>
+          @attachmentsReportView = new TuringEmailApp.Views.Reports.AttachmentsReportView(
+            model: model
+          )
 
-  #     @server.respondWith "GET", "/api/v1/emails/attachments_report", JSON.stringify(@attachmentsReportFixture)
+          @attachmentsReportView.render()
 
-  #     # @attachmentsReport.fetch()
-  #     TuringEmailApp.reportsRouter.showAttachmentsReport()
-  #     @server.respond()
+          return
+      )
 
-  #     console.log @attachmentsReport
+      @server.respond()
 
-  #     return
+    afterEach ->
+      @server.restore()
 
-  #   afterEach ->
-  #     @server.restore()
+    it "should have the root element be a div", ->
+      console.log @attachmentsReport
+      console.log @attachmentsReportView
+      console.log @attachmentsReportView.el
 
-  #   it "should have the root element be a div", ->
-  #     expect(@attachmentsReportView.el.nodeName).toEqual "DIV"
+      expect(@attachmentsReportView.el.nodeName).toEqual "DIV"
 
-  #   it "should render the number of attachments chart title", ->
-  #     console.log $("#reports")
-  #     console.log @attachmentsReportView.el
-  #     console.log @attachmentsReportView.$el.find('#num_attachments_chart_div')
-  #     console.log @attachmentsReportView.$el.find('#num_attachments_chart_div').find("div:contains('Number of Attachments')")
+    it "should be defined", ->
+      expect(TuringEmailApp.Views.Reports.AttachmentsReportView).toBeDefined()
+   
+    it "should have the right model", ->
+      expect(@attachmentsReportView.model).toEqual @attachmentsReport
+
+    it "loads the attachment report template", ->
+      expect(@attachmentsReportView.template).toEqual JST["backbone/templates/reports/attachments_report"]
+
+    #   it "should render the number of attachments chart title", ->
+    #     console.log $("#reports")
+    #     console.log @attachmentsReportView.el
+    #     console.log @attachmentsReportView.$el.find('#num_attachments_chart_div')
+    #     console.log @attachmentsReportView.$el.find('#num_attachments_chart_div').find("div:contains('Number of Attachments')")
 
     # it "should render the attachment file size chart title", ->
 
@@ -77,7 +84,7 @@ describe "AttachmentsReportView", ->
     #   #Run expectations
     #   for emailThread, index in @attachmentsReport.models
     #     email = emailThread.get("emails")[0]
-        
+
     #     expect(fromNames[index]).toEqual email.from_name
     #     expect(subjects[index]).toEqual email.subject
     #     #expect(snippets[index]).toEqual email.snippet
