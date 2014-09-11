@@ -16,7 +16,13 @@ class Api::V1::EmailThreadsController < ApiController
   def inbox
     inbox_label = GmailLabel.where(:gmail_account => current_user.gmail_accounts.first,
                                    :label_id => 'INBOX').first
-    @email_threads = inbox_label.nil? ? [] : inbox_label.get_paginated_threads(params)
+
+    if inbox_label.nil?
+      @email_threads = []
+    else
+      page = params[:page] ? params[:page].to_i : 1
+      @email_threads = inbox_label.get_sorted_paginated_threads(page: page)
+    end
 
     render 'api/v1/email_threads/index'
   end
@@ -32,17 +38,17 @@ class Api::V1::EmailThreadsController < ApiController
   end
 
   def in_folder
-    @email_folder = GmailLabel.find_by(:gmail_account => current_user.gmail_accounts.first,
+    email_folder = GmailLabel.find_by(:gmail_account => current_user.gmail_accounts.first,
                                        :label_id => params[:folder_id])
 
-    if @email_folder.nil?
+    if email_folder.nil?
       render :status => $config.http_errors[:email_folder_not_found][:status_code],
              :json => $config.http_errors[:email_folder_not_found][:description]
       return
     end
-    
-    email_thread_ids = @email_folder.emails.pluck(:email_thread_id)
-    @email_threads = EmailThread.get_threads_from_ids(email_thread_ids)
+
+    page = params[:page] ? params[:page].to_i : 1
+    @email_threads = email_folder.get_sorted_paginated_threads(page: page)
 
     render 'api/v1/email_threads/index'
   end
