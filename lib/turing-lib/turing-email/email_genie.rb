@@ -69,6 +69,7 @@ class EmailGenie
 
     sent_label = GmailLabel.where(:gmail_account => gmail_account,
                                   :label_id => 'SENT').first
+    
     top_lists_email_daily_average = Email.lists_email_daily_average(gmail_account.user, limit: 10).transpose()[0]
     
     emails.each do |email|
@@ -193,9 +194,8 @@ class EmailGenie
   end
   
   def EmailGenie.auto_file_list_email(email, top_lists_email_daily_average: nil)
-    list_id_parsed = parse_email_list_id_header(email.list_id)
-    subfolder = list_id_parsed[:name]
-    subfolder = list_id_parsed[:id] if subfolder.nil?
+    subfolder = email.list_name
+    subfolder = email.list_id if subfolder.nil?
     
     if EmailGenie::LISTS.keys.include?(email.list_id.downcase)
       email.email_account.move_email_to_folder(email, EmailGenie::LISTS[email.list_id.downcase], true)

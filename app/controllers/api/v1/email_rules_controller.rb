@@ -42,13 +42,12 @@ class Api::V1::EmailRulesController < ApiController
 
     rules_recommended = []
 
-    lists_email_daily_average.each do |list_id, average|
+    lists_email_daily_average.each do |list_name, list_id, average|
       break if average < $config.recommended_rules_average_daily_list_volume
       next if current_user.email_rules.where(:list_id => list_id).count > 0
 
-      list_id_parsed = parse_email_list_id_header(list_id)
-      subfolder = list_id_parsed[:name]
-      subfolder = list_id_parsed[:id] if subfolder.nil?
+      subfolder = list_name
+      subfolder = list_id if subfolder.nil?
       
       rules_recommended << { :list_id => list_id, :destination_folder => "List Emails/#{subfolder}" }
     end

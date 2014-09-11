@@ -157,17 +157,17 @@ class Api::V1::EmailsController < ApiController
     list_report_stats[:lists_email_daily_average] = Email.lists_email_daily_average(current_user)
 
     list_report_stats[:emails_per_list] =
-        current_user.emails.where('list_id IS NOT NULL').group(:list_id).order('emails_per_list DESC').
-                     pluck('list_id, COUNT(*) AS emails_per_list')
+        current_user.emails.where('list_id IS NOT NULL').group(:list_name, :list_id).order('emails_per_list DESC').
+                     pluck('list_name, list_id, COUNT(*) AS emails_per_list')
     
     list_report_stats[:email_threads_per_list] = 
-        current_user.emails.where('list_id IS NOT NULL').group(:list_id).order('email_threads_per_list DESC').
-                     pluck('list_id, COUNT(DISTINCT email_thread_id) AS email_threads_per_list')
+        current_user.emails.where('list_id IS NOT NULL').group(:list_name, :list_id).order('email_threads_per_list DESC').
+                     pluck('list_name, list_id, COUNT(DISTINCT email_thread_id) AS email_threads_per_list')
     
     list_report_stats[:email_threads_replied_to_per_list] =
-        current_user.emails.where('list_id IS NOT NULL').having('COUNT(*) > 1').group(:list_id, :email_thread_id).
+        current_user.emails.where('list_id IS NOT NULL').having('COUNT(*) > 1').group(:list_name, :list_id, :email_thread_id).
                      order('email_threads_replied_to_per_list DESC').
-                     pluck('list_id, COUNT(*) AS email_threads_replied_to_per_list')
+                     pluck('list_name, list_id, COUNT(*) AS email_threads_replied_to_per_list')
 
     list_report_stats[:sent_emails_per_list] = []
     list_report_stats[:sent_emails_replied_to_per_list] = []

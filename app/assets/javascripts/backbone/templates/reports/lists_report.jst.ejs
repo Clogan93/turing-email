@@ -2,14 +2,26 @@
   <h1 class="h1">Reports <small>lists</small></h1>
 </div>
 
+<%
+function print_list_stats_rows(list_stats) {
+  if (list_stats[0] != null && list_stats[0] != "") { %>
+    <td><%= list_stats[0] %></td>
+  <% } else { %>
+    <td><%= list_stats[1] %></td>
+<%   } %>
+
+    <td><%= list_stats[2] %></td>
+<%
+}
+%>
+
 <div id="list_report_statistics">
   <h4 class="h4">Lists email daily average</h4>
   
   <table>
     <% for(var i=0; i < lists_email_daily_average.length; i++) {%>
       <tr>
-        <td><%= lists_email_daily_average[i][0].replace("<", "").replace(">", "") %></td>
-        <td><%= lists_email_daily_average[i][1] %></td>
+        <% print_list_stats_rows(lists_email_daily_average[i]) %>
       </tr>
     <% } %>
   </table>
@@ -18,8 +30,7 @@
   <table>
     <% for(var i=0; i < emails_per_list.length; i++) {%>
       <tr>
-        <td><%= emails_per_list[i][0].replace("<", "").replace(">", "") %></td>
-        <td><%= emails_per_list[i][1] %></td>
+        <% print_list_stats_rows(emails_per_list[i]) %>
       </tr>
     <% } %>
   </table>
@@ -28,8 +39,7 @@
   <table>
     <% for(var i=0; i < email_threads_per_list.length; i++) {%>
       <tr>
-        <td><%= email_threads_per_list[i][0].replace("<", "").replace(">", "") %></td>
-        <td><%= email_threads_per_list[i][1] %></td>
+        <% print_list_stats_rows(email_threads_per_list[i]) %>
       </tr>
     <% } %>
   </table>
@@ -38,8 +48,7 @@
   <table>
     <% for(var i=0; i < email_threads_replied_to_per_list.length; i++) {%>
       <tr>
-        <td><%= email_threads_replied_to_per_list[i][0].replace("<", "").replace(">", "") %></td>
-        <td><%= email_threads_replied_to_per_list[i][1] %></td>
+        <% print_list_stats_rows(email_threads_replied_to_per_list[i]) %>
       </tr>
     <% } %>
   </table>
@@ -48,8 +57,7 @@
   <table>
     <% for(var i=0; i < sent_emails_per_list.length; i++) {%>
       <tr>
-        <td><%= sent_emails_per_list[i][0].replace("<", "").replace(">", "") %></td>
-        <td><%= sent_emails_per_list[i][1] %></td>
+        <% print_list_stats_rows(sent_emails_per_list[i]) %>
       </tr>
     <% } %>
   </table>
@@ -59,8 +67,7 @@
     <% for(var i=0; i < sent_emails_replied_to_per_list.length; i++) { %>
       <% if (sent_emails_replied_to_per_list[i].length > 0) { %>
         <tr>
-          <td><%= sent_emails_replied_to_per_list[i][0].replace("<", "").replace(">", "") %></td>
-          <td><%= sent_emails_replied_to_per_list[i][1] %></td>
+          <% print_list_stats_rows(sent_emails_replied_to_per_list[i]) %>
         </tr>
       <% } %>
     <% } %>
