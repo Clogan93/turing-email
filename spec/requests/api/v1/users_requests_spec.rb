@@ -47,4 +47,23 @@ describe Api::V1::UsersController, :type => :request do
       expect(response).to have_http_status(:unauthorized)
     end
   end
+  
+  context 'declare email bankruptcy' do
+    let!(:email_account) { FactoryGirl.create(:gmail_account, :user => user) }
+    let(:emails) { FactoryGirl.create_list(:email, SpecMisc::MEDIUM_LIST_SIZE, :email_account => email_account) }
+    let!(:inbox) { FactoryGirl.create(:gmail_label_inbox, :gmail_account => email_account) }
+    
+    before { post '/api/v1/sessions', :email => user.email, :password => user.password }
+    before { create_email_folder_mappings(emails, inbox) }
+    
+    it 'should remove all emails from the inbox' do
+      expect(inbox.emails.count).to eq(emails.length)
+      
+      post '/api/v1/users/declare_email_bankruptcy'
+      
+      inbox.reload
+      expect(inbox.emails.count).to eq(0)
+      expect(inbox.gmail_account.user.emails.count).to eq(emails.length)
+    end
+  end
 end

@@ -155,13 +155,8 @@ describe Api::V1::EmailsController, :type => :request do
       let!(:last_month_month_str) { last_month.at_beginning_of_month.strftime($config.volume_report_date_format) }
       
       before {
-        emails_sent_today.each do |email|
-          FactoryGirl.create(:email_folder_mapping, :email => email, :email_folder => sent_folder)
-        end
-
-        emails_sent_last_month.each do |email|
-          FactoryGirl.create(:email_folder_mapping, :email => email, :email_folder => sent_folder)
-        end
+        create_email_folder_mappings(emails_sent_today, sent_folder)
+        create_email_folder_mappings(emails_sent_last_month, sent_folder)
       }
 
       it 'should return volume report stats' do
@@ -233,14 +228,11 @@ describe Api::V1::EmailsController, :type => :request do
         person = FactoryGirl.create(:person, :email_account => gmail_account)
         emails = FactoryGirl.create_list(:email, num_emails, :email_account => gmail_account,
                                          :from_address => person.email_address)
-
+        create_email_folder_mappings(emails, folder)
+        
         emails.each do |email|
           FactoryGirl.create(:email_recipient, :email => email, :person => person,
                              :recipient_type => EmailRecipient.recipient_types[:to])
-
-          properties = { :email => email }
-          properties[:email_folder] = folder if folder
-          FactoryGirl.create(:email_folder_mapping, properties)
         end
         
         return emails, person

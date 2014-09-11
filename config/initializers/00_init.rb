@@ -4,6 +4,7 @@ require 'rest-client'
 require 'google/api_client'
 
 require 'turing-lib/misc'
+require 'turing-lib/misc_email'
 require 'turing-lib/logging'
 
 require 'turing-lib/google/misc'

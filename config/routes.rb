@@ -18,7 +18,8 @@ Rails.application.routes.draw do
   namespace :api, :defaults => {:format => :json} do
     namespace :v1 do
       resources :users, only: [:create]
-      match '/users/current', to: 'users#current', via: 'get'
+      get '/users/current', to: 'users#current'
+      post '/users/declare_email_bankruptcy', to: 'users#declare_email_bankruptcy'
 
       resources :sessions, only: [:create]
       match '/signout', to: 'sessions#destroy', via: 'delete'
