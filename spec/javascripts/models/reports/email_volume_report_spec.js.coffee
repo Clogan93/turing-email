@@ -34,22 +34,16 @@ describe "Email volume report model", ->
       @email_volume_report.fetch()
       @server.respond()
 
-      expect(@email_volume_report.get("received_emails_per_month")).toEqual @emailVolumeReport.received_emails_per_month
-      expect(@email_volume_report.get("received_emails_per_week")).toEqual @emailVolumeReport.received_emails_per_week
-      expect(@email_volume_report.get("received_emails_per_day")).toEqual @emailVolumeReport.received_emails_per_day
-      expect(@email_volume_report.get("sent_emails_per_month")).toEqual @emailVolumeReport.sent_emails_per_month
-      expect(@email_volume_report.get("sent_emails_per_week")).toEqual @emailVolumeReport.sent_emails_per_week
-      expect(@email_volume_report.get("sent_emails_per_day")).toEqual @emailVolumeReport.sent_emails_per_day
+      expect(@email_volume_report.get("dailyEmailVolumeData")).toEqual @emailVolumeReport.dailyEmailVolumeData
+      expect(@email_volume_report.get("weeklyEmailVolumeData")).toEqual @emailVolumeReport.weeklyEmailVolumeData
+      expect(@email_volume_report.get("monthlyEmailVolumeData")).toEqual @emailVolumeReport.monthlyEmailVolumeData
       return
 
     it "should have the attributes", ->
       @email_volume_report.fetch()
       @server.respond()
       
-      expect(@email_volume_report.get("received_emails_per_month")).toBeDefined()
-      expect(@email_volume_report.get("received_emails_per_week")).toBeDefined()
-      expect(@email_volume_report.get("received_emails_per_day")).toBeDefined()
-      expect(@email_volume_report.get("sent_emails_per_month")).toBeDefined()
-      expect(@email_volume_report.get("sent_emails_per_week")).toBeDefined()
-      expect(@email_volume_report.get("sent_emails_per_day")).toBeDefined()
+      expect(@email_volume_report.get("dailyEmailVolumeData")).toBeDefined()
+      expect(@email_volume_report.get("weeklyEmailVolumeData")).toBeDefined()
+      expect(@email_volume_report.get("monthlyEmailVolumeData")).toBeDefined()
       return

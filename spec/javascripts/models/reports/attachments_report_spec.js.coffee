@@ -33,16 +33,13 @@ describe "Attachments report model", ->
     it "should parse the attributes from the response", ->
       @attachments_report.fetch()
       @server.respond()
-      console.log @attachments_report
 
-      expect(@attachments_report.get("average_file_size")).toEqual @attachmentReport.average_file_size
-      expect(@attachments_report.get("content_type_stats")).toEqual @attachmentReport.content_type_stats
+      expect(@attachments_report.get("data")).toEqual @attachmentReport
       return
 
     it "should have the attributes", ->
       @attachments_report.fetch()
       @server.respond()
       
-      expect(@attachments_report.get("average_file_size")).toBeDefined()
-      expect(@attachments_report.get("content_type_stats")).toBeDefined()
+      expect(@attachments_report.get("data")).toBeDefined()
       return

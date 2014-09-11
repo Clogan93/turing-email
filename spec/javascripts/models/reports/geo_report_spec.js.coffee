@@ -34,16 +34,12 @@ describe "Geo report model", ->
       @geo_report.fetch()
       @server.respond()
 
-      for index, geoData of @geo_report.attributes
-        expect(geoData.num_emails).toEqual geoData.num_emails
-        expect(geoData.ip_info).toEqual geoData.ip_info
+      expect(@geo_report.get("data")).toEqual @geoReport
       return
 
     it "should have the attributes", ->
       @geo_report.fetch()
       @server.respond()
 
-      for index, geoData of @geo_report.attributes
-        expect(geoData.num_emails).toBeDefined()
-        expect(geoData.ip_info).toBeDefined()
+      expect(@geo_report.get("data")).toBeDefined()
       return

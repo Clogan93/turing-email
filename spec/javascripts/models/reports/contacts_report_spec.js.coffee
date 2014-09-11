@@ -34,18 +34,14 @@ describe "Contacts report model", ->
       @contacts_report.fetch()
       @server.respond()
 
-      expect(@contacts_report.get("top_senders")).toEqual @contactsReport.top_senders
-      expect(@contacts_report.get("top_recipients")).toEqual @contactsReport.top_recipients
-      expect(@contacts_report.get("bottom_senders")).toEqual @contactsReport.bottom_senders
-      expect(@contacts_report.get("bottom_recipients")).toEqual @contactsReport.bottom_recipients
+      expect(@contacts_report.get("incomingEmailData")).toEqual @contactsReport.incomingEmailData
+      expect(@contacts_report.get("outgoingEmailData")).toEqual @contactsReport.outgoingEmailData
       return
 
     it "should have the attributes", ->
       @contacts_report.fetch()
       @server.respond()
 
-      expect(@contacts_report.get("top_senders")).toBeDefined()
-      expect(@contacts_report.get("top_recipients")).toBeDefined()
-      expect(@contacts_report.get("bottom_senders")).toBeDefined()
-      expect(@contacts_report.get("bottom_recipients")).toBeDefined()
+      expect(@contacts_report.get("incomingEmailData")).toBeDefined()
+      expect(@contacts_report.get("outgoingEmailData")).toBeDefined()
       return
