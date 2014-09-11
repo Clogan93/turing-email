@@ -6,6 +6,7 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
     "impact_report": "showImpactReport"
     "inbox_efficiency_report": "showInboxEfficiencyReport"
     "lists_report": "showListsReport"
+    "recommended_rules_report": "showRecommendedRulesReport"
     "threads_report": "showThreadsReport"
     "top_contacts": "showContactsReport"
     "summary_analytics_report": "showSummaryAnalyticsReport"
@@ -109,12 +110,25 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
     listsReport.fetch(
       success: (model, response, options) =>
         listsReportView = new TuringEmailApp.Views.Reports.ListsReportView(
-          model: listsReport
+          model: model
           el: $(target_element)
         )
         
         listsReportView.render()
     )
+
+  showRecommendedRulesReport: (target_element="#reports") ->
+    recommendedRulesReport = new TuringEmailApp.Models.RecommendedRulesReport()
+
+    recommendedRulesReport.fetch(
+      success: (model, response, options) =>
+        recommendedRulesReportView = new TuringEmailApp.Views.Reports.RecommendedRulesReport(
+          model: model
+          el: $(target_element)
+        )
+
+        recommendedRulesReportView.render()
+    ) 
 
   showSummaryAnalyticsReport: (target_element="#reports") ->
     summaryAnalyticsReport = new TuringEmailApp.Models.SummaryAnalyticsReport()
