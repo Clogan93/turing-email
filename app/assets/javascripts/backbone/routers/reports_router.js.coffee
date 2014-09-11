@@ -122,7 +122,7 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
 
     recommendedRulesReport.fetch(
       success: (model, response, options) =>
-        recommendedRulesReportView = new TuringEmailApp.Views.Reports.RecommendedRulesReport(
+        recommendedRulesReportView = new TuringEmailApp.Views.Reports.RecommendedRulesReportView(
           model: model
           el: $(target_element)
         )
