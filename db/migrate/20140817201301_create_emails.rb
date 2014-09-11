@@ -12,6 +12,7 @@ class CreateEmails < ActiveRecord::Migration
 
       t.text :uid
       t.text :message_id
+      t.text :list_name
       t.text :list_id
 
       t.boolean :seen, :default => false

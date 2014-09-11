@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140910050150) do
+ActiveRecord::Schema.define(version: 20140911051824) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -66,6 +66,19 @@ ActiveRecord::Schema.define(version: 20140910050150) do
   add_index "email_references", ["email_id", "references_message_id"], name: "index_email_references_on_email_id_and_references_message_id", unique: true, using: :btree
   add_index "email_references", ["email_id"], name: "index_email_references_on_email_id", using: :btree
 
+  create_table "email_rules", force: true do |t|
+    t.integer  "user_id"
+    t.text     "from_address"
+    t.text     "to_address"
+    t.text     "subject"
+    t.text     "list_id"
+    t.text     "destination_folder"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "email_rules", ["from_address", "to_address", "subject", "list_id", "destination_folder"], name: "index_email_rules_on_everything", unique: true, using: :btree
+
   create_table "email_threads", force: true do |t|
     t.integer  "email_account_id"
     t.string   "email_account_type"
@@ -89,6 +102,7 @@ ActiveRecord::Schema.define(version: 20140910050150) do
     t.string   "auto_filed_folder_type"
     t.text     "uid"
     t.text     "message_id"
+    t.text     "list_name"
     t.text     "list_id"
     t.boolean  "seen",                    default: false
     t.text     "snippet"

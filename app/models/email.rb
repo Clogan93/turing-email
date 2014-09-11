@@ -25,14 +25,10 @@ class Email < ActiveRecord::Base
 
   validates_presence_of(:email_account, :uid, :message_id, :email_thread_id)
 
-  def Email.lists_email_daily_average(user, limit = nil)
-    if limit
-      return user.emails.where('list_id IS NOT NULL').group(:list_id).order('daily_average DESC').limit(limit).
-                  pluck('list_id, COUNT(*) / GREATEST(1, EXTRACT(day FROM now() - MIN(date))) AS daily_average')
-    else
-      return user.emails.where('list_id IS NOT NULL').group(:list_id).order('daily_average DESC').
-                  pluck('list_id, COUNT(*) / GREATEST(1, EXTRACT(day FROM now() - MIN(date))) AS daily_average')
-    end
+  def Email.lists_email_daily_average(user, limit: nil, where: nil)
+    return user.emails.where("list_id IS NOT NULL").where(where).
+                group(:list_id).order('daily_average DESC').limit(limit).
+                pluck('list_id, COUNT(*) / GREATEST(1, EXTRACT(day FROM now() - MIN(date))) AS daily_average')
   end
   
   def Email.email_raw_from_mime_data(mime_data)
@@ -59,7 +55,13 @@ class Email < ActiveRecord::Base
     email.ip_info = IpInfo.from_ip(ip) if ip
 
     email.message_id = email_raw.message_id
-    email.list_id = email_raw.header['List-ID'].decoded.force_utf8(true) if email_raw.header['List-ID']
+
+    if email_raw.header['List-ID']
+      list_id_header_parsed = parse_email_list_id_header(email_raw.header['List-ID'])
+      email.list_name = list_id_header_parsed[:name]
+      email.list_id = list_id_header_parsed[:id]
+    end
+
     email.date = email_raw.date
 
     froms_parsed = parse_email_address_field(email_raw, :from)

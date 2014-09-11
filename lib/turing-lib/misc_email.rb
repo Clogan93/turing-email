@@ -16,21 +16,47 @@ rescue Exception
   return { :display_name => display_name, :address => email_address }
 end
 
+def parse_email_list_id_header(list_id_header)
+  return { :name => nil, :id => nil } if list_id_header.nil?
+  
+  if list_id_header.class != String
+    list_id_value = list_id_header.decoded.force_utf8(true)
+  else
+    list_id_value = list_id_header
+  end
+  
+  list_id_header_parsed = parse_email_string(list_id_value)
+  list_name = list_id_header_parsed[:display_name]
+  list_id = list_id_header_parsed[:address]
+  
+  if list_id.nil?
+    m = list_id_value.match(/.*<(.+)>.*/)
+    if m
+      list_id = m[1]
+    else
+      list_id = list_id_value
+      list_name = nil
+    end
+  end
+
+  return { :name => list_name, :id => list_id }
+end
+
 # sometimes list address in the list_id is missing the @
-def parse_email_list_address(email_list_address)
-  m = email_list_address.match(/([^@]+)@(.+)/)
+def get_email_list_address_from_list_id(list_id)
+  m = list_id.match(/([^@]+)@(.+)/)
 
   if m
     name = m[1]
     domain = m[2]
   else
-    m = email_list_address.match(/(.*)\.([^\.]+\.[^\.]+)/)
+    m = list_id.match(/(.*)\.([^\.]+\.[^\.]+)/)
 
     if m
       name = m[1]
       domain = m[2]
     else
-      name = email_list_address
+      name = list_id
       domain = nil
     end
   end

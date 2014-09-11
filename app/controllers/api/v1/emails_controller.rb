@@ -179,7 +179,7 @@ class Api::V1::EmailsController < ApiController
       list_ids_parsed = list_ids.map { |list_id| parse_email_string(list_id) }
       
       list_email_addresses = list_ids_parsed.map do |list_id_parsed|
-        list_address_parsed = parse_email_list_address(list_id_parsed[:address].downcase)
+        list_address_parsed = get_email_list_address_from_list_id(list_id_parsed[:address].downcase)
         "#{list_address_parsed[:name]}@#{list_address_parsed[:domain]}"
       end
 
