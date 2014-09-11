@@ -213,20 +213,9 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
 
   showGeoReport: (target_element = "#reports") ->
     geoReport = new TuringEmailApp.Models.GeoReport()
-    
+
     geoReport.fetch(
       success: (model, response, options) ->
-        data = { 
-          geoData : [
-            ['City', 'Popularity']
-          ]
-        }
-        
-        for key, geoDataPoint of model.attributes
-          data.geoData.push([geoDataPoint["ip_info"]["city"], geoDataPoint["num_emails"]])
-          
-        model.set "data", data
-
         geoReportView = new TuringEmailApp.Views.Reports.GeoReportView(
           model: model
           el: $(target_element)
