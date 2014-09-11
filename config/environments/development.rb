@@ -19,7 +19,7 @@ Rails.application.configure do
   config.mailgun_smtp_username = 'postmaster@dev.turingemail.com'
   config.mailgun_smtp_password = '5ced9285272c96d6e49ec2105e087bcf'
 
-  #config.log_level = :info
+  config.log_level = :info
 
   # Settings specified here will take precedence over those in config/application.rb.
 

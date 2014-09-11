@@ -66,6 +66,9 @@ $config.max_login_attempts = 5
 
 $config.volume_report_date_format = '%-m/%-d/%Y'
 
+# rule recommendations
+$config.recommended_rules_average_daily_list_volume = 5
+
 # mailgun
 $config.mailgun_smtp_server = 'smtp.mailgun.org'
 $config.mailgun_api_url_base = "https://api:#{$config.mailgun_api_key}@api.mailgun.net/v2"

@@ -27,13 +27,38 @@ context 'parse_email_string' do
   end
 end
 
-context 'parse_email_list_address' do
+context 'parse_email_list_id_header' do
+  it 'should parse email List-ID header correctly' do
+    # no @
+    expect(parse_email_list_id_header('<sales.turinginc.com>')).to eq(:name => nil, :id => 'sales.turinginc.com')
+    
+    # no brackets no @
+    expect(parse_email_list_id_header('sales.turinginc.com')).to eq(:name => nil, :id => 'sales.turinginc.com')
+
+    # with @
+    expect(parse_email_list_id_header('<sales@turinginc.com>')).to eq(:name => nil, :id => 'sales@turinginc.com')
+
+    # with @ no brackets
+    expect(parse_email_list_id_header('sales@turinginc.com')).to eq(:name => nil, :id => 'sales@turinginc.com')
+    
+    # with brackets no @
+    expect(parse_email_list_id_header('Sales <sales.turinginc.com>')).to eq(:name => 'Sales', :id => 'sales.turinginc.com')
+
+    expect(parse_email_list_id_header('Sales sales.turinginc.com')).to eq(:name => nil, :id => 'Sales sales.turinginc.com')
+
+    expect(parse_email_list_id_header('The virtual soul of the Black Community at Stanford <the_diaspora.lists.stanford.edu>')).to eq(:name => 'The virtual soul of the Black Community at Stanford', :id => 'the_diaspora.lists.stanford.edu')
+  end
+end
+
+context 'get_email_list_address_from_list_id' do
   it 'should parse email list addresses correctly' do
     # no @
-    expect(parse_email_list_address('sales.turinginc.com')).to eq({ :name => 'sales', :domain => 'turinginc.com' })
+    expect(get_email_list_address_from_list_id('sales.turinginc.com')).to eq({ :name => 'sales',
+                                                                               :domain => 'turinginc.com' })
     
     # has @
-    expect(parse_email_list_address('sales@turinginc.com')).to eq({ :name => 'sales', :domain => 'turinginc.com' })
+    expect(get_email_list_address_from_list_id('sales@turinginc.com')).to eq({ :name => 'sales',
+                                                                               :domain => 'turinginc.com' })
   end
 end
 
