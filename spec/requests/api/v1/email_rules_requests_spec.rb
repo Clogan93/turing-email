@@ -37,6 +37,11 @@ describe Api::V1::EmailRulesController, :type => :request do
                                             :email_account => gmail_account,
                                             :list_id => 'test.list.com',
                                             :auto_filed => true ) }
+    
+    let!(:emails_other) { FactoryGirl.create_list(:email, $config.recommended_rules_average_daily_list_volume - 1,
+                                                  :email_account => gmail_account,
+                                                  :list_id => 'test2.list.com',
+                                                  :auto_filed => true ) }
 
     before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
     
