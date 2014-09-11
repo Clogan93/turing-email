@@ -27,4 +27,14 @@ class Api::V1::GenieRulesController < ApiController
                                 :subject => subject, :list_id => list_id)
     render :json => ''
   end
+
+  swagger_api :index do
+    summary 'Return existing genie rules.'
+
+    response :ok
+  end
+
+  def index
+    @genie_rules = current_user.genie_rules
+  end
 end

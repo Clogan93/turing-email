@@ -24,11 +24,21 @@ class Api::V1::EmailRulesController < ApiController
     
     destination_folder = params[:destination_folder].blank? ? nil : params[:destination_folder]
 
-    GenieRule.find_or_create_by(:user => current_user,
+    EmailRule.find_or_create_by(:user => current_user,
                                 :from_address => from_address, :to_address => to_address,
                                 :subject => subject, :list_id => list_id,
                                 :destination_folder => destination_folder)
     render :json => ''
+  end
+
+  swagger_api :index do
+    summary 'Return existing email rules.'
+
+    response :ok
+  end
+  
+  def index
+    @email_rules = current_user.email_rules
   end
   
   swagger_api :recommended_rules do
@@ -39,9 +49,9 @@ class Api::V1::EmailRulesController < ApiController
 
   def recommended_rules
     lists_email_daily_average = Email.lists_email_daily_average(current_user, where: ['auto_filed=?', true])
-
+    
     rules_recommended = []
-
+    
     lists_email_daily_average.each do |list_name, list_id, average|
       break if average < $config.recommended_rules_average_daily_list_volume
       next if current_user.email_rules.where(:list_id => list_id).count > 0
