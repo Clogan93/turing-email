@@ -12,11 +12,10 @@ describe GmailLabel, :type => :model do
 
       expect(test_label.num_threads).to eq(0)
 
-      emails.each { |email| FactoryGirl.create(:email_folder_mapping, :email => email, :email_folder => test_label) }
+      create_email_folder_mappings(emails, test_label)
       expect(test_label.num_threads).to eq(emails.length)
 
-      emails_seen.each { |email_seen| FactoryGirl.create(:email_folder_mapping,
-                                                         :email => email_seen, :email_folder => test_label) }
+      create_email_folder_mappings(emails_seen, test_label)
       expect(test_label.num_threads).to eq(emails.length + emails_seen.length)
     end
   end
@@ -25,11 +24,10 @@ describe GmailLabel, :type => :model do
     it 'should return the correct number of unread threads' do
       expect(test_label.num_unread_threads).to eq(0)
 
-      emails.each { |email| FactoryGirl.create(:email_folder_mapping, :email => email, :email_folder => test_label) }
+      create_email_folder_mappings(emails, test_label)
       expect(test_label.num_unread_threads).to eq(emails.length)
 
-      emails_seen.each { |email_seen| FactoryGirl.create(:email_folder_mapping,
-                                                         :email => email_seen, :email_folder => test_label) }
+      create_email_folder_mappings(emails_seen, test_label)
       expect(test_label.num_unread_threads).to eq(emails.length)
     end
   end

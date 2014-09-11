@@ -57,4 +57,27 @@ class Api::V1::UsersController < ApiController
     @user = current_user
     render 'api/v1/users/show'
   end
+
+  swagger_api :current do
+    summary 'Return the current user.'
+
+    response :ok
+  end
+
+  swagger_api :bankruptcy do
+    summary 'Declare Email Bankruptcy! Delete all emails from inbox.'
+
+    response :ok
+  end
+  
+  def declare_email_bankruptcy
+    inbox_label = GmailLabel.where(:gmail_account => current_user.gmail_accounts.first,
+                                   :label_id => 'INBOX').first
+    
+    if inbox_label
+      EmailFolderMapping.where(:email_folder => inbox_label).destroy_all()
+    end
+
+    render :json => ''
+  end
 end
