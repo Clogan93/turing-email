@@ -40,9 +40,9 @@ Rails.application.routes.draw do
       match '/email_threads/inbox', to: 'email_threads#inbox', via: 'get'
       match '/email_threads/in_folder', to: 'email_threads#in_folder', via: 'get'
       
-      resources :genie_rules, only: [:create]
+      resources :genie_rules, only: [:create, :index]
 
-      resources :email_rules, only: [:create]
+      resources :email_rules, only: [:create, :index]
       get '/email_rules/recommended_rules', to: 'email_rules#recommended_rules'
     end
   end

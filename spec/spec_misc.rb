@@ -83,6 +83,16 @@ module SpecMisc
     spec_validate_attributes(expected_attributes, ip_info, ip_info_rendered)
   end
 
+  def validate_email_rule(email_rule, email_rule_rendered)
+    expected_attributes = %w(from_address to_address subject list_id destination_folder)
+    spec_validate_attributes(expected_attributes, email_rule, email_rule_rendered)
+  end
+
+  def validate_genie_rule(genie_rule, genie_rule_rendered)
+    expected_attributes = %w(from_address to_address subject list_id)
+    spec_validate_attributes(expected_attributes, genie_rule, genie_rule_rendered)
+  end
+
   def verify_models_expected(models_expected, models_rendered, key)
     expect(models_rendered.length).to eq(models_expected.length)
 
