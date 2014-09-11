@@ -237,7 +237,7 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
 
   showImpactReport: (target_element="#reports") ->
     impactReport = new TuringEmailApp.Models.ImpactReport()
-    
+
     impactReport.fetch(
       success: (model, response, options) =>
         impactReportView = new TuringEmailApp.Views.Reports.ImpactReportView(
@@ -301,24 +301,6 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
     
     contactsReport.fetch(
       success: (model, response, options) =>
-        incomingEmailData = { 
-          people : [],
-          title : "Incoming Email Volume Chart"
-        }
-        
-        for recipientAddress, count of model.get("top_recipients")
-          incomingEmailData.people.push([recipientAddress, count])
-          
-        model.set "incomingEmailData", incomingEmailData
-        outgoingEmailData = { 
-          people : [],
-          title : "Outgoing Email Volume Chart"
-        }
-        
-        for senderAddress, count of model.get("top_senders")
-          outgoingEmailData.people.push([senderAddress, count])
-        
-        model.set "outgoingEmailData", outgoingEmailData
         contactsReportView = new TuringEmailApp.Views.Reports.ContactsReportView(
           model: contactsReport
           el: $(target_element)
