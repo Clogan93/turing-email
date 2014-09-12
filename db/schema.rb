@@ -68,6 +68,7 @@ ActiveRecord::Schema.define(version: 20140911051824) do
 
   create_table "email_rules", force: true do |t|
     t.integer  "user_id"
+    t.text     "uid"
     t.text     "from_address"
     t.text     "to_address"
     t.text     "subject"
@@ -78,6 +79,7 @@ ActiveRecord::Schema.define(version: 20140911051824) do
   end
 
   add_index "email_rules", ["from_address", "to_address", "subject", "list_id", "destination_folder"], name: "index_email_rules_on_everything", unique: true, using: :btree
+  add_index "email_rules", ["uid"], name: "index_email_rules_on_uid", unique: true, using: :btree
 
   create_table "email_threads", force: true do |t|
     t.integer  "email_account_id"
@@ -133,6 +135,7 @@ ActiveRecord::Schema.define(version: 20140911051824) do
 
   create_table "genie_rules", force: true do |t|
     t.integer  "user_id"
+    t.text     "uid"
     t.text     "from_address"
     t.text     "to_address"
     t.text     "subject"
@@ -142,6 +145,7 @@ ActiveRecord::Schema.define(version: 20140911051824) do
   end
 
   add_index "genie_rules", ["from_address", "to_address", "subject", "list_id"], name: "index_genie_rules_on_everything", unique: true, using: :btree
+  add_index "genie_rules", ["uid"], name: "index_genie_rules_on_uid", unique: true, using: :btree
 
   create_table "gmail_accounts", force: true do |t|
     t.integer  "user_id"

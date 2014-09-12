@@ -27,8 +27,10 @@ $config.http_errors = {
 
     :email_folder_not_found => {:status_code => 610, :description => 'Email folder not found.'},
 
-    :email_not_found => {:status_code => 620, :description => 'Email not found.',},
-    :email_thread_not_found => {:status_code => 630, :description => 'Email Thread not found.'}
+    :email_not_found => {:status_code => 620, :description => 'Email not found.'},
+    :email_thread_not_found => {:status_code => 630, :description => 'Email Thread not found.'},
+    :genie_rule_not_found => {:status_code => 640, :description => 'Genie Rule not found.'},
+    :email_rule_not_found => {:status_code => 650, :description => 'Email Rule not found.'}
 }
 
 # globals

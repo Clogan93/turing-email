@@ -40,7 +40,7 @@ module SessionsHelper
 
   def sign_in(user)
     auth_key = UserAuthKey.new_key
-    encrypted_auth_key = UserAuthKey.encrypt(auth_key)
+    encrypted_auth_key = UserAuthKey.secure_hash(auth_key)
 
     user_auth_key = UserAuthKey.new()
     user_auth_key.user = user
@@ -65,7 +65,7 @@ module SessionsHelper
     return if cookies[:auth_key].nil?
     return @current_user if @current_user
 
-    encrypted_auth_key  = UserAuthKey.encrypt(cookies[:auth_key])
+    encrypted_auth_key  = UserAuthKey.secure_hash(cookies[:auth_key])
     user_auth_key = UserAuthKey.find_by_encrypted_auth_key(encrypted_auth_key)
     @current_user = user_auth_key.user if user_auth_key
 
@@ -90,7 +90,7 @@ module SessionsHelper
   def sign_out
     auth_key = cookies[:auth_key]
     user_auth_key = UserAuthKey.find_by(:user => current_user,
-                                        :encrypted_auth_key => UserAuthKey.encrypt(auth_key)) if auth_key
+                                        :encrypted_auth_key => UserAuthKey.secure_hash(auth_key)) if auth_key
     user_auth_key.destroy() if user_auth_key
 
     cookies.delete(:auth_key)

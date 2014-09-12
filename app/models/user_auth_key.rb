@@ -4,10 +4,10 @@ class UserAuthKey < ActiveRecord::Base
   validates_presence_of(:user, :encrypted_auth_key)
 
   before_validation {
-    self.encrypted_auth_key = UserAuthKey.encrypt(UserAuthKey.new_key) if self.encrypted_auth_key.nil?
+    self.encrypted_auth_key = UserAuthKey.secure_hash(UserAuthKey.new_key) if self.encrypted_auth_key.nil?
   }
 
-  def UserAuthKey.encrypt(data)
+  def UserAuthKey.secure_hash(data)
     return Digest::SHA1.hexdigest(data)
   end
 
