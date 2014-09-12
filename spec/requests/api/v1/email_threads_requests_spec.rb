@@ -144,19 +144,35 @@ describe Api::V1::EmailThreadsController, :type => :request do
     let!(:emails) { gmail_account.emails }
     let!(:email_thread_uids) { EmailThread.where(:id => email_threads).pluck(:uid) }
 
-    before do
-      post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password
-      create_email_thread_emails(email_threads, gmail_label)
+    before { create_email_thread_emails(email_threads, gmail_label) }
+
+    context 'when the user is signed in' do
+      before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
+      
+      it 'should remove emails from the specified folder' do
+        expect(gmail_label.emails.length).to eq(emails.length)
+        
+        post '/api/v1/email_threads/remove_from_folder', :email_thread_uids => email_thread_uids,
+                                                          :email_folder_id => gmail_label.label_id
+  
+        gmail_label.reload
+        expect(gmail_label.emails.length).to eq(0)
+      end
     end
 
-    it 'should remove emails from the specified folder' do
-      expect(gmail_label.emails.length).to eq(emails.length)
-      
-      post '/api/v1/email_threads/remove_from_folder', :email_thread_uids => email_thread_uids,
-                                                        :email_folder_id => gmail_label.label_id
+    context 'when the other user is signed in' do
+      let!(:user_other) { FactoryGirl.create(:user) }
+      before { post '/api/v1/sessions', :email => user_other.email, :password => user_other.password }
 
-      gmail_label.reload
-      expect(gmail_label.emails.length).to eq(0)
+      it 'should NOT remove emails from the specified folder' do
+        expect(gmail_label.emails.length).to eq(emails.length)
+
+        post '/api/v1/email_threads/remove_from_folder', :email_thread_uids => email_thread_uids,
+             :email_folder_id => gmail_label.label_id
+
+        gmail_label.reload
+        expect(gmail_label.emails.length).to eq(emails.length)
+      end
     end
   end
 
@@ -168,22 +184,41 @@ describe Api::V1::EmailThreadsController, :type => :request do
     let!(:emails) { gmail_account.emails }
     let!(:email_thread_uids) { EmailThread.where(:id => email_threads).pluck(:uid) }
     
-    before do
-      post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password
-      create_email_thread_emails(email_threads, gmail_label)
+    before { create_email_thread_emails(email_threads, gmail_label) }
+
+    context 'when the user is signed in' do
+      before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password} 
+      
+      it 'should move emails to trash' do
+        expect(gmail_label.emails.length).to eq(emails.length)
+        expect(trash_label.emails.length).to eq(0)
+  
+        post '/api/v1/email_threads/trash', :email_thread_uids => email_thread_uids
+  
+        gmail_label.reload
+        trash_label.reload
+  
+        expect(gmail_label.emails.length).to eq(0)
+        expect(trash_label.emails.length).to eq(emails.length)
+      end
     end
 
-    it 'should move emails to trash' do
-      expect(gmail_label.emails.length).to eq(emails.length)
-      expect(trash_label.emails.length).to eq(0)
+    context 'when the other user is signed in' do
+      let!(:user_other) { FactoryGirl.create(:user) }
+      before { post '/api/v1/sessions', :email => user_other.email, :password => user_other.password }
 
-      post '/api/v1/email_threads/trash', :email_thread_uids => email_thread_uids
+      it 'should NOT move emails to trash' do
+        expect(gmail_label.emails.length).to eq(emails.length)
+        expect(trash_label.emails.length).to eq(0)
 
-      gmail_label.reload
-      trash_label.reload
+        post '/api/v1/email_threads/trash', :email_thread_uids => email_thread_uids
 
-      expect(gmail_label.emails.length).to eq(0)
-      expect(trash_label.emails.length).to eq(emails.length)
+        gmail_label.reload
+        trash_label.reload
+
+        expect(gmail_label.emails.length).to eq(emails.length)
+        expect(trash_label.emails.length).to eq(0)
+      end
     end
   end
 end
