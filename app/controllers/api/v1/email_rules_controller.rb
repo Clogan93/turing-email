@@ -26,10 +26,14 @@ class Api::V1::EmailRulesController < ApiController
     
     destination_folder = params[:destination_folder].blank? ? nil : params[:destination_folder]
 
-    EmailRule.find_or_create_by(:user => current_user,
-                                :from_address => from_address, :to_address => to_address,
-                                :subject => subject, :list_id => list_id,
-                                :destination_folder => destination_folder)
+    begin
+      EmailRule.find_or_create_by!(:user => current_user,
+                                   :from_address => from_address, :to_address => to_address,
+                                   :subject => subject, :list_id => list_id,
+                                   :destination_folder => destination_folder)
+    rescue ActiveRecord::RecordNotUnique
+    end
+    
     render :json => ''
   end
 

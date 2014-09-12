@@ -57,4 +57,17 @@ sql
     
     return email_threads
   end
+  
+  def apply_to_emails(email_ids)
+    email_ids.each do |email_id|
+      begin
+        if email_id.class == Email
+          EmailFolderMapping.find_or_create_by!(:email => email_id, :email_folder => self)
+        else
+          EmailFolderMapping.find_or_create_by!(:email_id => email_id, :email_folder => self)
+        end
+      rescue ActiveRecord::RecordNotUnique
+      end
+    end
+  end
 end

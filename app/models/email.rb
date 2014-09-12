@@ -31,6 +31,11 @@ class Email < ActiveRecord::Base
                 pluck('list_name, list_id, COUNT(*) / GREATEST(1, EXTRACT(day FROM now() - MIN(date))) AS daily_average')
   end
   
+  def Email.trash_emails(email_ids, trash_folder = nil)
+    EmailFolderMapping.where(:email => email_ids).destroy_all
+    trash_folder.apply_to_emails(email_ids) if trash_folder
+  end
+  
   def Email.email_raw_from_mime_data(mime_data)
     mail_data_file = Tempfile.new('turing')
     mail_data_file.binmode
@@ -145,7 +150,11 @@ class Email < ActiveRecord::Base
     return if email_raw.references.nil?
 
     if email_raw.references.class == String
-      EmailReference.find_or_create_by!(:email => self, :references_message_id => email_raw.references)
+      begin
+        EmailReference.find_or_create_by!(:email => self, :references_message_id => email_raw.references)
+      rescue ActiveRecord::RecordNotUnique
+      end
+      
       return
     end
 
@@ -161,7 +170,11 @@ class Email < ActiveRecord::Base
     return if email_raw.in_reply_to.nil?
 
     if email_raw.in_reply_to.class == String
-      EmailInReplyTo.find_or_create_by!(:email => self, :in_reply_to_message_id => email_raw.in_reply_to)
+      begin
+        EmailInReplyTo.find_or_create_by!(:email => self, :in_reply_to_message_id => email_raw.in_reply_to)
+      rescue ActiveRecord::RecordNotUnique
+      end
+      
       return
     end
 

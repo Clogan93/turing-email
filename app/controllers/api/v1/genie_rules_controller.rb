@@ -24,9 +24,13 @@ class Api::V1::GenieRulesController < ApiController
     subject = params[:subject].blank? ? nil : params[:subject]
     list_id = params[:list_id].blank? ? nil : params[:list_id]
     
-    GenieRule.find_or_create_by(:user => current_user,
-                                :from_address => from_address, :to_address => to_address,
-                                :subject => subject, :list_id => list_id)
+    begin
+      GenieRule.find_or_create_by!(:user => current_user,
+                                   :from_address => from_address, :to_address => to_address,
+                                   :subject => subject, :list_id => list_id)
+    rescue ActiveRecord::RecordNotUnique
+    end
+    
     render :json => ''
   end
 

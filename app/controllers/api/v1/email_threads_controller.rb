@@ -3,7 +3,7 @@ class Api::V1::EmailThreadsController < ApiController
     signed_in_user(true)
   end
 
-  before_action :correct_user, :except => [:inbox, :in_folder]
+  before_action :correct_user, :except => [:inbox, :in_folder, :remove_from_folder, :trash]
 
   swagger_controller :email_threads, 'Email Threads Controller'
 
@@ -64,6 +64,45 @@ class Api::V1::EmailThreadsController < ApiController
   end
 
   def show
+  end
+
+  swagger_api :remove_from_folder do
+    summary 'Remove the specified email threads from the specified folder.'
+
+    param :form, :email_thread_uids, :array, :required, 'Email Thread UIDs'
+    param :form, :email_folder_id, :folder_id, :required, 'Folder ID'
+
+    response :ok
+  end
+
+  def remove_from_folder
+    email_account = current_user.gmail_accounts.first
+    email_thread_ids = EmailThread.where(:email_account => email_account, :uid => params[:email_thread_uids]).pluck(:id)
+    email_ids = Email.where(:email_account => email_account, :email_thread_id => email_thread_ids).pluck(:id)
+    email_folder = GmailLabel.find_by(:gmail_account => email_account, :label_id => params[:email_folder_id])
+    
+    EmailFolderMapping.where(:email => email_ids, :email_folder => email_folder).destroy_all if email_folder
+
+    render :json => ''
+  end
+
+  swagger_api :trash do
+    summary 'Move the specified email thread to the trash.'
+
+    param :form, :email_thread_uids, :array, :required, 'Email Thread UIDs'
+
+    response :ok
+  end
+
+  def trash
+    email_account = current_user.gmail_accounts.first
+    email_thread_ids = EmailThread.where(:email_account => email_account, :uid => params[:email_thread_uids]).pluck(:id)
+    email_ids = Email.where(:email_account => email_account, :email_thread_id => email_thread_ids).pluck(:id)
+    trash_label = GmailLabel.where(:gmail_account => email_account, :label_id => 'TRASH').first
+
+    Email.trash_emails(email_ids, trash_label)
+
+    render :json => ''
   end
 
   private

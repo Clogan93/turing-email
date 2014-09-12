@@ -31,6 +31,28 @@ describe GmailLabel, :type => :model do
       expect(test_label.num_unread_threads).to eq(emails.length)
     end
   end
+  
+  context 'apply_to_emails' do
+    let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
+    let!(:gmail_label) { FactoryGirl.create(:gmail_label, :gmail_account => gmail_account) }
+    let!(:trash_label) { FactoryGirl.create(:gmail_label_trash, :gmail_account => gmail_account) }
+    let!(:emails) { FactoryGirl.create_list(:email, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account) }
+    
+    it 'should apply the label to the emails' do
+      expect(gmail_label.email_folder_mappings.length).to eq(0)
+      gmail_label.apply_to_emails(emails)
+      gmail_label.reload
+      expect(gmail_label.email_folder_mappings.length).to eq(emails.length)
+      
+      emails.sort! { |x, y| x.uid <=> y.uid }
+      label_emails = gmail_label.emails.to_a
+      label_emails.sort! { |x, y| x.uid <=> y.uid }
+
+      emails.zip(label_emails).each do |email, label_email|
+        expect(label_email.uid).to eq(email.uid)
+      end
+    end
+  end
 
   context 'destroy' do
     let!(:email_account) { FactoryGirl.create(:gmail_account) }

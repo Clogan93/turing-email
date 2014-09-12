@@ -85,4 +85,47 @@ describe Api::V1::EmailsController, :type => :request do
       emails_seen.each { |email| expect(email.reload.seen).to be(false) }
     end
   end
+  
+  context 'remove_from_folder' do
+    let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
+    let!(:gmail_label) { FactoryGirl.create(:gmail_label, :gmail_account => gmail_account) }
+    let!(:emails) { FactoryGirl.create_list(:email, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account) }
+
+    before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
+    before{ gmail_label.apply_to_emails(emails) }
+    
+    it 'should remove emails from the specified folder' do
+      expect(gmail_label.emails.length).to eq(emails.length)
+
+      email_uids = Email.where(:id => emails).pluck(:uid)
+      post '/api/v1/emails/remove_from_folder', :email_uids => email_uids, :email_folder_id => gmail_label.label_id
+
+      gmail_label.reload
+      expect(gmail_label.emails.length).to eq(0)
+    end
+  end
+  
+  context 'trash' do
+    let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
+    let!(:gmail_label) { FactoryGirl.create(:gmail_label, :gmail_account => gmail_account) }
+    let!(:trash_label) { FactoryGirl.create(:gmail_label_trash, :gmail_account => gmail_account) }
+    let!(:emails) { FactoryGirl.create_list(:email, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account) }
+
+    before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
+    before{ gmail_label.apply_to_emails(emails) }
+    
+    it 'should move emails to trash' do
+      expect(gmail_label.emails.length).to eq(emails.length)
+      expect(trash_label.emails.length).to eq(0)
+
+      email_uids = Email.where(:id => emails).pluck(:uid)
+      post '/api/v1/emails/trash', :email_uids => email_uids
+
+      gmail_label.reload
+      trash_label.reload
+
+      expect(gmail_label.emails.length).to eq(0)
+      expect(trash_label.emails.length).to eq(emails.length)
+    end
+  end
 end

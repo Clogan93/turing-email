@@ -3,7 +3,7 @@ class Api::V1::EmailsController < ApiController
     signed_in_user(true)
   end
 
-  before_action :correct_user, :except => [:set_seen]
+  before_action :correct_user, :except => [:set_seen, :remove_from_folder, :trash]
 
   swagger_controller :emails, 'Emails Controller'
 
@@ -31,6 +31,43 @@ class Api::V1::EmailsController < ApiController
   def set_seen
     email_account = current_user.gmail_accounts.first
     Email.where(:email_account => email_account, :uid => params[:email_uids]).update_all(:seen => params[:seen])
+    
+    render :json => ''
+  end
+
+  swagger_api :remove_from_folder do
+    summary 'Remove the specified emails from the specified folder.'
+
+    param :form, :email_uids, :array, :required, 'Email UIDs'
+    param :form, :email_folder_id, :folder_id, :required, 'Folder ID'
+
+    response :ok
+  end
+
+  def remove_from_folder
+    email_account = current_user.gmail_accounts.first
+    email_ids = Email.where(:email_account => email_account, :uid => params[:email_uids]).pluck(:id)
+    email_folder = GmailLabel.find_by(:gmail_account => email_account, :label_id => params[:email_folder_id])
+    
+    EmailFolderMapping.where(:email => email_ids, :email_folder => email_folder).destroy_all if email_folder
+
+    render :json => ''
+  end
+
+  swagger_api :trash do
+    summary 'Move the specified emails to the trash.'
+
+    param :form, :email_uids, :array, :required, 'Email UIDs'
+
+    response :ok
+  end
+
+  def trash
+    email_account = current_user.gmail_accounts.first
+    email_ids = Email.where(:email_account => email_account, :uid => params[:email_uids]).pluck(:id)
+    trash_label = GmailLabel.where(:gmail_account => email_account, :label_id => 'TRASH').first
+    
+    Email.trash_emails(email_ids, trash_label)
     
     render :json => ''
   end

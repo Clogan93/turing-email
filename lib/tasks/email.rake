@@ -88,8 +88,12 @@ task :email_genie_reset => :environment do
       inbox_label = GmailLabel.where(:gmail_account => user.gmail_accounts.first,
                                      :label_id => 'INBOX').first
       
-      email_ids_auto_filed.each { |email_id| EmailFolderMapping.find_or_create_by(:email_folder => inbox_label,
-                                                                                  :email_id => email_id) }
+      email_ids_auto_filed.each do |email_id|
+        begin
+          EmailFolderMapping.find_or_create_by!(:email_folder => inbox_label, :email_id => email_id)
+        rescue ActiveRecord::RecordNotUnique
+        end
+      end
       
       Email.where(:id => email_ids_auto_filed).update_all(:auto_filed => false, :auto_filed_reported => false,
                                                           :auto_filed_folder_id => nil, :auto_filed_folder_type => nil)
