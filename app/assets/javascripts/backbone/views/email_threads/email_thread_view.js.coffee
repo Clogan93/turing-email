@@ -3,9 +3,6 @@ TuringEmailApp.Views.EmailThreads ||= {}
 class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
   template: JST["backbone/templates/email_threads/email_thread"]
 
-  events:
-    "click a": "setSeen"
-
   initialize: ->
     @listenTo(@model, "change", @render)
     @listenTo(@model, "hide destroy", @remove)
@@ -15,11 +12,15 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
 
   render: ->
     $("#email-folder-mail-header").hide()
+
     @$el.html(@template(@model.toJSON()))
 
     @render_genie_report()
 
     @bindEmailClick()
+
+    @setSeen()
+
     return 
 
   render_genie_report: ->

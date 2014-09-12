@@ -21,11 +21,16 @@ class TuringEmailApp.Views.Reports.SettingsView extends Backbone.View
           success: (data) ->
             return
 
+  setup_go_live_switch: ->
+    $("#go_live_switch").bootstrapSwitch()
+
   render: ->
     TuringEmailApp.reportsRouter.restyle_other_elements()
 
     @$el.html(@template())
 
     @setup_the_declare_email_bankruptcy_button()
+
+    @setup_go_live_switch()
 
     return this
