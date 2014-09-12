@@ -1,6 +1,28 @@
 require 'rails_helper'
 
 describe Email, :type => :model do
+  context 'trash_emails' do
+    let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
+    let!(:gmail_label) { FactoryGirl.create(:gmail_label, :gmail_account => gmail_account) }
+    let!(:trash_label) { FactoryGirl.create(:gmail_label_trash, :gmail_account => gmail_account) }
+    let!(:emails) { FactoryGirl.create_list(:email, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account) }
+    
+    before { gmail_label.apply_to_emails(emails) }
+    
+    it 'should move emails to the trash folder' do
+      expect(gmail_label.emails.length).to eq(emails.length)
+      expect(trash_label.emails.length).to eq(0)
+      
+      Email.trash_emails(emails, trash_label)
+      
+      gmail_label.reload
+      trash_label.reload
+
+      expect(gmail_label.emails.length).to eq(0)
+      expect(trash_label.emails.length).to eq(emails.length)
+    end
+  end
+  
   context 'Email.email_from_email_raw' do
     context 'parsing from address' do 
       let(:email_raw) { Mail.read('spec/data/emails/raw/raw_email_1.txt') }

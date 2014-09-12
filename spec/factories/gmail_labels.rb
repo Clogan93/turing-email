@@ -14,10 +14,18 @@ FactoryGirl.define do
   factory :gmail_label_inbox, :parent => :gmail_label do
     label_id 'INBOX'
     name 'INBOX'
+    label_type 'system'
   end
 
   factory :gmail_label_sent, :parent => :gmail_label do
     label_id 'SENT'
     name 'SENT'
+    label_type 'system'
+  end
+
+  factory :gmail_label_trash, :parent => :gmail_label do
+    label_id 'TRASH'
+    name 'TRASH'
+    label_type 'system'
   end
 end

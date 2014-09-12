@@ -26,6 +26,14 @@ Rails.application.routes.draw do
 
       get '/emails/show/:email_uid', to: 'emails#show'
       post '/emails/set_seen', to: 'emails#set_seen'
+      post '/emails/remove_from_folder', to: 'emails#remove_from_folder'
+      post '/emails/trash', to: 'emails#trash'
+
+      get '/email_threads/show/:email_thread_uid', to: 'email_threads#show'
+      match '/email_threads/inbox', to: 'email_threads#inbox', via: 'get'
+      match '/email_threads/in_folder', to: 'email_threads#in_folder', via: 'get'
+      post '/email_threads/remove_from_folder', to: 'email_threads#remove_from_folder'
+      post '/email_threads/trash', to: 'email_threads#trash'
       
       get '/email_reports/ip_stats', to: 'email_reports#ip_stats'
       get '/email_reports/volume_report', to: 'email_reports#volume_report'
@@ -37,10 +45,6 @@ Rails.application.routes.draw do
       get '/email_reports/impact_report', to: 'email_reports#impact_report'
       
       resources :email_folders, only: [:index]
-
-      get '/email_threads/show/:email_thread_uid', to: 'email_threads#show'
-      match '/email_threads/inbox', to: 'email_threads#inbox', via: 'get'
-      match '/email_threads/in_folder', to: 'email_threads#in_folder', via: 'get'
       
       resources :genie_rules, only: [:create, :index]
       delete '/genie_rules/:genie_rule_uid', :to => 'genie_rules#destroy'

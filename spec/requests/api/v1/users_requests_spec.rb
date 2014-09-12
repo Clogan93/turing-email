@@ -3,7 +3,7 @@ require 'rails_helper'
 describe Api::V1::UsersController, :type => :request do
   let!(:user) { FactoryGirl.create(:user) }
   let!(:user_other) { FactoryGirl.create(:user) }
-
+  
   context 'when the user is signed in' do
     before { post '/api/v1/sessions', :email => user.email, :password => user.password }
 

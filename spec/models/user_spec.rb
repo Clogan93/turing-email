@@ -80,17 +80,23 @@ describe User, :type => :model do
     let!(:user_auth_keys) { FactoryGirl.create_list(:user_auth_key, SpecMisc::SMALL_LIST_SIZE, :user => user) }
     let!(:email_accounts) { FactoryGirl.create_list(:gmail_account, SpecMisc::SMALL_LIST_SIZE, :user => user) }
     let!(:emails) { FactoryGirl.create_list(:email, SpecMisc::SMALL_LIST_SIZE, :email_account => email_accounts[0]) }
+    let!(:genie_rules) { FactoryGirl.create_list(:genie_rule, SpecMisc::SMALL_LIST_SIZE, :user => user) }
+    let!(:email_rules) { FactoryGirl.create_list(:email_rule, SpecMisc::SMALL_LIST_SIZE, :user => user) }
 
     it 'should destroy the associated user_auth_keys, gmail_accounts, and emails' do
       expect(UserAuthKey.where(:user => user).count).to eq(user_auth_keys.length)
       expect(GmailAccount.where(:user => user).count).to eq(email_accounts.length)
       expect(Email.where(:email_account => email_accounts[0]).count).to eq(emails.length)
+      expect(GenieRule.where(:user => user).count).to eq(genie_rules.length)
+      expect(EmailRule.where(:user => user).count).to eq(email_rules.length)
 
       expect(user.destroy).not_to be(false)
 
       expect(UserAuthKey.where(:user => user).count).to eq(0)
       expect(GmailAccount.where(:user => user).count).to eq(0)
       expect(Email.where(:email_account => email_accounts[0]).count).to eq(0)
+      expect(GenieRule.where(:user => user).count).to eq(0)
+      expect(EmailRule.where(:user => user).count).to eq(0)
     end
   end
 end

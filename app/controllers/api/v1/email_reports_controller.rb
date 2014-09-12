@@ -1,4 +1,4 @@
-class Api::V1::EmailsController < ApiController
+class Api::V1::EmailReportsController < ApiController
   before_action do
     signed_in_user(true)
   end
@@ -8,7 +8,7 @@ class Api::V1::EmailsController < ApiController
                                            :lists_report, :threads_report,
                                            :folders_report, :impact_report]
 
-  swagger_controller :emails, 'Email Reports Controller'
+  swagger_controller :email_reports, 'Email Reports Controller'
 
   swagger_api :ip_stats do
     summary 'Return email sender IP stats.'
