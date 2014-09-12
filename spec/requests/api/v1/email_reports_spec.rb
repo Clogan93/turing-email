@@ -1,65 +1,6 @@
 require 'rails_helper'
 
 describe Api::V1::EmailsController, :type => :request do
-  context 'when the user is NOT signed in' do
-    let!(:email) { FactoryGirl.create(:email) }
-    let!(:email_other) { FactoryGirl.create(:email) }
-    
-    it 'should NOT show the email' do
-      get "/api/v1/emails/show/#{email.uid}"
-
-      expect(response).to have_http_status(:unauthorized)
-    end
-  end
-
-  context 'when the user is signed in' do
-    let!(:email) { FactoryGirl.create(:email) }
-    let!(:email_other) { FactoryGirl.create(:email) }
-    
-    before { post '/api/v1/sessions', :email => email.user.email, :password => email.user.password }
-
-    it 'should show the email' do
-      get "/api/v1/emails/show/#{email.uid}"
-      
-      expect(response).to have_http_status(:ok)
-      expect(response).to render_template('api/v1/emails/show')
-
-      email_rendered = JSON.parse(response.body)
-      expect(email_rendered['uid']).to eq(email.uid)
-      expect(email_rendered['uid']).not_to eq(email_other.uid)
-    end
-
-    it 'should NOT show the other email' do
-      get "/api/v1/emails/show/#{email_other.uid}"
-
-      expect(response).to have_http_status($config.http_errors[:email_not_found][:status_code])
-    end
-  end
-
-  context 'when the other user is signed in' do
-    let!(:email) { FactoryGirl.create(:email) }
-    let!(:email_other) { FactoryGirl.create(:email) }
-    
-    before { post '/api/v1/sessions', :email => email_other.user.email, :password => email_other.user.password }
-
-    it 'should show the other email' do
-      get "/api/v1/emails/show/#{email_other.uid}"
-
-      expect(response).to have_http_status(:ok)
-      expect(response).to render_template('api/v1/emails/show')
-
-      email_rendered = JSON.parse(response.body)
-      expect(email_rendered['uid']).to eq(email_other.uid)
-      expect(email_rendered['uid']).not_to eq(email.uid)
-    end
-
-    it 'should NOT show the email' do
-      get "/api/v1/emails/show/#{email.uid}"
-
-      expect(response).to have_http_status($config.http_errors[:email_not_found][:status_code])
-    end
-  end
-  
   context 'ip_stats' do
     let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
     
@@ -67,7 +8,7 @@ describe Api::V1::EmailsController, :type => :request do
       before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
 
       it 'should return email sender IP statistics' do
-        get '/api/v1/emails/ip_stats'
+        get '/api/v1/email_reports/ip_stats'
         email_ip_stats = JSON.parse(response.body)
         expect(email_ip_stats.length).to eq(0)
       end
@@ -86,7 +27,7 @@ describe Api::V1::EmailsController, :type => :request do
       before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
       
       it 'should return email sender IP statistics' do
-        get '/api/v1/emails/ip_stats'
+        get '/api/v1/email_reports/ip_stats'
         email_ip_stats = JSON.parse(response.body)
         expect(email_ip_stats.length).to eq(2)
   
@@ -113,7 +54,7 @@ describe Api::V1::EmailsController, :type => :request do
 
     context 'no emails' do
       it 'should return volume report stats' do
-        get '/api/v1/emails/volume_report'
+        get '/api/v1/email_reports/volume_report'
 
         volume_report_stats = JSON.parse(response.body)
 
@@ -160,7 +101,7 @@ describe Api::V1::EmailsController, :type => :request do
       }
 
       it 'should return volume report stats' do
-        get '/api/v1/emails/volume_report'
+        get '/api/v1/email_reports/volume_report'
 
         volume_report_stats = JSON.parse(response.body)
         
@@ -203,7 +144,7 @@ describe Api::V1::EmailsController, :type => :request do
     
     context 'no senders or recipients' do      
       it 'should return top contact stats' do
-        get '/api/v1/emails/contacts_report'
+        get '/api/v1/email_reports/contacts_report'
 
         contacts_report = JSON.parse(response.body)
 
@@ -253,7 +194,7 @@ describe Api::V1::EmailsController, :type => :request do
       before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
 
       it 'should return top contact stats' do
-        get '/api/v1/emails/contacts_report'
+        get '/api/v1/email_reports/contacts_report'
 
         contacts_report_stats = JSON.parse(response.body)
 
@@ -298,7 +239,7 @@ describe Api::V1::EmailsController, :type => :request do
 
     context 'no attachments' do
       it 'should return attachments report stats' do
-        get '/api/v1/emails/attachments_report'
+        get '/api/v1/email_reports/attachments_report'
 
         attachments_report_stats = JSON.parse(response.body)
 
@@ -322,7 +263,7 @@ describe Api::V1::EmailsController, :type => :request do
                                                          :content_type => 'image/bmp', :file_size => bmp_2_size) }
       
       it 'should return attachments report stats' do
-        get '/api/v1/emails/attachments_report'
+        get '/api/v1/email_reports/attachments_report'
         
         attachments_report_stats = JSON.parse(response.body)
         default = email_attachments.first

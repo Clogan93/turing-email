@@ -1,5 +1,5 @@
 class TuringEmailApp.Models.AttachmentsReport extends Backbone.Model
-  url: "/api/v1/emails/attachments_report"
+  url: "/api/v1/email_reports/attachments_report"
 
   parse: (response, options) ->
     parsedResponse = {}
