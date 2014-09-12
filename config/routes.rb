@@ -25,14 +25,16 @@ Rails.application.routes.draw do
       match '/signout', to: 'sessions#destroy', via: 'delete'
 
       get '/emails/show/:email_uid', to: 'emails#show'
-      get '/emails/ip_stats', to: 'emails#ip_stats'
-      get '/emails/volume_report', to: 'emails#volume_report'
-      get '/emails/contacts_report', to: 'emails#contacts_report'
-      get '/emails/attachments_report', to: 'emails#attachments_report'
-      get '/emails/lists_report', to: 'emails#lists_report'
-      get '/emails/threads_report', to: 'emails#threads_report'
-      get '/emails/folders_report', to: 'emails#folders_report'
-      get '/emails/impact_report', to: 'emails#impact_report'
+      post '/emails/set_seen', to: 'emails#set_seen'
+      
+      get '/email_reports/ip_stats', to: 'email_reports#ip_stats'
+      get '/email_reports/volume_report', to: 'email_reports#volume_report'
+      get '/email_reports/contacts_report', to: 'email_reports#contacts_report'
+      get '/email_reports/attachments_report', to: 'email_reports#attachments_report'
+      get '/email_reports/lists_report', to: 'email_reports#lists_report'
+      get '/email_reports/threads_report', to: 'email_reports#threads_report'
+      get '/email_reports/folders_report', to: 'email_reports#folders_report'
+      get '/email_reports/impact_report', to: 'email_reports#impact_report'
       
       resources :email_folders, only: [:index]
 
