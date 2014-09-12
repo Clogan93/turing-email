@@ -43,5 +43,7 @@ window.TuringEmailApp = new(Backbone.View.extend({
 
     @analyticsRouter = new TuringEmailApp.Routers.AnalyticsRouter()
 
+    @settingsRouter = new TuringEmailApp.Routers.SettingsRouter()
+
     Backbone.history.start()
 }))({el: document.body})

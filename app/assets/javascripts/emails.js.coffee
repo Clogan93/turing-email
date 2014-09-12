@@ -10,7 +10,7 @@ $ ->
       url: url
       data: $("#compose_form").serialize() # serializes the form's elements.
       success: (data) ->
-        alert data # show response from the php script.
+        alert data
         return
 
     false # avoid to execute the actual submit of the form.
@@ -27,7 +27,7 @@ $ ->
       url: url
       data: $("#filter_form").serialize() # serializes the form's elements.
       success: (data) ->
-        alert data # show response from the php script.
+        alert data
         return
 
     $('.dropdown a').trigger('click.bs.dropdown')
