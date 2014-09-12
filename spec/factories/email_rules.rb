@@ -3,7 +3,8 @@
 FactoryGirl.define do
   factory :email_rule do
     user
-    
+
+    sequence(:uid) { |n| n.to_s }
     sequence(:list_id) { |n| "sales_#{n}.turinginc.com" }
     sequence(:destination_folder) { |n| "sales_#{n}" }
   end

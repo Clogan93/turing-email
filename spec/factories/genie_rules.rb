@@ -3,7 +3,8 @@
 FactoryGirl.define do
   factory :genie_rule do
     user
-    
+
+    sequence(:uid) { |n| n.to_s }
     sequence(:list_id) { |n| "sales_#{n}.turinginc.com" }
   end
 end

@@ -54,4 +54,33 @@ describe Api::V1::EmailRulesController, :type => :request do
       expect(recommended_rules[0]['destination_folder']).to eq("List Emails/test.list.com")
     end
   end
+
+  context 'deleting rules' do
+    let!(:user) { FactoryGirl.create(:user) }
+    let!(:user_other) { FactoryGirl.create(:user) }
+    let!(:email_rule) { FactoryGirl.create(:email_rule, :user => user) }
+
+    context 'when the user is signed in' do
+      before { post '/api/v1/sessions', :email => user.email, :password => user.password }
+
+      it 'should delete the rule' do
+        expect(user.email_rules.count).to eq(1)
+        delete "/api/v1/email_rules/#{email_rule.uid}"
+        expect(user.email_rules.count).to eq(0)
+      end
+    end
+
+    context 'when the other user is signed in' do
+      before { post '/api/v1/sessions', :email => user_other.email, :password => user_other.password }
+
+      it 'should NOT delete the rule' do
+        expect(user.email_rules.count).to eq(1)
+        
+        delete "/api/v1/email_rules/#{email_rule.uid}"
+        expect(response).to have_http_status($config.http_errors[:email_rule_not_found][:status_code])
+        
+        expect(user.email_rules.count).to eq(1)
+      end
+    end
+  end
 end

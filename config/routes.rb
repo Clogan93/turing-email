@@ -41,8 +41,10 @@ Rails.application.routes.draw do
       match '/email_threads/in_folder', to: 'email_threads#in_folder', via: 'get'
       
       resources :genie_rules, only: [:create, :index]
+      delete '/genie_rules/:genie_rule_uid', :to => 'genie_rules#destroy'
 
       resources :email_rules, only: [:create, :index]
+      delete '/email_rules/:email_rule_uid', :to => 'email_rules#destroy'
       get '/email_rules/recommended_rules', to: 'email_rules#recommended_rules'
     end
   end

@@ -91,7 +91,7 @@ group :test do
 end
 
 # Backbone testing framework
-group :test do
+group :development, :test do
   gem 'phantomjs', '~> 1.9.7.1'
   gem 'teaspoon', '~> 0.8.0'
   gem 'sinon-rails', '~> 1.10.3'

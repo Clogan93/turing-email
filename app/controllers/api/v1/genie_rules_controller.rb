@@ -3,6 +3,8 @@ class Api::V1::GenieRulesController < ApiController
     signed_in_user(true)
   end
 
+  before_action :correct_user, :except => [:create, :index, :recommended_rules]
+
   swagger_controller :genie_rules, 'Genie Rules Controller'
 
   swagger_api :create do
@@ -36,5 +38,34 @@ class Api::V1::GenieRulesController < ApiController
 
   def index
     @genie_rules = current_user.genie_rules
+  end
+
+  swagger_api :destroy do
+    summary 'Delete genie rule.'
+
+    param :path, :genie_rule_uid, :string, :required, 'Genie Rule UID'
+
+    response :ok
+  end
+
+  def destroy
+    @genie_rule.destroy!
+    
+    render :json => ''
+  end
+
+  private
+
+  # Before filters
+
+  def correct_user
+    @genie_rule = GenieRule.find_by(:user => current_user,
+                                    :uid => params[:genie_rule_uid])
+
+    if @genie_rule.nil?
+      render :status => $config.http_errors[:genie_rule_not_found][:status_code],
+             :json => $config.http_errors[:genie_rule_not_found][:description]
+      return
+    end
   end
 end
