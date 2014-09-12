@@ -8,6 +8,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   setup_toolbar_buttons: ->
     @setupRead()
     @setupUnread()
+    @setupArchive()
     @setupDelete()
     @setupGoLeft()
     @setupGoRight()
@@ -21,6 +22,33 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       checkedUIDs.push uid
     checkedUIDs = _.uniq(checkedUIDs)
     return checkedUIDs
+
+  setupArchive: ->
+    @$el.find("i.fa-archive").parent().click =>
+      checkedUIDs = @retrieveCheckedUIDs()
+
+      postData = {}
+      postData.email_thread_uids = checkedUIDs
+      if window.location.hash is ""
+        postData.email_folder_id = "INBOX"
+      else
+        url_components = window.location.hash.split("#")
+        folder_id = url_components[url_components.length - 1]
+        postData.email_folder_id = folder_id
+
+      url = "/api/v1/email_threads/remove_from_folder.json"
+      $.ajax
+        type: "POST"
+        url: url
+        data: postData
+        success: (data) ->
+          return
+
+      #Alter UI
+      tr_element = $(".check-mail .checked").parent().parent()
+      tr_element.remove()
+      $(".check-mail .checked").each ->
+        $(@).removeClass("checked")
 
   setupDelete: ->
     @$el.find("i.fa-trash-o").parent().click =>
