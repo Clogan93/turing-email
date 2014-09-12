@@ -22,7 +22,7 @@ class Api::V1::EmailsController < ApiController
   swagger_api :set_seen do
     summary 'Update the seen status of the specified emails.'
 
-    param :form, :email_uids, :array, :required, 'Email UIDs'
+    param :form, :email_uids, :string, :required, 'Email UIDs'
     param :form, :seen, :boolean, :required, 'Seen status'
 
     response :ok
@@ -38,8 +38,8 @@ class Api::V1::EmailsController < ApiController
   swagger_api :remove_from_folder do
     summary 'Remove the specified emails from the specified folder.'
 
-    param :form, :email_uids, :array, :required, 'Email UIDs'
-    param :form, :email_folder_id, :folder_id, :required, 'Folder ID'
+    param :form, :email_uids, :string, :required, 'Email UIDs'
+    param :form, :email_folder_id, :string, :required, 'Email Folder ID'
 
     response :ok
   end
@@ -57,7 +57,7 @@ class Api::V1::EmailsController < ApiController
   swagger_api :trash do
     summary 'Move the specified emails to the trash.'
 
-    param :form, :email_uids, :array, :required, 'Email UIDs'
+    param :form, :email_uids, :string, :required, 'Email UIDs'
 
     response :ok
   end

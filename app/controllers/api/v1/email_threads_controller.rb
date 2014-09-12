@@ -69,8 +69,8 @@ class Api::V1::EmailThreadsController < ApiController
   swagger_api :remove_from_folder do
     summary 'Remove the specified email threads from the specified folder.'
 
-    param :form, :email_thread_uids, :array, :required, 'Email Thread UIDs'
-    param :form, :email_folder_id, :folder_id, :required, 'Folder ID'
+    param :form, :email_thread_uids, :string, :required, 'Email Thread UIDs'
+    param :form, :email_folder_id, :string, :required, 'Email Folder ID'
 
     response :ok
   end
@@ -89,7 +89,7 @@ class Api::V1::EmailThreadsController < ApiController
   swagger_api :trash do
     summary 'Move the specified email thread to the trash.'
 
-    param :form, :email_thread_uids, :array, :required, 'Email Thread UIDs'
+    param :form, :email_thread_uids, :string, :required, 'Email Thread UIDs'
 
     response :ok
   end

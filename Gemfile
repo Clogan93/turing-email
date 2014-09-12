@@ -59,7 +59,7 @@ gem 'rabl', '~> 0.9.3'
 gem 'oj', '~> 2.7.2'
 
 # swagger
-gem 'swagger-docs'
+gem 'swagger-docs', '0.1.8'
 
 # aws
 gem 'aws-sdk', '~> 1.45.0'

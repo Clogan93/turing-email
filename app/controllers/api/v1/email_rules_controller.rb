@@ -3,7 +3,7 @@ class Api::V1::EmailRulesController < ApiController
   
   before_action :correct_user, :except => [:create, :index, :recommended_rules]
 
-  swagger_controller :users, 'Email Rules Controller'
+  swagger_controller :email_rules, 'Email Rules Controller'
 
   swagger_api :create do
     summary 'Create an email rule.'
