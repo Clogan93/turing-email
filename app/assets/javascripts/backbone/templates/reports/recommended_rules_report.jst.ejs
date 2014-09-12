@@ -1,3 +1,12 @@
 <div class="page-header">
   <h1 class="h1">Reports <small>recommended rules</small></h1>
 </div>
+
+<h4 class="h4">Recommended Rules</h4>
+<p>The genie has been working extra hard to keep your inbox clean, and recommends that you make the following rules so that these emails skip your inbox during the day:</p>
+<br />
+<ul>
+  <% for(var i = 0; i < ruleRecommendations.length; i++) { %>
+    <li>Rule: filter emails from <%= ruleRecommendations[i].list_id %> into <%= ruleRecommendations[i].destination_folder %>. <a class="rule_recommendation_link" href="<%= ruleRecommendations[i].list_id %>">Create rule.</a></li>
+  <% } %>
+</ul>
