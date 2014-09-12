@@ -13,9 +13,9 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
   render: ->
     $("#email-folder-mail-header").hide()
 
-    console.log @model.toJSON()
-
     @$el.html(@template(@model.toJSON()))
+
+    console.log @model.toJSON()
 
     @render_genie_report()
 
