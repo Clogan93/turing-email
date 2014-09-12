@@ -6,41 +6,58 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @$el.remove()
 
   setup_toolbar_buttons: ->
-    @setup_read()
-    @setup_unread()
-    @setup_trash()
-    @setup_go_left()
-    @setup_go_right()
+    @setupRead()
+    @setupUnread()
+    @setupDelete()
+    @setupGoLeft()
+    @setupGoRight()
 
-  setup_read: ->
-    @$el.find("i.fa-eye").parent().click ->
-      checkedUIDs = []
-      checked_checkboxes = $(".check-mail .checked")
-      links_of_checked_emails = checked_checkboxes.parent().parent().find('a[href^="#email_thread"]')
-      links_of_checked_emails.each ->
-        link_components = $(@).attr("href").split("#")
-        uid = link_components[link_components.length - 1]
-        checkedUIDs.push uid
-      checkedUIDs = _.uniq(checkedUIDs)
+  retrieveCheckedUIDs: ->
+    checkedUIDs = []
+    links_of_checked_emails = $(".check-mail .checked").parent().parent().find('a[href^="#email_thread"]')
+    links_of_checked_emails.each ->
+      link_components = $(@).attr("href").split("#")
+      uid = link_components[link_components.length - 1]
+      checkedUIDs.push uid
+    checkedUIDs = _.uniq(checkedUIDs)
+    return checkedUIDs
+
+  setupDelete: ->
+    @$el.find("i.fa-trash-o").parent().click =>
+      checkedUIDs = @retrieveCheckedUIDs()
+
+      postData = {}
+      postData.email_thread_uids = checkedUIDs
+
+      url = "/api/v1/email_threads/trash.json"
+      $.ajax
+        type: "POST"
+        url: url
+        data: postData
+        success: (data) ->
+          return
+
+      #Alter UI
+      tr_element = $(".check-mail .checked").parent().parent()
+      tr_element.remove()
+      $(".check-mail .checked").each ->
+        $(@).removeClass("checked")
+
+  setupRead: ->
+    @$el.find("i.fa-eye").parent().click =>
+      checkedUIDs = @retrieveCheckedUIDs()
       TuringEmailApp.emailThreads.setSeen checkedUIDs
 
-      #Alter classes
+      #Alter UI
       tr_element = $(".check-mail .checked").parent().parent()
       tr_element.removeClass("unread")
       tr_element.addClass("read")
-      checked_checkboxes.each ->
+      $(".check-mail .checked").each ->
         $(@).removeClass("checked")
 
-  setup_unread: ->
-    @$el.find("i.fa-eye-slash").parent().click ->
-      checkedUIDs = []
-      checked_checkboxes = $(".check-mail .checked")
-      links_of_checked_emails = checked_checkboxes.parent().parent().find('a[href^="#email_thread"]')
-      links_of_checked_emails.each ->
-        link_components = $(@).attr("href").split("#")
-        uid = link_components[link_components.length - 1]
-        checkedUIDs.push uid
-      checkedUIDs = _.uniq(checkedUIDs)
+  setupUnread: ->
+    @$el.find("i.fa-eye-slash").parent().click =>
+      checkedUIDs = @retrieveCheckedUIDs()
       TuringEmailApp.emailThreads.setUnseen checkedUIDs
 
       #Alter classes
@@ -50,11 +67,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       checked_checkboxes.each ->
         $(@).removeClass("checked")
 
-  setup_trash: ->
-    @$el.find("i.fa-trash-o").parent().click ->
-      console.log "trash"
-
-  setup_go_left: ->
+  setupGoLeft: ->
     @$el.find("#paginate_left_link").click ->
       windowSearchAttribute = window.location.search
       if windowSearchAttribute != ""
@@ -74,7 +87,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       newUrl = "?page=" + newPageNumber.toString()
       window.location = newUrl
 
-  setup_go_right: ->
+  setupGoRight: ->
     @$el.find("#paginate_right_link").click ->
       windowSearchAttribute = window.location.search
       if windowSearchAttribute != ""
