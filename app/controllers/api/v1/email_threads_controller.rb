@@ -4,7 +4,7 @@ class Api::V1::EmailThreadsController < ApiController
   end
 
   before_action :correct_user, :except => [:inbox, :in_folder, :move_to_folder, :apply_gmail_label,:remove_from_folder, :trash]
-  before_action :correct_email_account, :except => [:inbox, :in_folder]
+  before_action :correct_email_account
   before_action :filter_email_thread_uids, :only => [:move_to_folder, :apply_gmail_label, :remove_from_folder, :trash]
 
   swagger_controller :email_threads, 'Email Threads Controller'
@@ -16,7 +16,7 @@ class Api::V1::EmailThreadsController < ApiController
   end
 
   def inbox
-    inbox_label = current_user.gmail_accounts.first.inbox_folder
+    inbox_label = @email_account.inbox_folder
 
     if inbox_label.nil?
       @email_threads = []
@@ -39,7 +39,7 @@ class Api::V1::EmailThreadsController < ApiController
   end
 
   def in_folder
-    email_folder = GmailLabel.find_by(:gmail_account => current_user.gmail_accounts.first,
+    email_folder = GmailLabel.find_by(:gmail_account => @email_account,
                                        :label_id => params[:folder_id])
 
     if email_folder.nil?
