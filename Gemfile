@@ -77,6 +77,9 @@ gem 'mail', '~> 2.5.4'
 #gem 'backbone-rails', '~> 1.1.2'
 gem 'rails-backbone', '~> 1.1.2', git:'https://github.com/codebrew/backbone-rails'
 
+# ejs
+gem 'ejs', '~> 1.1.1'
+
 # rails testing
 # keep in development for generators
 group :development, :test do
