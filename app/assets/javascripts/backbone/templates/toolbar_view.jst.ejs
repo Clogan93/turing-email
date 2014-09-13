@@ -26,14 +26,26 @@
     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Move to trash"><i class="fa fa-trash-o"></i></button>
   </div>
 
-  <div class="dropdown col-md-3">
-    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+  <div class="dropdown col-md-2">
+    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
       Label As:
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
       <% for(var i = 0; i < emailFolders.length; i++) { %>
-        <li role="presentation"><a role="menuitem" tabindex="-1" id="<%= emailFolders[i]["label_id"] %>" href="#"><%= emailFolders[i]["name"] %></a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" class="label_as_link" id="<%= emailFolders[i]["label_id"] %>" href="#"><%= emailFolders[i]["name"] %></a></li>
+      <% } %>
+    </ul>
+  </div>
+
+  <div class="dropdown col-md-1">
+    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+      Move To Folder:
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+      <% for(var i = 0; i < emailFolders.length; i++) { %>
+        <li role="presentation"><a role="menuitem" tabindex="-1" class="move_to_folder_link" id="<%= emailFolders[i]["label_id"] %>" href="#"><%= emailFolders[i]["name"] %></a></li>
       <% } %>
     </ul>
   </div>

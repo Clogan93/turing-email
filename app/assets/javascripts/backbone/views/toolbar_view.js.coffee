@@ -92,7 +92,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       tr_element = $(".check-mail .checked").parent().parent()
       tr_element.removeClass("read")
       tr_element.addClass("unread")
-      checked_checkboxes.each ->
+      $(".check-mail .checked").each ->
         $(@).removeClass("checked")
 
   setupGoLeft: ->
