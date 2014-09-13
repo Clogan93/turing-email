@@ -15,8 +15,6 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
 
     @$el.html(@template(@model.toJSON()))
 
-    console.log @model.toJSON()
-
     @render_genie_report()
 
     @render_html_parts_of_emails()
@@ -30,7 +28,10 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
   insert_html_into_iframe: (email, index) ->
     @$el.find("#email_iframe" + index.toString()).contents().find("body").append(email.html_part)
     body_height_sum = 0
+    console.log @$el.find("#email_iframe" + index.toString())
+    console.log document.getElementById("#email_iframe" + index.toString()).contentWindow.document.body.scrollHeight
     @$el.find("#email_iframe" + index.toString()).contents().find("body").children().each ->
+      console.log $(@)
       body_height = $(@).height()
       body_height_sum += body_height
     body_height_adjusted = body_height_sum + 25
@@ -41,8 +42,6 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     for email, index in @model.get("emails")
       if email.html_part?
         @insert_html_into_iframe email, index
-      else
-        console.log email
 
   render_genie_report: ->
     for email, index in @model.get("emails")

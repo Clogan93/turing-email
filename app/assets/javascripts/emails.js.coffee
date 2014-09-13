@@ -13,7 +13,13 @@ $ ->
         alert data
         return
 
-    false # avoid to execute the actual submit of the form.
+    $("#compose_form").html('<div class="alert alert-success" role="alert">You have successfully sent your email!</div>')
+    setTimeout (->
+      $("#composeModal").modal "hide"
+      return
+    ), 1000
+
+    false # to avoid executing the actual submit of the form.
 
 $ ->
   $(".create_filter").click ->
