@@ -105,15 +105,4 @@ describe 'Gmail emails support', :type => :feature, :js => true, :link_gmail_acc
     email = GmailAccount.email_from_gmail_data(gmail_data)
     verify_email(email, email_expected)
   end
-  
-  it 'should move emails to a folder' do
-    email = FactoryGirl.create(:email, :email_account => gmail_account)
-
-    label_names = email.gmail_labels.pluck(:name)
-    expect(label_names).not_to include('Test Label')
-    
-    gmail_account.move_email_to_folder(email, 'Test Label')
-    label_names = email.gmail_labels.pluck(:name)
-    expect(label_names).to include('Test Label')
-  end
 end

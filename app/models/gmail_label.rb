@@ -49,7 +49,7 @@ WITH RECURSIVE recent_email_threads AS (
 SELECT email_threads.*
        FROM recent_email_threads
        INNER JOIN "email_threads" AS email_threads ON email_threads."id" = recent_email_threads.email_thread_id
-       LIMIT #{threads_per_page} OFFSET #{(page - 1) * num_rows}
+       LIMIT #{threads_per_page} OFFSET #{(page - 1) * threads_per_page}
 sql
 
     email_threads = EmailThread.find_by_sql(sql)
@@ -59,15 +59,20 @@ sql
   end
   
   def apply_to_emails(email_ids)
+    email_folder_mappings = []
+    
     email_ids.each do |email_id|
       begin
         if email_id.class == Email
-          EmailFolderMapping.find_or_create_by!(:email => email_id, :email_folder => self)
+          email_folder_mappings << EmailFolderMapping.find_or_create_by!(:email => email_id, :email_folder => self)
         else
-          EmailFolderMapping.find_or_create_by!(:email_id => email_id, :email_folder => self)
+          email_folder_mappings << EmailFolderMapping.find_or_create_by!(:email_id => email_id, :email_folder => self)
         end
       rescue ActiveRecord::RecordNotUnique
+        email_folder_mappings << nil
       end
     end
+    
+    return email_folder_mappings
   end
 end

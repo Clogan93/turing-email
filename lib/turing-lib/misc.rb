@@ -102,3 +102,10 @@ def retry_block(retry_attempts = 2)
     end
   end
 end
+
+def append_where_condition(where_conditions, comparison, value)
+  where_conditions[0] << ' AND ' if where_conditions[0].blank?
+  
+  where_conditions[0] << comparison
+  where_conditions[1] << value
+end

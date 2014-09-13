@@ -14,8 +14,7 @@ class Api::V1::EmailThreadsController < ApiController
   end
 
   def inbox
-    inbox_label = GmailLabel.where(:gmail_account => current_user.gmail_accounts.first,
-                                   :label_id => 'INBOX').first
+    inbox_label = current_user.gmail_accounts.first.inbox_folder
 
     if inbox_label.nil?
       @email_threads = []

@@ -53,6 +53,18 @@ class GmailAccount < ActiveRecord::Base
     email.snippet = gmail_data['snippet']
   end
   
+  def inbox_folder
+    return self.gmail_labels.find_by_label_id('INBOX')
+  end
+  
+  def sent_folder
+    return self.gmail_labels.find_by_label_id('SENT')
+  end
+
+  def trash_folder
+    return self.gmail_labels.find_by_label_id('TRASH')
+  end
+  
   def delete_o_auth2_token
     if self.google_o_auth2_token
       self.google_o_auth2_token.destroy()
@@ -179,16 +191,36 @@ class GmailAccount < ActiveRecord::Base
         log_console("created #{gmail_label_id}")
       end
 
-      self.apply_label_to_email(email, gmail_label)
+      self.apply_label_to_email(email, label_id: gmail_label.label_id, label_name: gmail_label.name)
     end
   end
 
   # polymorphic call
-  def move_email_to_folder(email, folder_name, set_auto_filed_folder = false)
-    log_console("MOVING #{email.uid} TO #{folder_name}")
+  def move_email_to_folder(email, folder_id: nil, folder_name: nil, set_auto_filed_folder: false)
+    if folder_id.nil? && folder_name.nil?
+      log_console("MOVING FAILED #{email.uid} TO folder_id AND folder_name are NIL!")
+      return false
+    end
+    
+    log_console("MOVING #{email.uid} TO folder_id=#{folder_id} folder_name=#{folder_name}")
 
+    EmailFolderMapping.destroy_all(:email => email)
+    self.apply_label_to_email(email, label_id: folder_id, label_name: folder_name, set_auto_filed_folder: set_auto_filed_folder)
+    
+    return true
+  end
+
+  def apply_label_to_email(email, label_id: nil, label_name: nil, set_auto_filed_folder: false)
+    if label_id.nil? && label_name.nil?
+      log_console("APPLY LABEL TO #{email.uid} FAILED label_id=#{label_id} label_name=#{label_name}")
+      return false
+    end
+    
+    log_console("APPLY LABEL TO #{email.uid} label_id=#{label_id} label_name=#{label_name}")
+
+    gmail_label = GmailLabel.find_by(:gmail_account => self, :label_id => label_id) if label_id
     gmail_label = GmailLabel.find_by(:gmail_account => self,
-                                     :name => folder_name)
+                                     :name => label_name) if gmail_label.nil? && label_name
 
     if gmail_label.nil?
       log_console("LABEL DNE! Creating!!")
@@ -196,35 +228,21 @@ class GmailAccount < ActiveRecord::Base
       gmail_label = GmailLabel.new()
 
       gmail_label.gmail_account = email.email_account
-      gmail_label.label_id = SecureRandom.uuid()
-      gmail_label.name = folder_name
+      gmail_label.label_id = label_id || SecureRandom.uuid()
+      gmail_label.name = label_name || 'New Label'
       gmail_label.label_type = 'user'
 
       gmail_label.save!
     end
 
-    self.apply_label_to_email(email, gmail_label, set_auto_filed_folder)
-  end
+    gmail_label.apply_to_emails([email])
 
-  def apply_label_to_email(email, gmail_label, set_auto_filed_folder = false)
-    log_console("APPLY #{gmail_label.name} TO #{email.uid}")
-
-    begin
-      email_folder_mapping = nil
-
-      email.with_lock do
-        email_folder_mapping = EmailFolderMapping.new()
-        email_folder_mapping.email = email
-        email_folder_mapping.email_folder = gmail_label
-        email_folder_mapping.save!
-
-        email.auto_filed_folder = gmail_label if set_auto_filed_folder
-      end
-
-      log_console("created email_folder_mapping.id=#{email_folder_mapping.id} FOR #{gmail_label.id}")
-    rescue ActiveRecord::RecordNotUnique => unique_violation
-      log_console('email_folder_mapping EXISTS!')
+    if set_auto_filed_folder
+      email.auto_filed_folder = gmail_label
+      email.save!
     end
+    
+    return true
   end
 
   def sync_email_full(include_inbox: false, include_sent: false)

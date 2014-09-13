@@ -67,4 +67,27 @@ class User < ActiveRecord::Base
 
     return [@user, @user.save]
   end
+  
+  def apply_email_rules()
+    inbox_folder = self.gmail_accounts.first.inbox_folder
+
+    self.email_rules.each do |email_rule|
+      where_conditions = [nil, []]
+      append_where_condition(where_conditions, 'from_address=?', email_rule.from_address) if email_rule.from_address
+      append_where_condition(where_conditions, 'list_id=?', email_rule.list_id) if email_rule.list_id
+      append_where_condition(where_conditions, "subject ILIKE '%?%'", email_rule.subject) if email_rule.subject
+      
+      if email_rule.to_address
+        append_where_condition(where_conditions, '"people"."email_address"=?', email_rule.to_address)
+        emails = inbox_folder.emails.joins(:email_recipients => :person).where(where_conditions)
+      else
+        emails = inbox_folder.emails.where(where_conditions)
+      end
+
+      inbox_folder.emails.each do |email|
+        # TO DO move
+        
+      end
+    end
+  end
 end

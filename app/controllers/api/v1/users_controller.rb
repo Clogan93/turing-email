@@ -71,12 +71,8 @@ class Api::V1::UsersController < ApiController
   end
   
   def declare_email_bankruptcy
-    inbox_label = GmailLabel.where(:gmail_account => current_user.gmail_accounts.first,
-                                   :label_id => 'INBOX').first
-    
-    if inbox_label
-      EmailFolderMapping.where(:email_folder => inbox_label).destroy_all()
-    end
+    inbox_label = current_user.gmail_accounts.first.inbox_folder
+    EmailFolderMapping.where(:email_folder => inbox_label).destroy_all() if inbox_label
 
     render :json => ''
   end
