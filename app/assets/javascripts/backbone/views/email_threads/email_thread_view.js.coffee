@@ -29,7 +29,6 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     @$el.find("#email_iframe" + index.toString()).contents().find("body").append(email.html_part)
     body_height_sum = 0
     console.log @$el.find("#email_iframe" + index.toString())
-    console.log document.getElementById("#email_iframe" + index.toString()).contentWindow.document.body.scrollHeight
     @$el.find("#email_iframe" + index.toString()).contents().find("body").children().each ->
       console.log $(@)
       body_height = $(@).height()
