@@ -74,6 +74,63 @@ describe User, :type => :model do
       end
     end
   end
+  
+  context 'apply_email_rules' do
+    let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
+    let!(:email_rule) { FactoryGirl.create(:email_rule, :user => gmail_account.user,
+                                           :from_address => nil, :to_address => nil, :subject => nil) }
+    
+    let!(:emails) { FactoryGirl.create_list(:email, SpecMisc::SMALL_LIST_SIZE,
+                                            :email_account => gmail_account,
+                                            :list_id => email_rule.list_id) }
+    let!(:emails_other) { FactoryGirl.create_list(:email, SpecMisc::SMALL_LIST_SIZE,
+                                                  :email_account => gmail_account) }
+    let!(:emails_all) { emails.dup.concat(emails_other) }
+    
+    let!(:gmail_label) { FactoryGirl.create(:gmail_label, :gmail_account => gmail_account,
+                                            :name => email_rule.destination_folder_name) }
+    
+    it 'should apply the email rule to matching emails' do
+      expect(gmail_label.emails.count).to eq(0)
+      
+      gmail_account.user.apply_email_rules(emails_all)
+      
+      gmail_label.reload
+      expect(gmail_label.emails.count).to eq(emails.length)
+    end
+  end
+  
+  context 'apply_email_rules_to_inbox' do
+    let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
+    let!(:email_rule) { FactoryGirl.create(:email_rule, :user => gmail_account.user,
+                                           :from_address => nil, :to_address => nil, :subject => nil) }
+
+    let!(:emails) { FactoryGirl.create_list(:email, SpecMisc::SMALL_LIST_SIZE,
+                                            :email_account => gmail_account,
+                                            :list_id => email_rule.list_id) }
+    let!(:emails_other) { FactoryGirl.create_list(:email, SpecMisc::SMALL_LIST_SIZE,
+                                                  :email_account => gmail_account) }
+    let!(:emails_all) { emails.dup.concat(emails_other) }
+
+    let!(:gmail_label) { FactoryGirl.create(:gmail_label, :gmail_account => gmail_account,
+                                            :name => email_rule.destination_folder_name) }
+    
+    let!(:inbox_label) { FactoryGirl.create(:gmail_label_inbox, :gmail_account => gmail_account) }
+    
+    before { create_email_folder_mappings(emails, inbox_label) }
+
+    it 'should apply the email rule to emails in the inbox' do
+      expect(gmail_label.emails.count).to eq(0)
+      expect(inbox_label.emails.count).to eq(emails.length)
+
+      gmail_account.user.apply_email_rules_to_inbox()
+
+      gmail_label.reload
+      inbox_label.reload
+      expect(gmail_label.emails.count).to eq(emails.length)
+      expect(inbox_label.emails.count).to eq(0)
+    end
+  end
 
   context 'destroy' do
     let!(:user) { FactoryGirl.create(:user) }
