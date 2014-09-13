@@ -136,12 +136,125 @@ describe Api::V1::EmailThreadsController, :type => :request do
       verify_models_unexpected(email_threads_misc_other, email_threads_rendered, 'uid')
     end
   end
+  
+  context 'move_to_folder' do
+    let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
+    let!(:gmail_label) { FactoryGirl.create(:gmail_label, :gmail_account => gmail_account) }
+    let!(:gmail_label_other) { FactoryGirl.create(:gmail_label, :gmail_account => gmail_account) }
+    let!(:email_threads) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => gmail_account) }
+    let!(:email_thread_uids) { EmailThread.where(:id => email_threads).pluck(:uid) }
+
+    before { create_email_thread_emails(email_threads, gmail_label) }
+
+    context 'when the user is signed in' do
+      before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
+      
+      it 'should move the email threads to the specified folder' do
+        expect(gmail_label.emails.length).to eq(gmail_account.emails.length)
+        expect(gmail_label_other.emails.length).to eq(0)
+        
+        post '/api/v1/email_threads/move_to_folder', :email_thread_uids => email_thread_uids,
+                                                     :email_folder_name => gmail_label_other.name
+        
+        gmail_label.reload
+        gmail_label_other.reload
+        expect(gmail_label.emails.length).to eq(0)
+        expect(gmail_label_other.emails.length).to eq(gmail_account.emails.length)
+      end
+    end
+
+    context 'when the other user is signed in' do
+      let!(:user_other) { FactoryGirl.create(:user) }
+      before { post '/api/v1/sessions', :email => user_other.email, :password => user_other.password }
+
+      context 'when the other user has no email account' do
+        it 'should return an error' do
+          post '/api/v1/email_threads/move_to_folder', :email_thread_uids => email_thread_uids,
+                                                       :email_folder_name => gmail_label_other.name
+          expect(response).to have_http_status($config.http_errors[:email_account_not_found][:status_code])
+        end
+      end
+      
+      context 'when the other user has an email account' do
+        let!(:gmail_account_other) { FactoryGirl.create(:gmail_account, :user => user_other) }
+        
+        it 'should NOT move the email threads to the specified folder' do
+          expect(gmail_label.emails.length).to eq(gmail_account.emails.length)
+          expect(gmail_label_other.emails.length).to eq(0)
+  
+          post '/api/v1/email_threads/move_to_folder', :email_thread_uids => email_thread_uids,
+                                                       :email_folder_name => gmail_label_other.name
+  
+          gmail_label.reload
+          gmail_label_other.reload
+          expect(gmail_label.emails.length).to eq(gmail_account.emails.length)
+          expect(gmail_label_other.emails.length).to eq(0)
+        end
+      end
+    end
+  end
+
+  context 'apply_gmail_label' do
+    let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
+    let!(:gmail_label) { FactoryGirl.create(:gmail_label, :gmail_account => gmail_account) }
+    let!(:gmail_label_other) { FactoryGirl.create(:gmail_label, :gmail_account => gmail_account) }
+    let!(:email_threads) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => gmail_account) }
+    let!(:email_thread_uids) { EmailThread.where(:id => email_threads).pluck(:uid) }
+
+    before { create_email_thread_emails(email_threads, gmail_label) }
+
+    context 'when the user is signed in' do
+      before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
+
+      it 'should move the email threads to the specified folder' do
+        expect(gmail_label.emails.length).to eq(gmail_account.emails.length)
+        expect(gmail_label_other.emails.length).to eq(0)
+
+        post '/api/v1/email_threads/apply_gmail_label', :email_thread_uids => email_thread_uids,
+                                                        :gmail_label_name => gmail_label_other.name
+        
+        gmail_label.reload
+        gmail_label_other.reload
+        expect(gmail_label.emails.length).to eq(gmail_account.emails.length)
+        expect(gmail_label_other.emails.length).to eq(gmail_account.emails.length)
+      end
+    end
+
+    context 'when the other user is signed in' do
+      let!(:user_other) { FactoryGirl.create(:user) }
+      before { post '/api/v1/sessions', :email => user_other.email, :password => user_other.password }
+
+      context 'when the other user has no email account' do
+        it 'should return an error' do
+          post '/api/v1/email_threads/apply_gmail_label', :email_thread_uids => email_thread_uids,
+                                                          :gmail_label_name => gmail_label_other.name
+          expect(response).to have_http_status($config.http_errors[:email_account_not_found][:status_code])
+        end
+      end
+
+      context 'when the other user has an email account' do
+        let!(:gmail_account_other) { FactoryGirl.create(:gmail_account, :user => user_other) }
+
+        it 'should NOT move the email threads to the specified folder' do
+          expect(gmail_label.emails.length).to eq(gmail_account.emails.length)
+          expect(gmail_label_other.emails.length).to eq(0)
+  
+          post '/api/v1/email_threads/apply_gmail_label', :email_thread_uids => email_thread_uids,
+               :gmail_label_name => gmail_label_other.name
+  
+          gmail_label.reload
+          gmail_label_other.reload
+          expect(gmail_label.emails.length).to eq(gmail_account.emails.length)
+          expect(gmail_label_other.emails.length).to eq(0)
+        end
+      end
+    end
+  end
 
   context 'remove_from_folder' do
     let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
     let!(:gmail_label) { FactoryGirl.create(:gmail_label, :gmail_account => gmail_account) }
     let!(:email_threads) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => gmail_account) }
-    let!(:emails) { gmail_account.emails }
     let!(:email_thread_uids) { EmailThread.where(:id => email_threads).pluck(:uid) }
 
     before { create_email_thread_emails(email_threads, gmail_label) }
@@ -150,10 +263,10 @@ describe Api::V1::EmailThreadsController, :type => :request do
       before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
       
       it 'should remove emails from the specified folder' do
-        expect(gmail_label.emails.length).to eq(emails.length)
+        expect(gmail_label.emails.length).to eq(gmail_account.emails.length)
         
         post '/api/v1/email_threads/remove_from_folder', :email_thread_uids => email_thread_uids,
-                                                          :email_folder_id => gmail_label.label_id
+                                                         :email_folder_id => gmail_label.label_id
   
         gmail_label.reload
         expect(gmail_label.emails.length).to eq(0)
@@ -164,14 +277,26 @@ describe Api::V1::EmailThreadsController, :type => :request do
       let!(:user_other) { FactoryGirl.create(:user) }
       before { post '/api/v1/sessions', :email => user_other.email, :password => user_other.password }
 
-      it 'should NOT remove emails from the specified folder' do
-        expect(gmail_label.emails.length).to eq(emails.length)
+      context 'when the other user has no email account' do
+        it 'should return an error' do
+          post '/api/v1/email_threads/remove_from_folder', :email_thread_uids => email_thread_uids,
+                                                           :email_folder_id => gmail_label.label_id
+          expect(response).to have_http_status($config.http_errors[:email_account_not_found][:status_code])
+        end
+      end
 
-        post '/api/v1/email_threads/remove_from_folder', :email_thread_uids => email_thread_uids,
-             :email_folder_id => gmail_label.label_id
+      context 'when the other user has an email account' do
+        let!(:gmail_account_other) { FactoryGirl.create(:gmail_account, :user => user_other) }
 
-        gmail_label.reload
-        expect(gmail_label.emails.length).to eq(emails.length)
+        it 'should NOT remove emails from the specified folder' do
+          expect(gmail_label.emails.length).to eq(gmail_account.emails.length)
+  
+          post '/api/v1/email_threads/remove_from_folder', :email_thread_uids => email_thread_uids,
+                                                           :email_folder_id => gmail_label.label_id
+  
+          gmail_label.reload
+          expect(gmail_label.emails.length).to eq(gmail_account.emails.length)
+        end
       end
     end
   end
@@ -181,7 +306,6 @@ describe Api::V1::EmailThreadsController, :type => :request do
     let!(:gmail_label) { FactoryGirl.create(:gmail_label, :gmail_account => gmail_account) }
     let!(:trash_label) { FactoryGirl.create(:gmail_label_trash, :gmail_account => gmail_account) }
     let!(:email_threads) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => gmail_account) }
-    let!(:emails) { gmail_account.emails }
     let!(:email_thread_uids) { EmailThread.where(:id => email_threads).pluck(:uid) }
     
     before { create_email_thread_emails(email_threads, gmail_label) }
@@ -190,7 +314,7 @@ describe Api::V1::EmailThreadsController, :type => :request do
       before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password} 
       
       it 'should move emails to trash' do
-        expect(gmail_label.emails.length).to eq(emails.length)
+        expect(gmail_label.emails.length).to eq(gmail_account.emails.length)
         expect(trash_label.emails.length).to eq(0)
   
         post '/api/v1/email_threads/trash', :email_thread_uids => email_thread_uids
@@ -199,7 +323,7 @@ describe Api::V1::EmailThreadsController, :type => :request do
         trash_label.reload
   
         expect(gmail_label.emails.length).to eq(0)
-        expect(trash_label.emails.length).to eq(emails.length)
+        expect(trash_label.emails.length).to eq(gmail_account.emails.length)
       end
     end
 
@@ -207,17 +331,28 @@ describe Api::V1::EmailThreadsController, :type => :request do
       let!(:user_other) { FactoryGirl.create(:user) }
       before { post '/api/v1/sessions', :email => user_other.email, :password => user_other.password }
 
-      it 'should NOT move emails to trash' do
-        expect(gmail_label.emails.length).to eq(emails.length)
-        expect(trash_label.emails.length).to eq(0)
+      context 'when the other user has no email account' do
+        it 'should return an error' do
+          post '/api/v1/email_threads/trash', :email_thread_uids => email_thread_uids
+          expect(response).to have_http_status($config.http_errors[:email_account_not_found][:status_code])
+        end
+      end
 
-        post '/api/v1/email_threads/trash', :email_thread_uids => email_thread_uids
+      context 'when the other user has an email account' do
+        let!(:gmail_account_other) { FactoryGirl.create(:gmail_account, :user => user_other) }
 
-        gmail_label.reload
-        trash_label.reload
-
-        expect(gmail_label.emails.length).to eq(emails.length)
-        expect(trash_label.emails.length).to eq(0)
+        it 'should NOT move emails to trash' do
+          expect(gmail_label.emails.length).to eq(gmail_account.emails.length)
+          expect(trash_label.emails.length).to eq(0)
+  
+          post '/api/v1/email_threads/trash', :email_thread_uids => email_thread_uids
+  
+          gmail_label.reload
+          trash_label.reload
+  
+          expect(gmail_label.emails.length).to eq(gmail_account.emails.length)
+          expect(trash_label.emails.length).to eq(0)
+        end
       end
     end
   end

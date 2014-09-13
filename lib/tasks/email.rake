@@ -123,6 +123,6 @@ task :run_email_rules => :environment do
   User.all.each do |user|
     log_console("PROCESSING account #{user.email}")
     
-    user.apply_email_rules()
+    user.apply_email_rules_to_inbox()
   end
 end

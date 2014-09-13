@@ -7,7 +7,7 @@ describe Api::V1::EmailRulesController, :type => :request do
     before { post '/api/v1/sessions', :email => user.email, :password => user.password }
     
     it 'should create a rule' do
-      post '/api/v1/email_rules', :list_id => 'sales.turinginc.com', :destination_folder => 'sales'
+      post '/api/v1/email_rules', :list_id => 'sales.turinginc.com', :destination_folder_name => 'sales'
       
       expect(response).to have_http_status(:ok)
       expect(user.email_rules.count).to eq(1)
@@ -51,7 +51,7 @@ describe Api::V1::EmailRulesController, :type => :request do
       
       expect(recommended_rules.length).to eq(1)
       expect(recommended_rules[0]['list_id']).to eq('test.list.com')
-      expect(recommended_rules[0]['destination_folder']).to eq("List Emails/test.list.com")
+      expect(recommended_rules[0]['destination_folder_name']).to eq("List Emails/test.list.com")
     end
   end
 

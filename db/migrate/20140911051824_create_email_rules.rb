@@ -10,14 +10,14 @@ class CreateEmailRules < ActiveRecord::Migration
       t.text :subject
       t.text :list_id
       
-      t.text :destination_folder
+      t.text :destination_folder_name
 
       t.timestamps
     end
 
     add_index :email_rules, :uid, :unique => true
     
-    add_index :email_rules, [:from_address, :to_address, :subject, :list_id, :destination_folder],
+    add_index :email_rules, [:from_address, :to_address, :subject, :list_id, :destination_folder_name],
               :unique => true, :name => 'index_email_rules_on_everything'
   end
 end
