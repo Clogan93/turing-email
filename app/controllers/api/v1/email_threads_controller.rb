@@ -151,16 +151,6 @@ class Api::V1::EmailThreadsController < ApiController
     end
   end
 
-  def correct_email_account
-    @email_account = current_user.gmail_accounts.first
-
-    if @email_account.nil?
-      render :status => $config.http_errors[:email_account_not_found][:status_code],
-             :json => $config.http_errors[:email_account_not_found][:description]
-      return
-    end
-  end
-  
   def filter_email_thread_uids
     @email_thread_ids = EmailThread.where(:email_account => @email_account, :uid => params[:email_thread_uids]).pluck(:id)
     @email_ids = Email.where(:email_account => @email_account, :email_thread_id => @email_thread_ids).pluck(:id)

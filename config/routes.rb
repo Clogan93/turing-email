@@ -24,6 +24,8 @@ Rails.application.routes.draw do
       resources :sessions, only: [:create]
       match '/signout', to: 'sessions#destroy', via: 'delete'
 
+      post '/email_accounts/send_email', to: 'email_accounts#send_email'
+      
       get '/emails/show/:email_uid', to: 'emails#show'
       post '/emails/set_seen', to: 'emails#set_seen'
       post '/emails/move_to_folder', to: 'emails#move_to_folder'

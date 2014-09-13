@@ -87,6 +87,16 @@ module SessionsHelper
     end
   end
 
+  def correct_email_account
+    @email_account = current_user.gmail_accounts.first
+
+    if @email_account.nil?
+      render :status => $config.http_errors[:email_account_not_found][:status_code],
+             :json => $config.http_errors[:email_account_not_found][:description]
+      return
+    end
+  end
+
   def sign_out
     auth_key = cookies[:auth_key]
     user_auth_key = UserAuthKey.find_by(:user => current_user,

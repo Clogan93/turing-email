@@ -120,16 +120,6 @@ class Api::V1::EmailsController < ApiController
       return
     end
   end
-  
-  def correct_email_account
-    @email_account = current_user.gmail_accounts.first
-
-    if @email_account.nil?
-      render :status => $config.http_errors[:email_account_not_found][:status_code],
-             :json => $config.http_errors[:email_account_not_found][:description]
-      return
-    end
-  end
 
   def filter_email_uids
     @email_ids = Email.where(:email_account => @email_account, :uid => params[:email_uids]).pluck(:id)
