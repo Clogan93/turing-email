@@ -39,8 +39,10 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
 
   render_html_parts_of_emails: ->
     for email, index in @model.get("emails")
-      if email.html_part != ""
+      if email.html_part?
         @insert_html_into_iframe email, index
+      else
+        console.log email
 
   render_genie_report: ->
     for email, index in @model.get("emails")
