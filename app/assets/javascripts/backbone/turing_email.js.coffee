@@ -29,12 +29,13 @@ window.TuringEmailApp = new(Backbone.View.extend({
         # Set the inbox count to the number of emails in the inbox.
         inboxFolder = TuringEmailApp.emailFolders.getEmailFolder("INBOX")
         $(".inbox_count_badge").html(inboxFolder.get("num_unread_threads")) if inboxFolder?
-    )
 
-    @toolbarView = new TuringEmailApp.Views.ToolbarView(
-      el: $("#email-folder-mail-header")
+        @toolbarView = new TuringEmailApp.Views.ToolbarView(
+          el: $("#email-folder-mail-header")
+          collection: collection
+        )
+        @toolbarView.render()
     )
-    @toolbarView.render()
 
     @emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
     @emailFoldersRouter.showFolder("INBOX", true)

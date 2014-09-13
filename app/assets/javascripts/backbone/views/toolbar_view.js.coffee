@@ -128,6 +128,6 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       window.location = newUrl
 
   render: ->
-    @$el.html(@template())
+    @$el.html(@template({'emailFolders' : @collection.toJSON()} ))
     @setup_toolbar_buttons()
     return this
