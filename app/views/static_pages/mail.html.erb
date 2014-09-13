@@ -16,9 +16,7 @@
                 <span class="m-r-sm text-muted welcome-message">Welcome to Turing.</span>
             </li>
             <li>
-                <a href="login.html">
-                    <i class="fa fa-sign-out"></i> Log out
-                </a>
+              <a data-method="delete" href="/signout" rel="nofollow"><i class="fa fa-sign-out"></i> Log out</a>
             </li>
         </ul>
       </nav>
@@ -26,11 +24,11 @@
       <div class="dropdown">
         <a data-toggle="dropdown" href="#"></a>
         <div class="dropdown-menu" id="email_filter_dropdown">
-          <form>
+          <form id="filter_form">
             <input type="text" class="form-control" id="toInput" placeholder="To"/>
-            <input type="text" class="form-control" placeholder="From"/>
+            <input type="text" id="email_filter_from" class="form-control" placeholder="From"/>
             <input type="text" class="form-control" placeholder="Subject"/>
-            <input type="text" class="form-control" placeholder="List Name"/>
+            <input type="text" id="email_filter_list" class="form-control" placeholder="List Name"/>
             <button type="submit" class="btn btn-primary">Create filter with these conditions</button>
           </form>
         </div>
@@ -40,7 +38,7 @@
 
     <div class="wrapper wrapper-content">
       <div class="row">
-          <div class="col-lg-3">
+          <div class="col-sm-2">
               <div class="ibox float-e-margins">
                   <div class="ibox-content mailbox-content">
                       <div class="file-manager">
@@ -73,26 +71,29 @@
                               <div><a href="#geo_report">Geo Report</a></div>
                               <div><a href="#impact_report">Impact Report</a></div>
                               <div><a href="#lists_report">Lists Report</a></div>
+                              <div><a href="#recommended_rules_report">Recommended Rules Report</a></div>
                               <div><a href="#threads_report">Threads Report</a></div>
-                              <div><a href="#top_senders_and_recipients_report">Contacts Report</a></div>
+                              <div><a href="#top_contacts">Contacts Report</a></div>
                           </ul>
 
                           <br />
 
-                          <h5>Filters</h5>
+                          <h5>Other</h5>
 
                           <br />
 
                           <ul class="category-list" id="reports_list" style="padding: 0">
-                              <div class="create_filter">Create Filter</div>
+                              <div><a href="#settings">Settings</a></div>
                           </ul>
+
+                          <br />
 
                           <div class="clearfix"></div>
                       </div>
                   </div>
               </div>
           </div>
-          <div class="col-lg-9 animated fadeInRight">
+          <div class="col-sm-10 animated fadeInRight">
             <div class="mail-box-header" id="email-folder-mail-header">
             </div>
             <div id="reports"></div>
@@ -128,10 +129,14 @@
             <input id="to_input" type="text" class="form-control" placeholder="To"/><br />
             <input id="cc_input" type="text" class="form-control" placeholder="CC"/><br />
             <input id="subject_input" type="text" class="form-control" placeholder="Subject"/><br />
+            <label id="compose_form_attachments_label">Attachments</label><input id="compose_form_attachments_input" type="file" name="attachment" multiple />
+            <br />
+            <br />
             <textarea id="compose_email_body" class="form-control" rows="8"></textarea>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-info" data-dismiss="modal">Save</button>
           <button type="submit" class="btn btn-primary">Send</button>
         </div>
       </form>

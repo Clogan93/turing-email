@@ -44,13 +44,14 @@ describe "ListItemView", ->
       expect(@listItemView.el.nodeName).toEqual "TR"
 
     it "should render the from_name attribute", ->
-      expect(@listItemView.$el.find('.email_from_column').text().trim()).toEqual @emailThread.get("emails")[0].from_name
+      expect(@listItemView.$el.find('td.mail-ontact a').text().trim()).toEqual @emailThread.get("emails")[0].from_name
 
     it "should render the subject attribute", ->
-      expect(@listItemView.$el.find('.email_subject_column a').text().trim()).toEqual @emailThread.get("emails")[0].subject
-
-    it "should render the snippet attribute", ->
-      expect(@listItemView.$el.find('.email_snippet').text().trim()).toEqual @emailThread.get("emails")[0].snippet
+      expect(@listItemView.$el.find('td.mail-subject a').text().trim()).toEqual @emailThread.get("emails")[0].subject
 
     it "should render the correct link for email thread", ->
       expect(@listItemView.$el.find('a').attr("href")).toEqual "#email_thread#" + @emailThread.get("uid")
+
+    # The snippet is no longer currently included in the emai list view.
+    # it "should render the snippet attribute", ->
+    #   expect(@listItemView.$el.find('.email_snippet').text().trim()).toEqual @emailThread.get("emails")[0].snippet

@@ -10,7 +10,7 @@
     <div class="mail-tools tooltip-demo m-t-md">
 
         <h3>
-            <span class="font-noraml">Subject: </span><%= emails[0].subject.trim() == "" ? "(no subject)" : emails[0].subject %>
+            <span class="font-noraml">Subject: </span><span id="email_subject"><%= emails[0].subject.trim() == "" ? "(no subject)" : emails[0].subject %></span>
         </h3>
         <h5>
             <span class="pull-right font-noraml">10:15AM 02 FEB 2014</span>
@@ -22,7 +22,7 @@
   <div class="mail-box">
     <div class="mail-body">
       <% _.each(emails, function(email, index) { %>
-        <div class="email<%= emails.length > 1 && index < emails.length - 1 ? " collapsed_email" : "" %>">
+        <div class="email<%= (emails.length > 1 && index < emails.length - 1) && email.seen ? " collapsed_email" : "" %>">
           <div class="email_information">
             <div class="col-md-3">
               <%= email.from_name == "" ? email.from_address : email.from_name %>
@@ -47,9 +47,16 @@
                 <%
                   if(email.subject.trim() == "Turing Email - Your daily Genie Report!") {
                     %>
-                    <iframe id="email_iframe<%= index %>" style="width: 100%; height: 350px;"></iframe><%
-                  } else {%>
-                    <pre><%= email.text_part == null ? "" : email.text_part %></pre><%
+                    <iframe id="email_iframe<%= index %>" style="width: 100%;"></iframe><%
+                  } else if(email.html_part != null) {%>
+                    <iframe id="email_iframe<%= index %>" style="width: 100%;"></iframe>
+                  <%
+                  } else if(email.text_part != null) {%>
+                    <pre><%= email.text_part %></pre>
+                  <%
+                  } else if(email.body_text != null) {%>
+                    <pre><%= email.body_text %></pre>
+                  <%
                   }
                 %>
               </div>

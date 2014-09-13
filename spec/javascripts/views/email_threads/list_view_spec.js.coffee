@@ -47,14 +47,13 @@ describe "ListView", ->
       links = []
 
       #Collect Attributes from the rendered DOM.
-      @listView.$el.find('.email_from_column').each ->
+      @listView.$el.find('td.mail-ontact a').each ->
         fromNames.push $(this).text().trim()
-      @listView.$el.find('.email_subject_column a').each ->
+      @listView.$el.find('td.mail-subject a').each ->
         subjects.push $(this).text().trim()
-      @listView.$el.find('.email_snippet').each ->
-        snippets.push $(this).text().trim()
       @listView.$el.find('a').each ->
         links.push $(this).attr("href")
+      links = _.uniq(links, false)
 
       #Run expectations
       for emailThread, index in @emailThreads.models
@@ -62,5 +61,4 @@ describe "ListView", ->
         
         expect(fromNames[index]).toEqual email.from_name
         expect(subjects[index]).toEqual email.subject
-        expect(snippets[index]).toEqual email.snippet
         expect(links[index]).toEqual "#email_thread#" + emailThread.get("uid")
