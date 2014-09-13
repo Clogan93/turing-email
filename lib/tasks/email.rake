@@ -85,8 +85,7 @@ task :email_genie_reset => :environment do
       log_console("FOUND #{email_ids_auto_filed.length} AUTO FILED!!")
 
       EmailFolderMapping.where(:email => email_ids_auto_filed).destroy_all
-      inbox_label = GmailLabel.where(:gmail_account => user.gmail_accounts.first,
-                                     :label_id => 'INBOX').first
+      inbox_label = user.gmail_accounts.first.inbox_folder
       
       email_ids_auto_filed.each do |email_id|
         begin
@@ -115,5 +114,15 @@ task :email_genie_reports_reset => :environment do
     rescue Exception => ex
       log_email_exception(ex)
     end
+  end
+end
+
+desc 'Run email rules'
+
+task :run_email_rules => :environment do
+  User.all.each do |user|
+    log_console("PROCESSING account #{user.email}")
+    
+    user.apply_email_rules()
   end
 end

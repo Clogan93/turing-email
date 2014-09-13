@@ -37,7 +37,7 @@ class Api::V1::EmailReportsController < ApiController
   end
   
   def volume_report
-    sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
+    sent_label = current_user.gmail_accounts.first.sent_folder
     sent_emails_ids = sent_label ? sent_label.emails.pluck(:id) : [-1]
     sent_emails_ids = [-1] if sent_emails_ids.empty?
   
@@ -79,7 +79,7 @@ class Api::V1::EmailReportsController < ApiController
   end
   
   def contacts_report
-    sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
+    sent_label = current_user.gmail_accounts.first.sent_folder
     sent_emails_ids = sent_label ? sent_label.emails.pluck(:id) : [-1]
     sent_emails_ids = [-1] if sent_emails_ids.empty?
   
@@ -161,7 +161,7 @@ class Api::V1::EmailReportsController < ApiController
     list_report_stats[:sent_emails_replied_to_per_list] = []
   
 =begin
-      sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
+      sent_label = current_user.gmail_accounts.first.sent_folder
       if sent_label
         list_ids = current_user.emails.where('list_id IS NOT NULL').pluck('DISTINCT list_id')
         list_ids_parsed = list_ids.map { |list_id| parse_email_string(list_id) }
@@ -228,9 +228,9 @@ class Api::V1::EmailReportsController < ApiController
     folders_report_stats = {}
   
     num_emails = current_user.emails.count
-    inbox_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('INBOX')
+    inbox_label = current_user.gmail_accounts.first.inbox_folder
     unread_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('UNREAD')
-    sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
+    sent_label = current_user.gmail_accounts.first.sent_folder
     draft_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('DRAFT')
     trash_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('TRASH')
     spam_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SPAM')
@@ -257,7 +257,7 @@ class Api::V1::EmailReportsController < ApiController
   def impact_report
     impact_report_stats = {}
   
-    sent_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SENT')
+    sent_label = current_user.gmail_accounts.first.sent_folder
   
     sent_email_message_ids = sent_label.emails.pluck(:message_id)
   
