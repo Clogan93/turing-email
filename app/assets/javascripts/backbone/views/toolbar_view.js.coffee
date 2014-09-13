@@ -104,8 +104,8 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
         currentPageNumber = "1"
       newPageNumber = parseInt(currentPageNumber) - 1
       if newPageNumber >= 1
-        newUrl = "?page=" + newPageNumber.toString()
-        window.location = newUrl
+        newQuery = "?page=" + newPageNumber.toString()
+        window.location = window.location.origin + window.location.pathname + window.location.hash + newQuery
 
   setupGoRight: ->
     @$el.find("#paginate_right_link").click ->
@@ -116,8 +116,8 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
         else
           currentPageNumber = "1"
         newPageNumber = parseInt(currentPageNumber) + 1
-        newUrl = "?page=" + newPageNumber.toString()
-        window.location = newUrl
+        newQuery = "?page=" + newPageNumber.toString()
+        window.location = window.location.origin + window.location.pathname + window.location.hash + newQuery
 
   render: ->
     @$el.html(@template({'emailFolders' : @collection.toJSON()} ))
