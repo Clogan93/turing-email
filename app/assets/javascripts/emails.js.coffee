@@ -14,11 +14,8 @@ $ ->
       url: 'api/v1/email_accounts/send_email.json'
       type: 'POST'
       data: postData
-      dataType : "text"
+      dataType : 'json'
       }).done((data, status) ->
-        console.log "Success function called"
-        console.log data
-        console.log status
         $("#compose_form").children().hide()
         $("#compose_form").append('<div id="email_sent_success_alert" class="alert alert-success" role="alert">You have successfully sent your email!</div>')
         setTimeout (->
@@ -27,9 +24,6 @@ $ ->
           $("#compose_form #email_sent_success_alert").hide()
         ), 1000
       ).fail (data, status) ->
-        console.log "Error function called"
-        console.log data
-        console.log status
         $("#compose_form").children().hide()
         $("#compose_form").append('<div id="email_sent_error_alert" class="alert alert-danger" role="alert">There was an error in sending your email!</div>')
         setTimeout (->
