@@ -12,6 +12,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @setupDelete()
     @setupGoLeft()
     @setupGoRight()
+    @setupLabelAsLinks()
 
   retrieveCheckedUIDs: ->
     checkedUIDs = []
@@ -22,6 +23,23 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       checkedUIDs.push uid
     checkedUIDs = _.uniq(checkedUIDs)
     return checkedUIDs
+
+  setupLabelAsLinks: ->
+    @$el.find(".label_as_link").click ->
+      checkedUIDs = @retrieveCheckedUIDs()
+      console.log "Label as link clicked"
+      console.log checkedUIDs
+
+      postData = {}
+      postData.email_thread_uids = checkedUIDs
+
+      url = "/api/v1/email_threads/apply_gmail_label"
+      $.ajax
+        type: "POST"
+        url: url
+        data: postData
+        success: (data) ->
+          return
 
   setupArchive: ->
     @$el.find("i.fa-archive").parent().click =>
