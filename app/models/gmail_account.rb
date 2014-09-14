@@ -132,9 +132,9 @@ class GmailAccount < ActiveRecord::Base
     log_console("SYNCING Gmail #{self.email}")
 
     if self.last_history_id_synced.nil?
-      self.sync_email_full(include_inbox: include_inbox, include_sent: include_sent)
+      return self.sync_email_full(include_inbox: include_inbox, include_sent: include_sent)
     else
-      self.sync_email_partial()
+      return self.sync_email_partial()
     end
   end
 
@@ -259,6 +259,7 @@ class GmailAccount < ActiveRecord::Base
   def sync_email_full(include_inbox: false, include_sent: false)
     log_console("FULL SYNC with last_history_id_synced = #{self.last_history_id_synced}\n")
 
+    num_emails_synced = 0
     nextPageToken = nil
 
     while true
@@ -283,6 +284,7 @@ class GmailAccount < ActiveRecord::Base
       log_console("GOT #{messages_data.length} messages\n")
 
       messages_data.each { |message_data| gmail_ids.push(message_data['id']) }
+      num_emails_synced += gmail_ids.length
 
       self.sync_gmail_ids(gmail_ids)
       sleep(1)
@@ -293,11 +295,14 @@ class GmailAccount < ActiveRecord::Base
 
     gmail_data = self.gmail_client.messages_get('me', gmail_ids.first, format: 'minimal', fields: 'historyId')
     self.set_last_history_id_synced(gmail_data['historyId'])
+
+    return num_emails_synced > 0
   end
 
   def sync_email_partial()
     log_console("PARTIAL SYNC with last_history_id_synced = #{self.last_history_id_synced}\n")
 
+    num_emails_synced = 0
     nextPageToken = nil
 
     while true
@@ -316,6 +321,7 @@ class GmailAccount < ActiveRecord::Base
         messages_data.each { |message_data| gmail_ids.push(message_data['id']) }
       end
 
+      num_emails_synced += gmail_ids.length
       log_console("GOT #{gmail_ids.length} messages\n")
 
       self.sync_gmail_ids(gmail_ids)
@@ -324,6 +330,8 @@ class GmailAccount < ActiveRecord::Base
       nextPageToken = history_list_data['nextPageToken']
       break if nextPageToken.nil?
     end
+    
+    return num_emails_synced > 0
   end
 
   def create_email_from_gmail_data(gmail_data)
