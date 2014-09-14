@@ -26,6 +26,7 @@ Rails.application.routes.draw do
 
       post '/email_accounts/send_email', to: 'email_accounts#send_email'
       post '/email_accounts/sync', to: 'email_accounts#sync'
+      post '/email_accounts/search_threads', to: 'email_accounts#search_threads'
       
       get '/emails/show/:email_uid', to: 'emails#show'
       post '/emails/set_seen', to: 'emails#set_seen'
