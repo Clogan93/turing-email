@@ -40,7 +40,7 @@ window.TuringEmailApp = new(Backbone.View.extend({
     @emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
 
     windowLocationHash = window.location.hash.toString()
-    if windowLocationHash == "" 
+    if windowLocationHash.indexOf("#folder#") == -1
       @emailFoldersRouter.showFolder("INBOX")
 
     @reportsRouter = new TuringEmailApp.Routers.ReportsRouter()

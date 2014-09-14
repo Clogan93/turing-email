@@ -23,7 +23,13 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
 
     @setSeen()
 
+    @setupReplyButtons()
+
     return
+
+  setupReplyButtons: ->
+    $(".reply_button").click ->
+      $("#composeModal").modal "show"
 
   insert_html_into_iframe: (email, index) ->
     @$el.find("#email_iframe" + index.toString()).contents().find("body").append(email.html_part)
