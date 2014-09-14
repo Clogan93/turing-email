@@ -84,7 +84,7 @@ module SpecMisc
   end
 
   def validate_email_rule(email_rule, email_rule_rendered)
-    expected_attributes = %w(uid from_address to_address subject list_id destination_folder)
+    expected_attributes = %w(uid from_address to_address subject list_id destination_folder_name)
     spec_validate_attributes(expected_attributes, email_rule, email_rule_rendered)
   end
 

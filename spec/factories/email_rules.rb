@@ -6,6 +6,6 @@ FactoryGirl.define do
 
     sequence(:uid) { |n| n.to_s }
     sequence(:list_id) { |n| "sales_#{n}.turinginc.com" }
-    sequence(:destination_folder) { |n| "sales_#{n}" }
+    sequence(:destination_folder_name) { |n| "sales_#{n}" }
   end
 end

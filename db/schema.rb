@@ -73,12 +73,12 @@ ActiveRecord::Schema.define(version: 20140911051824) do
     t.text     "to_address"
     t.text     "subject"
     t.text     "list_id"
-    t.text     "destination_folder"
+    t.text     "destination_folder_name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "email_rules", ["from_address", "to_address", "subject", "list_id", "destination_folder"], name: "index_email_rules_on_everything", unique: true, using: :btree
+  add_index "email_rules", ["from_address", "to_address", "subject", "list_id", "destination_folder_name"], name: "index_email_rules_on_everything", unique: true, using: :btree
   add_index "email_rules", ["uid"], name: "index_email_rules_on_uid", unique: true, using: :btree
 
   create_table "email_threads", force: true do |t|

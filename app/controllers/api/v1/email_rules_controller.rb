@@ -13,7 +13,7 @@ class Api::V1::EmailRulesController < ApiController
     param :form, :subject, :string, 'Subject'
     param :form, :list_id, :string, 'List ID'
 
-    param :form, :destination_folder, :string, 'Destination Folder'
+    param :form, :destination_folder_name, :string, 'Destination Folder Name'
 
     response :ok
   end
@@ -23,14 +23,14 @@ class Api::V1::EmailRulesController < ApiController
     to_address = params[:to_address].blank? ? nil : params[:to_address]
     subject = params[:subject].blank? ? nil : params[:subject]
     list_id = params[:list_id].blank? ? nil : params[:list_id]
-    
-    destination_folder = params[:destination_folder].blank? ? nil : params[:destination_folder]
+
+    destination_folder_name = params[:destination_folder_name].blank? ? nil : params[:destination_folder_name]
 
     begin
       EmailRule.find_or_create_by!(:user => current_user,
                                    :from_address => from_address, :to_address => to_address,
                                    :subject => subject, :list_id => list_id,
-                                   :destination_folder => destination_folder)
+                                   :destination_folder_name => destination_folder_name)
     rescue ActiveRecord::RecordNotUnique
     end
     
@@ -79,7 +79,7 @@ class Api::V1::EmailRulesController < ApiController
       subfolder = list_name
       subfolder = list_id if subfolder.nil?
       
-      rules_recommended << { :list_id => list_id, :destination_folder => "List Emails/#{subfolder}" }
+      rules_recommended << { :list_id => list_id, :destination_folder_name => "List Emails/#{subfolder}" }
     end
 
     render :json => rules_recommended

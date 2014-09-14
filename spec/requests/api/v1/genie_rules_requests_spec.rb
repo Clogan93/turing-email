@@ -7,7 +7,7 @@ describe Api::V1::GenieRulesController, :type => :request do
     before { post '/api/v1/sessions', :email => user.email, :password => user.password }
     
     it 'should create a rule' do
-      post '/api/v1/genie_rules', :list_id => 'sales.turinginc.com', :destination_folder => 'sales'
+      post '/api/v1/genie_rules', :list_id => 'sales.turinginc.com', :destination_folder_name => 'sales'
       
       expect(response).to have_http_status(:ok)
       expect(user.genie_rules.count).to eq(1)

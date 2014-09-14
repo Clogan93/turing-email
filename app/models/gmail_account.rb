@@ -65,6 +65,17 @@ class GmailAccount < ActiveRecord::Base
     return self.gmail_labels.find_by_label_id('TRASH')
   end
   
+  # TODO test
+  def send_email(tos, subject, body)
+    email_raw = Mail.new do
+      to tos
+      subject subject
+      body body
+    end
+    
+    self.gmail_client.send_email('me', email_raw)
+  end
+  
   def delete_o_auth2_token
     if self.google_o_auth2_token
       self.google_o_auth2_token.destroy()

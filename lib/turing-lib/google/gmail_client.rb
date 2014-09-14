@@ -87,5 +87,17 @@ module Google
                                         :parameters => parameters)
       return result.data
     end
+    
+    # send email
+    def send_email(userId, email_raw)
+      result = self.api_client.execute!(:api_method => self.gmail_api.users.messages.to_h['gmail.users.messages.send'],
+                                        body_object: {
+                                            raw: Base64.urlsafe_encode64(email_raw.encoded)
+                                        },
+                                        parameters: {
+                                            userId: 'me',
+                                        })
+      return result.data
+    end
   end
 end

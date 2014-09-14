@@ -41,7 +41,7 @@ describe GmailAccount, :type => :model do
         expect(email.auto_filed_folder.id).to eq(gmail_label.id)
       end
       
-      context 'when the destination folder exists' do
+      context 'when the target folder exists' do
         let!(:gmail_label_other) { FactoryGirl.create(:gmail_label, :gmail_account => gmail_account) }
         
         it 'should remove the email from the existing folder and move it to the new folder by label_id' do
@@ -79,7 +79,7 @@ describe GmailAccount, :type => :model do
         end
       end
 
-      context 'when the destination folder does NOT exist' do
+      context 'when the target folder does NOT exist' do
         let(:label_id) { 'LABEL ID' }
         let(:label_name) { 'LABEL NAME' }
         
@@ -125,7 +125,7 @@ describe GmailAccount, :type => :model do
     end
 
     context 'when the email is NOT in a folder' do
-      context 'when the destination folder does NOT exist' do
+      context 'when the target folder does NOT exist' do
         let(:label_id) { 'LABEL ID' }
         let(:label_name) { 'LABEL NAME' }
         

@@ -68,25 +68,50 @@ class User < ActiveRecord::Base
     return [@user, @user.save]
   end
   
-  def apply_email_rules()
-    inbox_folder = self.gmail_accounts.first.inbox_folder
+  def apply_email_rules(emails)
+    log_console("apply_email_rules for #{self.email}!!")
+    
+    email_account = self.gmail_accounts.first
+    
+    emails.each do |email|
+      log_console("processing email.uid=#{email.uid}")
+      
+      self.email_rules.each do |email_rule|
+        matches_rule = true if email_rule.from_address ||email_rule.list_id || email_rule.subject || email_rule.to_address
+        matches_rule = false if email_rule.from_address && email.from_address.downcase != email_rule.from_address.downcase
+        matches_rule = false if email_rule.list_id && email.list_id.downcase != email_rule.list_id.downcase
+        matches_rule = false if email_rule.subject && email.subject !~ /.*#{email_rule.subject}.*/i
+        
+        if email_rule.to_address && !email.email_recipients.joins(:person).pluck('LOWER("people"."email_address")').include?(email_rule.to_address)
+          matches_rule = false
+        end
+        
+        log_console("matches_rule=#{matches_rule}")
+        
+        email_account.move_email_to_folder(email, :folder_name => email_rule.destination_folder_name) if matches_rule
+      end
+    end
+  end
+
+  def apply_email_rules_to_inbox()
+    email_account = self.gmail_accounts.first
+    inbox_folder = email_account.inbox_folder
 
     self.email_rules.each do |email_rule|
-      where_conditions = [nil, []]
-      append_where_condition(where_conditions, 'from_address=?', email_rule.from_address) if email_rule.from_address
-      append_where_condition(where_conditions, 'list_id=?', email_rule.list_id) if email_rule.list_id
-      append_where_condition(where_conditions, "subject ILIKE '%?%'", email_rule.subject) if email_rule.subject
-      
+      where_conditions = ['', []]
+      append_where_condition(where_conditions, 'LOWER(from_address)=?', email_rule.from_address.downcase) if email_rule.from_address
+      append_where_condition(where_conditions, 'LOWER(list_id)=?', email_rule.list_id.downcase) if email_rule.list_id
+      append_where_condition(where_conditions, "subject ILIKE '%?%'", email_rule.subject.downcase) if email_rule.subject
+
       if email_rule.to_address
-        append_where_condition(where_conditions, '"people"."email_address"=?', email_rule.to_address)
+        append_where_condition(where_conditions, 'LOWER("people"."email_address")=?', email_rule.to_address.downcase)
         emails = inbox_folder.emails.joins(:email_recipients => :person).where(where_conditions)
       else
         emails = inbox_folder.emails.where(where_conditions)
       end
 
-      inbox_folder.emails.each do |email|
-        # TO DO move
-        
+      emails.each do |email|
+        email_account.move_email_to_folder(email, :folder_name => email_rule.destination_folder_name)
       end
     end
   end

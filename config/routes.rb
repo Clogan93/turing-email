@@ -24,14 +24,20 @@ Rails.application.routes.draw do
       resources :sessions, only: [:create]
       match '/signout', to: 'sessions#destroy', via: 'delete'
 
+      post '/email_accounts/send_email', to: 'email_accounts#send_email'
+      
       get '/emails/show/:email_uid', to: 'emails#show'
       post '/emails/set_seen', to: 'emails#set_seen'
+      post '/emails/move_to_folder', to: 'emails#move_to_folder'
+      post '/emails/apply_gmail_label', to: 'emails#apply_gmail_label'
       post '/emails/remove_from_folder', to: 'emails#remove_from_folder'
       post '/emails/trash', to: 'emails#trash'
 
       get '/email_threads/show/:email_thread_uid', to: 'email_threads#show'
       match '/email_threads/inbox', to: 'email_threads#inbox', via: 'get'
       match '/email_threads/in_folder', to: 'email_threads#in_folder', via: 'get'
+      post '/email_threads/move_to_folder', to: 'email_threads#move_to_folder'
+      post '/email_threads/apply_gmail_label', to: 'email_threads#apply_gmail_label'
       post '/email_threads/remove_from_folder', to: 'email_threads#remove_from_folder'
       post '/email_threads/trash', to: 'email_threads#trash'
       
