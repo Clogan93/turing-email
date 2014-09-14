@@ -13,6 +13,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @setupGoLeft()
     @setupGoRight()
     @setupLabelAsLinks()
+    @setupMoveToFolder()
 
   retrieveCheckedUIDs: ->
     checkedUIDs = []
@@ -24,16 +25,30 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     checkedUIDs = _.uniq(checkedUIDs)
     return checkedUIDs
 
-  setupLabelAsLinks: ->
-    @$el.find(".label_as_link").click ->
-      checkedUIDs = @retrieveCheckedUIDs()
-      console.log "Label as link clicked"
-      console.log checkedUIDs
-
+  setupMoveToFolder: ->
+    checkedUIDs = @retrieveCheckedUIDs()
+    @$el.find(".move_to_folder_link").click ->
       postData = {}
       postData.email_thread_uids = checkedUIDs
+      postData.gmail_label_name = $(@).text()
+      console.log $(@)
 
-      url = "/api/v1/email_threads/apply_gmail_label"
+      url = "/api/v1/email_threads/move_to_folder.json"
+      $.ajax
+        type: "POST"
+        url: url
+        data: postData
+        success: (data) ->
+          return
+
+  setupLabelAsLinks: ->
+    checkedUIDs = @retrieveCheckedUIDs()
+    @$el.find(".label_as_link").click ->
+      postData = {}
+      postData.email_thread_uids = checkedUIDs
+      postData.gmail_label_name = $(@).text()
+
+      url = "/api/v1/email_threads/apply_gmail_label.json"
       $.ajax
         type: "POST"
         url: url
