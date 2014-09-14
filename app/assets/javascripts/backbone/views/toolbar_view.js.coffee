@@ -139,27 +139,27 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
   setupGoLeft: ->
     @$el.find("#paginate_left_link").click ->
-      windowSearchAttribute = window.location.search
-      if windowSearchAttribute != ""
-        currentPageNumber = windowSearchAttribute.split("page=")[1]
+      if window.location.href.indexOf("page=") != -1
+        currentPageNumber = window.location.href.split("page=")[1]
       else
         currentPageNumber = "1"
       newPageNumber = parseInt(currentPageNumber) - 1
       if newPageNumber >= 1
         newQuery = "?page=" + newPageNumber.toString()
-        window.location = window.location.origin + window.location.pathname + window.location.hash + newQuery
+        if window.location.hash.indexOf("page=") then hashUrlComponent = window.location.hash.split("?page=")[0] else hashUrlComponent = window.location.hash
+        window.location = window.location.origin + window.location.pathname + hashUrlComponent + newQuery
 
   setupGoRight: ->
     @$el.find("#paginate_right_link").click ->
       if TuringEmailApp.emailThreads.length is 50
-        windowSearchAttribute = window.location.search
-        if windowSearchAttribute != ""
-          currentPageNumber = windowSearchAttribute.split("page=")[1]
+        if window.location.href.indexOf("page=") != -1
+          currentPageNumber = window.location.href.split("page=")[1]
         else
           currentPageNumber = "1"
         newPageNumber = parseInt(currentPageNumber) + 1
         newQuery = "?page=" + newPageNumber.toString()
-        window.location = window.location.origin + window.location.pathname + window.location.hash + newQuery
+        if window.location.hash.indexOf("page=") then hashUrlComponent = window.location.hash.split("?page=")[0] else hashUrlComponent = window.location.hash
+        window.location = window.location.origin + window.location.pathname + hashUrlComponent + newQuery
 
   render: ->
     @$el.html(@template({'emailFolders' : @collection.toJSON()} ))
