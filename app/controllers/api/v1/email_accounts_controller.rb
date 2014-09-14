@@ -19,7 +19,7 @@ class Api::V1::EmailAccountsController < ApiController
 
   def send_email
     @email_account.send_email(params[:tos], params[:subject], params[:email_body])
-    render :json => ''
+    render :json => {}
   end
 
   swagger_api :sync do

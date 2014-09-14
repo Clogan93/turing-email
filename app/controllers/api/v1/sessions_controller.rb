@@ -22,6 +22,6 @@ class Api::V1::SessionsController < ApiController
   
   def destroy
     sign_out
-    render :json => ''
+    render :json => {}
   end
 end

@@ -83,7 +83,7 @@ class Api::V1::EmailThreadsController < ApiController
       @email_account.move_email_to_folder(email, folder_name: params[:email_folder_name])
     end
     
-    render :json => ''
+    render :json => {}
   end
 
   swagger_api :apply_gmail_label do
@@ -102,7 +102,7 @@ class Api::V1::EmailThreadsController < ApiController
       @email_account.apply_label_to_email(email, label_name: params[:gmail_label_name])
     end
 
-    render :json => ''
+    render :json => {}
   end
 
   swagger_api :remove_from_folder do
@@ -118,7 +118,7 @@ class Api::V1::EmailThreadsController < ApiController
     email_folder = GmailLabel.find_by(:gmail_account => @email_account, :label_id => params[:email_folder_id])
     EmailFolderMapping.where(:email => @email_ids, :email_folder => email_folder).destroy_all if email_folder
 
-    render :json => ''
+    render :json => {}
   end
 
   swagger_api :trash do
@@ -133,7 +133,7 @@ class Api::V1::EmailThreadsController < ApiController
     trash_folder = @email_account.trash_folder
     Email.trash_emails(@email_ids, trash_folder)
 
-    render :json => ''
+    render :json => {}
   end
 
   private
