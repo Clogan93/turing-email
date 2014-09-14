@@ -25,18 +25,37 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
 
     @setupReplyButtons()
 
+    @setupForwardButton()
+
     return
 
   setupReplyButtons: ->
-    $(".reply_button").click ->
+    $(".email_reply_button").click ->
+      last_email_in_thread = TuringEmailApp.currentEmailThread.get("emails")[0]
+
+      if last_email_in_thread.reply_to_address?
+        $("#compose_form #to_input").val(last_email_in_thread.reply_to_address)
+      else
+        $("#compose_form #to_input").val(last_email_in_thread.from_address)
+
+      $("#compose_form #subject_input").val("Re: " + last_email_in_thread.subject)
+      $("#compose_form #compose_email_body").val("\n\n\n\n\n" + last_email_in_thread.body_text)
+
+      $("#composeModal").modal "show"
+
+  setupForwardButton: ->
+    $(".email_forward_button").click ->
+      last_email_in_thread = TuringEmailApp.currentEmailThread.get("emails")[0]
+
+      $("#compose_form #subject_input").val("Fwd: " + last_email_in_thread.subject)
+      $("#compose_form #compose_email_body").val("\n\n\n\n\n" + last_email_in_thread.body_text)
+
       $("#composeModal").modal "show"
 
   insert_html_into_iframe: (email, index) ->
     @$el.find("#email_iframe" + index.toString()).contents().find("body").append(email.html_part)
     body_height_sum = 0
-    console.log @$el.find("#email_iframe" + index.toString())
     @$el.find("#email_iframe" + index.toString()).contents().find("body").children().each ->
-      console.log $(@)
       body_height = $(@).height()
       body_height_sum += body_height
     body_height_adjusted = body_height_sum + 25
