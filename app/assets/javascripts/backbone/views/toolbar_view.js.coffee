@@ -26,12 +26,11 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     return checkedUIDs
 
   setupMoveToFolder: ->
-    checkedUIDs = @retrieveCheckedUIDs()
-    @$el.find(".move_to_folder_link").click ->
+    @$el.find(".move_to_folder_link").click (event) =>
+      checkedUIDs = @retrieveCheckedUIDs()
       postData = {}
       postData.email_thread_uids = checkedUIDs
-      postData.gmail_label_name = $(@).text()
-      console.log $(@)
+      postData.email_folder_name = $(event.target).text()
 
       url = "/api/v1/email_threads/move_to_folder.json"
       $.ajax
@@ -41,12 +40,18 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
         success: (data) ->
           return
 
+      #Alter UI
+      tr_element = $(".check-mail .checked").parent().parent()
+      tr_element.remove()
+      $(".check-mail .checked").each ->
+        $(@).removeClass("checked")
+
   setupLabelAsLinks: ->
-    checkedUIDs = @retrieveCheckedUIDs()
-    @$el.find(".label_as_link").click ->
+    @$el.find(".label_as_link").click (event) =>
+      checkedUIDs = @retrieveCheckedUIDs()
       postData = {}
       postData.email_thread_uids = checkedUIDs
-      postData.gmail_label_name = $(@).text()
+      postData.gmail_label_name = $(event.target).text()
 
       url = "/api/v1/email_threads/apply_gmail_label.json"
       $.ajax
@@ -55,6 +60,10 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
         data: postData
         success: (data) ->
           return
+
+      #Alter UI
+      $(".check-mail .checked").each ->
+        $(@).removeClass("checked")
 
   setupArchive: ->
     @$el.find("i.fa-archive").parent().click =>
