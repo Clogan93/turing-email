@@ -46,7 +46,5 @@ class Api::V1::EmailAccountsController < ApiController
   def search_threads
     email_thread_uids, @next_page_token = @email_account.search_threads(params[:query], params[:next_page_token])
     @email_threads = EmailThread.where(:uid => email_thread_uids).joins(:emails).includes(:emails).order('"emails"."date" DESC')
-
-    render 'api/v1/email_threads/index'
   end
 end
