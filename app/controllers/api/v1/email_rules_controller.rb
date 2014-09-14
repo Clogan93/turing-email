@@ -34,7 +34,7 @@ class Api::V1::EmailRulesController < ApiController
     rescue ActiveRecord::RecordNotUnique
     end
     
-    render :json => ''
+    render :json => {}
   end
 
   swagger_api :index do
@@ -64,7 +64,7 @@ class Api::V1::EmailRulesController < ApiController
   def destroy
     @email_rule.destroy!
 
-    render :json => ''
+    render :json => {}
   end
 
   def recommended_rules

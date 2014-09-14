@@ -19,6 +19,18 @@ class Api::V1::EmailAccountsController < ApiController
 
   def send_email
     @email_account.send_email(params[:tos], params[:subject], params[:email_body])
-    render :json => ''
+    render :json => {}
+  end
+
+  swagger_api :sync do
+    summary 'Sync email. Returns true if any emails were synced, else false.'
+
+    response :ok
+  end
+  
+  def sync
+    synced_emails = @email_account.sync_email()
+    
+    render :json => {:synced_emails => synced_emails}
   end
 end

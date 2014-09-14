@@ -25,6 +25,7 @@ Rails.application.routes.draw do
       match '/signout', to: 'sessions#destroy', via: 'delete'
 
       post '/email_accounts/send_email', to: 'email_accounts#send_email'
+      post '/email_accounts/sync', to: 'email_accounts#sync'
       
       get '/emails/show/:email_uid', to: 'emails#show'
       post '/emails/set_seen', to: 'emails#set_seen'

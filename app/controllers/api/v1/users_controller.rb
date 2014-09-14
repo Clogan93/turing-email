@@ -74,6 +74,6 @@ class Api::V1::UsersController < ApiController
     inbox_label = current_user.gmail_accounts.first.inbox_folder
     EmailFolderMapping.where(:email_folder => inbox_label).destroy_all() if inbox_label
 
-    render :json => ''
+    render :json => {}
   end
 end

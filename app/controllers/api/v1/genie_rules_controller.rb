@@ -31,7 +31,7 @@ class Api::V1::GenieRulesController < ApiController
     rescue ActiveRecord::RecordNotUnique
     end
     
-    render :json => ''
+    render :json => {}
   end
 
   swagger_api :index do
@@ -55,7 +55,7 @@ class Api::V1::GenieRulesController < ApiController
   def destroy
     @genie_rule.destroy!
     
-    render :json => ''
+    render :json => {}
   end
 
   private
