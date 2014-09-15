@@ -3,6 +3,7 @@ require 'base64'
 class GmailAccount < ActiveRecord::Base
   MESSAGE_BATCH_SIZE = 10
   HISTORY_BATCH_SIZE = 100
+  SEARCH_RESULTS_PER_PAGE = 50
 
   belongs_to :user
 
@@ -126,6 +127,24 @@ class GmailAccount < ActiveRecord::Base
     self.verified_email = userinfo_data['verified_email']
 
     self.save! if do_save
+  end
+
+  def search_threads(query, nextPageToken = nil, max_results = GmailAccount::SEARCH_RESULTS_PER_PAGE)
+    log_console("SEARCH threads query=#{query} nextPageToken=#{nextPageToken} max_results=#{max_results}")
+    
+    thread_uids = []
+
+    threds_list_data = self.gmail_client.threads_list('me', maxResults: max_results,
+                                                            pageToken: nextPageToken,
+                                                            q: query, fields: 'nextPageToken,threads/id')
+
+    threads_data = threds_list_data['threads']
+    threads_data.each { |thread_data| thread_uids.push(thread_data['id']) }
+    nextPageToken = threds_list_data['nextPageToken']
+
+    log_console("FOUND #{threads_data.length} threads nextPageToken=#{nextPageToken}")
+
+    return thread_uids, nextPageToken
   end
 
   def sync_email(include_inbox: false, include_sent: false)
