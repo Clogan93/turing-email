@@ -36,6 +36,58 @@ class Email < ActiveRecord::Base
     trash_folder.apply_to_emails(email_ids) if trash_folder
   end
   
+  def Email.email_raw_from_params(tos, ccs, bccs, subject, body, email_in_reply_to_uid = nil)
+    email_raw = Mail.new do
+      to tos
+      cc ccs
+      bcc bccs
+      subject subject
+    end
+
+    email_raw.text_part = Mail::Part.new do
+      body body
+    end
+
+    email_raw.html_part = Mail::Part.new do
+      content_type 'text/html; charset=UTF-8'
+      body body
+    end
+
+    email_in_reply_to = nil
+
+    if email_in_reply_to_uid
+      email_in_reply_to = self.emails.includes(:email_thread).find_by(:uid => email_in_reply_to_uid)
+
+      if email_in_reply_to
+        log_console("FOUND email_in_reply_to=#{email_in_reply_to.id}")
+
+        email_raw.in_reply_to = "<#{email_in_reply_to.message_id}>"
+
+        references_header_string = ''
+
+        reference_message_ids = email_in_reply_to.email_references.order(:position).pluck(:references_message_id)
+        if reference_message_ids.length > 0
+          log_console("reference_message_ids.length=#{reference_message_ids.length}")
+
+          references_header_string = '<' + reference_message_ids.join("><") + '>'
+        elsif email_in_reply_to.email_in_reply_tos.count == 1
+          log_console("email_in_reply_tos.count=#{email_in_reply_tos.count}")
+
+          references_header_string =
+              '<' + reference_message_ids.email_in_reply_tos.order(:position)[0].in_reply_to_message_id + '>'
+        end
+
+        references_header_string << "<#{email_in_reply_to.message_id}>"
+
+        log_console("references_header_string = #{references_header_string}")
+
+        email_raw.references = references_header_string
+      end
+    end
+    
+    return email_raw, email_in_reply_to
+  end
+  
   def Email.email_raw_from_mime_data(mime_data)
     mail_data_file = Tempfile.new('turing')
     mail_data_file.binmode

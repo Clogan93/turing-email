@@ -2,6 +2,7 @@ require 'base64'
 
 class GmailAccount < ActiveRecord::Base
   MESSAGE_BATCH_SIZE = 10
+  DRAFTS_BATCH_SIZE = 100
   HISTORY_BATCH_SIZE = 100
   SEARCH_RESULTS_PER_PAGE = 50
 
@@ -65,66 +66,80 @@ class GmailAccount < ActiveRecord::Base
   def trash_folder
     return self.gmail_labels.find_by_label_id('TRASH')
   end
+
+  def drafts_folder
+    return self.gmail_labels.find_by_label_id('DRAFTS')
+  end
   
-  # TODO test
+  # TODO write tests
   def send_email(tos, ccs, bccs, subject, body, email_in_reply_to_uid = nil)
-    log_console("SEND EMAIL with email_in_reply_to_uid=#{email_in_reply_to_uid}")
-
-    email_raw = Mail.new do
-      to tos
-      cc ccs
-      bcc bccs
-      subject subject
-    end
-
-    email_raw.text_part = Mail::Part.new do
-      body body
-    end
-
-    email_raw.html_part = Mail::Part.new do
-      content_type 'text/html; charset=UTF-8'
-      body body
-    end
-
-    email_in_reply_to = nil
-    
-    if email_in_reply_to_uid
-      email_in_reply_to = self.emails.includes(:email_thread).find_by(:uid => email_in_reply_to_uid)
-      
-      if email_in_reply_to
-        log_console("FOUND email_in_reply_to=#{email_in_reply_to.id}")
-        
-        email_raw.in_reply_to = "<#{email_in_reply_to.message_id}>"
-        
-        references_header_string = ''
-        
-        reference_message_ids = email_in_reply_to.email_references.order(:position).pluck(:references_message_id)
-        if reference_message_ids.length > 0
-          log_console("reference_message_ids.length=#{reference_message_ids.length}")
-          
-          references_header_string = '<' + reference_message_ids.join("><") + '>'
-        elsif email_in_reply_to.email_in_reply_tos.count == 1
-          log_console("email_in_reply_tos.count=#{email_in_reply_tos.count}")
-          
-          references_header_string =
-              '<' + reference_message_ids.email_in_reply_tos.order(:position)[0].in_reply_to_message_id + '>'
-        end
-        
-        references_header_string << "<#{email_in_reply_to.message_id}>"
-
-        log_console("references_header_string = #{references_header_string}")
-        
-        email_raw.references = references_header_string
-      end
-    end
+    email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, body, email_in_reply_to_uid)
   
     if email_in_reply_to
-      self.gmail_client.send_email('me', :threadId => email_in_reply_to.email_thread.uid, :email_raw => email_raw)
+      self.gmail_client.messages_send('me', :threadId => email_in_reply_to.email_thread.uid, :email_raw => email_raw)
     else
-      self.gmail_client.send_email('me', :email_raw => email_raw)
+      self.gmail_client.messages_send('me', :email_raw => email_raw)
+    end
+  end
+  
+  # TODO write tests
+  def get_draft_ids()
+    log_console("GET DRAFTS\n")
+
+    draft_ids = {}
+
+    nextPageToken = nil
+
+    while true
+      drafts_list_data = self.gmail_client.drafts_list('me', pageToken: nextPageToken,
+                                                       maxResults: GmailAccount::DRAFTS_BATCH_SIZE)
+      drafts_data = drafts_list_data['drafts']
+      log_console("GOT #{drafts_data.length} drafts")
+
+      drafts_data.each do |draft_data|
+        gmail_id = draft_data['message']['id']
+        draft_id = draft_data['id']
+
+        draft_ids[gmail_id] = draft_id
+      end
+
+      nextPageToken = drafts_list_data['nextPageToken']
+      break if nextPageToken.nil?
+    end
+
+    return draft_ids
+  end
+
+  # TODO write tests
+  def create_draft(tos, ccs, bccs, subject, body, email_in_reply_to_uid = nil)
+    email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, body, email_in_reply_to_uid)
+
+    if email_in_reply_to
+      draft_data = self.gmail_client.drafts_create('me', :threadId => email_in_reply_to.email_thread.uid, :email_raw => email_raw)
+    else
+      draft_data = self.gmail_client.drafts_create('me', :email_raw => email_raw)
     end
     
-    log_console('EMAIL SENT!!!')
+    draft = draft_data
+    
+    return draft['id']
+  end
+
+  # TODO write tests
+  def update_draft(draft_id, tos, ccs, bccs, subject, body, email_in_reply_to_uid = nil)
+    email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, body, email_in_reply_to_uid)
+
+    if email_in_reply_to
+      self.gmail_client.drafts_update('me', draft_id,
+                                      :threadId => email_in_reply_to.email_thread.uid, :email_raw => email_raw)
+    else
+      self.gmail_client.drafts_update('me', draft_id, :email_raw => email_raw)
+    end
+  end
+
+  # TODO write tests
+  def send_draft(draft_id)
+    self.gmail_client.drafts_send('me', draft_id)
   end
   
   def delete_o_auth2_token

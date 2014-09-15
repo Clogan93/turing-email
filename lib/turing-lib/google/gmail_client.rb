@@ -77,6 +77,18 @@ module Google
       return result.data
     end
 
+    def messages_send(userId, threadId: nil, email_raw: nil)
+      args = method(__method__).parameters[0...-2].map { |arg| {arg[1] => eval(arg[1].to_s)} }
+      parameters = Google::Misc.get_parameters_from_args(args)
+
+      body_object = { :raw => Base64.urlsafe_encode64(email_raw.encoded) }
+      body_object[:threadId] = threadId if threadId
+
+      result = self.api_client.execute!(:api_method => self.gmail_api.users.messages.to_h['gmail.users.messages.send'],
+                                        :parameters => parameters, :body_object => body_object)
+      return result.data
+    end
+
     # history
 
     def history_list(userId, labelId: nil, maxResults: nil, pageToken: nil, startHistoryId: nil)
@@ -88,17 +100,49 @@ module Google
       return result.data
     end
     
-    # send email
-    def send_email(userId, threadId: nil, email_raw: nil)
+    # drafts
+    
+    def drafts_list(userId, maxResults: nil, pageToken: nil)
+      args = method(__method__).parameters.map { |arg| {arg[1] => eval(arg[1].to_s)} }
+      parameters = Google::Misc.get_parameters_from_args(args)
+      
+      result = self.api_client.execute!(:api_method => self.gmail_api.users.drafts.list,
+                                        :parameters => parameters)
+      return result.data
+    end
+    
+    def drafts_create(userId, threadId: nil, email_raw: nil)
       args = method(__method__).parameters[0...-2].map { |arg| {arg[1] => eval(arg[1].to_s)} }
       parameters = Google::Misc.get_parameters_from_args(args)
-      log_console("PARAMS!!!!!!= #{parameters}")
 
-      body_object = { :raw => Base64.urlsafe_encode64(email_raw.encoded) }
-      body_object[:threadId] = threadId if threadId
+      body_object = { :message => {:raw => Base64.urlsafe_encode64(email_raw.encoded)} }
+      body_object[:message][:threadId] = threadId if threadId
+
+      result = self.api_client.execute!(:api_method => self.gmail_api.users.drafts.create,
+                                        :parameters => parameters, :body_object => body_object)
+      return result.data
+    end
+
+    def drafts_update(userId, id, threadId: nil, email_raw: nil)
+      args = method(__method__).parameters[0...-2].map { |arg| {arg[1] => eval(arg[1].to_s)} }
+      parameters = Google::Misc.get_parameters_from_args(args)
+
+      body_object = { :message => {:raw => Base64.urlsafe_encode64(email_raw.encoded)} }
+      body_object[:message][:threadId] = threadId if threadId
+
+      result = self.api_client.execute!(:api_method => self.gmail_api.users.drafts.update,
+                                        :parameters => parameters, :body_object => body_object)
+      return result.data
+    end
+
+    def drafts_send(userId, id)
+      args = method(__method__).parameters[0...-1].map { |arg| {arg[1] => eval(arg[1].to_s)} }
+      parameters = Google::Misc.get_parameters_from_args(args)
       
-      result = self.api_client.execute!(:api_method => self.gmail_api.users.messages.to_h['gmail.users.messages.send'],
-                                        :body_object => body_object, :parameters => parameters)
+      body_object = { :id => id }
+      
+      result = self.api_client.execute!(:api_method => self.gmail_api.users.drafts.to_h['gmail.users.drafts.send'],
+                                        :parameters => parameters, :body_object => body_object)
       return result.data
     end
   end
