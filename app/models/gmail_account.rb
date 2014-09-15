@@ -67,14 +67,45 @@ class GmailAccount < ActiveRecord::Base
   end
   
   # TODO test
-  def send_email(tos, subject, body)
+  def send_email(tos, ccs, bccs, subject, body, email_in_reply_to_uid = nil)
     email_raw = Mail.new do
       to tos
+      cc ccs
+      bcc bccs
       subject subject
       body body
     end
+
+    email_in_reply_to = nil
     
-    self.gmail_client.send_email('me', email_raw)
+    if email_in_reply_to_uid
+      email_in_reply_to = self.emails.includes(:email_thread).find_by(:uid => email_in_reply_to_uid)
+      
+      if email_in_reply_to
+        email_raw.in_reply_to = "<#{email_in_reply_to.message_id}>"
+        
+        references_header_string = ''
+        
+        reference_message_ids = email_in_reply_to.email_references.order(:position).pluck(:references_message_id)
+        if reference_message_ids.length > 0
+          references_header_string = '<' + reference_message_ids.join(">\r\n<") + '>'
+        elsif email_in_reply_to.email_in_reply_tos.count == 1
+          references_header_string =
+              '<' + reference_message_ids.email_in_reply_tos.order(:position)[0].in_reply_to_message_id + '>'
+        end
+        
+        references_header_string << "\r\n" if !references_header_string.blank?
+        references_header_string << "<#{email_in_reply_to.message_id}>"
+        
+        email_raw.references = references_header_string
+      end
+    end
+  
+    if email_in_reply_to
+      self.gmail_client.send_email('me', threadId: email_in_reply_to.email_thread.uid, email_raw: email_raw)
+    else
+      self.gmail_client.send_email('me', email_raw: email_raw)
+    end
   end
   
   def delete_o_auth2_token

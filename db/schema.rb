@@ -38,11 +38,12 @@ ActiveRecord::Schema.define(version: 20140911051824) do
   create_table "email_in_reply_tos", force: true do |t|
     t.integer  "email_id"
     t.text     "in_reply_to_message_id"
+    t.integer  "position"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "email_in_reply_tos", ["email_id", "in_reply_to_message_id"], name: "index_email_in_reply_tos_on_email_id_and_in_reply_to_message_id", unique: true, using: :btree
+  add_index "email_in_reply_tos", ["email_id", "in_reply_to_message_id", "position"], name: "index_email_in_reply_to_on_email_and_in_reply_to_msg_id_and_pos", unique: true, using: :btree
   add_index "email_in_reply_tos", ["email_id"], name: "index_email_in_reply_tos_on_email_id", using: :btree
 
   create_table "email_recipients", force: true do |t|
@@ -59,11 +60,12 @@ ActiveRecord::Schema.define(version: 20140911051824) do
   create_table "email_references", force: true do |t|
     t.integer  "email_id"
     t.text     "references_message_id"
+    t.integer  "position"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "email_references", ["email_id", "references_message_id"], name: "index_email_references_on_email_id_and_references_message_id", unique: true, using: :btree
+  add_index "email_references", ["email_id", "references_message_id", "position"], name: "index_email_references_on_email_and_references_msg_id_and_pos", unique: true, using: :btree
   add_index "email_references", ["email_id"], name: "index_email_references_on_email_id", using: :btree
 
   create_table "email_rules", force: true do |t|

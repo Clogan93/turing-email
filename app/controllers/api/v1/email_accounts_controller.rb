@@ -10,15 +10,23 @@ class Api::V1::EmailAccountsController < ApiController
   swagger_api :send_email do
     summary 'Send an email.'
 
-    param :form, :tos, :string, :required, 'Array of recipient email addresses'
-    param :form, :subject, :string, :required, 'Subject'
-    param :form, :email_body, :string, :required, 'Body'
+    param :form, :tos, :string, 'Array of recipient email addresses'
+    param :form, :ccs, :string, 'Array of recipient email addresses'
+    param :form, :bccs, :string, 'Array of recipient email addresses'
+
+    param :form, :email_in_reply_to_uid, :string, 'Email UID being replied to.'
+    
+    param :form, :subject, :string, 'Subject'
+    param :form, :email_body, :string, 'Body'
 
     response :ok
   end
 
   def send_email
-    @email_account.send_email(params[:tos], params[:subject], params[:email_body])
+    @email_account.send_email(params[:tos], params[:ccs], params[:bccs],
+                              params[:subject], params[:email_body],
+                              params[:email_in_reply_to_uid])
+    
     render :json => {}
   end
 

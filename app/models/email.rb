@@ -151,19 +151,25 @@ class Email < ActiveRecord::Base
 
     if email_raw.references.class == String
       begin
-        EmailReference.find_or_create_by!(:email => self, :references_message_id => email_raw.references)
+        EmailReference.find_or_create_by!(:email => self, :references_message_id => email_raw.references,
+                                          :position => 0)
       rescue ActiveRecord::RecordNotUnique
       end
       
       return
     end
 
+    position = 0
+    
     email_raw.references.each do |references_message_id|
       begin
-        EmailReference.find_or_create_by!(:email => self, :references_message_id => references_message_id)
+        EmailReference.find_or_create_by!(:email => self, :references_message_id => references_message_id,
+                                          :position => position)
       rescue ActiveRecord::RecordNotUnique
       end
     end
+    
+    position += 1
   end
 
   def add_in_reply_tos(email_raw)
@@ -171,18 +177,24 @@ class Email < ActiveRecord::Base
 
     if email_raw.in_reply_to.class == String
       begin
-        EmailInReplyTo.find_or_create_by!(:email => self, :in_reply_to_message_id => email_raw.in_reply_to)
+        EmailInReplyTo.find_or_create_by!(:email => self, :in_reply_to_message_id => email_raw.in_reply_to,
+                                          :position => 0)
       rescue ActiveRecord::RecordNotUnique
       end
       
       return
     end
 
+    position = 0
+    
     email_raw.in_reply_to.each do |in_reply_to_message_id|
       begin
-        EmailInReplyTo.find_or_create_by!(:email => self, :in_reply_to_message_id => in_reply_to_message_id)
+        EmailInReplyTo.find_or_create_by!(:email => self, :in_reply_to_message_id => in_reply_to_message_id,
+                                          :position => 0)
       rescue ActiveRecord::RecordNotUnique
       end
+
+      position += 1
     end
   end
   

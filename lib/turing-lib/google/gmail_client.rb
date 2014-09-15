@@ -89,14 +89,15 @@ module Google
     end
     
     # send email
-    def send_email(userId, email_raw)
+    def send_email(userId, threadId: nil, email_raw: nil)
+      args = method(__method__).parameters[0...-1].map { |arg| {arg[1] => eval(arg[1].to_s)} }
+      parameters = Google::Misc.get_parameters_from_args(args)
+      
       result = self.api_client.execute!(:api_method => self.gmail_api.users.messages.to_h['gmail.users.messages.send'],
                                         body_object: {
                                             raw: Base64.urlsafe_encode64(email_raw.encoded)
                                         },
-                                        parameters: {
-                                            userId: 'me',
-                                        })
+                                        :parameters => parameters)
       return result.data
     end
   end
