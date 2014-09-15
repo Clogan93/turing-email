@@ -26,7 +26,6 @@ class Api::V1::EmailAccountsController < ApiController
     @email_account.send_email(params[:tos], params[:ccs], params[:bccs],
                               params[:subject], params[:email_body],
                               params[:email_in_reply_to_uid])
-    
     render :json => {}
   end
 

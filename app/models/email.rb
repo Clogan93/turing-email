@@ -167,9 +167,9 @@ class Email < ActiveRecord::Base
                                           :position => position)
       rescue ActiveRecord::RecordNotUnique
       end
+
+      position += 1
     end
-    
-    position += 1
   end
 
   def add_in_reply_tos(email_raw)
