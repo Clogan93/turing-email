@@ -49,6 +49,26 @@ $ ->
 
     false # to avoid executing the actual submit of the form.
 
+  $("#compose_form #save_button").click ->
+    postData = {}
+    postData.tos = $("#compose_form").find("#to_input").val().split(",")
+    postData.ccs = $("#compose_form").find("#cc_input").val().split(",")
+    postData.bccs = $("#compose_form").find("#bcc_input").val().split(",")
+    postData.subject = $("#compose_form").find("#subject_input").val()
+    postData.email_body = $("#compose_form").find("#compose_email_body").val()
+
+    $.ajax({
+      url: 'api/v1/email_accounts/create_draft.json'
+      type: 'POST'
+      data: postData
+      dataType : 'json'
+      }).done((data, status) ->
+        console.log status
+        console.log data
+      ).fail (data, status) ->
+        console.log status
+        console.log data
+
 #########################################################
 #################### Email Filtering ####################
 #########################################################
