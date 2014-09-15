@@ -27,12 +27,8 @@
             <div class="col-md-3">
               <%= email.from_name == "" ? email.from_address : email.from_name %>
             </div>
-            
-            <div class="col-md-4">
-              <%= email.snippet %>
-            </div>
-            
-            <div class="col-md-2">
+
+            <div class="col-md-offset-7 col-md-2">
               <%= email.date == null ? "" : email.date.substring(0, 10) %>
             </div>
           </div>
