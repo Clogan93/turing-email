@@ -3,6 +3,7 @@ class @KeyboardShortcutHandler
 
   constructor: ->
     this.keyboard_shortcuts_are_turned_on = false
+    @current_email_thread_index = 1
 
   start: ->
     if this.keyboard_shortcuts_are_turned_on
@@ -52,12 +53,10 @@ class @KeyboardShortcutHandler
     this.bind_opens_options_in_chat()
     this.bind_move_up_a_contact()
     this.bind_move_down_a_contact()
-    this.bind_open()
     this.bind_return_to_contact_list_view()
     this.bind_remove_from_current_group()
     this.bind_select_contact()
     this.bind_escape_from_input_field()
-    this.bind_delete()
     this.bind_group_membership()
     this.bind_undo()
 
@@ -66,6 +65,49 @@ class @KeyboardShortcutHandler
     $(document).bind "keydown", "c", ->
       $("#compose_button").click()
       return
+
+  #Opens or moves your cursor to a more recent conversation. You can hit Enter to expand a conversation.
+  bind_move_to_newer_conversation: ->
+    $(document).bind "keydown", "k", =>
+      $("#email_table_body tr:nth-child(" + @current_email_thread_index + ")").removeClass("email_thread_highlight")
+      if @current_email_thread_index > 1
+        @current_email_thread_index -= 1
+      $("#email_table_body tr:nth-child(" + @current_email_thread_index + ")").addClass("email_thread_highlight")
+      return
+
+  #Opens or moves your cursor to the next oldest conversation. You can hit Enter to expand a conversation.
+  bind_move_to_older_conversation: ->
+    $(document).bind "keydown", "j", =>
+      $("#email_table_body tr:nth-child(" + @current_email_thread_index + ")").removeClass("email_thread_highlight")
+      if @current_email_thread_index < 50
+        @current_email_thread_index += 1
+      $("#email_table_body tr:nth-child(" + @current_email_thread_index + ")").addClass("email_thread_highlight")
+      return
+
+  #Automatically checks and selects a conversation so that you can archive, apply a label, or choose an action from the drop-down menu to apply to that conversation.
+  bind_select_conversation: ->
+    $(document).bind "keydown", "x", =>
+      $("#email_table_body tr:nth-child(" + @current_email_thread_index + ") .icheckbox_square-green").toggleClass("checked")
+
+  #Automatically removes the message or conversation from your current view.
+  bind_remove_from_current_view: ->
+    $(document).bind "keydown", "y", ->
+      $("i.fa-archive").parent().click()
+
+  #Archive your conversation from any view.
+  bind_archive: ->
+    $(document).bind "keydown", "e", ->
+      $("i.fa-archive").parent().click()
+
+  #Moves the conversation to Trash.
+  bind_delete: ->
+    $(document).bind "keydown", "#", ->
+      $("i.fa-trash-o").parent().click()
+
+  #Opens your conversation. Also expands or collapses a message if you are in 'Conversation View.'
+  bind_open: ->
+    $(document).bind "keydown", "o", =>
+      $("#email_table_body tr:nth-child(" + @current_email_thread_index + ") .mail-subject a")[0].click()
 
   #Refreshes your page and returns you to the inbox, or list of conversations.
   bind_return_to_conversation_list: ->
@@ -81,16 +123,6 @@ class @KeyboardShortcutHandler
   #Puts your cursor in the search box.
   bind_search: ->
     $(document).bind "keydown", "/", ->
-      return
-
-  #Opens or moves your cursor to a more recent conversation. You can hit Enter to expand a conversation.
-  bind_move_to_newer_conversation: ->
-    $(document).bind "keydown", "k", ->
-      return
-
-  #Opens or moves your cursor to the next oldest conversation. You can hit Enter to expand a conversation.
-  bind_move_to_older_conversation: ->
-    $(document).bind "keydown", "j", ->
       return
 
   #In 'Conversation view', moves your cursor to the newer message. You can hitEnter to expand or collapse a message.
@@ -113,24 +145,9 @@ class @KeyboardShortcutHandler
     $(document).bind "keydown", "~", ->
       return
 
-  #Opens your conversation. Also expands or collapses a message if you are in 'Conversation View.'
-  bind_open: ->
-    $(document).bind "keydown", "o or Enter", ->
-      return
-
-  #Archive your conversation from any view.
-  bind_archive: ->
-    $(document).bind "keydown", "e", ->
-      return
-
   #Archives the conversation, and all future messages skip the Inbox unless sent or cc'd directly to you. Learn more.
   bind_mute: ->
     $(document).bind "keydown", "m", ->
-      return
-
-  #Automatically checks and selects a conversation so that you can archive, apply a label, or choose an action from the drop-down menu to apply to that conversation.
-  bind_select_conversation: ->
-    $(document).bind "keydown", "x", ->
       return
 
   #Adds or removes a star to a message or conversation. Stars allow you to give a message or conversation a special status.
@@ -176,11 +193,6 @@ class @KeyboardShortcutHandler
   #Saves the current text as a draft when composing a message. Hold the Ctrl/⌘key while pressing s and make sure your cursor is in one of the text fields -- either the composition pane, or any of the To, CC, BCC, or Subject fields -- when using this shortcut.
   bind_save_draft: ->
     $(document).bind "keydown", "Ctrl + s", ->
-      return
-
-  #Moves the conversation to Trash.
-  bind_delete: ->
-    $(document).bind "keydown", "#", ->
       return
 
   #Opens the Labels menu to label a conversation.
@@ -238,11 +250,6 @@ class @KeyboardShortcutHandler
     $(document).bind "keydown", "q", ->
       return
 
-  #Automatically removes the message or conversation from your current view.
-  bind_remove_from_current_view: ->
-    $(document).bind "keydown", "y", ->
-      return
-
   #Displays the 'More Actions' drop-down menu.
   bind_show_more_actions: ->
     $(document).bind "keydown", ".", ->
@@ -268,11 +275,6 @@ class @KeyboardShortcutHandler
     $(document).bind "keydown", "j", ->
       return
 
-  #Opens the contact with the cursor next to it.
-  bind_open: ->
-    $(document).bind "keydown", "o or Enter", ->
-      return
-
   #Refreshes your page and returns you to the contact list.
   bind_return_to_contact_list_view: ->
     $(document).bind "keydown", "u", ->
@@ -291,11 +293,6 @@ class @KeyboardShortcutHandler
   #Removes the cursor from the current input
   bind_escape_from_input_field: ->
     $(document).bind "keydown", "Esc", ->
-      return
-
-  #Deletes a contact permanently
-  bind_delete: ->
-    $(document).bind "keydown", "#", ->
       return
 
   #Opens the groups button to group contacts

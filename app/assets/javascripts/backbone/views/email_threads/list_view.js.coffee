@@ -26,6 +26,11 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
       checkboxClass: "icheckbox_square-green"
       radioClass: "iradio_square-green"
 
+    @addKeyboardShortcutHighlight()
+
+  addKeyboardShortcutHighlight: ->
+    $("#email_table_body tr:nth-child(1)").addClass("email_thread_highlight")
+
   moveReportToTop: ->
     report_email = null
     @$el.find("td.mail-ontact a").each ->
