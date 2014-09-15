@@ -84,6 +84,11 @@ class @KeyboardShortcutHandler
       $("#email_table_body tr:nth-child(" + @current_email_thread_index + ")").addClass("email_thread_highlight")
       return
 
+  #Moves the conversation from the inbox to a different label, Spam or Trash.
+  bind_move_to: ->
+    $(document).bind "keydown", "v", ->
+      $("#moveToFolderDropdownMenu").click()
+
   #Automatically checks and selects a conversation so that you can archive, apply a label, or choose an action from the drop-down menu to apply to that conversation.
   bind_select_conversation: ->
     $(document).bind "keydown", "x", =>
@@ -108,6 +113,22 @@ class @KeyboardShortcutHandler
   bind_open: ->
     $(document).bind "keydown", "o", =>
       $("#email_table_body tr:nth-child(" + @current_email_thread_index + ") .mail-subject a")[0].click()
+
+  #Replies to the message sender. Shift + r allows you to reply to a message in a new window. (Only applicable in 'Conversation View.')
+  bind_reply: ->
+    $(document).bind "keydown", "r", =>
+      emailThreadIndex = @current_email_thread_index - 1
+      last_email_in_thread = TuringEmailApp.emailThreads.models[emailThreadIndex].get("emails")[0]
+
+      if last_email_in_thread.reply_to_address?
+        $("#compose_form #to_input").val(last_email_in_thread.reply_to_address)
+      else
+        $("#compose_form #to_input").val(last_email_in_thread.from_address)
+
+      $("#compose_form #subject_input").val("Re: " + last_email_in_thread.subject)
+      $("#compose_form #compose_email_body").val("\n\n\n\n\n" + last_email_in_thread.body_text)
+
+      $("#composeModal").modal "show"
 
   #Refreshes your page and returns you to the inbox, or list of conversations.
   bind_return_to_conversation_list: ->
@@ -170,11 +191,6 @@ class @KeyboardShortcutHandler
     $(document).bind "keydown", "!", ->
       return
 
-  #Replies to the message sender. Shift + r allows you to reply to a message in a new window. (Only applicable in 'Conversation View.')
-  bind_reply: ->
-    $(document).bind "keydown", "r", ->
-      return
-
   #Replies to all message recipients. Shift + a allows you to reply to all message recipients in a new window. (Only applicable in 'Conversation View.')
   bind_reply_all: ->
     $(document).bind "keydown", "a", ->
@@ -198,11 +214,6 @@ class @KeyboardShortcutHandler
   #Opens the Labels menu to label a conversation.
   bind_label: ->
     $(document).bind "keydown", "l", ->
-      return
-
-  #Moves the conversation from the inbox to a different label, Spam or Trash.
-  bind_move_to: ->
-    $(document).bind "keydown", "v", ->
       return
 
   #Marks your message as 'read' and skip to a newer message.
