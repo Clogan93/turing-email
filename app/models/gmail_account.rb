@@ -280,6 +280,7 @@ class GmailAccount < ActiveRecord::Base
 
     num_emails_synced = 0
     nextPageToken = nil
+    last_history_id_synced = nil
 
     while true
       gmail_ids = []
@@ -303,17 +304,21 @@ class GmailAccount < ActiveRecord::Base
       log_console("GOT #{messages_data.length} messages\n")
 
       messages_data.each { |message_data| gmail_ids.push(message_data['id']) }
-      num_emails_synced += gmail_ids.length
+
+      if last_history_id_synced.nil?
+        gmail_data = self.gmail_client.messages_get('me', gmail_ids.first, format: 'minimal', fields: 'historyId')
+        last_history_id_synced = gmail_data['historyId']
+      end
 
       self.sync_gmail_ids(gmail_ids)
+      num_emails_synced += gmail_ids.length
       sleep(1)
 
       nextPageToken = messages_list_data['nextPageToken']
       break if nextPageToken.nil?
     end
 
-    gmail_data = self.gmail_client.messages_get('me', gmail_ids.first, format: 'minimal', fields: 'historyId')
-    self.set_last_history_id_synced(gmail_data['historyId'])
+    self.set_last_history_id_synced(last_history_id_synced)
 
     return num_emails_synced > 0
   end
