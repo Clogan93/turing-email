@@ -3,15 +3,15 @@ class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
     "email_thread#:uid": "showEmailThread"
 
   showEmailThread: (emailThreadUID) ->
-    emailThread = TuringEmailApp.emailThreads.getEmailThread(emailThreadUID)
+    TuringEmailApp.currentEmailThread = TuringEmailApp.emailThreads.getEmailThread(emailThreadUID)
     
-    if emailThread?
-      @renderEmailThread emailThread
+    if TuringEmailApp.currentEmailThread?
+      @renderEmailThread TuringEmailApp.currentEmailThread
     else
-      emailThread = new TuringEmailApp.Models.EmailThread()
-      emailThread.url = "/api/v1/email_threads/show/" + emailThreadUID
+      TuringEmailApp.currentEmailThread = new TuringEmailApp.Models.EmailThread()
+      TuringEmailApp.currentEmailThread.url = "/api/v1/email_threads/show/" + emailThreadUID
       
-      emailThread.fetch(
+      TuringEmailApp.currentEmailThread.fetch(
         success: (model, response, options) =>
           @renderEmailThread model
       )

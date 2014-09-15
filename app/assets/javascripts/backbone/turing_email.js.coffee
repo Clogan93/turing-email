@@ -38,13 +38,18 @@ window.TuringEmailApp = new(Backbone.View.extend({
     )
 
     @emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
-    @emailFoldersRouter.showFolder("INBOX", true)
+
+    windowLocationHash = window.location.hash.toString()
+    if windowLocationHash.indexOf("#folder#") == -1
+      @emailFoldersRouter.showFolder("INBOX")
 
     @reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
 
     @analyticsRouter = new TuringEmailApp.Routers.AnalyticsRouter()
 
     @settingsRouter = new TuringEmailApp.Routers.SettingsRouter()
+
+    @searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()
 
     Backbone.history.start()
 }))({el: document.body})

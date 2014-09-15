@@ -23,6 +23,7 @@ class TuringEmailApp.Views.Reports.SettingsView extends Backbone.View
 
   setup_go_live_switch: ->
     $("#go_live_switch").bootstrapSwitch()
+    $("#keyboard_shortcuts_on_off_switch").bootstrapSwitch()
 
   render: ->
     TuringEmailApp.reportsRouter.restyle_other_elements()

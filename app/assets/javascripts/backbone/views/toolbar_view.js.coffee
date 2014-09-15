@@ -12,6 +12,13 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @setupDelete()
     @setupGoLeft()
     @setupGoRight()
+    @setupLabelAsLinks()
+    @setupMoveToFolder()
+    @setupSearch()
+
+  setupSearch: ->
+    $("#search_input").change ->
+      $("a#search_button_link").attr("href", "#search#" + $(@).val())
 
   retrieveCheckedUIDs: ->
     checkedUIDs = []
@@ -22,6 +29,46 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       checkedUIDs.push uid
     checkedUIDs = _.uniq(checkedUIDs)
     return checkedUIDs
+
+  setupMoveToFolder: ->
+    @$el.find(".move_to_folder_link").click (event) =>
+      checkedUIDs = @retrieveCheckedUIDs()
+      postData = {}
+      postData.email_thread_uids = checkedUIDs
+      postData.email_folder_name = $(event.target).text()
+
+      url = "/api/v1/email_threads/move_to_folder.json"
+      $.ajax
+        type: "POST"
+        url: url
+        data: postData
+        success: (data) ->
+          return
+
+      #Alter UI
+      tr_element = $(".check-mail .checked").parent().parent()
+      tr_element.remove()
+      $(".check-mail .checked").each ->
+        $(@).removeClass("checked")
+
+  setupLabelAsLinks: ->
+    @$el.find(".label_as_link").click (event) =>
+      checkedUIDs = @retrieveCheckedUIDs()
+      postData = {}
+      postData.email_thread_uids = checkedUIDs
+      postData.gmail_label_name = $(event.target).text()
+
+      url = "/api/v1/email_threads/apply_gmail_label.json"
+      $.ajax
+        type: "POST"
+        url: url
+        data: postData
+        success: (data) ->
+          return
+
+      #Alter UI
+      $(".check-mail .checked").each ->
+        $(@).removeClass("checked")
 
   setupArchive: ->
     @$el.find("i.fa-archive").parent().click =>
@@ -97,27 +144,27 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
   setupGoLeft: ->
     @$el.find("#paginate_left_link").click ->
-      windowSearchAttribute = window.location.search
-      if windowSearchAttribute != ""
-        currentPageNumber = windowSearchAttribute.split("page=")[1]
+      if window.location.href.indexOf("page=") != -1
+        currentPageNumber = window.location.href.split("page=")[1]
       else
         currentPageNumber = "1"
       newPageNumber = parseInt(currentPageNumber) - 1
       if newPageNumber >= 1
-        newUrl = "?page=" + newPageNumber.toString()
-        window.location = newUrl
+        newQuery = "?page=" + newPageNumber.toString()
+        if window.location.hash.indexOf("page=") then hashUrlComponent = window.location.hash.split("?page=")[0] else hashUrlComponent = window.location.hash
+        window.location = window.location.origin + window.location.pathname + hashUrlComponent + newQuery
 
   setupGoRight: ->
     @$el.find("#paginate_right_link").click ->
       if TuringEmailApp.emailThreads.length is 50
-        windowSearchAttribute = window.location.search
-        if windowSearchAttribute != ""
-          currentPageNumber = windowSearchAttribute.split("page=")[1]
+        if window.location.href.indexOf("page=") != -1
+          currentPageNumber = window.location.href.split("page=")[1]
         else
           currentPageNumber = "1"
         newPageNumber = parseInt(currentPageNumber) + 1
-        newUrl = "?page=" + newPageNumber.toString()
-        window.location = newUrl
+        newQuery = "?page=" + newPageNumber.toString()
+        if window.location.hash.indexOf("page=") then hashUrlComponent = window.location.hash.split("?page=")[0] else hashUrlComponent = window.location.hash
+        window.location = window.location.origin + window.location.pathname + hashUrlComponent + newQuery
 
   render: ->
     @$el.html(@template({'emailFolders' : @collection.toJSON()} ))

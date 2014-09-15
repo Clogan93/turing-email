@@ -384,3 +384,26 @@ a#refresh_link
 {
   float: right;
 }
+
+#undo_email_send
+{
+  cursor: pointer;  
+}
+
+#email_sent_success_alert
+{
+  position: absolute;
+  position: absolute;
+  left: 12%;
+  top: 0.65%;
+
+  #undo_email_send
+  {
+    text-decoration: underline; 
+  }
+}
+
+.email_thread_highlight
+{
+  border-left: 2px solid rgb(1, 148, 125) !important;
+}

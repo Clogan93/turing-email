@@ -1,18 +1,22 @@
-<form method="get" action="index.html" class="pull-right mail-search">
+<div class="pull-right mail-search">
   <div class="input-group">
-    <input type="text" class="form-control input-sm" name="search" placeholder="Search email">
+    <input id="search_input" type="text" class="form-control input-sm" name="search" placeholder="Search email">
 
     <div class="input-group-btn">
-      <button type="submit" class="btn btn-sm btn-primary">
+      <a id="search_button_link" href="#"><button class="btn btn-sm btn-primary">
         Search
-      </button>
+      </button></a>
     </div>
   </div>
-</form>
+</div>
 
-<h2>
-  Inbox (<span class="inbox_count_badge"></span>)
-</h2>
+<div id="inbox_title_header">
+
+  <h2>
+    <span id="inbox_title">Inbox (<span class="inbox_count_badge"></span>)</span>
+  </h2>
+
+</div>
 
 <div class="mail-tools tooltip-demo m-t-md row">
   <div class="col-md-3">
@@ -27,11 +31,11 @@
   </div>
 
   <div class="dropdown col-md-2">
-    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+    <button class="btn btn-primary dropdown-toggle" type="button" id="labelAsDropdownMenu" data-toggle="dropdown">
       Label As:
       <span class="caret"></span>
     </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+    <ul class="dropdown-menu" role="menu" aria-labelledby="labelAsDropdownMenu">
       <% for(var i = 0; i < emailFolders.length; i++) { %>
         <li role="presentation"><a role="menuitem" tabindex="-1" class="label_as_link" id="<%= emailFolders[i]["label_id"] %>" href="#"><%= emailFolders[i]["name"] %></a></li>
       <% } %>
@@ -39,11 +43,11 @@
   </div>
 
   <div class="dropdown col-md-1">
-    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+    <button class="btn btn-primary dropdown-toggle" type="button" id="moveToFolderDropdownMenu" data-toggle="dropdown">
       Move To Folder:
       <span class="caret"></span>
     </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+    <ul class="dropdown-menu" role="menu" aria-labelledby="moveToFolderDropdownMenu">
       <% for(var i = 0; i < emailFolders.length; i++) { %>
         <li role="presentation"><a role="menuitem" tabindex="-1" class="move_to_folder_link" id="<%= emailFolders[i]["label_id"] %>" href="#"><%= emailFolders[i]["name"] %></a></li>
       <% } %>
