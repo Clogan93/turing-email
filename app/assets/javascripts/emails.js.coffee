@@ -2,6 +2,10 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
+#######################################################
+#################### Email Sending ####################
+#######################################################
+
 $ ->
   $("#compose_form").submit ->
     $("#inbox_title_header").append('<div id="email_sent_success_alert" class="alert alert-info col-md-4" role="alert">Your message has been sent. <span id="undo_email_send">Undo</span></div>')
@@ -44,6 +48,10 @@ $ ->
     $("#composeModal").modal "hide"
 
     false # to avoid executing the actual submit of the form.
+
+#########################################################
+#################### Email Filtering ####################
+#########################################################
 
 $ ->
   $(".create_filter").click ->

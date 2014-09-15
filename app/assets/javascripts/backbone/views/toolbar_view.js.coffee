@@ -14,6 +14,11 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @setupGoRight()
     @setupLabelAsLinks()
     @setupMoveToFolder()
+    @setupSearch()
+
+  setupSearch: ->
+    $("#search_input").change ->
+      $("a#search_button_link").attr("href", "#search#" + $(@).val())
 
   retrieveCheckedUIDs: ->
     checkedUIDs = []

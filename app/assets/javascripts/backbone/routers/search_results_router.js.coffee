@@ -1,8 +1,7 @@
 class TuringEmailApp.Routers.SearchResultsRouter extends Backbone.Router
   routes:
     "search#:query": "showSearchResultsRouter"
-    
-  showEmailThread: (emailThreadUID) ->
+
   showSearchResultsRouter: (query) ->
     TuringEmailApp.emailThreads = new TuringEmailApp.Collections.SearchResultsCollection(
       url: "/api/v1/email_accounts/search_threads"
@@ -14,5 +13,9 @@ class TuringEmailApp.Routers.SearchResultsRouter extends Backbone.Router
     })
 
     TuringEmailApp.emailThreads.fetch(
+      data: {'query': query}
+      type: 'POST'
       reset: true
+      success: (collection, response, options) ->
+        TuringEmailApp.emailThreads.next_page_token = response.next_page_token
     )
