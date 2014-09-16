@@ -372,7 +372,7 @@ class GmailAccount < ActiveRecord::Base
     self.init_email_from_gmail_data(email, gmail_data)
 
     if email.message_id.nil?
-      log_email("NO message_id - SKIPPING!!!!! #{gmail_data.to_json}")
+      log_email('NO message_id - SKIPPING!!!!!', gmail_data.to_json)
       return
     end
 
@@ -424,7 +424,7 @@ class GmailAccount < ActiveRecord::Base
                             :uid => result.request.parameters['id'])
           next
         else
-          SyncFailedEmail.create_retry(result: result)
+          SyncFailedEmail.create_retry(self, result.request.parameters['id'], result: result)
           next
         end
       end
@@ -440,7 +440,7 @@ class GmailAccount < ActiveRecord::Base
           self.update_email_from_gmail_data(gmail_data)
         end
       rescue Exception => ex
-        SyncFailedEmail.create_retry(ex: ex)
+        SyncFailedEmail.create_retry(self, gmail_data['id'], ex: ex)
       end
     end
   end
