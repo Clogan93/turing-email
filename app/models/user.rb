@@ -1,6 +1,9 @@
 class User < ActiveRecord::Base
   has_secure_password
   
+  has_one :user_configuration,
+          :dependent => :destroy
+  
   has_many :user_auth_keys,
            :dependent => :destroy
 
@@ -29,6 +32,10 @@ class User < ActiveRecord::Base
 
   after_validation {
     self.errors.messages.delete(:password_digest)
+  }
+
+  after_create {
+    self.user_configuration = UserConfiguration.create!(:user => self) if self.user_configuration.nil?
   }
 
   # class methods

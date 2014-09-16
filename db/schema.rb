@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140916043554) do
+ActiveRecord::Schema.define(version: 20140916063746) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -253,6 +253,16 @@ ActiveRecord::Schema.define(version: 20140916043554) do
 
   add_index "user_auth_keys", ["encrypted_auth_key"], name: "index_user_auth_keys_on_encrypted_auth_key", using: :btree
   add_index "user_auth_keys", ["user_id"], name: "index_user_auth_keys_on_user_id", using: :btree
+
+  create_table "user_configurations", force: true do |t|
+    t.integer  "user_id"
+    t.boolean  "genie_enabled",   default: true
+    t.text     "split_pane_mode", default: "off"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "user_configurations", ["user_id"], name: "index_user_configurations_on_user_id", unique: true, using: :btree
 
   create_table "users", force: true do |t|
     t.boolean  "admin"
