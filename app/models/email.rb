@@ -23,7 +23,7 @@ class Email < ActiveRecord::Base
   has_many :email_attachments,
            :dependent => :destroy
 
-  validates_presence_of(:email_account, :uid, :message_id, :email_thread_id)
+  validates_presence_of(:email_account, :uid, :email_thread_id)
 
   def Email.lists_email_daily_average(user, limit: nil, where: nil)
     return user.emails.where("list_id IS NOT NULL").where(where).
@@ -61,7 +61,7 @@ class Email < ActiveRecord::Base
       if email_in_reply_to
         log_console("FOUND email_in_reply_to=#{email_in_reply_to.id}")
 
-        email_raw.in_reply_to = "<#{email_in_reply_to.message_id}>"
+        email_raw.in_reply_to = "<#{email_in_reply_to.message_id}>" if !email_in_reply_to.message_id.blank?
 
         references_header_string = ''
 
@@ -77,7 +77,7 @@ class Email < ActiveRecord::Base
               '<' + reference_message_ids.email_in_reply_tos.order(:position)[0].in_reply_to_message_id + '>'
         end
 
-        references_header_string << "<#{email_in_reply_to.message_id}>"
+        references_header_string << "<#{email_in_reply_to.message_id}>" if !email_in_reply_to.message_id.blank?
 
         log_console("references_header_string = #{references_header_string}")
 

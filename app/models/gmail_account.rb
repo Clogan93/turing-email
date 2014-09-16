@@ -1,7 +1,7 @@
 require 'base64'
 
 class GmailAccount < ActiveRecord::Base
-  MESSAGE_BATCH_SIZE = 10
+  MESSAGE_BATCH_SIZE = 50
   DRAFTS_BATCH_SIZE = 100
   HISTORY_BATCH_SIZE = 100
   SEARCH_RESULTS_PER_PAGE = 50
@@ -371,11 +371,6 @@ class GmailAccount < ActiveRecord::Base
     email = Email.email_from_email_raw(email_raw)
     self.init_email_from_gmail_data(email, gmail_data)
 
-    if email.message_id.nil?
-      log_email('NO message_id - SKIPPING!!!!!', gmail_data.to_json)
-      return
-    end
-
     begin
       gmail_thread_id = gmail_data['threadId']
 
@@ -454,12 +449,13 @@ class GmailAccount < ActiveRecord::Base
         email_uids = Email.where(:uid => current_gmail_ids).pluck(:uid)
   
         batch_request = sync_gmail_ids_batch_request()
+        gmail_client = self.gmail_client
   
         current_gmail_ids.each do |gmail_id|
           format = email_uids.include?(gmail_id) ? 'minimal' : 'raw'
           log_console("QUEUEING message SYNC format=#{format} gmail_id = #{gmail_id}")
   
-          call = self.gmail_client.messages_get_call('me', gmail_id, format: format)
+          call = gmail_client.messages_get_call('me', gmail_id, format: format)
           batch_request.add(call)
         end
   

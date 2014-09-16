@@ -1,7 +1,7 @@
 class SyncFailedEmail < ActiveRecord::Base
   belongs_to :email_account, polymorphic: true
   
-  validates_presence_of(:email_account, :uid)
+  validates_presence_of(:email_account, :email_uid)
   
   def SyncFailedEmail.create_retry(email_account, email_uid, result: nil, ex: nil)
     retry_block do
