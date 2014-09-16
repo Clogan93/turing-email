@@ -4,7 +4,7 @@ class SyncFailedEmail < ActiveRecord::Base
   validates_presence_of(:email_account, :uid)
   
   def SyncFailedEmail.create_retry(result: nil, ex: nil)
-    retry_bock do
+    retry_block do
       sync_failed_email = SyncFailedEmail.find_or_create_by!(:email_account => self,
                                                              :uid => result.request.parameters['id'])
       sync_failed_email.result = result.to_yaml if result
