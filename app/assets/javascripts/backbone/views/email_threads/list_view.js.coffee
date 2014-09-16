@@ -51,6 +51,9 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
       $("#compose_form #to_input").val(emailThread.from_address)
 
     $("#compose_form #subject_input").val(subject_prefix + emailThread.subject)
-    $("#compose_form #compose_email_body").val("\n\n\n\n\n" + emailThread.body_text)
+    if emailThread.text_part?
+      $("#compose_form #compose_email_body").val("\r\n\r\n\r\n\r\n" + emailThread.text_part)
+    else
+      $("#compose_form #compose_email_body").val("\r\n\r\n\r\n\r\n" + emailThread.body_text)
 
     $("#composeModal").modal "show"

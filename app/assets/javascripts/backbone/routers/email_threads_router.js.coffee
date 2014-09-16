@@ -49,11 +49,12 @@ class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
     TuringEmailApp.sendEmailTimeout = setTimeout (->
       #Data preparation
       postData = {}
-      postData.tos = $("#compose_form").find("#to_input").val().split(",")
-      postData.ccs = $("#compose_form").find("#cc_input").val().split(",")
-      postData.bccs = $("#compose_form").find("#bcc_input").val().split(",")
-      postData.subject = $("#compose_form").find("#subject_input").val()
-      postData.email_body = $("#compose_form").find("#compose_email_body").val()
+      postData.tos = $("#compose_form #to_input").val().split(",")
+      postData.ccs = $("#compose_form #cc_input").val().split(",")
+      postData.bccs = $("#compose_form #bcc_input").val().split(",")
+      postData.subject = $("#compose_form #subject_input").val()
+      postData.email_body = $("#compose_form #compose_email_body").val()
+      postData.email_in_reply_to_uid_input = $("#compose_form #email_in_reply_to_uid_input").val()
 
       $.ajax({
         url: 'api/v1/email_accounts/send_email.json'
@@ -95,6 +96,7 @@ class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
     postData.bccs = $("#compose_form").find("#bcc_input").val().split(",")
     postData.subject = $("#compose_form").find("#subject_input").val()
     postData.email_body = $("#compose_form").find("#compose_email_body").val()
+    postData.email_in_reply_to_uid_input = $("#compose_form #email_in_reply_to_uid_input").val()
     if TuringEmailApp.currentEmailThread? and TuringEmailApp.currentEmailThread.get("uid")? and TuringEmailApp.emailThreads? and TuringEmailApp.emailThreads.draftIds? and TuringEmailApp.emailThreads.draftIds.models? and TuringEmailApp.emailThreads.draftIds.models[0].attributes?
       draftIds = TuringEmailApp.emailThreads.draftIds.models[0].attributes
       postData.draft_id = draftIds[TuringEmailApp.currentEmailThread.get("uid")]
@@ -134,8 +136,9 @@ class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
     $("#composeModal").modal "hide"
 
   clearComposeModal: ->
-    $("#compose_form").find("#to_input").val("")
-    $("#compose_form").find("#cc_input").val("")
-    $("#compose_form").find("#bcc_input").val("")
-    $("#compose_form").find("#subject_input").val("")
-    $("#compose_form").find("#compose_email_body").val("")
+    $("#compose_form #to_input").val("")
+    $("#compose_form #cc_input").val("")
+    $("#compose_form #bcc_input").val("")
+    $("#compose_form #subject_input").val("")
+    $("#compose_form #compose_email_body").val("")
+    $("#compose_form #email_in_reply_to_uid_input").val("")
