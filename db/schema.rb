@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140911051824) do
+ActiveRecord::Schema.define(version: 20140916043554) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -231,6 +231,18 @@ ActiveRecord::Schema.define(version: 20140911051824) do
   end
 
   add_index "people", ["email_account_id", "email_account_type", "email_address"], name: "index_people_on_email_account_and_email_address", unique: true, using: :btree
+
+  create_table "sync_failed_emails", force: true do |t|
+    t.integer  "email_account_id"
+    t.string   "email_account_type"
+    t.text     "email_uid"
+    t.text     "result"
+    t.text     "exception"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "sync_failed_emails", ["email_account_type", "email_account_id", "email_uid"], name: "index_sync_failed_emails_on_email_account_and_email_uid", unique: true, using: :btree
 
   create_table "user_auth_keys", force: true do |t|
     t.integer  "user_id"
