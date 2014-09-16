@@ -135,7 +135,7 @@ module Google
       return result.data
     end
 
-    def drafts_send(userId, id)
+    def drafts_send(userId, id, format: nil)
       args = method(__method__).parameters[0...-1].map { |arg| {arg[1] => eval(arg[1].to_s)} }
       parameters = Google::Misc.get_parameters_from_args(args)
       

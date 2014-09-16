@@ -85,10 +85,10 @@ class Api::V1::EmailAccountsController < ApiController
   end
 
   def create_draft
-    email_draft_uid = @email_account.create_draft(params[:tos], params[:ccs], params[:bccs],
-                                                  params[:subject], params[:email_body],
-                                                  params[:email_in_reply_to_uid])
-    render :json => {:email_draft_uid => email_draft_uid}
+    @draft_id, @email = @email_account.create_draft(params[:tos], params[:ccs], params[:bccs],
+                                                    params[:subject], params[:email_body],
+                                                    params[:email_in_reply_to_uid])
+    render 'api/v1/emails/show_draft'
   end
 
   swagger_api :update_draft do
@@ -110,11 +110,11 @@ class Api::V1::EmailAccountsController < ApiController
 
   # TODO write tests
   def update_draft
-    @email_account.update_draft(params[:draft_id],
-                                params[:tos], params[:ccs], params[:bccs],
-                                params[:subject], params[:email_body],
-                                params[:email_in_reply_to_uid])
-    render :json => {}
+    @draft_id, @email = @email_account.update_draft(params[:draft_id],
+                                                    params[:tos], params[:ccs], params[:bccs],
+                                                    params[:subject], params[:email_body],
+                                                    params[:email_in_reply_to_uid])
+    render 'api/v1/emails/show_draft'
   end
 
   swagger_api :send_draft do
@@ -127,7 +127,8 @@ class Api::V1::EmailAccountsController < ApiController
 
   # TODO write tests
   def send_draft
-    @email_account.send_draft(params[:draft_id])
-    render :json => {}
+    @email = @email_account.send_draft(params[:draft_id])
+
+    render 'api/v1/emails/show'
   end
 end

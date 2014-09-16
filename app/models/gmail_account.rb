@@ -111,6 +111,16 @@ class GmailAccount < ActiveRecord::Base
   end
 
   # TODO write tests
+  def sync_draft_data(draft_data)
+    draft_id = draft_data['id']
+    gmail_id = draft_data['message']['id']
+    sync_gmail_ids([gmail_id])
+    draft_email = self.emails.find_by(:uid => gmail_id)
+    
+    return draft_id, draft_email
+  end
+
+  # TODO write tests
   def create_draft(tos, ccs, bccs, subject, body, email_in_reply_to_uid = nil)
     email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, body, email_in_reply_to_uid)
 
@@ -120,9 +130,7 @@ class GmailAccount < ActiveRecord::Base
       draft_data = self.gmail_client.drafts_create('me', :email_raw => email_raw)
     end
     
-    draft = draft_data
-    
-    return draft['id']
+    return sync_draft_data(draft_data)
   end
 
   # TODO write tests
@@ -130,16 +138,24 @@ class GmailAccount < ActiveRecord::Base
     email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, body, email_in_reply_to_uid)
 
     if email_in_reply_to
-      self.gmail_client.drafts_update('me', draft_id,
-                                      :threadId => email_in_reply_to.email_thread.uid, :email_raw => email_raw)
+      draft_data = self.gmail_client.drafts_update('me', draft_id,
+                                                   :threadId => email_in_reply_to.email_thread.uid, :email_raw => email_raw)
     else
-      self.gmail_client.drafts_update('me', draft_id, :email_raw => email_raw)
+      draft_data = self.gmail_client.drafts_update('me', draft_id, :email_raw => email_raw)
     end
+
+    return sync_draft_data(draft_data)
   end
 
   # TODO write tests
   def send_draft(draft_id)
-    self.gmail_client.drafts_send('me', draft_id)
+    gmail_data = self.gmail_client.drafts_send('me', draft_id)
+    
+    gmail_id = gmail_data['id']
+    sync_gmail_ids([gmail_id])
+    email = self.emails.find_by(:uid => gmail_id)
+    
+    return email
   end
   
   def delete_o_auth2_token
