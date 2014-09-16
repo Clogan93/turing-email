@@ -16,8 +16,8 @@ class Api::V1::UserConfigurationsController < ApiController
   swagger_api :update do
     summary 'Update the user configuration.'
     
-    param :form, :genie_enabled, :boolean, 'Genie Enabled status'
-    param :form, :split_pane_mode, :string, 'Split Pane Mode (off, horizontal, or vertical)'
+    param :form, :genie_enabled, :boolean, :description => 'Genie Enabled status'
+    param :form, :split_pane_mode, :string, false, 'Split Pane Mode (off, horizontal, or vertical)'
 
     response :ok
   end
