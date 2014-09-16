@@ -1,30 +1,18 @@
 desc 'Sync all email accounts'
 
-task :sync_email => :environment do
+task :sync_email, [:labelIds_string] => :environment do |t, args|
+  args.with_defaults(:labelIds_string => nil)
+  labelIds = nil
+  labelIds = args.labelIds_string.split(' ') if args.labelIds_string
+  
   GmailAccount.all.each do |gmail_account|
     log_console("PROCESSING account #{gmail_account.email}")
 
-    gmail_account.sync_email()
-  end
-end
-
-desc 'Sync all email accounts - inbox and sent folders only'
-
-task :sync_email_inbox_and_sent => :environment do
-  GmailAccount.all.each do |gmail_account|
-    log_console("PROCESSING account #{gmail_account.email}")
-
-    gmail_account.sync_email(include_inbox: true, include_sent: true)
-  end
-end
-
-desc 'Sync all email accounts - inbox folder only'
-
-task :sync_email_inbox => :environment do
-  GmailAccount.all.each do |gmail_account|
-    log_console("PROCESSING account #{gmail_account.email}")
-
-    gmail_account.sync_email(include_inbox: true)
+    begin
+      gmail_account.sync_email(labelIds: labelIds)
+    rescue Exception => ex
+      log_email_exception(ex)
+    end
   end
 end
 
@@ -34,7 +22,7 @@ task :sync_email_sent => :environment do
   GmailAccount.all.each do |gmail_account|
     log_console("PROCESSING account #{gmail_account.email}")
 
-    gmail_account.sync_email(include_sent: true)
+    gmail_account.sync_email(['SENT'])
   end
 end
 

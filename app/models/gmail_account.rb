@@ -228,11 +228,11 @@ class GmailAccount < ActiveRecord::Base
     return thread_uids, nextPageToken
   end
 
-  def sync_email(include_inbox: false, include_sent: false)
+  def sync_email(labelIds: nil)
     log_console("SYNCING Gmail #{self.email}")
 
     if self.last_history_id_synced.nil?
-      return self.sync_email_full(include_inbox: include_inbox, include_sent: include_sent)
+      return self.sync_email_full(labelIds: labelIds)
     else
       return self.sync_email_partial()
     end
@@ -356,7 +356,7 @@ class GmailAccount < ActiveRecord::Base
     return true
   end
 
-  def sync_email_full(include_inbox: false, include_sent: false)
+  def sync_email_full(labelIds: nil)
     log_console("FULL SYNC with last_history_id_synced = #{self.last_history_id_synced}\n")
 
     num_emails_synced = 0
@@ -368,18 +368,9 @@ class GmailAccount < ActiveRecord::Base
 
       log_console("SYNCING page = #{nextPageToken}")
 
-      if include_inbox || include_sent
-        labelIds = []
-        labelIds.push('INBOX') if include_inbox
-        labelIds.push('SENT') if include_sent
-
-        messages_list_data = self.gmail_client.messages_list('me', pageToken: nextPageToken,
-                                                             labelIds: labelIds,
-                                                             maxResults: Google::Misc::MAX_BATCH_REQUESTS)
-      else
-        messages_list_data = self.gmail_client.messages_list('me', pageToken: nextPageToken,
-                                                             maxResults: Google::Misc::MAX_BATCH_REQUESTS)
-      end
+      messages_list_data = self.gmail_client.messages_list('me', pageToken: nextPageToken,
+                                                           labelIds: labelIds,
+                                                           maxResults: Google::Misc::MAX_BATCH_REQUESTS)
 
       messages_data = messages_list_data['messages']
       log_console("GOT #{messages_data.length} messages\n")
