@@ -16,16 +16,6 @@ task :sync_email, [:labelIds_string] => :environment do |t, args|
   end
 end
 
-desc 'Sync all email accounts - sent folder only'
-
-task :sync_email_sent => :environment do
-  GmailAccount.all.each do |gmail_account|
-    log_console("PROCESSING account #{gmail_account.email}")
-
-    gmail_account.sync_email(['SENT'])
-  end
-end
-
 desc 'Sync all email accounts - labels only'
 
 task :sync_labels => :environment do
