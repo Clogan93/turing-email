@@ -1,7 +1,26 @@
 module Google
   class GmailClient
+    MAX_RATE_LIMIT_ATTEMPTS = 8
+    
     attr_accessor :api_client, :gmail_api
 
+    def GmailClient.handle_client_error(ex, attempts)
+      log_console("GmailClient.handle_client_error!!!!!! attempts=#{attempts}")
+      
+      if ex.result.data.error.nil? ||
+         ex.result.data.error['errors'].nil? || ex.result.data.error['errors'].empty? ||
+         ex.result.data.error['errors'][0]['reason'] != 'userRateLimitExceeded'
+        raise ex
+      end
+
+      attempts += 1
+      raise ex if attempts >= Google::GmailClient::MAX_RATE_LIMIT_ATTEMPTS
+      
+      sleep(2 ** attempts + rand())
+
+      return attempts
+    end
+    
     def initialize(api_client)
       self.api_client = api_client
       self.gmail_api = api_client.discovered_api('gmail', 'v1')

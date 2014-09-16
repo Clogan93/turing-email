@@ -20,7 +20,7 @@ def log_email(subject, text = ' ', to_console = true, to = $config.logs_email, d
     end
 
     if to_console
-      console_output = subject
+      console_output = subject.dup
       console_output << "\r\n\r\n#{text}" if text != ' '
       log_console(console_output)
     end
