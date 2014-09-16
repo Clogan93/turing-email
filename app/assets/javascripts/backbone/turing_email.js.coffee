@@ -2,6 +2,8 @@
 #= require_tree ./templates
 #= require_tree ./models
 #= require_tree ./collections
+#= require ./views/email_threads/list_item_view
+#= require ./views/email_threads/list_view
 #= require_tree ./views
 #= require_tree ./routers
 
