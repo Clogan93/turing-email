@@ -1,0 +1,19 @@
+<td class="check-mail">
+    <input type="checkbox" class="i-checks">
+</td>
+<td class="mail-ontact"><a href="#email_draft#<%= uid %>"><%= emails[0].from_name == null ? emails[0].from_address : emails[0].from_name %></a></td>
+<td class="mail-subject"><a href="#email_draft#<%= uid %>"> <%= emails[0].subject == "" ? "(no subject)" : emails[0].subject %> </a></td>
+<td class="text-right mail-date">
+<%
+  var emailDate = new Date(emails[0].date);
+  var emailDatePlus18H = new Date(emails[0].date);
+
+  emailDatePlus18H.setHours(emailDate.getHours() + 18);
+
+  if (emailDatePlus18H > Date.now()) {%>
+    <%= emailDate.toLocaleTimeString(navigator.language, {hour: "2-digit", minute: "2-digit"}) %><%
+  } else {%>
+    <%= emails[0].date.substring(0, 10) %><%
+  }
+%>
+</td>

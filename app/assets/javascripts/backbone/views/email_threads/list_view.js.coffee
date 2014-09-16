@@ -43,3 +43,14 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
       report_email.remove()
       $("#email_table_body").prepend("<tr height='59px;' class='" + report_email.attr("class") + "'>" +
                                      report_email.html() + "</tr>")
+
+  prepareComposeModalWithEmailThreadData: (emailThread, subject_prefix="Re: ") ->
+    if emailThread.reply_to_address?
+      $("#compose_form #to_input").val(emailThread.reply_to_address)
+    else
+      $("#compose_form #to_input").val(emailThread.from_address)
+
+    $("#compose_form #subject_input").val(subject_prefix + emailThread.subject)
+    $("#compose_form #compose_email_body").val("\n\n\n\n\n" + emailThread.body_text)
+
+    $("#composeModal").modal "show"
