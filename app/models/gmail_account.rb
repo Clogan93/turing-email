@@ -1,7 +1,7 @@
 require 'base64'
 
 class GmailAccount < ActiveRecord::Base
-  MESSAGE_BATCH_SIZE = 50
+  MESSAGE_BATCH_SIZE = 100
   DRAFTS_BATCH_SIZE = 100
   HISTORY_BATCH_SIZE = 100
   SEARCH_RESULTS_PER_PAGE = 50
@@ -296,25 +296,31 @@ class GmailAccount < ActiveRecord::Base
     while true
       log_console("SYNCING page = #{nextPageToken}")
 
-      retry_block(sleep_seconds: 1) do
-        messages_list_data = self.gmail_client.messages_list('me', pageToken: nextPageToken, labelIds: labelIds,
-                                                             maxResults: Google::Misc::MAX_BATCH_REQUESTS)
-        messages_data = messages_list_data['messages']
-        log_console("GOT #{messages_data.length} messages\n")
-
-        gmail_ids = messages_data.map { |message_data| message_data['id'] }
+      attempts = 0
+      begin
+        retry_block(log: true, exceptions_to_ignore: [Google::APIClient::ClientError]) do
+          messages_list_data = self.gmail_client.messages_list('me', pageToken: nextPageToken, labelIds: labelIds,
+                                                               maxResults: Google::Misc::MAX_BATCH_REQUESTS)
+          messages_data = messages_list_data['messages']
+          log_console("GOT #{messages_data.length} messages\n")
   
-        if last_history_id_synced.nil?
-          gmail_data = self.gmail_client.messages_get('me', gmail_ids.first, format: 'minimal', fields: 'historyId')
-          last_history_id_synced = gmail_data['historyId']
+          gmail_ids = messages_data.map { |message_data| message_data['id'] }
+    
+          if last_history_id_synced.nil?
+            gmail_data = self.gmail_client.messages_get('me', gmail_ids.first, format: 'minimal', fields: 'historyId')
+            last_history_id_synced = gmail_data['historyId']
+          end
+    
+          self.sync_gmail_ids(gmail_ids)
+          num_emails_synced += gmail_ids.length
+          
+          nextPageToken = messages_list_data['nextPageToken']
         end
-  
-        self.sync_gmail_ids(gmail_ids)
-        num_emails_synced += gmail_ids.length
-        
-        nextPageToken = messages_list_data['nextPageToken']
+      rescue Google::APIClient::ClientError => ex
+        attempts = Google::GmailClient.handle_client_error(ex, attempts)
+        retry
       end
-
+      
       sleep(1)
       
       break if nextPageToken.nil?
@@ -323,6 +329,9 @@ class GmailAccount < ActiveRecord::Base
     self.set_last_history_id_synced(last_history_id_synced)
 
     return num_emails_synced > 0
+  rescue Exception => ex
+    log_console('AHHHHHHH sync_email_full self.gmail_client.messages_list FAILED')
+    raise ex
   end
   
   def sync_email_partial()
@@ -334,28 +343,34 @@ class GmailAccount < ActiveRecord::Base
     while true
       log_console("SYNCING page = #{nextPageToken}")
 
-      retry_block(sleep_seconds: 1) do
-        history_list_data = self.gmail_client.history_list('me', pageToken: nextPageToken,
-                                                           startHistoryId: self.last_history_id_synced,
-                                                           maxResults: GmailAccount::HISTORY_BATCH_SIZE)
-        historys_data = history_list_data['history']
-        log_console("GOT #{historys_data.length} history items")
-  
-        gmail_ids = []
-  
-        historys_data.each do |history_data|
-          messages_data = history_data['messages']
-          gmail_ids.concat(messages_data.map { |message_data| message_data['id'] })
+      attempts = 0
+      begin
+        retry_block(log: true, exceptions_to_ignore: [Google::APIClient::ClientError]) do
+          history_list_data = self.gmail_client.history_list('me', pageToken: nextPageToken,
+                                                             startHistoryId: self.last_history_id_synced,
+                                                             maxResults: GmailAccount::HISTORY_BATCH_SIZE)
+          historys_data = history_list_data['history']
+          log_console("GOT #{historys_data.length} history items")
+    
+          gmail_ids = []
+    
+          historys_data.each do |history_data|
+            messages_data = history_data['messages']
+            gmail_ids.concat(messages_data.map { |message_data| message_data['id'] })
+          end
+          
+          log_console("GOT #{gmail_ids.length} messages\n")
+    
+          self.sync_gmail_ids(gmail_ids)
+          num_emails_synced += gmail_ids.length
+          
+          self.set_last_history_id_synced(historys_data.last['id']) if !historys_data.empty?
+          
+          nextPageToken = history_list_data['nextPageToken']
         end
-        
-        log_console("GOT #{gmail_ids.length} messages\n")
-  
-        self.sync_gmail_ids(gmail_ids)
-        num_emails_synced += gmail_ids.length
-        
-        self.set_last_history_id_synced(historys_data.last['id']) if !historys_data.empty?
-        
-        nextPageToken = history_list_data['nextPageToken']
+      rescue Google::APIClient::ClientError => ex
+        attempts = Google::GmailClient.handle_client_error(ex, attempts)
+        retry
       end
 
       sleep(1)
@@ -364,6 +379,9 @@ class GmailAccount < ActiveRecord::Base
     end
     
     return num_emails_synced > 0
+  rescue Exception => ex
+    log_console('AHHHHHHH sync_email_partial self.gmail_client.history_list FAILED')
+    raise ex
   end
 
   def create_email_from_gmail_data(gmail_data)
@@ -445,7 +463,7 @@ class GmailAccount < ActiveRecord::Base
 
     while gmail_id_index < gmail_ids.length
       retry_block do
-        current_gmail_ids = gmail_ids[gmail_id_index ... (gmail_id_index + MESSAGE_BATCH_SIZE)]
+        current_gmail_ids = gmail_ids[gmail_id_index ... (gmail_id_index + GmailAccount::MESSAGE_BATCH_SIZE)]
         email_uids = Email.where(:uid => current_gmail_ids).pluck(:uid)
   
         batch_request = sync_gmail_ids_batch_request()
@@ -461,7 +479,7 @@ class GmailAccount < ActiveRecord::Base
   
         self.google_o_auth2_token.api_client.execute!(batch_request)
   
-        gmail_id_index += MESSAGE_BATCH_SIZE
+        gmail_id_index += GmailAccount::MESSAGE_BATCH_SIZE
       end
     end
   end

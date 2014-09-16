@@ -87,16 +87,21 @@ def reserve_key(object, keys = {:key => nil}, length = 256)
   end
 end
 
-def retry_block(max_attempts: 2, sleep_seconds: nil, exceptions_to_catch: nil)
+# TODO write tests
+def retry_block(max_attempts: 2, sleep_seconds: nil, exceptions_to_catch: nil, exceptions_to_ignore: nil, log: false)
   attempts = 0
 
   begin
     yield
   rescue Exception => ex
+    raise ex if exceptions_to_ignore.include?(ex.class)
+
     attempts += 1
 
     if attempts < max_attempts && (exceptions_to_catch.nil? || exceptions_to_catch.include?(ex.class))
       sleep(sleep_seconds) if sleep_seconds
+      
+      log_console("RETRYING attempt=#{attempts}\n\n#{ex.log_message}\n") if log
       retry
     else
       raise ex
