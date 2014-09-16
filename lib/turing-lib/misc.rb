@@ -87,7 +87,7 @@ def reserve_key(object, keys = {:key => nil}, length = 256)
   end
 end
 
-def retry_block(retry_attempts = 2)
+def retry_block(max_attempts: 2, sleep_seconds: nil, exceptions_to_catch: nil)
   attempts = 0
 
   begin
@@ -95,7 +95,8 @@ def retry_block(retry_attempts = 2)
   rescue Exception => ex
     attempts += 1
 
-    if attempts < retry_attempts
+    if attempts < max_attempts && (exceptions_to_catch.nil? || exceptions_to_catch.include?(ex.class))
+      sleep(sleep_seconds) if sleep_seconds
       retry
     else
       raise ex

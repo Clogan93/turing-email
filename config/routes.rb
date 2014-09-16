@@ -21,6 +21,9 @@ Rails.application.routes.draw do
       get '/users/current', to: 'users#current'
       post '/users/declare_email_bankruptcy', to: 'users#declare_email_bankruptcy'
 
+      get '/user_configurations', to: 'user_configurations#show'
+      patch '/user_configurations', to: 'user_configurations#update'
+
       resources :sessions, only: [:create]
       match '/signout', to: 'sessions#destroy', via: 'delete'
 

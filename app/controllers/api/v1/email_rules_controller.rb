@@ -8,12 +8,12 @@ class Api::V1::EmailRulesController < ApiController
   swagger_api :create do
     summary 'Create an email rule.'
 
-    param :form, :from_address, :string, 'From Address'
-    param :form, :to_address, :string, 'To Adddress'
-    param :form, :subject, :string, 'Subject'
-    param :form, :list_id, :string, 'List ID'
+    param :form, :from_address, :string, false, 'From Address'
+    param :form, :to_address, :string, false, 'To Adddress'
+    param :form, :subject, :string, false, 'Subject'
+    param :form, :list_id, :string, false, 'List ID'
 
-    param :form, :destination_folder_name, :string, 'Destination Folder Name'
+    param :form, :destination_folder_name, :string, false, 'Destination Folder Name'
 
     response :ok
   end

@@ -27,6 +27,10 @@ class GmailAccount < ActiveRecord::Base
   has_many :gmail_labels,
            :dependent => :destroy
 
+  has_many :sync_failed_emails,
+           :as => :email_account,
+           :dependent => :destroy
+
   validates_presence_of(:user, :google_id, :email, :verified_email)
 
   def GmailAccount.mime_data_from_gmail_data(gmail_data)
@@ -54,104 +58,9 @@ class GmailAccount < ActiveRecord::Base
     email.uid = gmail_data['id']
     email.snippet = gmail_data['snippet']
   end
-  
-  def inbox_folder
-    return self.gmail_labels.find_by_label_id('INBOX')
-  end
-  
-  def sent_folder
-    return self.gmail_labels.find_by_label_id('SENT')
-  end
-
-  def trash_folder
-    return self.gmail_labels.find_by_label_id('TRASH')
-  end
-
-  def drafts_folder
-    return self.gmail_labels.find_by_label_id('DRAFTS')
-  end
-  
-  # TODO write tests
-  def send_email(tos, ccs, bccs, subject, body, email_in_reply_to_uid = nil)
-    email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, body, email_in_reply_to_uid)
-  
-    if email_in_reply_to
-      self.gmail_client.messages_send('me', :threadId => email_in_reply_to.email_thread.uid, :email_raw => email_raw)
-    else
-      self.gmail_client.messages_send('me', :email_raw => email_raw)
-    end
-  end
-  
-  # TODO write tests
-  def get_draft_ids()
-    log_console("GET DRAFTS\n")
-
-    draft_ids = {}
-
-    nextPageToken = nil
-
-    while true
-      drafts_list_data = self.gmail_client.drafts_list('me', pageToken: nextPageToken,
-                                                       maxResults: GmailAccount::DRAFTS_BATCH_SIZE)
-      drafts_data = drafts_list_data['drafts']
-      log_console("GOT #{drafts_data.length} drafts")
-
-      drafts_data.each do |draft_data|
-        gmail_id = draft_data['message']['id']
-        draft_id = draft_data['id']
-
-        draft_ids[gmail_id] = draft_id
-      end
-
-      nextPageToken = drafts_list_data['nextPageToken']
-      break if nextPageToken.nil?
-    end
-
-    return draft_ids
-  end
-
-  # TODO write tests
-  def create_draft(tos, ccs, bccs, subject, body, email_in_reply_to_uid = nil)
-    email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, body, email_in_reply_to_uid)
-
-    if email_in_reply_to
-      draft_data = self.gmail_client.drafts_create('me', :threadId => email_in_reply_to.email_thread.uid, :email_raw => email_raw)
-    else
-      draft_data = self.gmail_client.drafts_create('me', :email_raw => email_raw)
-    end
-    
-    draft = draft_data
-    
-    return draft['id']
-  end
-
-  # TODO write tests
-  def update_draft(draft_id, tos, ccs, bccs, subject, body, email_in_reply_to_uid = nil)
-    email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, body, email_in_reply_to_uid)
-
-    if email_in_reply_to
-      self.gmail_client.drafts_update('me', draft_id,
-                                      :threadId => email_in_reply_to.email_thread.uid, :email_raw => email_raw)
-    else
-      self.gmail_client.drafts_update('me', draft_id, :email_raw => email_raw)
-    end
-  end
-
-  # TODO write tests
-  def send_draft(draft_id)
-    self.gmail_client.drafts_send('me', draft_id)
-  end
-  
-  def delete_o_auth2_token
-    if self.google_o_auth2_token
-      self.google_o_auth2_token.destroy()
-      self.google_o_auth2_token = nil
-    end
-  end
 
   def gmail_client()
-    @gmail_client = Google::GmailClient.new(self.google_o_auth2_token.api_client) if @gmail_client.nil?
-    return @gmail_client
+    return Google::GmailClient.new(self.google_o_auth2_token.api_client)
   end
 
   def init_email_from_gmail_data(email, gmail_data)
@@ -182,6 +91,35 @@ class GmailAccount < ActiveRecord::Base
     return email
   end
 
+  def inbox_folder
+    return self.gmail_labels.find_by_label_id('INBOX')
+  end
+
+  def sent_folder
+    return self.gmail_labels.find_by_label_id('SENT')
+  end
+
+  def trash_folder
+    return self.gmail_labels.find_by_label_id('TRASH')
+  end
+
+  def drafts_folder
+    return self.gmail_labels.find_by_label_id('DRAFTS')
+  end
+
+  def set_last_history_id_synced(last_history_id_synced)
+    self.last_history_id_synced = last_history_id_synced
+    self.save!
+    log_console("SET last_history_id_synced = #{self.last_history_id_synced}\n")
+  end
+  
+  def delete_o_auth2_token
+    if self.google_o_auth2_token
+      self.google_o_auth2_token.destroy()
+      self.google_o_auth2_token = nil
+    end
+  end
+
   def refresh_user_info(api_client = nil, do_save = true)
     api_client = self.google_o_auth2_token.api_client() if api_client.nil?
     o_auth2_client = Google::OAuth2Client.new(api_client)
@@ -197,14 +135,12 @@ class GmailAccount < ActiveRecord::Base
   def search_threads(query, nextPageToken = nil, max_results = GmailAccount::SEARCH_RESULTS_PER_PAGE)
     log_console("SEARCH threads query=#{query} nextPageToken=#{nextPageToken} max_results=#{max_results}")
     
-    thread_uids = []
-
     threds_list_data = self.gmail_client.threads_list('me', maxResults: max_results,
                                                             pageToken: nextPageToken,
                                                             q: query, fields: 'nextPageToken,threads/id')
 
     threads_data = threds_list_data['threads']
-    threads_data.each { |thread_data| thread_uids.push(thread_data['id']) }
+    thread_uids = threads_data.map { |thread_data| thread_data['id'] }
     nextPageToken = threds_list_data['nextPageToken']
 
     log_console("FOUND #{threads_data.length} threads nextPageToken=#{nextPageToken}")
@@ -212,11 +148,13 @@ class GmailAccount < ActiveRecord::Base
     return thread_uids, nextPageToken
   end
 
-  def sync_email(include_inbox: false, include_sent: false)
+  def sync_email(labelIds: nil)
     log_console("SYNCING Gmail #{self.email}")
+    
+    self.process_sync_failed_emails()
 
     if self.last_history_id_synced.nil?
-      return self.sync_email_full(include_inbox: include_inbox, include_sent: include_sent)
+      return self.sync_email_full(labelIds: labelIds)
     else
       return self.sync_email_partial()
     end
@@ -233,34 +171,31 @@ class GmailAccount < ActiveRecord::Base
   end
 
   def sync_label_data(label_data)
-    attempt = 0
-
+    gmail_label = nil
+    
     begin
-      attempt += 1
       log_console("SYNCING Gmail LABEL #{label_data['id']} #{label_data['name']} #{label_data['type']}")
-
-      gmail_label = GmailLabel.where(:gmail_account => self, :label_id => label_data['id']).first
-      gmail_label = GmailLabel.new() if gmail_label.nil?
-
-      gmail_label.gmail_account = self
-
-      gmail_label.label_id = label_data['id']
-      gmail_label.name = label_data['name']
-      gmail_label.message_list_visibility = label_data['messageListVisibility']
-      gmail_label.label_list_visibility = label_data['labelListVisibility']
-      gmail_label.label_type = label_data['type']
-
-      gmail_label.save!
+      
+      retry_block(sleep_seconds: 1) do
+        gmail_label = GmailLabel.find_by(:gmail_account => self, :label_id => label_data['id'])
+        gmail_label = GmailLabel.new(:gmail_account => self, :label_id => label_data['id']) if gmail_label.nil?
+  
+        gmail_label.name = label_data['name']
+        gmail_label.message_list_visibility = label_data['messageListVisibility']
+        gmail_label.label_list_visibility = label_data['labelListVisibility']
+        gmail_label.label_type = label_data['type']
+  
+        gmail_label.save!
+      end
     rescue ActiveRecord::RecordNotUnique => unique_violation
       log_console('UNIQUE violation!!')
-      retry if attempt <= 1
 
       raise unique_violation
     end
 
     return gmail_label
   end
-
+  
   def sync_email_labels(email, gmail_label_ids)
     log_console("SYNC LABELS for #{email.uid}")
     email.email_folder_mappings.destroy_all()
@@ -271,14 +206,17 @@ class GmailAccount < ActiveRecord::Base
     log_console("seen = #{email.seen}")
 
     gmail_label_ids.each do |gmail_label_id|
+      log_console("SYNCING LABEL #{gmail_label_id}!")
+      
       next if gmail_label_id == 'UNREAD'
 
       if gmail_label_id == 'INBOX' && email.auto_filed
-        log_console('SKIPPING INBOX label because UNIMPORTANT!')
+        # TODO take out when syncing to Gmail!!
+        log_console('SKIPPING INBOX label because AUTO FILED!')
         next
       end
 
-      gmail_label = GmailLabel.where(:gmail_account => self, :label_id => gmail_label_id).first
+      gmail_label = GmailLabel.find_by(:gmail_account => self, :label_id => gmail_label_id)
       if gmail_label.nil?
         label_data = self.gmail_client.labels_get('me', gmail_label_id)
         gmail_label = self.sync_label_data(label_data)
@@ -300,7 +238,8 @@ class GmailAccount < ActiveRecord::Base
     log_console("MOVING #{email.uid} TO folder_id=#{folder_id} folder_name=#{folder_name}")
 
     EmailFolderMapping.destroy_all(:email => email)
-    self.apply_label_to_email(email, label_id: folder_id, label_name: folder_name, set_auto_filed_folder: set_auto_filed_folder)
+    self.apply_label_to_email(email, label_id: folder_id, label_name: folder_name,
+                              set_auto_filed_folder: set_auto_filed_folder)
     
     return true
   end
@@ -339,8 +278,15 @@ class GmailAccount < ActiveRecord::Base
     
     return true
   end
+  
+  def process_sync_failed_emails()
+    log_console("process_sync_failed_emails ##{self.sync_failed_emails.count} emails!")
+    
+    gmail_ids = self.sync_failed_emails.pluck(:email_uid)
+    self.sync_gmail_ids(gmail_ids)
+  end
 
-  def sync_email_full(include_inbox: false, include_sent: false)
+  def sync_email_full(labelIds: nil)
     log_console("FULL SYNC with last_history_id_synced = #{self.last_history_id_synced}\n")
 
     num_emails_synced = 0
@@ -348,38 +294,29 @@ class GmailAccount < ActiveRecord::Base
     last_history_id_synced = nil
 
     while true
-      gmail_ids = []
-
       log_console("SYNCING page = #{nextPageToken}")
 
-      if include_inbox || include_sent
-        labelIds = []
-        labelIds.push('INBOX') if include_inbox
-        labelIds.push('SENT') if include_sent
+      retry_block(sleep_seconds: 1) do
+        messages_list_data = self.gmail_client.messages_list('me', pageToken: nextPageToken, labelIds: labelIds,
+                                                             maxResults: Google::Misc::MAX_BATCH_REQUESTS)
+        messages_data = messages_list_data['messages']
+        log_console("GOT #{messages_data.length} messages\n")
 
-        messages_list_data = self.gmail_client.messages_list('me', pageToken: nextPageToken,
-                                                             labelIds: labelIds,
-                                                             maxResults: Google::Misc::MAX_BATCH_REQUESTS)
-      else
-        messages_list_data = self.gmail_client.messages_list('me', pageToken: nextPageToken,
-                                                             maxResults: Google::Misc::MAX_BATCH_REQUESTS)
+        gmail_ids = messages_data.map { |message_data| message_data['id'] }
+  
+        if last_history_id_synced.nil?
+          gmail_data = self.gmail_client.messages_get('me', gmail_ids.first, format: 'minimal', fields: 'historyId')
+          last_history_id_synced = gmail_data['historyId']
+        end
+  
+        self.sync_gmail_ids(gmail_ids)
+        num_emails_synced += gmail_ids.length
+        
+        nextPageToken = messages_list_data['nextPageToken']
       end
 
-      messages_data = messages_list_data['messages']
-      log_console("GOT #{messages_data.length} messages\n")
-
-      messages_data.each { |message_data| gmail_ids.push(message_data['id']) }
-
-      if last_history_id_synced.nil?
-        gmail_data = self.gmail_client.messages_get('me', gmail_ids.first, format: 'minimal', fields: 'historyId')
-        last_history_id_synced = gmail_data['historyId']
-      end
-
-      self.sync_gmail_ids(gmail_ids)
-      num_emails_synced += gmail_ids.length
       sleep(1)
-
-      nextPageToken = messages_list_data['nextPageToken']
+      
       break if nextPageToken.nil?
     end
 
@@ -387,7 +324,7 @@ class GmailAccount < ActiveRecord::Base
 
     return num_emails_synced > 0
   end
-
+  
   def sync_email_partial()
     log_console("PARTIAL SYNC with last_history_id_synced = #{self.last_history_id_synced}\n")
 
@@ -397,26 +334,32 @@ class GmailAccount < ActiveRecord::Base
     while true
       log_console("SYNCING page = #{nextPageToken}")
 
-      history_list_data = self.gmail_client.history_list('me', pageToken: nextPageToken,
-                                                         startHistoryId: self.last_history_id_synced,
-                                                         maxResults: GmailAccount::HISTORY_BATCH_SIZE)
-      historys_data = history_list_data['history']
-      log_console("GOT #{historys_data.length} history items")
-
-      gmail_ids = []
-
-      historys_data.each do |history_data|
-        messages_data = history_data['messages']
-        messages_data.each { |message_data| gmail_ids.push(message_data['id']) }
+      retry_block(sleep_seconds: 1) do
+        history_list_data = self.gmail_client.history_list('me', pageToken: nextPageToken,
+                                                           startHistoryId: self.last_history_id_synced,
+                                                           maxResults: GmailAccount::HISTORY_BATCH_SIZE)
+        historys_data = history_list_data['history']
+        log_console("GOT #{historys_data.length} history items")
+  
+        gmail_ids = []
+  
+        historys_data.each do |history_data|
+          messages_data = history_data['messages']
+          gmail_ids.concat(messages_data.map { |message_data| message_data['id'] })
+        end
+        
+        log_console("GOT #{gmail_ids.length} messages\n")
+  
+        self.sync_gmail_ids(gmail_ids)
+        num_emails_synced += gmail_ids.length
+        
+        self.set_last_history_id_synced(historys_data.last['id']) if !historys_data.empty?
+        
+        nextPageToken = history_list_data['nextPageToken']
       end
 
-      num_emails_synced += gmail_ids.length
-      log_console("GOT #{gmail_ids.length} messages\n")
-
-      self.sync_gmail_ids(gmail_ids)
-      self.set_last_history_id_synced(historys_data.last['id']) if !historys_data.empty?
-
-      nextPageToken = history_list_data['nextPageToken']
+      sleep(1)
+      
       break if nextPageToken.nil?
     end
     
@@ -429,7 +372,7 @@ class GmailAccount < ActiveRecord::Base
     self.init_email_from_gmail_data(email, gmail_data)
 
     if email.message_id.nil?
-      log_console('NO message_id - SKIPPING!!!!!')
+      log_email('NO message_id - SKIPPING!!!!!', gmail_data.to_json)
       return
     end
 
@@ -465,7 +408,7 @@ class GmailAccount < ActiveRecord::Base
   def update_email_from_gmail_data(gmail_data)
     email = Email.find_by_uid(gmail_data['id'])
     if email.nil?
-      log_console('Email GONE!!!')
+      log_email('Email GONE!!!')
       return
     end
 
@@ -481,18 +424,23 @@ class GmailAccount < ActiveRecord::Base
                             :uid => result.request.parameters['id'])
           next
         else
-          raise Google::Misc.raise_exception(result)
+          SyncFailedEmail.create_retry(self, result.request.parameters['id'], result: result)
+          next
         end
       end
 
       gmail_data = result.data
       log_console("SYNC PROCESSING message.id = #{gmail_data['id']}")
 
-      if gmail_data['raw']
-        self.create_email_from_gmail_data(gmail_data)
-      else
-        log_console('EXISTS - minimal update!')
-        self.update_email_from_gmail_data(gmail_data)
+      begin
+        if gmail_data['raw']
+          self.create_email_from_gmail_data(gmail_data)
+        else
+          log_console('EXISTS - minimal update!')
+          self.update_email_from_gmail_data(gmail_data)
+        end
+      rescue Exception => ex
+        SyncFailedEmail.create_retry(self, gmail_data['id'], ex: ex)
       end
     end
   end
@@ -501,25 +449,24 @@ class GmailAccount < ActiveRecord::Base
     gmail_id_index = 0
 
     while gmail_id_index < gmail_ids.length
-      current_gmail_ids = gmail_ids[gmail_id_index ... (gmail_id_index + MESSAGE_BATCH_SIZE)]
-
-      emails = Email.where(:uid => current_gmail_ids)
-      emails_by_uid = {}
-      emails.each { |email| emails_by_uid[email.uid] = email }
-
-      batch_request = sync_gmail_ids_batch_request()
-
-      current_gmail_ids.each do |gmail_id|
-        format = emails_by_uid.has_key?(gmail_id) ? 'minimal' : 'raw'
-        log_console("QUEUEING message SYNC format=#{format} gmail_id = #{gmail_id}")
-
-        call = self.gmail_client.messages_get_call('me', gmail_id, format: format)
-        batch_request.add(call)
+      retry_block do
+        current_gmail_ids = gmail_ids[gmail_id_index ... (gmail_id_index + MESSAGE_BATCH_SIZE)]
+        email_uids = Email.where(:uid => current_gmail_ids).pluck(:uid)
+  
+        batch_request = sync_gmail_ids_batch_request()
+  
+        current_gmail_ids.each do |gmail_id|
+          format = email_uids.include?(gmail_id) ? 'minimal' : 'raw'
+          log_console("QUEUEING message SYNC format=#{format} gmail_id = #{gmail_id}")
+  
+          call = self.gmail_client.messages_get_call('me', gmail_id, format: format)
+          batch_request.add(call)
+        end
+  
+        self.google_o_auth2_token.api_client.execute!(batch_request)
+  
+        gmail_id_index += MESSAGE_BATCH_SIZE
       end
-
-      self.google_o_auth2_token.api_client.execute!(batch_request)
-
-      gmail_id_index += MESSAGE_BATCH_SIZE
     end
   end
 
@@ -534,9 +481,90 @@ class GmailAccount < ActiveRecord::Base
     self.sync_gmail_ids(gmail_ids)
   end
 
-  def set_last_history_id_synced(last_history_id_synced)
-    self.last_history_id_synced = last_history_id_synced
-    self.save!
-    log_console("SET last_history_id_synced = #{self.last_history_id_synced}\n")
+  # TODO write tests
+  def send_email(tos, ccs, bccs, subject, body, email_in_reply_to_uid = nil)
+    email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, body, email_in_reply_to_uid)
+
+    if email_in_reply_to
+      self.gmail_client.messages_send('me', :threadId => email_in_reply_to.email_thread.uid, :email_raw => email_raw)
+    else
+      self.gmail_client.messages_send('me', :email_raw => email_raw)
+    end
+  end
+
+  # TODO write tests
+  def get_draft_ids()
+    log_console("GET DRAFTS")
+
+    draft_ids = {}
+
+    nextPageToken = nil
+
+    while true
+      drafts_list_data = self.gmail_client.drafts_list('me', pageToken: nextPageToken,
+                                                       maxResults: GmailAccount::DRAFTS_BATCH_SIZE)
+      drafts_data = drafts_list_data['drafts']
+      log_console("GOT #{drafts_data.length} drafts")
+
+      drafts_data.each do |draft_data|
+        gmail_id = draft_data['message']['id']
+        draft_id = draft_data['id']
+
+        draft_ids[gmail_id] = draft_id
+      end
+
+      nextPageToken = drafts_list_data['nextPageToken']
+      break if nextPageToken.nil?
+    end
+
+    return draft_ids
+  end
+
+  # TODO write tests
+  def sync_draft_data(draft_data)
+    draft_id = draft_data['id']
+    gmail_id = draft_data['message']['id']
+    sync_gmail_ids([gmail_id])
+    draft_email = self.emails.find_by(:uid => gmail_id)
+
+    return draft_id, draft_email
+  end
+
+  # TODO write tests
+  def create_draft(tos, ccs, bccs, subject, body, email_in_reply_to_uid = nil)
+    email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, body, email_in_reply_to_uid)
+
+    if email_in_reply_to
+      draft_data = self.gmail_client.drafts_create('me', :threadId => email_in_reply_to.email_thread.uid, :email_raw => email_raw)
+    else
+      draft_data = self.gmail_client.drafts_create('me', :email_raw => email_raw)
+    end
+
+    return sync_draft_data(draft_data)
+  end
+
+  # TODO write tests
+  def update_draft(draft_id, tos, ccs, bccs, subject, body, email_in_reply_to_uid = nil)
+    email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, body, email_in_reply_to_uid)
+
+    if email_in_reply_to
+      draft_data = self.gmail_client.drafts_update('me', draft_id,
+                                                   :threadId => email_in_reply_to.email_thread.uid, :email_raw => email_raw)
+    else
+      draft_data = self.gmail_client.drafts_update('me', draft_id, :email_raw => email_raw)
+    end
+
+    return sync_draft_data(draft_data)
+  end
+
+  # TODO write tests
+  def send_draft(draft_id)
+    gmail_data = self.gmail_client.drafts_send('me', draft_id)
+
+    gmail_id = gmail_data['id']
+    sync_gmail_ids([gmail_id])
+    email = self.emails.find_by(:uid => gmail_id)
+
+    return email
   end
 end

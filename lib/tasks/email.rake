@@ -1,40 +1,18 @@
 desc 'Sync all email accounts'
 
-task :sync_email => :environment do
+task :sync_email, [:labelIds_string] => :environment do |t, args|
+  args.with_defaults(:labelIds_string => nil)
+  labelIds = nil
+  labelIds = args.labelIds_string.split(' ') if args.labelIds_string
+  
   GmailAccount.all.each do |gmail_account|
-    log_console("PROCESSING account #{gmail_account.email}")
-
-    gmail_account.sync_email()
-  end
-end
-
-desc 'Sync all email accounts - inbox and sent folders only'
-
-task :sync_email_inbox_and_sent => :environment do
-  GmailAccount.all.each do |gmail_account|
-    log_console("PROCESSING account #{gmail_account.email}")
-
-    gmail_account.sync_email(include_inbox: true, include_sent: true)
-  end
-end
-
-desc 'Sync all email accounts - inbox folder only'
-
-task :sync_email_inbox => :environment do
-  GmailAccount.all.each do |gmail_account|
-    log_console("PROCESSING account #{gmail_account.email}")
-
-    gmail_account.sync_email(include_inbox: true)
-  end
-end
-
-desc 'Sync all email accounts - sent folder only'
-
-task :sync_email_sent => :environment do
-  GmailAccount.all.each do |gmail_account|
-    log_console("PROCESSING account #{gmail_account.email}")
-
-    gmail_account.sync_email(include_sent: true)
+    begin
+      log_console("PROCESSING account #{gmail_account.email}")
+      
+      gmail_account.sync_email(labelIds: labelIds)
+    rescue Exception => ex
+      log_email_exception(ex)
+    end
   end
 end
 
@@ -42,9 +20,13 @@ desc 'Sync all email accounts - labels only'
 
 task :sync_labels => :environment do
   GmailAccount.all.each do |gmail_account|
-    log_console("PROCESSING account #{gmail_account.email}")
+    begin
+      log_console("PROCESSING account #{gmail_account.email}")
 
-    gmail_account.sync_labels()
+      gmail_account.sync_labels()
+    rescue Exception => ex
+      log_email_exception(ex)
+    end
   end
 end
 
@@ -54,9 +36,14 @@ task :email_genie, [:demo] => :environment do |t, args|
   args.with_defaults(:demo => false)
   
   GmailAccount.all.each do |gmail_account|
-    log_console("PROCESSING account #{gmail_account.email}")
+    begin
+      log_console("PROCESSING account #{gmail_account.email}")
+  
+      EmailGenie.process_gmail_account(gmail_account, args.demo)
 
-    EmailGenie.process_gmail_account(gmail_account, args.demo)
+    rescue Exception => ex
+      log_email_exception(ex)
+    end
   end
 end
 
@@ -121,8 +108,12 @@ desc 'Run email rules'
 
 task :run_email_rules => :environment do
   User.all.each do |user|
-    log_console("PROCESSING account #{user.email}")
-    
-    user.apply_email_rules_to_inbox()
+    begin
+      log_console("PROCESSING account #{user.email}")
+      
+      user.apply_email_rules_to_inbox()
+    rescue Exception => ex
+      log_email_exception(ex)
+    end
   end
 end

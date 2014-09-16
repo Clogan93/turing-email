@@ -10,14 +10,14 @@ class Api::V1::EmailAccountsController < ApiController
   swagger_api :send_email do
     summary 'Send an email.'
 
-    param :form, :tos, :string, 'Array of recipient email addresses'
-    param :form, :ccs, :string, 'Array of recipient email addresses'
-    param :form, :bccs, :string, 'Array of recipient email addresses'
+    param :form, :tos, :string, false, 'Array of recipient email addresses'
+    param :form, :ccs, :string, false, 'Array of recipient email addresses'
+    param :form, :bccs, :string, false, 'Array of recipient email addresses'
     
-    param :form, :subject, :string, 'Subject'
-    param :form, :email_body, :string, 'Body'
+    param :form, :subject, :string, false, 'Subject'
+    param :form, :email_body, :string, false, 'Body'
 
-    param :form, :email_in_reply_to_uid, :string, 'Email UID being replied to.'
+    param :form, :email_in_reply_to_uid, :string, false, 'Email UID being replied to.'
 
     response :ok
   end
@@ -47,7 +47,7 @@ class Api::V1::EmailAccountsController < ApiController
     summary 'Search email threads using the same query format as the Gmail search box.'
 
     param :form, :query, :string, :required, 'Query - same query format as the Gmail search box.'
-    param :form, :next_page_token, :string, 'Next Page Token - returned in a prior search_threads call.'
+    param :form, :next_page_token, :string, false, 'Next Page Token - returned in a prior search_threads call.'
     
     response :ok
   end
@@ -72,23 +72,23 @@ class Api::V1::EmailAccountsController < ApiController
   swagger_api :create_draft do
     summary 'Create email draft.'
 
-    param :form, :tos, :string, 'Array of recipient email addresses'
-    param :form, :ccs, :string, 'Array of recipient email addresses'
-    param :form, :bccs, :string, 'Array of recipient email addresses'
+    param :form, :tos, :string, false, 'Array of recipient email addresses'
+    param :form, :ccs, :string, false, 'Array of recipient email addresses'
+    param :form, :bccs, :string, false, 'Array of recipient email addresses'
 
-    param :form, :subject, :string, 'Subject'
-    param :form, :email_body, :string, 'Body'
+    param :form, :subject, :string, false, 'Subject'
+    param :form, :email_body, :string, false, 'Body'
 
-    param :form, :email_in_reply_to_uid, :string, 'Email UID being replied to.'
+    param :form, :email_in_reply_to_uid, :string, false, 'Email UID being replied to.'
 
     response :ok
   end
 
   def create_draft
-    email_draft_uid = @email_account.create_draft(params[:tos], params[:ccs], params[:bccs],
-                                                  params[:subject], params[:email_body],
-                                                  params[:email_in_reply_to_uid])
-    render :json => {:email_draft_uid => email_draft_uid}
+    @draft_id, @email = @email_account.create_draft(params[:tos], params[:ccs], params[:bccs],
+                                                    params[:subject], params[:email_body],
+                                                    params[:email_in_reply_to_uid])
+    render 'api/v1/emails/show_draft'
   end
 
   swagger_api :update_draft do
@@ -96,25 +96,25 @@ class Api::V1::EmailAccountsController < ApiController
     
     param :form, :draft_id, :string, :required, 'Draft ID'
 
-    param :form, :tos, :string, 'Array of recipient email addresses'
-    param :form, :ccs, :string, 'Array of recipient email addresses'
-    param :form, :bccs, :string, 'Array of recipient email addresses'
+    param :form, :tos, :string, false, 'Array of recipient email addresses'
+    param :form, :ccs, :string, false, 'Array of recipient email addresses'
+    param :form, :bccs, :string, false, 'Array of recipient email addresses'
 
-    param :form, :email_in_reply_to_uid, :string, 'Email UID being replied to.'
+    param :form, :email_in_reply_to_uid, :string, false, 'Email UID being replied to.'
 
-    param :form, :subject, :string, 'Subject'
-    param :form, :email_body, :string, 'Body'
+    param :form, :subject, :string, false, 'Subject'
+    param :form, :email_body, :string, false, 'Body'
 
     response :ok
   end
 
   # TODO write tests
   def update_draft
-    @email_account.update_draft(params[:draft_id],
-                                params[:tos], params[:ccs], params[:bccs],
-                                params[:subject], params[:email_body],
-                                params[:email_in_reply_to_uid])
-    render :json => {}
+    @draft_id, @email = @email_account.update_draft(params[:draft_id],
+                                                    params[:tos], params[:ccs], params[:bccs],
+                                                    params[:subject], params[:email_body],
+                                                    params[:email_in_reply_to_uid])
+    render 'api/v1/emails/show_draft'
   end
 
   swagger_api :send_draft do
@@ -127,7 +127,8 @@ class Api::V1::EmailAccountsController < ApiController
 
   # TODO write tests
   def send_draft
-    @email_account.send_draft(params[:draft_id])
-    render :json => {}
+    @email = @email_account.send_draft(params[:draft_id])
+
+    render 'api/v1/emails/show'
   end
 end

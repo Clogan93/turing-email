@@ -10,10 +10,10 @@ class Api::V1::GenieRulesController < ApiController
   swagger_api :create do
     summary 'Create a genie rule.'
 
-    param :form, :from_address, :string, 'From Address'
-    param :form, :to_address, :string, 'To Adddress'
-    param :form, :subject, :string, 'Subject'
-    param :form, :list_id, :string, 'List ID'
+    param :form, :from_address, :string, false, 'From Address'
+    param :form, :to_address, :string, false, 'To Adddress'
+    param :form, :subject, :string, false, 'Subject'
+    param :form, :list_id, :string, false, 'List ID'
 
     response :ok
   end
