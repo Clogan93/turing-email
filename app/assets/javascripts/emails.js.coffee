@@ -8,66 +8,13 @@
 
 $ ->
   $("#compose_form").submit ->
-    $("#inbox_title_header").append('<div id="email_sent_success_alert" class="alert alert-info col-md-4" role="alert">Your message has been sent. <span id="undo_email_send">Undo</span></div>')
-
-    TuringEmailApp.sendEmailTimeout = setTimeout (->
-      #Data preparation
-      postData = {}
-      postData.tos = $("#compose_form").find("#to_input").val().split(",")
-      postData.subject = $("#compose_form").find("#subject_input").val()
-      postData.email_body = $("#compose_form").find("#compose_email_body").val()
-
-      $.ajax({
-        url: 'api/v1/email_accounts/send_email.json'
-        type: 'POST'
-        data: postData
-        dataType : 'json'
-        }).done((data, status) ->
-          #Clear input form fields.
-          $("#compose_form").find("#to_input").val("")
-          $("#compose_form").find("#subject_input").val("")
-          $("#compose_form").find("#compose_email_body").val("")
-
-        ).fail (data, status) ->
-          $("#composeModal").modal "show"
-          $("#compose_form").children().hide()
-          $("#compose_form").append('<div id="email_sent_error_alert" class="alert alert-danger" role="alert">There was an error in sending your email!</div>')
-          setTimeout (->
-            $("#compose_form #email_sent_error_alert").remove()
-            $("#compose_form").children().show()
-          ), 1000
-
-      $("#undo_email_send").parent().remove()
-    ), 5000
-
-    $("#undo_email_send").click ->
-      clearTimeout(TuringEmailApp.sendEmailTimeout)
-      $("#composeModal").modal "show"
-      $(@).parent().remove()
-
-    $("#composeModal").modal "hide"
-
-    false # to avoid executing the actual submit of the form.
+    if TuringEmailApp.currentEmailThread? and TuringEmailApp.currentEmailThread.get("uid")? and TuringEmailApp.emailThreads? and TuringEmailApp.emailThreads.draftIds? and TuringEmailApp.emailThreads.draftIds.models? and TuringEmailApp.emailThreads.draftIds.models[0].attributes?
+      TuringEmailApp.emailThreadsRouter.updateDraft(true)
+    else
+      TuringEmailApp.emailThreadsRouter.sendEmail()
 
   $("#compose_form #save_button").click ->
-    postData = {}
-    postData.tos = $("#compose_form").find("#to_input").val().split(",")
-    postData.ccs = $("#compose_form").find("#cc_input").val().split(",")
-    postData.bccs = $("#compose_form").find("#bcc_input").val().split(",")
-    postData.subject = $("#compose_form").find("#subject_input").val()
-    postData.email_body = $("#compose_form").find("#compose_email_body").val()
-
-    $.ajax({
-      url: 'api/v1/email_accounts/create_draft.json'
-      type: 'POST'
-      data: postData
-      dataType : 'json'
-      }).done((data, status) ->
-        console.log status
-        console.log data
-      ).fail (data, status) ->
-        console.log status
-        console.log data
+    TuringEmailApp.emailThreadsRouter.updateDraft()
 
 #########################################################
 #################### Email Filtering ####################
