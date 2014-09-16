@@ -8,7 +8,8 @@ class Api::V1::UserConfigurationsController < ApiController
 
     response :ok
   end
-  
+
+  # TODO write tests
   def show
     @user_configuration = current_user.user_configuration
   end
@@ -22,6 +23,7 @@ class Api::V1::UserConfigurationsController < ApiController
     response :ok
   end
   
+  # TODO write tests
   def update
     @user_configuration = current_user.user_configuration
     
