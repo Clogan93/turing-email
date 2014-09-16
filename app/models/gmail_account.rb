@@ -255,12 +255,8 @@ class GmailAccount < ActiveRecord::Base
       attempt += 1
       log_console("SYNCING Gmail LABEL #{label_data['id']} #{label_data['name']} #{label_data['type']}")
 
-      gmail_label = GmailLabel.where(:gmail_account => self, :label_id => label_data['id']).first
-      gmail_label = GmailLabel.new() if gmail_label.nil?
+      gmail_label = GmailLabel.find_or_create_by!(:gmail_account => self, :label_id => label_data['id'])
 
-      gmail_label.gmail_account = self
-
-      gmail_label.label_id = label_data['id']
       gmail_label.name = label_data['name']
       gmail_label.message_list_visibility = label_data['messageListVisibility']
       gmail_label.label_list_visibility = label_data['labelListVisibility']
@@ -287,22 +283,29 @@ class GmailAccount < ActiveRecord::Base
     log_console("seen = #{email.seen}")
 
     gmail_label_ids.each do |gmail_label_id|
-      next if gmail_label_id == 'UNREAD'
+      begin
+        log_console("SYNCING LABEL #{gmail_label_id}!")
+        
+        next if gmail_label_id == 'UNREAD'
 
-      if gmail_label_id == 'INBOX' && email.auto_filed
-        log_console('SKIPPING INBOX label because UNIMPORTANT!')
-        next
+        if gmail_label_id == 'INBOX' && email.auto_filed
+          # TODO take out when syncing to Gmail!!
+          log_console('SKIPPING INBOX label because AUTO FILED!')
+          next
+        end
+  
+        gmail_label = GmailLabel.find_by(:gmail_account => self, :label_id => gmail_label_id)
+        if gmail_label.nil?
+          label_data = self.gmail_client.labels_get('me', gmail_label_id)
+          gmail_label = self.sync_label_data(label_data)
+  
+          log_console("created #{gmail_label_id}")
+        end
+  
+        self.apply_label_to_email(email, label_id: gmail_label.label_id, label_name: gmail_label.name)
+      rescue Exception => ex
+        log_email_exception(ex)
       end
-
-      gmail_label = GmailLabel.where(:gmail_account => self, :label_id => gmail_label_id).first
-      if gmail_label.nil?
-        label_data = self.gmail_client.labels_get('me', gmail_label_id)
-        gmail_label = self.sync_label_data(label_data)
-
-        log_console("created #{gmail_label_id}")
-      end
-
-      self.apply_label_to_email(email, label_id: gmail_label.label_id, label_name: gmail_label.name)
     end
   end
 
