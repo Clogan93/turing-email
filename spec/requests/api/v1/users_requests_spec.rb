@@ -3,6 +3,35 @@ require 'rails_helper'
 describe Api::V1::UsersController, :type => :request do
   let!(:user) { FactoryGirl.create(:user) }
   let!(:user_other) { FactoryGirl.create(:user) }
+
+  context 'when the email is already in use' do
+    it 'should not create the account' do
+      post '/api/v1/users', :email => user.email, :password => user.password
+
+      expect(response).to have_http_status($config.http_errors[:email_in_use][:status_code])
+    end
+  end
+
+  context 'when the email is invalid' do
+    let!(:user_unsaved) { FactoryGirl.build(:user) }
+    
+    it 'should not create the account' do
+      post '/api/v1/users', :email => 'invalid_email', :password => user_unsaved.password
+
+      expect(response).to have_http_status($config.http_errors[:invalid_email_or_password][:status_code])
+    end
+  end
+
+  context 'when the email and password are valid' do
+    let!(:user_unsaved) { FactoryGirl.build(:user) }
+    
+    it 'should create the account' do
+      post '/api/v1/users', :email => user_unsaved.email, :password => user_unsaved.password
+
+      expect(response).to have_http_status(:ok)
+      expect(response).to render_template('api/v1/users/show')
+    end
+  end
   
   context 'when the user is signed in' do
     before { post '/api/v1/sessions', :email => user.email, :password => user.password }

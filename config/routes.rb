@@ -17,7 +17,7 @@ Rails.application.routes.draw do
 
   namespace :api, :defaults => {:format => :json} do
     namespace :v1 do
-      post '/logs', to: 'logs#log'
+      post '/log', to: 'logs#log'
       
       resources :users, only: [:create]
       get '/users/current', to: 'users#current'
@@ -27,7 +27,7 @@ Rails.application.routes.draw do
       patch '/user_configurations', to: 'user_configurations#update'
 
       resources :sessions, only: [:create]
-      match '/signout', to: 'sessions#destroy', via: 'delete'
+      delete '/signout', to: 'sessions#destroy'
 
       post '/email_accounts/send_email', to: 'email_accounts#send_email'
       post '/email_accounts/sync', to: 'email_accounts#sync'

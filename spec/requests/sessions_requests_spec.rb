@@ -1,14 +1,25 @@
 require 'rails_helper'
 
-describe Api::V1::SessionsController, :type => :controller do
+describe SessionsController, :type => :request do
+  context 'when the user is not signed in' do
+    it 'should render the signin page' do
+      get signin_path
+
+      expect(response).to have_http_status(:ok)
+      expect(response).to render_template('new')
+      expect(response.cookies['auth_key']).to eq(nil)
+    end
+  end
+
   context 'when the username and password is invalid' do
     let(:user) { FactoryGirl.build(:user) }
 
     it 'should not login the user' do
-      post :create, :email => user.email, :password => user.password
+      post sessions_path, :session => { :email => user.email, :password => user.password }
 
-      expect(response).to have_http_status(:unauthorized)
+      expect(response).to render_template('new')
       expect(response.cookies['auth_key']).to eq(nil)
+      expect(request.flash[:danger]).to match(/Invalid email\/password combination/)
     end
   end
 
@@ -18,10 +29,11 @@ describe Api::V1::SessionsController, :type => :controller do
     it 'should increment the login attempt counter' do
       expect(user.login_attempt_count).to eq(0)
 
-      post :create, :email => user.email, :password => "#{user.password} invalid"
+      post sessions_path, :session => { :email => user.email, :password => "#{user.password} invalid" }
 
-      expect(response).to have_http_status(:unauthorized)
+      expect(response).to render_template('new')
       expect(response.cookies['auth_key']).to eq(nil)
+      expect(request.flash[:danger]).to match(/Invalid email\/password combination/)
 
       user.reload
       expect(user.login_attempt_count).to eq(1)
@@ -35,19 +47,21 @@ describe Api::V1::SessionsController, :type => :controller do
       expect(user.login_attempt_count).to eq(0)
 
       (1..$config.max_login_attempts).each do
-        post :create, :email => user.email, :password => "#{user.password} invalid"
+        post sessions_path, :session => { :email => user.email, :password => "#{user.password} invalid" }
 
-        expect(response).to have_http_status(:unauthorized)
+        expect(response).to render_template('new')
         expect(response.cookies['auth_key']).to eq(nil)
+        expect(request.flash[:danger]).to match(/Invalid email\/password combination/)
       end
 
       user.reload
       expect(user.login_attempt_count).to eq($config.max_login_attempts)
 
-      post :create, :email => user.email, :password => user.password
+      post sessions_path, :session => { :email => user.email, :password => user.password }
 
-      expect(response).to have_http_status($config.http_errors[:account_locked][:status_code])
+      expect(response).to redirect_to(reset_password_path)
       expect(response.cookies['auth_key']).to eq(nil)
+      expect(request.flash[:danger]).to match(/Your account has been locked/)
 
       user.reload
       expect(user.login_attempt_count).to eq($config.max_login_attempts)
@@ -58,10 +72,11 @@ describe Api::V1::SessionsController, :type => :controller do
     let(:user) { FactoryGirl.create(:locked_user) }
 
     it 'should not login the user' do
-      post :create, :email => user.email, :password => user.password
+      post sessions_path, :session => { :email => user.email, :password => user.password }
 
-      expect(response).to have_http_status($config.http_errors[:account_locked][:status_code])
+      expect(response).to redirect_to(reset_password_path)
       expect(response.cookies['auth_key']).to eq(nil)
+      expect(request.flash[:danger]).to match(/Your account has been locked/)
     end
   end
 
@@ -69,31 +84,30 @@ describe Api::V1::SessionsController, :type => :controller do
     let(:user) { FactoryGirl.create(:user) }
 
     it 'should login the user' do
-      post :create, :email => user.email, :password => user.password
+      post sessions_path, :session => { :email => user.email, :password => user.password }
 
-      expect(response).to have_http_status(:ok)
-      expect(response).to render_template('api/v1/users/show')
+      expect(response).to redirect_to(root_url)
       expect(response.cookies['auth_key']).to_not eq(nil)
     end
   end
 
   context 'when the user is signed in' do
     let(:user) { FactoryGirl.create(:user) }
-    before { post :create, :email => user.email, :password => user.password }
+    before { post sessions_path, :session => { :email => user.email, :password => user.password } }
 
     it 'should logout the user' do
-      delete :destroy
+      delete signout_path
 
-      expect(response).to have_http_status(:ok)
+      expect(response).to redirect_to(root_url)
       expect(response.cookies['auth_key']).to eq(nil)
     end
   end
 
   context 'when there user is not signed in' do
     it 'logout should still succeed' do
-      delete :destroy
+      delete signout_path
 
-      expect(response).to have_http_status(:ok)
+      expect(response).to redirect_to(root_url)
       expect(response.cookies['auth_key']).to eq(nil)
     end
   end
