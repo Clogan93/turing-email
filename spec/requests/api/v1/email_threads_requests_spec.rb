@@ -20,12 +20,12 @@ describe Api::V1::EmailThreadsController, :type => :request do
   let!(:email_threads_misc_other) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => email_account_other) }
 
   before(:each) do
-    create_email_thread_emails(email_threads_inbox, inbox)
-    create_email_thread_emails(email_threads_test, test_folder)
+    create_email_thread_emails(email_threads_inbox, email_folder: inbox)
+    create_email_thread_emails(email_threads_test, email_folder: test_folder)
     create_email_thread_emails(email_threads_misc)
 
-    create_email_thread_emails(email_threads_inbox_other, inbox_other)
-    create_email_thread_emails(email_threads_test_other, test_folder_other)
+    create_email_thread_emails(email_threads_inbox_other, email_folder: inbox_other)
+    create_email_thread_emails(email_threads_test_other, email_folder: test_folder_other)
     create_email_thread_emails(email_threads_misc_other)
   end
 
@@ -144,7 +144,7 @@ describe Api::V1::EmailThreadsController, :type => :request do
     let!(:email_threads) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => gmail_account) }
     let!(:email_thread_uids) { EmailThread.where(:id => email_threads).pluck(:uid) }
 
-    before { create_email_thread_emails(email_threads, gmail_label) }
+    before { create_email_thread_emails(email_threads, email_folder: gmail_label) }
 
     context 'when the user is signed in' do
       before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
@@ -201,7 +201,7 @@ describe Api::V1::EmailThreadsController, :type => :request do
     let!(:email_threads) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => gmail_account) }
     let!(:email_thread_uids) { EmailThread.where(:id => email_threads).pluck(:uid) }
 
-    before { create_email_thread_emails(email_threads, gmail_label) }
+    before { create_email_thread_emails(email_threads, email_folder: gmail_label) }
 
     context 'when the user is signed in' do
       before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
@@ -257,7 +257,7 @@ describe Api::V1::EmailThreadsController, :type => :request do
     let!(:email_threads) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => gmail_account) }
     let!(:email_thread_uids) { EmailThread.where(:id => email_threads).pluck(:uid) }
 
-    before { create_email_thread_emails(email_threads, gmail_label) }
+    before { create_email_thread_emails(email_threads, email_folder: gmail_label) }
 
     context 'when the user is signed in' do
       before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
@@ -308,7 +308,7 @@ describe Api::V1::EmailThreadsController, :type => :request do
     let!(:email_threads) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => gmail_account) }
     let!(:email_thread_uids) { EmailThread.where(:id => email_threads).pluck(:uid) }
     
-    before { create_email_thread_emails(email_threads, gmail_label) }
+    before { create_email_thread_emails(email_threads, email_folder: gmail_label) }
 
     context 'when the user is signed in' do
       before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password} 

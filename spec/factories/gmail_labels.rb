@@ -23,9 +23,27 @@ FactoryGirl.define do
     label_type 'system'
   end
 
+  factory :gmail_label_draft, :parent => :gmail_label do
+    label_id 'DRAFT'
+    name 'DRAFT'
+    label_type 'system'
+  end
+
   factory :gmail_label_trash, :parent => :gmail_label do
     label_id 'TRASH'
     name 'TRASH'
+    label_type 'system'
+  end
+
+  factory :gmail_label_spam, :parent => :gmail_label do
+    label_id 'SPAM'
+    name 'SPAM'
+    label_type 'system'
+  end
+
+  factory :gmail_label_starred, :parent => :gmail_label do
+    label_id 'STARRED'
+    name 'STARRED'
     label_type 'system'
   end
 end

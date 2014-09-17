@@ -292,4 +292,94 @@ describe Api::V1::EmailsController, :type => :request do
       end
     end
   end
+  
+  context 'threads_report' do
+    let(:gmail_account) { FactoryGirl.create(:gmail_account) }
+    let(:email_threads) { FactoryGirl.create_list(:email_thread, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account) }
+
+    before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
+    
+    before do
+      num_emails = 1
+      
+      email_threads.each do |email_thread|
+        create_email_thread_emails([email_thread], num_emails: num_emails)
+        num_emails += 1
+      end
+    end
+    
+    let!(:num_emails) { email_threads.length * (email_threads.length + 1) / 2 }
+    
+    it 'returns the threads report stats' do
+      get '/api/v1/email_reports/threads_report'
+
+      threads_report_stats = JSON.parse(response.body)
+      
+      expect(threads_report_stats['average_thread_length']).to eq(num_emails / email_threads.length)
+      verify_models_expected(email_threads.reverse, threads_report_stats['top_email_threads'], 'uid')
+    end
+  end
+  
+  context 'folders_report' do
+    let(:gmail_account) { FactoryGirl.create(:gmail_account) }
+    let(:other_emails) { FactoryGirl.create_list(:email, SpecMisc::LARGE_LIST_SIZE) }
+    
+    before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
+
+    context 'without emails' do
+      it 'returns the folders report stats' do
+        get '/api/v1/email_reports/folders_report'
+
+        folders_report_stats = JSON.parse(response.body)
+
+        expect(folders_report_stats['percent_inbox']).to eq(0)
+        expect(folders_report_stats['percent_unread']).to eq(0)
+        expect(folders_report_stats['percent_sent']).to eq(0)
+        expect(folders_report_stats['percent_draft']).to eq(0)
+        expect(folders_report_stats['percent_trash']).to eq(0)
+        expect(folders_report_stats['percent_spam']).to eq(0)
+        expect(folders_report_stats['percent_starred']).to eq(0)
+      end
+    end
+    
+    context 'with emails' do
+      let!(:inbox_emails) { FactoryGirl.create_list(:email, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account) }
+      let!(:read_emails) { FactoryGirl.create_list(:email, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account, :seen => true) }
+      let!(:sent_emails) { FactoryGirl.create_list(:email, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account) }
+      let!(:draft_emails) { FactoryGirl.create_list(:email, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account) }
+      let!(:trash_emails) { FactoryGirl.create_list(:email, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account) }
+      let!(:spam_emails) { FactoryGirl.create_list(:email, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account) }
+      let!(:starred_emails) { FactoryGirl.create_list(:email, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account) }
+      
+      let!(:inbox_folder) { FactoryGirl.create(:gmail_label_inbox, :gmail_account => gmail_account) }
+      let!(:sent_folder) { FactoryGirl.create(:gmail_label_sent, :gmail_account => gmail_account) }
+      let!(:draft_folder) { FactoryGirl.create(:gmail_label_draft, :gmail_account => gmail_account) }
+      let!(:trash_folder) { FactoryGirl.create(:gmail_label_trash, :gmail_account => gmail_account) }
+      let!(:spam_folder) { FactoryGirl.create(:gmail_label_spam, :gmail_account => gmail_account) }
+      let!(:starred_folder) { FactoryGirl.create(:gmail_label_starred, :gmail_account => gmail_account) }
+
+      before do
+        create_email_folder_mappings(inbox_emails, inbox_folder)
+        create_email_folder_mappings(sent_emails, sent_folder)
+        create_email_folder_mappings(draft_emails, draft_folder)
+        create_email_folder_mappings(trash_emails, trash_folder)
+        create_email_folder_mappings(spam_emails, spam_folder)
+        create_email_folder_mappings(starred_emails, starred_folder)
+      end
+  
+      it 'returns the folders report stats' do
+        get '/api/v1/email_reports/folders_report'
+        
+        folders_report_stats = JSON.parse(response.body)
+        
+        expect(folders_report_stats['percent_inbox']).to eq(inbox_emails.length / gmail_account.emails.count.to_f)
+        expect(folders_report_stats['percent_unread']).to eq(gmail_account.emails.count - read_emails.length)
+        expect(folders_report_stats['percent_sent']).to eq(sent_emails.length / gmail_account.emails.count.to_f)
+        expect(folders_report_stats['percent_draft']).to eq(draft_emails.length / gmail_account.emails.count.to_f)
+        expect(folders_report_stats['percent_trash']).to eq(trash_emails.length / gmail_account.emails.count.to_f)
+        expect(folders_report_stats['percent_spam']).to eq(spam_emails.length / gmail_account.emails.count.to_f)
+        expect(folders_report_stats['percent_starred']).to eq(starred_emails.length / gmail_account.emails.count.to_f)
+      end
+    end
+  end
 end

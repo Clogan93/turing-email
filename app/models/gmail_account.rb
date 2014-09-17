@@ -99,12 +99,12 @@ class GmailAccount < ActiveRecord::Base
     return self.gmail_labels.find_by_label_id('SENT')
   end
 
-  def trash_folder
-    return self.gmail_labels.find_by_label_id('TRASH')
+  def drafts_folder
+    return self.gmail_labels.find_by_label_id('DRAFT')
   end
 
-  def drafts_folder
-    return self.gmail_labels.find_by_label_id('DRAFTS')
+  def trash_folder
+    return self.gmail_labels.find_by_label_id('TRASH')
   end
 
   def set_last_history_id_synced(last_history_id_synced)

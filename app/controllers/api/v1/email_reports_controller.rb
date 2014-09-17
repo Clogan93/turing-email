@@ -3,11 +3,6 @@ class Api::V1::EmailReportsController < ApiController
     signed_in_user(true)
   end
 
-  before_action :correct_user, :except => [:ip_stats, :volume_report,
-                                           :contacts_report, :attachments_report,
-                                           :lists_report, :threads_report,
-                                           :folders_report, :impact_report]
-
   swagger_controller :email_reports, 'Email Reports Controller'
 
   swagger_api :ip_stats do
@@ -209,7 +204,6 @@ class Api::V1::EmailReportsController < ApiController
     response :ok
   end
   
-  # TODO write test
   def threads_report
     @average_thread_length = current_user.emails.count / current_user.gmail_accounts.first.email_threads.count
   
@@ -223,26 +217,24 @@ class Api::V1::EmailReportsController < ApiController
     response :ok
   end
   
-  # TODO write test
   def folders_report
     folders_report_stats = {}
-  
+    
     num_emails = current_user.emails.count
     inbox_label = current_user.gmail_accounts.first.inbox_folder
-    unread_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('UNREAD')
     sent_label = current_user.gmail_accounts.first.sent_folder
-    draft_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('DRAFT')
-    trash_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('TRASH')
+    draft_label = current_user.gmail_accounts.first.drafts_folder
+    trash_label = current_user.gmail_accounts.first.trash_folder
     spam_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('SPAM')
     starred_label = current_user.gmail_accounts.first.gmail_labels.find_by_label_id('STARRED')
   
-    folders_report_stats[:percent_inbox] = inbox_label ? inbox_label.emails.count / num_emails.to_f : 0
-    folders_report_stats[:percent_unread] = unread_label ? unread_label.emails.count / num_emails.to_f : 0
-    folders_report_stats[:percent_sent] = sent_label ? sent_label.emails.count / num_emails.to_f : 0
-    folders_report_stats[:percent_draft] = sent_label ? draft_label.emails.count / num_emails.to_f : 0
-    folders_report_stats[:percent_trash] = sent_label ? trash_label.emails.count / num_emails.to_f : 0
-    folders_report_stats[:percent_spam] = sent_label ? spam_label.emails.count / num_emails.to_f : 0
-    folders_report_stats[:percent_starred] = sent_label ? starred_label.emails.count / num_emails.to_f : 0
+    folders_report_stats[:percent_inbox] = inbox_label && num_emails > 0 ? inbox_label.emails.count / num_emails.to_f : 0
+    folders_report_stats[:percent_unread] = current_user.emails.where(:seen => false).count
+    folders_report_stats[:percent_sent] = sent_label && num_emails > 0 ? sent_label.emails.count / num_emails.to_f : 0
+    folders_report_stats[:percent_draft] = draft_label && num_emails > 0 ? draft_label.emails.count / num_emails.to_f : 0
+    folders_report_stats[:percent_trash] = trash_label && num_emails > 0 ? trash_label.emails.count / num_emails.to_f : 0
+    folders_report_stats[:percent_spam] = spam_label && num_emails > 0 ? spam_label.emails.count / num_emails.to_f : 0
+    folders_report_stats[:percent_starred] = starred_label && num_emails > 0 ? starred_label.emails.count / num_emails.to_f : 0
   
     render :json => folders_report_stats
   end

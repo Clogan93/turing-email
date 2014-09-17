@@ -61,7 +61,7 @@ describe GmailLabel, :type => :model do
                                                    SpecMisc::TINY_LIST_SIZE,
                                                    :email_account => email_account) }
 
-    let!(:emails) { create_email_thread_emails(email_threads, email_folder) }
+    let!(:emails) { create_email_thread_emails(email_threads, email_folder: email_folder) }
 
     it 'should destroy the email folder mappings but not the emails' do
       expect(EmailThread.where(:email_account => email_account).count).to eq(email_threads.length)
