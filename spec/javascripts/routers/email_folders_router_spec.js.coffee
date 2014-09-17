@@ -10,4 +10,4 @@ describe "EmailFoldersRouter", ->
     expect(@router.routes["folder#:folder_id"]).toEqual "showFolder"
 
   it "Has the right number of routes", ->
-    expect(_.size(@router.routes)).toEqual 1
+    expect(_.size(@router.routes)).toEqual 2

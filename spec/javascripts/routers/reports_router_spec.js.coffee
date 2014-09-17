@@ -37,4 +37,4 @@ describe "ReportsRouter", ->
     expect(@router.routes["word_count_report"]).toEqual "showWordCountReport"
 
   it "Has the right number of routes", ->
-    expect(_.size(@router.routes)).toEqual 10
+    expect(_.size(@router.routes)).toEqual 11

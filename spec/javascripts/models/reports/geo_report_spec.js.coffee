@@ -7,7 +7,7 @@ describe "Geo report model", ->
     expect(TuringEmailApp.Models.GeoReport).toBeDefined()
 
   it "should have the right url", ->
-    expect(@geo_report.url).toEqual '/api/v1/emails/ip_stats'
+    expect(@geo_report.url).toEqual '/api/v1/email_reports/ip_stats'
 
   describe "when instantiated using fetch with data from the server", ->
 
@@ -17,7 +17,7 @@ describe "Geo report model", ->
       @geoReport = @fixtures[0]
 
       @server = sinon.fakeServer.create()
-      @server.respondWith "GET", "/api/v1/emails/ip_stats", JSON.stringify(@geoReport)
+      @server.respondWith "GET", "/api/v1/email_reports/ip_stats", JSON.stringify(@geoReport)
       return
 
     afterEach ->
@@ -27,7 +27,7 @@ describe "Geo report model", ->
       @geo_report.fetch()
       expect(@server.requests.length).toEqual 1
       expect(@server.requests[0].method).toEqual "GET"
-      expect(@server.requests[0].url).toEqual "/api/v1/emails/ip_stats"
+      expect(@server.requests[0].url).toEqual "/api/v1/email_reports/ip_stats"
       return
 
     it "should parse the attributes from the response", ->
