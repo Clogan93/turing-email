@@ -38,7 +38,11 @@ class Api::V1::EmailAccountsController < ApiController
 
   # TODO write tests
   def sync
-    synced_emails = @email_account.sync_email()
+    if @email_account.last_history_id_synced.nil?
+      synced_emails = false
+    else
+      synced_emails = @email_account.sync_email()
+    end
     
     render :json => {:synced_emails => synced_emails}
   end
