@@ -284,32 +284,6 @@ body
     }
   }
 
-  /* Preview Pane Styling */
-
-  #preview_pane
-  {
-    position: fixed;
-    background-color: white;
-    bottom: 0px;
-    height: 45%;
-    width: 100%;
-
-    #resize_border
-    {
-      height: 3px;
-      width: 100%;
-      border-top: 1px solid #e5e5e5;
-      border-bottom: 1px solid #e5e5e5;
-      background-color: rgba(255,255,255,0.1);
-      cursor: row-resize;
-    }
-    #preview_content
-    {
-      overflow-y: scroll;
-      height: 100%;
-    }
-  }
-
   .main_email_list_content
   {
     position: fixed;
@@ -406,4 +380,33 @@ a#refresh_link
 .email_thread_highlight
 {
   border-left: 2px solid rgb(1, 148, 125) !important;
+}
+
+/* Preview Pane Styling */
+
+#preview_panel
+{
+  width: 79.85%;
+  height: 50%;
+  position: fixed !important;
+  bottom: 0px;
+  left: 18.25%;
+  z-index: 1000;
+  overflow-y: scroll;
+  display: none;
+
+  #resize_border
+  {
+    height: 3px;
+    width: 100%;
+    border-top: 1px solid #e5e5e5;
+    border-bottom: 1px solid #e5e5e5;
+    background-color: rgba(255,255,255,0.1);
+    cursor: row-resize;
+  }
+  #preview_content
+  {
+    overflow-y: scroll;
+    height: 100%;
+  }
 }

@@ -53,5 +53,25 @@ window.TuringEmailApp = new(Backbone.View.extend({
 
     @searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()
 
+    @userSettings = new TuringEmailApp.Models.UserSettings()
+    @userSettings.fetch()
+
+    @start_email_sync()
+
     Backbone.history.start()
+
+  start_email_sync: ->
+    window.setInterval (->
+      console.log "Email sync called"
+      $.ajax({
+        url: 'api/v1/email_accounts/sync.json'
+        type: 'POST'
+        dataType : 'json'
+        }).done((data, status) =>
+          if data.synced_emails
+            TuringEmailApp.emailThreads.fetch()
+        )
+    #/ call your function here
+    ), 60000
+
 }))({el: document.body})

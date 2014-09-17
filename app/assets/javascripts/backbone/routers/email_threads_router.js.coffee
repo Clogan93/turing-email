@@ -4,20 +4,31 @@ class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
     "email_draft#:uid": "showEmailDraft"
 
   showEmailThread: (emailThreadUID) ->
-    TuringEmailApp.currentEmailThread = TuringEmailApp.emailThreads.getEmailThread(emailThreadUID)
-    
-    if TuringEmailApp.currentEmailThread?
-      @renderEmailThread TuringEmailApp.currentEmailThread
-    else
-      TuringEmailApp.currentEmailThread = new TuringEmailApp.Models.EmailThread()
-      TuringEmailApp.currentEmailThread.url = "/api/v1/email_threads/show/" + emailThreadUID
-      
-      TuringEmailApp.currentEmailThread.fetch(
-        success: (model, response, options) =>
-          @renderEmailThread model
+    if TuringEmailApp.userSettings.get("split_pane_mode") is "horizontal"
+      $("#preview_panel").show()
+      TuringEmailApp.currentEmailThread = TuringEmailApp.emailThreads.getEmailThread(emailThreadUID)
+
+      TuringEmailApp.previewEmailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
+        model: TuringEmailApp.currentEmailThread
+        el: $("#preview_content")
       )
+      TuringEmailApp.previewEmailThreadView.render()
+    else
+      TuringEmailApp.currentEmailThread = TuringEmailApp.emailThreads.getEmailThread(emailThreadUID)
+      
+      if TuringEmailApp.currentEmailThread?
+        @renderEmailThread TuringEmailApp.currentEmailThread
+      else
+        TuringEmailApp.currentEmailThread = new TuringEmailApp.Models.EmailThread()
+        TuringEmailApp.currentEmailThread.url = "/api/v1/email_threads/show/" + emailThreadUID
+        
+        TuringEmailApp.currentEmailThread.fetch(
+          success: (model, response, options) =>
+            @renderEmailThread model
+        )
 
   renderEmailThread: (emailThread) ->
+    $("#email-folder-mail-header").hide()
     emailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
       model: emailThread
       el: $("#email_table_body")
@@ -49,11 +60,12 @@ class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
     TuringEmailApp.sendEmailTimeout = setTimeout (->
       #Data preparation
       postData = {}
-      postData.tos = $("#compose_form").find("#to_input").val().split(",")
-      postData.ccs = $("#compose_form").find("#cc_input").val().split(",")
-      postData.bccs = $("#compose_form").find("#bcc_input").val().split(",")
-      postData.subject = $("#compose_form").find("#subject_input").val()
-      postData.email_body = $("#compose_form").find("#compose_email_body").val()
+      postData.tos = $("#compose_form #to_input").val().split(",")
+      postData.ccs = $("#compose_form #cc_input").val().split(",")
+      postData.bccs = $("#compose_form #bcc_input").val().split(",")
+      postData.subject = $("#compose_form #subject_input").val()
+      postData.email_body = $("#compose_form #compose_email_body").val()
+      postData.email_in_reply_to_uid_input = $("#compose_form #email_in_reply_to_uid_input").val()
 
       $.ajax({
         url: 'api/v1/email_accounts/send_email.json'
@@ -95,6 +107,7 @@ class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
     postData.bccs = $("#compose_form").find("#bcc_input").val().split(",")
     postData.subject = $("#compose_form").find("#subject_input").val()
     postData.email_body = $("#compose_form").find("#compose_email_body").val()
+    postData.email_in_reply_to_uid_input = $("#compose_form #email_in_reply_to_uid_input").val()
     if TuringEmailApp.currentEmailThread? and TuringEmailApp.currentEmailThread.get("uid")? and TuringEmailApp.emailThreads? and TuringEmailApp.emailThreads.draftIds? and TuringEmailApp.emailThreads.draftIds.models? and TuringEmailApp.emailThreads.draftIds.models[0].attributes?
       draftIds = TuringEmailApp.emailThreads.draftIds.models[0].attributes
       postData.draft_id = draftIds[TuringEmailApp.currentEmailThread.get("uid")]
@@ -134,8 +147,9 @@ class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
     $("#composeModal").modal "hide"
 
   clearComposeModal: ->
-    $("#compose_form").find("#to_input").val("")
-    $("#compose_form").find("#cc_input").val("")
-    $("#compose_form").find("#bcc_input").val("")
-    $("#compose_form").find("#subject_input").val("")
-    $("#compose_form").find("#compose_email_body").val("")
+    $("#compose_form #to_input").val("")
+    $("#compose_form #cc_input").val("")
+    $("#compose_form #bcc_input").val("")
+    $("#compose_form #subject_input").val("")
+    $("#compose_form #compose_email_body").val("")
+    $("#compose_form #email_in_reply_to_uid_input").val("")

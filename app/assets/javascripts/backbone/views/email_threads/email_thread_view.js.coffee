@@ -11,8 +11,6 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     @$el.remove()
 
   render: ->
-    $("#email-folder-mail-header").hide()
-
     @$el.html(@template(@model.toJSON()))
 
     @render_genie_report()
@@ -33,6 +31,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     $(".email_reply_button").click =>
       last_email_in_thread = TuringEmailApp.currentEmailThread.get("emails")[0]
       TuringEmailApp.emailThreadsListView.prepareComposeModalWithEmailThreadData last_email_in_thread
+      $("#compose_form #email_in_reply_to_uid_input").val(last_email_in_thread.uid)
 
   setupForwardButton: ->
     $(".email_forward_button").click ->

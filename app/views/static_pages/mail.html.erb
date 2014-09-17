@@ -37,6 +37,12 @@
     </div>
 
     <div class="wrapper wrapper-content">
+
+      <div id="preview_panel">
+        <div id="resize_border"></div>
+        <div id="preview_content"></div>
+      </div>
+
       <div class="row">
           <div class="col-sm-2">
               <div class="ibox float-e-margins">
@@ -94,15 +100,19 @@
               </div>
           </div>
           <div class="col-sm-10 animated fadeInRight">
+
             <div class="mail-box-header" id="email-folder-mail-header">
             </div>
+
             <div id="reports"></div>
+
             <div class="mail-box">
               <table class="table table-hover table-mail">
                 <tbody id="email_table_body">
                 </tbody>
               </table>
             </div>
+
           </div>
       </div>
     </div>
@@ -134,6 +144,7 @@
             <br />
             <br />
             <textarea id="compose_email_body" class="form-control" rows="8"></textarea>
+            <input id="email_in_reply_to_uid_input" type="hidden" class="form-control" placeholder="Subject"/><br />
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

@@ -9,7 +9,7 @@ class TuringEmailApp.Views.Reports.SettingsView extends Backbone.View
   remove: ->
     @$el.remove()
 
-  setup_the_declare_email_bankruptcy_button: ->
+  setupTheDeclareEmailBankruptcyButton: ->
     $("#declare_email_bankruptcy").click ->
       confirm_response = confirm("Are you sure you want to declare email bankruptcy?")
       if confirm_response
@@ -21,17 +21,50 @@ class TuringEmailApp.Views.Reports.SettingsView extends Backbone.View
           success: (data) ->
             return
 
-  setup_go_live_switch: ->
+  setupGoLiveSwitch: ->
     $("#go_live_switch").bootstrapSwitch()
     $("#keyboard_shortcuts_on_off_switch").bootstrapSwitch()
+    $("#preview_on_off_switch").bootstrapSwitch()
+    $("#genie_on_off_switch").bootstrapSwitch()
+
+  setupSaveButton: ->
+    $("#user_settings_save_button").click ->
+      console.log "Saving user settings."
+
+      postData = {}
+
+      if $("#genie_on_off_switch").parent().parent().hasClass("switch-on")
+        postData.genie_enabled = true
+      else
+        postData.genie_enabled = false
+
+      if $("#preview_on_off_switch").parent().parent().hasClass("switch-on")
+        postData.split_pane_mode = "horizontal"
+      else
+        postData.split_pane_mode = "off"
+
+      $.ajax({
+        url: 'api/v1/user_configurations.json'
+        type: 'PATCH'
+        data: postData
+        dataType : 'json'
+        }).done((data, status) ->
+          console.log status
+          console.log data
+        ).fail (data, status) ->
+          console.log status
+          console.log data
 
   render: ->
     TuringEmailApp.reportsRouter.restyle_other_elements()
 
-    @$el.html(@template())
+    console.log @model.toJSON()
+    @$el.html(@template(@model.toJSON()))
 
-    @setup_the_declare_email_bankruptcy_button()
+    @setupTheDeclareEmailBankruptcyButton()
 
-    @setup_go_live_switch()
+    @setupGoLiveSwitch()
+
+    @setupSaveButton()
 
     return this
