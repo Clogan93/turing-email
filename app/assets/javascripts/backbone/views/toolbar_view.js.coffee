@@ -121,7 +121,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   setupRead: ->
     @$el.find("i.fa-eye").parent().click =>
       checkedUIDs = @retrieveCheckedUIDs()
-      TuringEmailApp.emailThreads.setSeen checkedUIDs
+      TuringEmailApp.emailThreads.seenIs checkedUIDs
 
       #Alter UI
       tr_element = $(".check-mail .checked").parent().parent()

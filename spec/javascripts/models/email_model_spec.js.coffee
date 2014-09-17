@@ -83,11 +83,11 @@ describe "Email model", ->
       expect(@email.get("uid")).toBeDefined()
       return
 
-    describe "when setSeen is called", ->
+    describe "when seenIs is called", ->
 
       it "updates the seen property", ->
         @email.fetch()
         @server.respond()
         expect(@email.get("seen")).toBeFalsy();
-        @email.setSeen()
+        @email.seenIs()
         expect(@email.get("seen")).toBeTruthy();

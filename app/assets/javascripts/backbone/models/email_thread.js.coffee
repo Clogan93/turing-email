@@ -1,6 +1,6 @@
 class TuringEmailApp.Models.EmailThread extends Backbone.Model
 
-  setSeen: (seenValue=true)->
+  seenIs: (seenValue=true)->
     postData = {}
     emailUids = []
     for email in @.get("emails")
@@ -17,4 +17,4 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
         return
 
   setUnseen: ->
-    @setSeen false
+    @seenIs false
