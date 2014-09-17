@@ -1,14 +1,14 @@
 class EmailGenie
-  LISTS = { '<sales.optimizely.com>' => 'Sales',
-            '<press.optimizely.com>' => 'Press',
-            '<marketing.optimizely.com>' => 'Marketing',
-            '<visible-changes.optimizely.com>' => 'Visible Changes',
-            '<events.optimizely.com>' => 'Events',
-            '<archive.optimizely.com>' => 'Archive',
-            '<team.optimizely.com>' => 'Team',
-            '<team-sf.optimizely.com>' => 'Team (SF)',
-            '<team-ams.optimizely.com>' => 'Team (AMS)',
-            '<rocketship.optimizely.com>' => 'Rocketship' }
+  LISTS = { '<sales@optimizely.com' => 'Sales',
+            '<press@optimizely.com' => 'Press',
+            '<marketing@optimizely.com' => 'Marketing',
+            '<visible-changes@optimizely.com' => 'Visible Changes',
+            '<events@optimizely.com' => 'Events',
+            '<archive@optimizely.com' => 'Archive',
+            '<team@optimizely.com' => 'Team',
+            '<team-sf@optimizely.com' => 'Team (SF)',
+            '<team-ams@optimizely.com' => 'Team (AMS)',
+            '<rocketship@optimizely.com' => 'Rocketship' }
 
   def EmailGenie.send_user_report_email(user, demo = false)
     inbox_label = user.gmail_accounts.first.inbox_folder

@@ -30,7 +30,7 @@ class ApplicationController < ActionController::Base
     return if skip_basic_auth?() || public_path?()
 
     authenticate_or_request_with_http_basic do |username, password|
-      username == 'optimize' && password == 'email'
+      username == 'streamline' && password == 'email'
     end
   end
 
