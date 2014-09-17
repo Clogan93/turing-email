@@ -154,7 +154,10 @@ class GmailAccount < ActiveRecord::Base
     self.process_sync_failed_emails()
 
     if self.last_history_id_synced.nil?
-      return self.sync_email_full(labelIds: labelIds)
+      synced_emails = self.sync_email_full(labelIds: labelIds)
+      synced_emails = self.sync_email_partial() || synced_emails
+      
+      return synced_emails
     else
       return self.sync_email_partial()
     end
