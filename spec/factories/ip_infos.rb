@@ -9,8 +9,8 @@ FactoryGirl.define do
     region_name 'California'
     city 'Menlo Park'
     zipcode '94025'
-    latitude 37.4498
-    longitude -122.2004
+    latitude '37.4498'
+    longitude '-122.2004'
     metro_code '807'
     area_code '650'
   end
