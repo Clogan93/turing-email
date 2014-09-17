@@ -35,7 +35,7 @@ module SpecMisc
     expect(keys).to eq(expected_attributes)
 
     model_rendered.each do |key, value|
-      next if expected_attributes.include?(key)
+      next if expected_attributes_to_skip.include?(key)
 
       if model.respond_to?(key)
         expect(value).to eq(model.send(key))
@@ -45,11 +45,26 @@ module SpecMisc
     end
   end
 
+  def validate_ip_stat(ip_stat, ip_stat_rendered)
+    expected_attributes = %w(country_code country_name
+                             region_code region_name
+                             city zip_code
+                             latitude longitude
+                             metro_code area_code)
+    spec_validate_attributes(expected_attributes, ip_stat, ip_stat_rendered)
+  end
+  
   def validate_email_thread(email_thread, email_thread_rendered)
     expected_attributes = %w(uid emails)
     expected_attributes_to_skip = %w(emails)
     spec_validate_attributes(expected_attributes, email_thread, email_thread_rendered, expected_attributes_to_skip)
 
+    email_thread.emails.zip(email_thread_rendered['emails']).each do |email, email_rendered|
+      validate_email(email, email_rendered)
+    end
+  end
+  
+  def validate_email(email, email_rendered)
     expected_attributes = %w(auto_filed
                              uid message_id list_id
                              seen snippet date
@@ -59,10 +74,10 @@ module SpecMisc
                              tos ccs bccs
                              subject
                              html_part text_part body_text)
+    expected_attributes_to_skip = %w(date)
 
-    email_thread.emails.zip(email_thread_rendered['emails']).each do |email, email_rendered|
-      spec_validate_attributes(expected_attributes, email, email_rendered)
-    end
+    spec_validate_attributes(expected_attributes, email, email_rendered, expected_attributes_to_skip)
+    expect(email_rendered['date']).to eq(email.date.as_json)
   end
 
   def validate_gmail_label(gmail_label, gmail_label_rendered)
@@ -80,7 +95,11 @@ module SpecMisc
                              city zipcode
                              latitude longitude
                              metro_code area_code)
-    spec_validate_attributes(expected_attributes, ip_info, ip_info_rendered)
+
+    expected_attributes_to_skip = %w(ip)
+    spec_validate_attributes(expected_attributes, ip_info, ip_info_rendered, expected_attributes_to_skip)
+
+    expect(ip_info_rendered['ip']).to eq(ip_info.ip.to_s)
   end
 
   def validate_email_rule(email_rule, email_rule_rendered)
