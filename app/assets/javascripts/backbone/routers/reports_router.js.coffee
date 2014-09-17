@@ -180,6 +180,7 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
 
   #TODO: re-factor mail.html.erb so that this is not longer necessary.
   restyle_other_elements: ->
+    $("#preview_panel").hide()
     $(".mail-box-header").hide()
     $("table.table-mail").hide()
     $("#pages").hide()

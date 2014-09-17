@@ -28,7 +28,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
     @addKeyboardShortcutHighlight()
 
-    if TuringEmailApp.userSettings.previewOn
+    if TuringEmailApp.userSettings.get("split_pane_mode") is "horizontal"
       $("#preview_panel").show()
       @renderEmailPreview()
 

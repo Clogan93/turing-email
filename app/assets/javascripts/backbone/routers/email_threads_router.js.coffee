@@ -4,7 +4,7 @@ class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
     "email_draft#:uid": "showEmailDraft"
 
   showEmailThread: (emailThreadUID) ->
-    if TuringEmailApp.userSettings.previewOn
+    if TuringEmailApp.userSettings.get("split_pane_mode") is "horizontal"
       $("#preview_panel").show()
       TuringEmailApp.currentEmailThread = TuringEmailApp.emailThreads.getEmailThread(emailThreadUID)
 
@@ -12,7 +12,7 @@ class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
         model: TuringEmailApp.currentEmailThread
         el: $("#preview_content")
       )
-      TuringEmailApp.previewEmailThreadView.render()      
+      TuringEmailApp.previewEmailThreadView.render()
     else
       TuringEmailApp.currentEmailThread = TuringEmailApp.emailThreads.getEmailThread(emailThreadUID)
       

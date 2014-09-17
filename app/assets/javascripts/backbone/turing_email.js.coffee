@@ -54,7 +54,7 @@ window.TuringEmailApp = new(Backbone.View.extend({
     @searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()
 
     @userSettings = new TuringEmailApp.Models.UserSettings()
-    @userSettings.previewOn = false
+    @userSettings.fetch()
 
     @start_email_sync()
 
