@@ -17,6 +17,8 @@ Rails.application.routes.draw do
 
   namespace :api, :defaults => {:format => :json} do
     namespace :v1 do
+      post '/logs', to: 'logs#log'
+      
       resources :users, only: [:create]
       get '/users/current', to: 'users#current'
       post '/users/declare_email_bankruptcy', to: 'users#declare_email_bankruptcy'
