@@ -177,7 +177,7 @@ class GmailAccount < ActiveRecord::Base
     gmail_label = nil
     
     begin
-      log_console("SYNCING Gmail LABEL #{label_data['id']} #{label_data['name']} #{label_data['type']}")
+      #log_console("SYNCING Gmail LABEL #{label_data['id']} #{label_data['name']} #{label_data['type']}")
       
       retry_block(sleep_seconds: 1) do
         gmail_label = GmailLabel.find_by(:gmail_account => self, :label_id => label_data['id'])
@@ -200,16 +200,16 @@ class GmailAccount < ActiveRecord::Base
   end
   
   def sync_email_labels(email, gmail_label_ids)
-    log_console("SYNC LABELS for #{email.uid}")
+    #log_console("SYNC LABELS for #{email.uid}")
     email.email_folder_mappings.destroy_all()
 
     email.seen = !gmail_label_ids.include?('UNREAD')
     email.save!
 
-    log_console("seen = #{email.seen}")
+    #log_console("seen = #{email.seen}")
 
     gmail_label_ids.each do |gmail_label_id|
-      log_console("SYNCING LABEL #{gmail_label_id}!")
+      #log_console("SYNCING LABEL #{gmail_label_id}!")
       
       next if gmail_label_id == 'UNREAD'
 
@@ -253,7 +253,7 @@ class GmailAccount < ActiveRecord::Base
       return false
     end
     
-    log_console("APPLY LABEL TO #{email.uid} label_id=#{label_id} label_name=#{label_name}")
+    #log_console("APPLY LABEL TO #{email.uid} label_id=#{label_id} label_name=#{label_name}")
 
     gmail_label = GmailLabel.find_by(:gmail_account => self, :label_id => label_id) if label_id
     gmail_label = GmailLabel.find_by(:gmail_account => self,
@@ -446,13 +446,13 @@ class GmailAccount < ActiveRecord::Base
       end
 
       gmail_data = result.data
-      log_console("SYNC PROCESSING message.id = #{gmail_data['id']}")
+      #log_console("SYNC PROCESSING message.id = #{gmail_data['id']}")
 
       begin
         if gmail_data['raw']
           self.create_email_from_gmail_data(gmail_data)
         else
-          log_console('EXISTS - minimal update!')
+          #log_console('EXISTS - minimal update!')
           self.update_email_from_gmail_data(gmail_data)
         end
       rescue Exception => ex
@@ -474,7 +474,7 @@ class GmailAccount < ActiveRecord::Base
   
         current_gmail_ids.each do |gmail_id|
           format = email_uids.include?(gmail_id) ? 'minimal' : 'raw'
-          log_console("QUEUEING message SYNC format=#{format} gmail_id = #{gmail_id}")
+          #log_console("QUEUEING message SYNC format=#{format} gmail_id = #{gmail_id}")
   
           call = gmail_client.messages_get_call('me', gmail_id, format: format)
           batch_request.add(call)

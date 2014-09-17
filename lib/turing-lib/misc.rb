@@ -94,7 +94,7 @@ def retry_block(max_attempts: 2, sleep_seconds: nil, exceptions_to_catch: nil, e
   begin
     yield
   rescue Exception => ex
-    raise ex if exceptions_to_ignore.include?(ex.class)
+    raise ex if exceptions_to_ignore && exceptions_to_ignore.include?(ex.class)
 
     attempts += 1
 
