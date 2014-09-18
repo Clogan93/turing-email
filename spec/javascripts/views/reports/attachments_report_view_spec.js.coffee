@@ -22,16 +22,12 @@ describe "AttachmentsReportView", ->
 
       @server.respondWith "GET", "/api/v1/emails/attachments_report", JSON.stringify(@attachmentsReportFixture)
 
-      @attachmentsReport.fetch(
-        success: (model, response, options) =>
-          @attachmentsReportView = new TuringEmailApp.Views.Reports.AttachmentsReportView(
-            model: model
-          )
-
-          @attachmentsReportView.render()
-
-          return
+      @attachmentsReportView = new TuringEmailApp.Views.Reports.AttachmentsReportView(
+        model: @attachmentsReport
+        el: $("#reports")
       )
+
+      @attachmentsReport.fetch()
 
       @server.respond()
 
@@ -54,11 +50,11 @@ describe "AttachmentsReportView", ->
     it "loads the attachment report template", ->
       expect(@attachmentsReportView.template).toEqual JST["backbone/templates/reports/attachments_report"]
 
-    #   it "should render the number of attachments chart title", ->
-    #     console.log $("#reports")
-    #     console.log @attachmentsReportView.el
-    #     console.log @attachmentsReportView.$el.find('#num_attachments_chart_div')
-    #     console.log @attachmentsReportView.$el.find('#num_attachments_chart_div').find("div:contains('Number of Attachments')")
+    # it "should render the number of attachments chart title", ->
+    #   console.log $("#reports")
+    #   console.log @attachmentsReportView.el
+    #   console.log @attachmentsReportView.$el.find('#num_attachments_chart_div')
+    #   console.log @attachmentsReportView.$el.find('#num_attachments_chart_div').find("div:contains('Number of Attachments')")
 
     # it "should render the attachment file size chart title", ->
 
