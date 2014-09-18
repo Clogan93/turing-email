@@ -53,5 +53,5 @@ class TuringEmailApp.Collections.DraftsCollection extends Backbone.Collection
         console.log status
         console.log data
 
-    @clearComposeModal()
+    TuringEmailApp.composeView.clearComposeModal()
     $("#composeModal").modal "hide"

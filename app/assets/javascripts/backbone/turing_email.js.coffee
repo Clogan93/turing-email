@@ -39,6 +39,11 @@ window.TuringEmailApp = new(Backbone.View.extend({
         @toolbarView.render()
     )
 
+    @composeView = new TuringEmailApp.Views.ComposeView(
+      el: $("#modals")
+    )
+    @composeView.render()
+
     @emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
 
     windowLocationHash = window.location.hash.toString()

@@ -1,6 +1,4 @@
-TuringEmailApp.Views.Reports ||= {}
-
-class TuringEmailApp.Views.Reports.SettingsView extends Backbone.View
+class TuringEmailApp.Views.SettingsView extends Backbone.View
   template: JST["backbone/templates/settings"]
 
   initialize: ->
@@ -29,7 +27,6 @@ class TuringEmailApp.Views.Reports.SettingsView extends Backbone.View
 
   setupSaveButton: ->
     $("#user_settings_save_button").click ->
-      console.log "Saving user settings."
 
       postData = {}
 
@@ -58,7 +55,6 @@ class TuringEmailApp.Views.Reports.SettingsView extends Backbone.View
   render: ->
     TuringEmailApp.reportsRouter.restyle_other_elements()
 
-    console.log @model.toJSON()
     @$el.html(@template(@model.toJSON()))
 
     @setupTheDeclareEmailBankruptcyButton()
