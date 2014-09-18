@@ -29,7 +29,7 @@ describe "ListView", ->
       TuringEmailApp.user.fetch()
       @server.respond()
 
-      @server.respondWith "GET", "/api/v1/email_threads/inbox", JSON.stringify(@validEmailThreads)
+      @server.respondWith "GET", "/api/v1/email_threads/in_folder?folder_id=INBOX", JSON.stringify(@validEmailThreads)
       @emailThreads.fetch()
       @server.respond()
 
@@ -59,6 +59,7 @@ describe "ListView", ->
 
       #Run expectations
       for emailThread, index in @emailThreads.models
+        console.log emailThread
         email = emailThread.get("emails")[0]
         
         expect(fromNames[index]).toEqual email.from_name

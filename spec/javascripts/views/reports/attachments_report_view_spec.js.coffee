@@ -4,7 +4,9 @@ describe "AttachmentsReportView", ->
     @attachmentsReport = new TuringEmailApp.Models.AttachmentsReport()
     TuringEmailApp.user = new TuringEmailApp.Models.User()
     TuringEmailApp.reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
-    @attachmentsReportView = null
+    @attachmentsReportView = new TuringEmailApp.Views.Reports.AttachmentsReportView(
+      model: @attachmentsReport
+    )
 
   describe "when render is called", ->
 
@@ -20,24 +22,18 @@ describe "AttachmentsReportView", ->
       TuringEmailApp.user.fetch()
       @server.respond()
 
-      @server.respondWith "GET", "/api/v1/emails/attachments_report", JSON.stringify(@attachmentsReportFixture)
-
-      @attachmentsReportView = new TuringEmailApp.Views.Reports.AttachmentsReportView(
-        model: @attachmentsReport
-        el: $("#reports")
-      )
+      @server.respondWith "GET", "/api/v1/email_reports/attachments_report", JSON.stringify(@attachmentsReportFixture)
 
       @attachmentsReport.fetch()
-
       @server.respond()
 
     afterEach ->
       @server.restore()
 
     it "should have the root element be a div", ->
-      # console.log @attachmentsReportFixture
-      # console.log @attachmentsReport
-      # console.log @attachmentsReportView
+      console.log @attachmentsReport
+      console.log @attachmentsReportView
+      console.log @attachmentsReportView.el
       expect(@attachmentsReportView.el.nodeName).toEqual "DIV"
 
     it "should be defined", ->
