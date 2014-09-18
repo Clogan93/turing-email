@@ -2,7 +2,9 @@ describe "ListView", ->
 
   beforeEach ->
     TuringEmailApp.user = new TuringEmailApp.Models.User()
-    @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
+    @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(
+      folder_id: "INBOX"
+    )
     @listView = new TuringEmailApp.Views.EmailThreads.ListView(
       collection: @emailThreads
     )

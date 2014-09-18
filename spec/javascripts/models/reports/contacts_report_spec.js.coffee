@@ -7,7 +7,7 @@ describe "Contacts report model", ->
     expect(TuringEmailApp.Models.ContactsReport).toBeDefined()
 
   it "should have the right url", ->
-    expect(@contacts_report.url).toEqual '/api/v1/emails/contacts_report'
+    expect(@contacts_report.url).toEqual '/api/v1/email_reports/contacts_report'
 
   describe "when instantiated using fetch with data from the server", ->
 
@@ -17,7 +17,7 @@ describe "Contacts report model", ->
       @contactsReport = @fixtures[0]
 
       @server = sinon.fakeServer.create()
-      @server.respondWith "GET", "/api/v1/emails/contacts_report", JSON.stringify(@contactsReport)
+      @server.respondWith "GET", "/api/v1/email_reports/contacts_report", JSON.stringify(@contactsReport)
       return
 
     afterEach ->
@@ -27,7 +27,7 @@ describe "Contacts report model", ->
       @contacts_report.fetch()
       expect(@server.requests.length).toEqual 1
       expect(@server.requests[0].method).toEqual "GET"
-      expect(@server.requests[0].url).toEqual "/api/v1/emails/contacts_report"
+      expect(@server.requests[0].url).toEqual "/api/v1/email_reports/contacts_report"
       return
 
     it "should parse the attributes from the response", ->

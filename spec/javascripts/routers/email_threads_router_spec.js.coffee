@@ -10,4 +10,4 @@ describe "EmailThreadsRouter", ->
     expect(@router.routes["email_thread#:uid"]).toEqual "showEmailThread"
 
   it "Has the right number of routes", ->
-    expect(_.size(@router.routes)).toEqual 1
+    expect(_.size(@router.routes)).toEqual 2

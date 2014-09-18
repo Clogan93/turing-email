@@ -1,7 +1,9 @@
 describe "EmailThreads collection", ->
 
   beforeEach ->
-    @emailThreadsCollection = new TuringEmailApp.Collections.EmailThreadsCollection()
+    @emailThreadsCollection = new TuringEmailApp.Collections.EmailThreadsCollection(
+      folder_id: "INBOX"
+    )
 
   it "should exist", ->
     expect(TuringEmailApp.Collections.EmailThreadsCollection).toBeDefined()
@@ -10,7 +12,7 @@ describe "EmailThreads collection", ->
       expect(@emailThreadsCollection.model).toEqual TuringEmailApp.Models.EmailThread
 
   it "should have the right url", ->
-    expect(@emailThreadsCollection.url).toEqual '/api/v1/email_threads/inbox'
+    expect(@emailThreadsCollection.url).toEqual '/api/v1/email_threads/in_folder?folder_id=INBOX'
 
   describe "when instantiated using fetch with data from the server", ->
 
@@ -20,7 +22,7 @@ describe "EmailThreads collection", ->
       @validEmailThreads = @fixtures[0]["valid"]
 
       @server = sinon.fakeServer.create()
-      @server.respondWith "GET", "/api/v1/email_threads/inbox", JSON.stringify(@validEmailThreads)
+      @server.respondWith "GET", "/api/v1/email_threads/in_folder?folder_id=INBOX", JSON.stringify(@validEmailThreads)
       return
 
     afterEach ->
@@ -30,7 +32,7 @@ describe "EmailThreads collection", ->
       @emailThreadsCollection.fetch()
       expect(@server.requests.length).toEqual 1
       expect(@server.requests[0].method).toEqual "GET"
-      expect(@server.requests[0].url).toEqual "/api/v1/email_threads/inbox"
+      expect(@server.requests[0].url).toEqual "/api/v1/email_threads/in_folder?folder_id=INBOX"
       return
 
     it "should parse the attributes from the response", ->

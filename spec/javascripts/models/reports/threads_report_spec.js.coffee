@@ -7,7 +7,7 @@ describe "Threads report model", ->
     expect(TuringEmailApp.Models.ThreadsReport).toBeDefined()
 
   it "should have the right url", ->
-    expect(@threads_report.url).toEqual '/api/v1/emails/threads_report'
+    expect(@threads_report.url).toEqual '/api/v1/email_reports/threads_report'
 
   describe "when instantiated using fetch with data from the server", ->
 
@@ -17,7 +17,7 @@ describe "Threads report model", ->
       @threadsReport = @fixtures[0]
 
       @server = sinon.fakeServer.create()
-      @server.respondWith "GET", "/api/v1/emails/threads_report", JSON.stringify(@threadsReport)
+      @server.respondWith "GET", "/api/v1/email_reports/threads_report", JSON.stringify(@threadsReport)
       return
 
     afterEach ->
@@ -27,7 +27,7 @@ describe "Threads report model", ->
       @threads_report.fetch()
       expect(@server.requests.length).toEqual 1
       expect(@server.requests[0].method).toEqual "GET"
-      expect(@server.requests[0].url).toEqual "/api/v1/emails/threads_report"
+      expect(@server.requests[0].url).toEqual "/api/v1/email_reports/threads_report"
       return
 
     it "should parse the attributes from the response", ->

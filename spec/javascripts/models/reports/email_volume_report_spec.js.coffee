@@ -7,7 +7,7 @@ describe "Email volume report model", ->
     expect(TuringEmailApp.Models.EmailVolumeReport).toBeDefined()
 
   it "should have the right url", ->
-    expect(@email_volume_report.url).toEqual '/api/v1/emails/volume_report'
+    expect(@email_volume_report.url).toEqual '/api/v1/email_reports/volume_report'
 
   describe "when instantiated using fetch with data from the server", ->
 
@@ -17,7 +17,7 @@ describe "Email volume report model", ->
       @emailVolumeReport = @fixtures[0]
 
       @server = sinon.fakeServer.create()
-      @server.respondWith "GET", "/api/v1/emails/volume_report", JSON.stringify(@emailVolumeReport)
+      @server.respondWith "GET", "/api/v1/email_reports/volume_report", JSON.stringify(@emailVolumeReport)
       return
 
     afterEach ->
@@ -27,7 +27,7 @@ describe "Email volume report model", ->
       @email_volume_report.fetch()
       expect(@server.requests.length).toEqual 1
       expect(@server.requests[0].method).toEqual "GET"
-      expect(@server.requests[0].url).toEqual "/api/v1/emails/volume_report"
+      expect(@server.requests[0].url).toEqual "/api/v1/email_reports/volume_report"
       return
 
     it "should parse the attributes from the response", ->
