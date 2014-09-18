@@ -11,6 +11,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     @$el.remove()
 
   render: ->
+    console.log JSON.stringify(@model.toJSON())
     @$el.html(@template(@model.toJSON()))
 
     @render_genie_report()

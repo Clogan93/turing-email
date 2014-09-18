@@ -49,12 +49,10 @@
 
   // Load the Visualization API and the piechart package, and set a callback to run when the Google Visualization API is loaded.
 
-  setTimeout(function() {
-    google.load('visualization', '1.0',
-                {'callback': function() {drawCharts(dailyEmailVolumeData, weeklyEmailVolumeData, monthlyEmailVolumeData); },
-                'packages':['corechart']}
-                )
-  }, 1000);
+  google.load('visualization', '1.0',
+              {'callback': function() {drawCharts(obj.dailyEmailVolumeData, obj.weeklyEmailVolumeData, obj.monthlyEmailVolumeData); },
+              'packages':['corechart']}
+              );
 %>
 
 <div class="page-header">

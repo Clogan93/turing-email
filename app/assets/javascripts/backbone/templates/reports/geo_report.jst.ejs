@@ -13,12 +13,10 @@
 	  chart.draw(data, options);
 	}
 
-  setTimeout(function() {
-    google.load('visualization', '1.0',
-                {'callback': function() {drawRegionsMap(geoData); },
-                'packages':['corechart']}
-                )
-  }, 1000);
+  google.load('visualization', '1.0',
+              {'callback': function() {drawRegionsMap(obj.geoData); },
+              'packages':['corechart']}
+              )
 %>
 
 <div class="page-header">

@@ -13,11 +13,9 @@
     chart.draw(data, options);
   }
 
-  setTimeout(function() {
-    google.load('visualization', '1.0',
-                {'callback': function() {drawChart(data.wordCountData); },
-                'packages':['corechart']})
-  }, 1000);
+  google.load('visualization', '1.0',
+              {'callback': function() {drawChart(obj.data.wordCountData); },
+              'packages':['corechart']});
 %>
 
 <div class="page-header">

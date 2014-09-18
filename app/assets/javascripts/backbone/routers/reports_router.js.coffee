@@ -44,54 +44,40 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
 
   showAttachmentsReport: (target_element = "#reports") ->
     attachmentsReport = new TuringEmailApp.Models.AttachmentsReport()
-    
-    attachmentsReport.fetch(
-      success: (model, response, options) =>
-        attachmentsReportView = new TuringEmailApp.Views.Reports.AttachmentsReportView(
-          model: model
-          el: $(target_element)
-        )
-        
-        attachmentsReportView.render()
+    attachmentsReportView = new TuringEmailApp.Views.Reports.AttachmentsReportView(
+      model: attachmentsReport
+      el: $(target_element)
     )
+
+    attachmentsReport.fetch()
 
   showEmailVolumeReport: (target_element = "#reports") ->
     emailVolumeReport = new TuringEmailApp.Models.EmailVolumeReport()
-    
-    emailVolumeReport.fetch(
-      success: (model, response, options) =>
-        emailVolumeReportView = new TuringEmailApp.Views.Reports.EmailVolumeReportView(
-          model: model
-          el: $(target_element)
-        )
-        emailVolumeReportView.render()
+    emailVolumeReportView = new TuringEmailApp.Views.Reports.EmailVolumeReportView(
+      model: emailVolumeReport
+      el: $(target_element)
     )
+    emailVolumeReport.fetch()
 
   showGeoReport: (target_element = "#reports") ->
     geoReport = new TuringEmailApp.Models.GeoReport()
 
-    geoReport.fetch(
-      success: (model, response, options) ->
-        geoReportView = new TuringEmailApp.Views.Reports.GeoReportView(
-          model: model
-          el: $(target_element)
-        )
-        
-        geoReportView.render()
+    geoReportView = new TuringEmailApp.Views.Reports.GeoReportView(
+      model: geoReport
+      el: $(target_element)
     )
+    
+    geoReport.fetch()
 
   showImpactReport: (target_element="#reports") ->
     impactReport = new TuringEmailApp.Models.ImpactReport()
 
-    impactReport.fetch(
-      success: (model, response, options) =>
-        impactReportView = new TuringEmailApp.Views.Reports.ImpactReportView(
-          model: impactReport
-          el: $(target_element)
-        )
-        
-        impactReportView.render()
+    impactReportView = new TuringEmailApp.Views.Reports.ImpactReportView(
+      model: impactReport
+      el: $(target_element)
     )
+    
+    impactReport.fetch()
 
   showInboxEfficiencyReport: (target_element="#reports") ->
     inboxEfficiencyReport = new TuringEmailApp.Models.InboxEfficiencyReport()
@@ -102,33 +88,27 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
       el: $(target_element)
     )
     
-    inboxEfficiencyReportView.render()
+    inboxEfficiencyReport.fetch()
 
   showListsReport: (target_element="#reports") ->
     listsReport = new TuringEmailApp.Models.ListsReport()
-    
-    listsReport.fetch(
-      success: (model, response, options) =>
-        listsReportView = new TuringEmailApp.Views.Reports.ListsReportView(
-          model: model
-          el: $(target_element)
-        )
-        
-        listsReportView.render()
+
+    listsReportView = new TuringEmailApp.Views.Reports.ListsReportView(
+      model: listsReport
+      el: $(target_element)
     )
+    
+    listsReport.fetch()
 
   showRecommendedRulesReport: (target_element="#reports") ->
     recommendedRulesReport = new TuringEmailApp.Models.RecommendedRulesReport()
 
-    recommendedRulesReport.fetch(
-      success: (model, response, options) =>
-        recommendedRulesReportView = new TuringEmailApp.Views.Reports.RecommendedRulesReportView(
-          model: model
-          el: $(target_element)
-        )
+    recommendedRulesReportView = new TuringEmailApp.Views.Reports.RecommendedRulesReportView(
+      model: recommendedRulesReport
+      el: $(target_element)
+    )
 
-        recommendedRulesReportView.render()
-    ) 
+    recommendedRulesReport.fetch()
 
   showSummaryAnalyticsReport: (target_element="#reports") ->
     summaryAnalyticsReport = new TuringEmailApp.Models.SummaryAnalyticsReport()
@@ -139,33 +119,26 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
       el: $(target_element)
     )
     
-    summaryAnalyticsReportView.render()
+    summaryAnalyticsReport.render()
 
   showThreadsReport: (target_element="#reports") ->
     threadsReport = new TuringEmailApp.Models.ThreadsReport()
-    
-    threadsReport.fetch(
-      success: (model, response, options) =>
-        threadsReportView = new TuringEmailApp.Views.Reports.ThreadsReportView(
-          model: threadsReport
-          el: $(target_element)
-        )
-        
-        threadsReportView.render()
+    threadsReportView = new TuringEmailApp.Views.Reports.ThreadsReportView(
+      model: threadsReport
+      el: $(target_element)
     )
+
+    threadsReport.fetch()
 
   showContactsReport: (target_element="#reports") ->
     contactsReport = new TuringEmailApp.Models.ContactsReport()
-    
-    contactsReport.fetch(
-      success: (model, response, options) =>
-        contactsReportView = new TuringEmailApp.Views.Reports.ContactsReportView(
-          model: contactsReport
-          el: $(target_element)
-        )
-        
-        contactsReportView.render()
+
+    contactsReportView = new TuringEmailApp.Views.Reports.ContactsReportView(
+      model: contactsReport
+      el: $(target_element)
     )
+    
+    contactsReport.fetch()
 
   showWordCountReport: (target_element="#reports") ->
     wordCountReport = new TuringEmailApp.Models.WordCountReport()
@@ -176,7 +149,7 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
       el: $(target_element)
     )
     
-    wordCountReportView.render()
+    wordCountReport.fetch()
 
   #TODO: re-factor mail.html.erb so that this is not longer necessary.
   restyle_other_elements: ->
