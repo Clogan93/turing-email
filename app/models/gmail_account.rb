@@ -498,18 +498,23 @@ class GmailAccount < ActiveRecord::Base
     self.sync_gmail_ids(gmail_ids)
   end
 
-  # TODO write tests
   def send_email(tos, ccs, bccs, subject, body, email_in_reply_to_uid = nil)
     email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, body, email_in_reply_to_uid)
 
     if email_in_reply_to
-      self.gmail_client.messages_send('me', :threadId => email_in_reply_to.email_thread.uid, :email_raw => email_raw)
+      gmail_data =
+          self.gmail_client.messages_send('me', :threadId => email_in_reply_to.email_thread.uid, :email_raw => email_raw)
     else
-      self.gmail_client.messages_send('me', :email_raw => email_raw)
+      gmail_data = self.gmail_client.messages_send('me', :email_raw => email_raw)
     end
+
+    gmail_id = gmail_data['id']
+    sync_gmail_ids([gmail_id])
+    email = self.emails.find_by(:uid => gmail_id)
+    
+    return email
   end
 
-  # TODO write tests
   def get_draft_ids()
     log_console("GET DRAFTS")
 
@@ -537,7 +542,6 @@ class GmailAccount < ActiveRecord::Base
     return draft_ids
   end
 
-  # TODO write tests
   def sync_draft_data(draft_data)
     draft_id = draft_data['id']
     gmail_id = draft_data['message']['id']
@@ -547,7 +551,6 @@ class GmailAccount < ActiveRecord::Base
     return draft_id, draft_email
   end
 
-  # TODO write tests
   def create_draft(tos, ccs, bccs, subject, body, email_in_reply_to_uid = nil)
     email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, body, email_in_reply_to_uid)
 
@@ -560,7 +563,6 @@ class GmailAccount < ActiveRecord::Base
     return sync_draft_data(draft_data)
   end
 
-  # TODO write tests
   def update_draft(draft_id, tos, ccs, bccs, subject, body, email_in_reply_to_uid = nil)
     email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, body, email_in_reply_to_uid)
 
@@ -574,14 +576,17 @@ class GmailAccount < ActiveRecord::Base
     return sync_draft_data(draft_data)
   end
 
-  # TODO write tests
   def send_draft(draft_id)
     gmail_data = self.gmail_client.drafts_send('me', draft_id)
 
     gmail_id = gmail_data['id']
     sync_gmail_ids([gmail_id])
     email = self.emails.find_by(:uid => gmail_id)
-
+    
     return email
+  end
+  
+  def delete_draft(draft_id)
+    self.gmail_client.drafts_delete('me', draft_id)
   end
 end

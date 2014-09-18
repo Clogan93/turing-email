@@ -205,7 +205,9 @@ class Api::V1::EmailReportsController < ApiController
   end
   
   def threads_report
-    @average_thread_length = current_user.emails.count / current_user.gmail_accounts.first.email_threads.count
+    @average_thread_length =
+        current_user.gmail_accounts.first.email_threads.count > 0 ?
+            current_user.emails.count / current_user.gmail_accounts.first.email_threads.count : 0
   
     @top_email_threads = EmailThread.where(:id => current_user.emails.group(:email_thread_id).
         order('count_all DESC').limit(10).count.keys)
@@ -245,20 +247,24 @@ class Api::V1::EmailReportsController < ApiController
     response :ok
   end
   
-  # TODO write test
   def impact_report
     impact_report_stats = {}
   
     sent_label = current_user.gmail_accounts.first.sent_folder
   
-    sent_email_message_ids = sent_label.emails.pluck(:message_id)
-  
-    sent_emails_replied_to = current_user.emails.joins(:email_in_reply_tos).
-        where('"email_in_reply_tos"."in_reply_to_message_id" IN (?)',
-              sent_email_message_ids).
-        pluck('COUNT(DISTINCT "email_in_reply_tos"."in_reply_to_message_id")')[0]
-  
-    impact_report_stats[:percent_sent_emails_replied_to] = sent_emails_replied_to / sent_label.emails.count.to_f
+    if sent_label
+      sent_email_message_ids = sent_label.emails.pluck(:message_id)
+    
+      sent_emails_replied_to = current_user.emails.joins(:email_in_reply_tos).
+          where('"email_in_reply_tos"."in_reply_to_message_id" IN (?)',
+                sent_email_message_ids).
+          pluck('COUNT(DISTINCT "email_in_reply_tos"."in_reply_to_message_id")')[0]
+    
+      impact_report_stats[:percent_sent_emails_replied_to] =
+          sent_label && sent_label.emails.count > 0 ? sent_emails_replied_to / sent_label.emails.count.to_f : 0
+    else
+      impact_report_stats[:percent_sent_emails_replied_to] = 0
+    end
   
     render :json => impact_report_stats
   end

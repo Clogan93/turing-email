@@ -1,77 +1,76 @@
 require 'rails_helper'
 
-context 'parse_email_string' do
-  it 'should parse email addresses correctly' do
-    # no brackets
-    expect(parse_email_string('test@turinginc.com')).to eq({ :display_name => nil, :address => 'test@turinginc.com' })
-
-    expect(parse_email_string('hithere test@turinginc.com')).to eq({ :display_name => 'hithere',
-                                                                      :address => 'test@turinginc.com' })
-    
-    expect(parse_email_string('hi there test@turinginc.com')).to eq({ :display_name => 'hi there',
-                                                                      :address => 'test@turinginc.com' })
-    
-    # brackets
-    expect(parse_email_string('Test Hello There <test@turinginc.com>')).to eq({ :display_name => 'Test Hello There',
-                                                                                :address => 'test@turinginc.com' })
-    
-    expect(parse_email_string('Test Hello There<test@turinginc.com>')).to eq({ :display_name => 'Test Hello There',
-                                                                               :address => 'test@turinginc.com' })
-    
-    # missing bracket
-    expect(parse_email_string('Hi <test@turinginc.com')).to eq({ :display_name => 'Hi',
-                                                                 :address => 'test@turinginc.com' })
-
-    expect(parse_email_string('Hi<test@turinginc.com')).to eq({ :display_name => 'Hi',
-                                                                 :address => 'test@turinginc.com' })
+context 'force_utf8' do
+  it 'should convert strings to UTF-8' do
+    expect('test'.encode('ascii').force_utf8.encoding.name).to eq('UTF-8')
   end
 end
 
-context 'parse_email_list_id_header' do
-  it 'should parse email List-ID header correctly' do
-    # no @
-    expect(parse_email_list_id_header('<sales.turinginc.com>')).to eq(:name => nil, :id => 'sales.turinginc.com')
-    
-    # no brackets no @
-    expect(parse_email_list_id_header('sales.turinginc.com')).to eq(:name => nil, :id => 'sales.turinginc.com')
-
-    # with @
-    expect(parse_email_list_id_header('<sales@turinginc.com>')).to eq(:name => nil, :id => 'sales@turinginc.com')
-
-    # with @ no brackets
-    expect(parse_email_list_id_header('sales@turinginc.com')).to eq(:name => nil, :id => 'sales@turinginc.com')
-    
-    # with brackets no @
-    expect(parse_email_list_id_header('Sales <sales.turinginc.com>')).to eq(:name => 'Sales', :id => 'sales.turinginc.com')
-
-    expect(parse_email_list_id_header('Sales sales.turinginc.com')).to eq(:name => nil, :id => 'Sales sales.turinginc.com')
-
-    expect(parse_email_list_id_header('The virtual soul of the Black Community at Stanford <the_diaspora.lists.stanford.edu>')).to eq(:name => 'The virtual soul of the Black Community at Stanford', :id => 'the_diaspora.lists.stanford.edu')
+context 'encoded_with_bcc' do
+  it 'should include the BCC header' do
+    m = Mail.new
+    m.bcc = 'foo@bar.com'
+    email_rfc2822 = m.encoded_with_bcc
+    expect(email_rfc2822.split("\r\n")[0]).to eq('Bcc: foo@bar.com')
   end
 end
 
-context 'get_email_list_address_from_list_id' do
-  it 'should parse email list addresses correctly' do
-    # no @
-    expect(get_email_list_address_from_list_id('sales.turinginc.com')).to eq({ :name => 'sales',
-                                                                               :domain => 'turinginc.com' })
+context 'retry_block' do
+  it 'should retry the block' do
+    attempts = 0
+    retry_block(max_attempts: 4) do
+      attempts += 1
+      raise attempt.to_s if attempts < 4
+    end
     
-    # has @
-    expect(get_email_list_address_from_list_id('sales@turinginc.com')).to eq({ :name => 'sales',
-                                                                               :domain => 'turinginc.com' })
+    expect(attempts).to eq(4)
   end
-end
-
-context 'parse_email_address_field' do
   
-end
+  it 'should ignore the specified exception' do
+    attempts = 0
+    
+    begin
+      retry_block(exceptions_to_ignore: [RuntimeError]) do
+        attempts += 1
+        raise RuntimeError
+      end
+    rescue RuntimeError
+    end
+    
+    expect(attempts).to eq(1)
+  end
 
-context 'cleanse_email' do
-  it 'should cleanse emails' do
-    expect(cleanse_email('Sales@turinGinc.com')).to eq('sales@turinginc.com')
-    expect(cleanse_email('salEs@turinGinC.com ')).to eq('sales@turinginc.com')
-    expect(cleanse_email(' sales@turInginc.COM')).to eq('sales@turinginc.com')
-    expect(cleanse_email('    sales@Turinginc.com ')).to eq('sales@turinginc.com')
+  it 'should catch only the specified exception' do
+    attempts = 0
+    retry_block(max_attempts: 2, exceptions_to_catch: [StandardError]) do
+      attempts += 1
+      raise StandardError if attempts < 2
+    end
+    expect(attempts).to eq(2)
+
+    attempts = 0
+    begin
+      retry_block(max_attempts: 2, exceptions_to_catch: [StandardError]) do
+        attempts += 1
+        raise RuntimeError if attempts < 2
+      end
+    rescue RuntimeError
+    end
+    expect(attempts).to eq(1)
   end
 end
 
+context 'append_where_condition' do
+  it 'should create the where_conditions' do
+    where_conditions = ['', []]
+    
+    append_where_condition(where_conditions, 'test<?', 1)
+    
+    expect(where_conditions[0]).to eq('test<?')
+    expect(where_conditions[1]).to eq([1])
+  
+    append_where_condition(where_conditions, 'test2<?', 2)
+    expect(where_conditions[0]).to eq('test<? AND test2<?')
+    expect(where_conditions[1]).to eq([1, 2])
+  end
+end

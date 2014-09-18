@@ -64,32 +64,30 @@ def get_email_list_address_from_list_id(list_id)
   return { :name => name, :domain => domain }
 end
 
-# TODO write tests
 def parse_email_address_field(email_raw, field)
-  emails_parsed = []
+  email_addresses_parsed = []
 
   if email_raw[field] && email_raw[field].field.class != Mail::UnstructuredField
     email_raw[field].addrs.each do |addr|
-      emails_parsed << { :display_name => addr.display_name, :address => addr.address }
+      email_addresses_parsed << { :display_name => addr.display_name, :address => addr.address }
     end
   else
     email_field = email_raw.send(field)
 
     if email_field
       if email_field.class == String
-        emails_parsed << parse_email_string(email_field)
+        email_addresses_parsed << parse_email_string(email_field)
       else
         email_field.each do |email_string|
-          emails_parsed << parse_email_string(email_string)
+          email_addresses_parsed << parse_email_string(email_string)
         end
       end
     end
   end
 
-  return emails_parsed
+  return email_addresses_parsed
 end
 
-# TODO write tests
 def parse_email_headers(raw_headers)
   unfolded_headers = raw_headers.gsub(/#{Mail::Patterns::CRLF}#{Mail::Patterns::WSP}+/, ' ').
                                  gsub(/#{Mail::Patterns::WSP}+/, ' ')
