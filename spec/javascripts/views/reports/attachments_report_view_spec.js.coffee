@@ -35,10 +35,9 @@ describe "AttachmentsReportView", ->
       @server.restore()
 
     it "should have the root element be a div", ->
-      console.log @attachmentsReport
-      console.log @attachmentsReportView
-      console.log @attachmentsReportView.el
-
+      # console.log @attachmentsReportFixture
+      # console.log @attachmentsReport
+      # console.log @attachmentsReportView
       expect(@attachmentsReportView.el.nodeName).toEqual "DIV"
 
     it "should be defined", ->

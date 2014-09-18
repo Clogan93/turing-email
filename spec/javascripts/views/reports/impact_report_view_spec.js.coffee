@@ -16,14 +16,11 @@ describe "Impact Report View", ->
 
       @server.respondWith "GET", "/api/v1/emails/impact_report", JSON.stringify(@impactReportFixture)
 
-      @impactReport.fetch(
-        success: (model, response, options) =>
-          @impactReportView = new TuringEmailApp.Views.Reports.ImpactReportView(
-            model: model
-          )
-          
-          @impactReportView.render()
+      @impactReportView = new TuringEmailApp.Views.Reports.ImpactReportView(
+        model: @impactReport
       )
+      
+      @impactReportView.fetch()
 
       @server.respond()
 

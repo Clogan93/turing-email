@@ -16,16 +16,12 @@ describe "Threads Report View", ->
 
       @server.respondWith "GET", "/api/v1/emails/threads_report", JSON.stringify(@threadsReportFixture)
 
-      @threadsReport.fetch(
-        async: false
-        success: (model, response, options) =>
-          @threadsReportView = new TuringEmailApp.Views.Reports.ThreadsReportView(
-            model: threadsReport
-            el: $(target_element)
-          )
-          
-          @threadsReportView.render()
+      @threadsReportView = new TuringEmailApp.Views.Reports.ThreadsReportView(
+        model: @threadsReport
+        el: $("#reports")
       )
+      
+      @threadsReport.fetch()
 
       @server.respond()
 
