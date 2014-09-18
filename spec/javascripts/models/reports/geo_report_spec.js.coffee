@@ -18,6 +18,8 @@ describe "Geo report model", ->
 
       @server = sinon.fakeServer.create()
       @server.respondWith "GET", "/api/v1/email_reports/ip_stats", JSON.stringify(@geoReport)
+
+      @geoReport = @geo_report.parse @geoReport
       return
 
     afterEach ->

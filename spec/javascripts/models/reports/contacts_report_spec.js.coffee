@@ -18,6 +18,8 @@ describe "Contacts report model", ->
 
       @server = sinon.fakeServer.create()
       @server.respondWith "GET", "/api/v1/email_reports/contacts_report", JSON.stringify(@contactsReport)
+
+      @contactsReport = @contacts_report.parse @contactsReport
       return
 
     afterEach ->

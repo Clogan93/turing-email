@@ -2,7 +2,6 @@ class TuringEmailApp.Models.EmailVolumeReport extends Backbone.Model
   url: "/api/v1/email_reports/volume_report"
 
   parse: (response, options) ->
-    console.log JSON.stringify(response)
     parsedResponse = {}
 
     dailyStartDate = new Date(Date.now())

@@ -18,6 +18,9 @@ describe "Email volume report model", ->
 
       @server = sinon.fakeServer.create()
       @server.respondWith "GET", "/api/v1/email_reports/volume_report", JSON.stringify(@emailVolumeReport)
+
+      @emailVolumeReport = @email_volume_report.parse @emailVolumeReport
+
       return
 
     afterEach ->
