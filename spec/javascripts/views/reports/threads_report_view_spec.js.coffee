@@ -17,9 +17,11 @@ describe "Threads Report View", ->
       @server.respondWith "GET", "/api/v1/emails/threads_report", JSON.stringify(@threadsReportFixture)
 
       @threadsReport.fetch(
+        async: false
         success: (model, response, options) =>
           @threadsReportView = new TuringEmailApp.Views.Reports.ThreadsReportView(
-            model: model
+            model: threadsReport
+            el: $(target_element)
           )
           
           @threadsReportView.render()
@@ -31,6 +33,8 @@ describe "Threads Report View", ->
       @server.restore()
 
     it "should have the root element be a div", ->
+      console.log @threadsReportView
+      console.log @threadsReportView.el
       expect(@threadsReportView.el.nodeName).toEqual "DIV"
 
     it "should be defined", ->
