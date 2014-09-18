@@ -1,6 +1,4 @@
-TuringEmailApp.Views.Reports ||= {}
-
-class TuringEmailApp.Views.Reports.AnalyticsView extends Backbone.View
+class TuringEmailApp.Views.AnalyticsView extends Backbone.View
   template: JST["backbone/templates/analytics"]
 
   initialize: ->

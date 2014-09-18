@@ -10,7 +10,7 @@ class TuringEmailApp.Views.Reports.RecommendedRulesReportView extends Backbone.V
   remove: ->
     @$el.remove()
 
-  setup_recommended_rules_links: ->
+  setupRecommendedRulesLinks: ->
     $(".rule_recommendation_link").click (event) ->
       event.preventDefault()
 
@@ -24,6 +24,6 @@ class TuringEmailApp.Views.Reports.RecommendedRulesReportView extends Backbone.V
 
     @$el.html(@template(@model.toJSON()))
 
-    @setup_recommended_rules_links()
+    @setupRecommendedRulesLinks()
 
     return this

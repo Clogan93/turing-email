@@ -58,9 +58,7 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     @$el.html(@template(@model.toJSON()))
 
     @setupTheDeclareEmailBankruptcyButton()
-
     @setupGoLiveSwitch()
-
     @setupSaveButton()
 
     return this

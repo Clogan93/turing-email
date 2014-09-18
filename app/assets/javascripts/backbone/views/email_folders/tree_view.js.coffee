@@ -12,7 +12,7 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
     @$el.remove()
 
   render: ->
-    @generate_tree()
+    @generateTree()
 
     @$el.html(@template(nodeName: "", node: @tree))
 
@@ -21,7 +21,7 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
 
     return this
 
-  generate_tree: ->
+  generateTree: ->
     @tree = {emailFolder: null, children: {}}
 
     for emailFolder in @collection.toJSON()

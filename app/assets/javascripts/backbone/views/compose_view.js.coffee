@@ -8,11 +8,8 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     @$el.remove()
 
   render: ->
-    
     @$el.html(@template())
-
     @setupComposeView()
-
     return this
 
   setupComposeView: ->

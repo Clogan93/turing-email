@@ -16,7 +16,7 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
   ########################## Show Reports ##########################
   ##################################################################
 
-  showReport: (target_element = "#reports", ReportModel, ReportView) ->
+  showReport: (target_element, ReportModel, ReportView) ->
     reportModel = new ReportModel()
     reportView = new ReportView(
       model: reportModel
