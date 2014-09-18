@@ -39,8 +39,8 @@ class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
   showEmailDraft: (emailThreadUID) ->
     TuringEmailApp.currentEmailThread = TuringEmailApp.emailThreads.getEmailThread(emailThreadUID)
 
-    TuringEmailApp.emailThreads.draftIds = new TuringEmailApp.Collections.DraftsCollection()
-    TuringEmailApp.emailThreads.draftIds.fetch()
+    TuringEmailApp.emailThreads.drafts = new TuringEmailApp.Collections.DraftsCollection()
+    TuringEmailApp.emailThreads.drafts.fetch()
 
     if TuringEmailApp.currentEmailThread?
       TuringEmailApp.emailThreadsListView.prepareComposeModalWithEmailThreadData TuringEmailApp.currentEmailThread.get("emails")[0], ""
@@ -53,6 +53,10 @@ class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
           console.log model
           TuringEmailApp.emailThreadsListView.prepareComposeModalWithEmailThreadData model.get("emails")[0], ""
       )
+
+  ##################################################################
+  ######################### Sending Emails #########################
+  ##################################################################
 
   sendEmail: ->
     $("#inbox_title_header").append('<div id="email_sent_success_alert" class="alert alert-info col-md-4" role="alert">Your message has been sent. <span id="undo_email_send">Undo</span></div>')
@@ -99,52 +103,6 @@ class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
     $("#composeModal").modal "hide"
 
     false # to avoid executing the actual submit of the form.
-
-  updateDraft: (shouldSend=false) ->
-    postData = {}
-    postData.tos = $("#compose_form").find("#to_input").val().split(",")
-    postData.ccs = $("#compose_form").find("#cc_input").val().split(",")
-    postData.bccs = $("#compose_form").find("#bcc_input").val().split(",")
-    postData.subject = $("#compose_form").find("#subject_input").val()
-    postData.email_body = $("#compose_form").find("#compose_email_body").val()
-    postData.email_in_reply_to_uid_input = $("#compose_form #email_in_reply_to_uid_input").val()
-    if TuringEmailApp.currentEmailThread? and TuringEmailApp.currentEmailThread.get("uid")? and TuringEmailApp.emailThreads? and TuringEmailApp.emailThreads.draftIds? and TuringEmailApp.emailThreads.draftIds.models? and TuringEmailApp.emailThreads.draftIds.models[0].attributes?
-      draftIds = TuringEmailApp.emailThreads.draftIds.models[0].attributes
-      postData.draft_id = draftIds[TuringEmailApp.currentEmailThread.get("uid")]
-      postUrl = 'api/v1/email_accounts/update_draft.json'
-    else 
-      postUrl = 'api/v1/email_accounts/create_draft.json'
-    $.ajax({
-      url: postUrl
-      type: 'POST'
-      data: postData
-      dataType : 'json'
-      }).done((data, status) =>
-        if shouldSend
-          @sendDraft postData.draft_id
-        console.log status
-        console.log data
-      ).fail (data, status) ->
-        console.log status
-        console.log data
-
-  sendDraft: (draft_id) ->
-    postData = {}
-    postData.draft_id = draft_id
-    $.ajax({
-      url: 'api/v1/email_accounts/send_draft.json'
-      type: 'POST'
-      data: postData
-      dataType : 'json'
-      }).done((data, status) ->
-        console.log status
-        console.log data
-      ).fail (data, status) ->
-        console.log status
-        console.log data
-
-    @clearComposeModal()
-    $("#composeModal").modal "hide"
 
   clearComposeModal: ->
     $("#compose_form #to_input").val("")

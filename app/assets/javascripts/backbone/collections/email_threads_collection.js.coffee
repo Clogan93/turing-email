@@ -25,3 +25,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
     for emailThreadUID in emailThreadUIDs
       emailThread = @getEmailThread emailThreadUID
       emailThread.seenIs(seenValue)
+
+  parse: (response, options) ->
+    console.log response
+    return response

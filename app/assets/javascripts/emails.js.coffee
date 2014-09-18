@@ -8,13 +8,13 @@
 
 $ ->
   $("#compose_form").submit ->
-    if TuringEmailApp.currentEmailThread? and TuringEmailApp.currentEmailThread.get("uid")? and TuringEmailApp.emailThreads? and TuringEmailApp.emailThreads.draftIds? and TuringEmailApp.emailThreads.draftIds.models? and TuringEmailApp.emailThreads.draftIds.models[0].attributes?
-      TuringEmailApp.emailThreadsRouter.updateDraft(true)
+    if TuringEmailApp.currentEmailThread? and TuringEmailApp.currentEmailThread.get("uid")? and TuringEmailApp.emailThreads? and TuringEmailApp.emailThreads.drafts? and TuringEmailApp.emailThreads.drafts.models? and TuringEmailApp.emailThreads.drafts.models[0].attributes?
+      TuringEmailApp.emailThreads.drafts.updateDraft(true)
     else
-      TuringEmailApp.emailThreadsRouter.sendEmail()
+      TuringEmailApp.emailThreads.drafts.sendEmail()
 
   $("#compose_form #save_button").click ->
-    TuringEmailApp.emailThreadsRouter.updateDraft()
+    TuringEmailApp.emailThreads.drafts.updateDraft()
 
 #########################################################
 #################### Email Filtering ####################
