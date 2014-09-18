@@ -28,7 +28,7 @@ class Email < ActiveRecord::Base
   def Email.lists_email_daily_average(user, limit: nil, where: nil)
     return user.emails.where("list_id IS NOT NULL").where(where).
                 group(:list_name, :list_id).order('daily_average DESC').limit(limit).
-                pluck('list_name, list_id, COUNT(*) / GREATEST(1, EXTRACT(day FROM now() - MIN(date))) AS daily_average')
+                pluck('list_name, list_id, COUNT(*) / (1 + EXTRACT(day FROM now() - MIN(date))) AS daily_average')
   end
   
   def Email.trash_emails(email_ids, trash_folder = nil)

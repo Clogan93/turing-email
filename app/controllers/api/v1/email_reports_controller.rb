@@ -133,7 +133,6 @@ class Api::V1::EmailReportsController < ApiController
     response :ok
   end
   
-  # TODO write test
   def lists_report
     list_report_stats = {}
   

@@ -8,12 +8,12 @@ Rails.application.routes.draw do
   resources :users, only: [:new, :create]
   match('/reset_password', to: 'users#reset_password', via: ['get', 'post'], as: :reset_password)
 
-  match '/gmail_oauth2_callback', to: 'gmail_accounts#o_auth2_callback', via: 'get'
-  match '/gmail_o_auth2_remove', to: 'gmail_accounts#o_auth2_remove', via: 'delete'
+  get '/gmail_oauth2_callback', to: 'gmail_accounts#o_auth2_callback'
+  delete '/gmail_o_auth2_remove', to: 'gmail_accounts#o_auth2_remove'
 
-  match '/signup',  to: 'users#new',        via: 'get'
-  match '/signin',  to: 'sessions#new',     via: 'get'
-  match '/signout', to: 'sessions#destroy', via: 'delete'
+  get '/signup',  to: 'users#new'
+  get '/signin',  to: 'sessions#new'
+  delete '/signout', to: 'sessions#destroy'
 
   namespace :api, :defaults => {:format => :json} do
     namespace :v1 do
@@ -46,8 +46,8 @@ Rails.application.routes.draw do
       post '/emails/trash', to: 'emails#trash'
 
       get '/email_threads/show/:email_thread_uid', to: 'email_threads#show'
-      match '/email_threads/inbox', to: 'email_threads#inbox', via: 'get'
-      match '/email_threads/in_folder', to: 'email_threads#in_folder', via: 'get'
+      get '/email_threads/inbox', to: 'email_threads#inbox'
+      get '/email_threads/in_folder', to: 'email_threads#in_folder'
       post '/email_threads/move_to_folder', to: 'email_threads#move_to_folder'
       post '/email_threads/apply_gmail_label', to: 'email_threads#apply_gmail_label'
       post '/email_threads/remove_from_folder', to: 'email_threads#remove_from_folder'

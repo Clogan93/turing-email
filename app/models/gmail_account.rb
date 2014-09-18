@@ -283,7 +283,7 @@ class GmailAccount < ActiveRecord::Base
   end
   
   def process_sync_failed_emails()
-    log_console("process_sync_failed_emails ##{self.sync_failed_emails.count} emails!")
+    log_console("process_sync_failed_emails #{self.sync_failed_emails.count} emails!")
     
     gmail_ids = self.sync_failed_emails.pluck(:email_uid)
     self.sync_gmail_ids(gmail_ids)

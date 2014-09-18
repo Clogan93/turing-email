@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-context 'parse_email_string' do
+describe '#parse_email_string' do
   it 'should parse email addresses correctly' do
     # no brackets
     expect(parse_email_string('test@turinginc.com')).to eq({ :display_name => nil, :address => 'test@turinginc.com' })
@@ -27,7 +27,7 @@ context 'parse_email_string' do
   end
 end
 
-context 'parse_email_list_id_header' do
+describe '#parse_email_list_id_header' do
   it 'should parse email List-ID header correctly' do
     # no @
     expect(parse_email_list_id_header('<sales.turinginc.com>')).to eq(:name => nil, :id => 'sales.turinginc.com')
@@ -50,7 +50,7 @@ context 'parse_email_list_id_header' do
   end
 end
 
-context 'get_email_list_address_from_list_id' do
+describe '#get_email_list_address_from_list_id' do
   it 'should parse email list addresses correctly' do
     # no @
     expect(get_email_list_address_from_list_id('sales.turinginc.com')).to eq({ :name => 'sales',
@@ -62,7 +62,7 @@ context 'get_email_list_address_from_list_id' do
   end
 end
 
-context 'parse_email_address_field' do
+describe '#parse_email_address_field' do
   it 'should parse email address fields' do
     email_raw = Mail.new
     email_raw.from = 'foo@bar.com'
@@ -73,7 +73,7 @@ context 'parse_email_address_field' do
   end
 end
 
-context 'parse_email_headers' do
+describe '#parse_email_headers' do
   it 'should parse email headers' do
     email_raw = Mail.new
     raw_headers = email_raw.header.raw_source
@@ -81,7 +81,7 @@ context 'parse_email_headers' do
   end
 end
 
-context 'cleanse_email' do
+describe '#cleanse_email' do
   it 'should cleanse emails' do
     expect(cleanse_email('Sales@turinGinc.com')).to eq('sales@turinginc.com')
     expect(cleanse_email('salEs@turinGinC.com ')).to eq('sales@turinginc.com')

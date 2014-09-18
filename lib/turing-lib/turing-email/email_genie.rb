@@ -1,3 +1,4 @@
+# TODO write tests
 class EmailGenie
   LISTS = { '<sales@optimizely.com' => 'Sales',
             '<press@optimizely.com' => 'Press',
