@@ -36,7 +36,7 @@ describe "Geo report model", ->
       @geo_report.fetch()
       @server.respond()
 
-      expect(@geo_report.get("data")).toEqual @geoReport
+      expect(@geo_report.get("data")).toEqual @geoReport.data
       return
 
     it "should have the attributes", ->
