@@ -21,12 +21,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
 
     return if emailThreads.length > 0 then emailThreads[0] else null
 
-  seenIs: (emailThreadUIDs) ->
+  seenIs: (emailThreadUIDs, seenValue=true) ->
     for emailThreadUID in emailThreadUIDs
       emailThread = @getEmailThread emailThreadUID
-      emailThread.seenIs()
-
-  setUnseen: (emailThreadUIDs) ->
-    for emailThreadUID in emailThreadUIDs
-      emailThread = @getEmailThread emailThreadUID
-      emailThread.setUnseen()
+      emailThread.seenIs(seenValue)

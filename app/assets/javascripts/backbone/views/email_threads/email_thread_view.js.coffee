@@ -20,7 +20,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
 
     @bindEmailClick()
 
-    @seenIs()
+    @model.seenIs(true)
 
     @setupReplyButtons()
 
@@ -98,6 +98,3 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
       $(this).siblings(".email").each ->
         $(this).addClass "collapsed_email"
         $(this).find(".email_body").hide()
-
-  seenIs: ->
-    @model.seenIs()

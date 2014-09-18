@@ -121,7 +121,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   setupRead: ->
     @$el.find("i.fa-eye").parent().click =>
       checkedUIDs = @retrieveCheckedUIDs()
-      TuringEmailApp.emailThreads.seenIs checkedUIDs
+      TuringEmailApp.emailThreads.seenIs checkedUIDs, true
 
       #Alter UI
       tr_element = $(".check-mail .checked").parent().parent()
@@ -133,7 +133,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   setupUnread: ->
     @$el.find("i.fa-eye-slash").parent().click =>
       checkedUIDs = @retrieveCheckedUIDs()
-      TuringEmailApp.emailThreads.setUnseen checkedUIDs
+      TuringEmailApp.emailThreads.seenIs checkedUIDs, false
 
       #Alter classes
       tr_element = $(".check-mail .checked").parent().parent()

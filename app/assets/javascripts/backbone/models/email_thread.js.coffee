@@ -15,6 +15,3 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
       data: postData
       success: (data) ->
         return
-
-  setUnseen: ->
-    @seenIs false
