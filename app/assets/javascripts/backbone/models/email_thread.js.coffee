@@ -15,6 +15,9 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
       data: postData
       success: (data) ->
         return
+      error: (data) ->
+        TuringEmailApp.tattletale.log(data)
+        TuringEmailApp.tattletale.send()
 
   uid:
     required: true

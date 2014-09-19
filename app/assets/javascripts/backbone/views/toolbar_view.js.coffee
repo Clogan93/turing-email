@@ -44,6 +44,9 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
         data: postData
         success: (data) ->
           return
+        error: (data) ->
+          TuringEmailApp.tattletale.log(JSON.stringify(data))
+          TuringEmailApp.tattletale.send()
 
       #Alter UI
       tr_element = $(".check-mail .checked").parent().parent()
@@ -65,6 +68,9 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
         data: postData
         success: (data) ->
           return
+        error: (data) ->
+          TuringEmailApp.tattletale.log(JSON.stringify(data))
+          TuringEmailApp.tattletale.send()
 
       #Alter UI
       $(".check-mail .checked").each ->
@@ -90,6 +96,9 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
         data: postData
         success: (data) ->
           return
+        error: (data) ->
+          TuringEmailApp.tattletale.log(JSON.stringify(data))
+          TuringEmailApp.tattletale.send()
 
       #Alter UI
       tr_element = $(".check-mail .checked").parent().parent()
@@ -111,6 +120,9 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
         data: postData
         success: (data) ->
           return
+        error: (data) ->
+          TuringEmailApp.tattletale.log(JSON.stringify(data))
+          TuringEmailApp.tattletale.send()
 
       #Alter UI
       tr_element = $(".check-mail .checked").parent().parent()

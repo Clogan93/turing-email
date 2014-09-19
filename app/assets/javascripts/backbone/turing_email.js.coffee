@@ -59,13 +59,14 @@ window.TuringEmailApp = new(Backbone.View.extend({
     @userSettings = new TuringEmailApp.Models.UserSettings()
     @userSettings.fetch()
 
+    @tattletale = new Tattletale('/api/v1/log.json')
+
     @start_email_sync()
 
     Backbone.history.start()
 
   start_email_sync: ->
     window.setInterval (->
-      console.log "Email sync called"
       $.ajax({
         url: 'api/v1/email_accounts/sync.json'
         type: 'POST'
@@ -73,7 +74,10 @@ window.TuringEmailApp = new(Backbone.View.extend({
         }).done((data, status) =>
           if data.synced_emails
             TuringEmailApp.emailThreads.fetch()
-        )
+        ).fail (data, status) ->
+          TuringEmailApp.tattletale.log(JSON.stringify(status))
+          TuringEmailApp.tattletale.log(JSON.stringify(data))
+          TuringEmailApp.tattletale.send()
     #/ call your function here
     ), 60000
 

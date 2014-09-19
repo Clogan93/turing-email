@@ -18,6 +18,9 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
           url: url
           success: (data) ->
             return
+          error: (data) ->
+            TuringEmailApp.tattletale.log(JSON.stringify(data))
+            TuringEmailApp.tattletale.send()
 
   setupGoLiveSwitch: ->
     $("#go_live_switch").bootstrapSwitch()
@@ -46,11 +49,11 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
         data: postData
         dataType : 'json'
         }).done((data, status) ->
-          console.log status
-          console.log data
+          return
         ).fail (data, status) ->
-          console.log status
-          console.log data
+          TuringEmailApp.tattletale.log(JSON.stringify(status))
+          TuringEmailApp.tattletale.log(JSON.stringify(data))
+          TuringEmailApp.tattletale.send()
 
   render: ->
     TuringEmailApp.reportsRouter.restyle_other_elements()

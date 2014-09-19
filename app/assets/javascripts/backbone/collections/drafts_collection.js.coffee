@@ -32,11 +32,10 @@ class TuringEmailApp.Collections.DraftsCollection extends Backbone.Collection
       }).done((data, status) =>
         if shouldSend
           @sendDraft postData.draft_id
-        console.log status
-        console.log data
       ).fail (data, status) ->
-        console.log status
-        console.log data
+        TuringEmailApp.tattletale.log(JSON.stringify(status))
+        TuringEmailApp.tattletale.log(JSON.stringify(data))
+        TuringEmailApp.tattletale.send()
 
   sendDraft: (draft_id) ->
     postData = {}
@@ -47,11 +46,11 @@ class TuringEmailApp.Collections.DraftsCollection extends Backbone.Collection
       data: postData
       dataType : 'json'
       }).done((data, status) ->
-        console.log status
-        console.log data
+        return
       ).fail (data, status) ->
-        console.log status
-        console.log data
+        TuringEmailApp.tattletale.log(JSON.stringify(status))
+        TuringEmailApp.tattletale.log(JSON.stringify(data))
+        TuringEmailApp.tattletale.send()
 
     TuringEmailApp.composeView.clearComposeModal()
     $("#composeModal").modal "hide"

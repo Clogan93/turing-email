@@ -64,6 +64,10 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
             $("#compose_form").children().show()
           ), 1000
 
+          TuringEmailApp.tattletale.log(JSON.stringify(status))
+          TuringEmailApp.tattletale.log(JSON.stringify(data))
+          TuringEmailApp.tattletale.send()
+
       $("#undo_email_send").parent().remove()
     ), 5000
 
