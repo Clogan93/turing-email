@@ -1,7 +1,7 @@
 describe "EmailFoldersRouter", ->
 
   beforeEach ->
-    @router = new TuringEmailApp.Routers.EmailFoldersRouter
+    @router = new TuringEmailApp.Routers.EmailFoldersRouter()
     @routeSpy = sinon.spy()
     try
       TuringEmailApp.start()
