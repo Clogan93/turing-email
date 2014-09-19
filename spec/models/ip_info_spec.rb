@@ -1,6 +1,16 @@
 require 'rails_helper'
 
 describe IpInfo, :type => :model do
+  context 'validations' do
+    it 'should fail to save without an ip' do
+      ip_info = IpInfo.new
+      expect(ip_info.save).to be(false)
+      
+      ip_info.ip = '76.21.112.131'
+      expect(ip_info.save).to be(true)
+    end
+  end
+  
   it 'should geolocate an IP' do
     ip = '76.21.112.131'
     ip_info = IpInfo.from_ip(ip)

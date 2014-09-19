@@ -36,6 +36,7 @@ class Email < ActiveRecord::Base
     trash_folder.apply_to_emails(email_ids) if trash_folder
   end
   
+  # TODO tests
   def Email.email_raw_from_params(tos, ccs, bccs, subject, body, email_in_reply_to_uid = nil)
     email_raw = Mail.new do
       to tos
@@ -87,7 +88,8 @@ class Email < ActiveRecord::Base
     
     return email_raw, email_in_reply_to
   end
-  
+
+  # TODO tests
   def Email.email_raw_from_mime_data(mime_data)
     mail_data_file = Tempfile.new('turing')
     mail_data_file.binmode
@@ -184,8 +186,9 @@ class Email < ActiveRecord::Base
     return nil
   end
 
+  # TODO write tests
   def Email.part_has_calendar_attachment(part)
-    return true if part.content_type =~ /text\/calendar/i
+    return true if part.content_type =~ /text\/calendar|application\/ics/i
 
     part.parts.each do |current_part|
       return true if Email.part_has_calendar_attachment(current_part)
@@ -198,6 +201,7 @@ class Email < ActiveRecord::Base
     return self.email_account.user
   end
 
+  # TODO write tests
   def add_references(email_raw)
     return if email_raw.references.nil?
 
@@ -224,6 +228,7 @@ class Email < ActiveRecord::Base
     end
   end
 
+  # TODO write tests
   def add_in_reply_tos(email_raw)
     return if email_raw.in_reply_to.nil?
 
@@ -250,7 +255,6 @@ class Email < ActiveRecord::Base
     end
   end
   
-  # TODO write test
   def add_attachments(email_raw)
     if !email_raw.multipart? && email_raw.content_type && email_raw.content_type !~ /text/i
       self.add_attachment(email_raw)
@@ -261,13 +265,12 @@ class Email < ActiveRecord::Base
     end
   end
 
-  # TODO write test
   def add_attachment(attachment)
     email_attachment = EmailAttachment.new
     
     email_attachment.email = self
     email_attachment.filename = attachment.filename
-    email_attachment.content_type = attachment.content_type.split(';')[0].strip if attachment.content_type
+    email_attachment.content_type = attachment.content_type.split(';')[0].downcase.strip if attachment.content_type
     email_attachment.file_size = attachment.decoded.length
     
     email_attachment.save!

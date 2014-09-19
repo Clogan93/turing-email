@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Email, :type => :model do
-  context 'trash_emails' do
+  describe '#Email.trash_emails' do
     let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
     let!(:gmail_label) { FactoryGirl.create(:gmail_label, :gmail_account => gmail_account) }
     let!(:trash_label) { FactoryGirl.create(:gmail_label_trash, :gmail_account => gmail_account) }
@@ -23,7 +23,11 @@ describe Email, :type => :model do
     end
   end
   
-  context 'Email.email_from_email_raw' do
+  describe '#Email.email_raw_from_params' do
+    
+  end
+  
+  describe '#Email.email_from_email_raw' do
     context 'parsing from address' do 
       let(:email_raw) { Mail.read('spec/data/emails/raw/raw_email_1.txt') }
       let(:email) { Email.email_from_email_raw(email_raw) }
@@ -55,7 +59,7 @@ describe Email, :type => :model do
     end
   end
 
-  context 'Email.get_sender_ip' do
+  context '#Email.get_sender_ip' do
     context 'X-Originating-IP' do
       let(:email_raw) { Mail.new }
       before { email_raw.header = File.read('spec/data/emails/headers/x_originating_ip.txt') }
@@ -84,7 +88,21 @@ describe Email, :type => :model do
     end
   end
   
-  context 'add_recipients' do
+  describe '#add_attachments' do
+    it 'should correctly add attachments' do
+      email = FactoryGirl.create(:email)
+      email_raw = Mail.read("spec/data/emails/with_attachments/email_1.txt")
+
+      email.add_attachments(email_raw)
+      
+      email_attachment = email.email_attachments.first
+      expect(email_attachment.filename).to eq('Health Promotions Specialist FTR92014 - APIWC.pdf')
+      expect(email_attachment.content_type).to eq('application/pdf')
+      expect(email_attachment.file_size).to eq(92918)
+    end
+  end
+  
+  describe '#add_recipients' do
     let(:recipients_expected) {
       {
           '1' => {

@@ -1,5 +1,5 @@
 class GenieMailer < ActionMailer::Base
-  layout 'mail'
+  layout 'email'
 
   def user_report_email(user, important_emails, auto_filed_emails, sent_emails_not_replied_to)
     @user = user
