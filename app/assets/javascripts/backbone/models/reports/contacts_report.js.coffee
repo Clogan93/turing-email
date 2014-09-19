@@ -25,3 +25,15 @@ class TuringEmailApp.Models.ContactsReport extends Backbone.Model
     parsedResponse["outgoingEmailData"] = outgoingEmailData
 
     return parsedResponse
+
+  bottom_recipients:
+    required: true
+
+  bottom_senders:
+    required: true
+
+  top_recipients:
+    required: true
+
+  top_senders:
+    required: true

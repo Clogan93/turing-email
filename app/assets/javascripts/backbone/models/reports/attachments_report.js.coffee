@@ -57,3 +57,9 @@ class TuringEmailApp.Models.AttachmentsReport extends Backbone.Model
       attachmentData.push([key, value])
     
     return attachmentData
+
+  average_file_size:
+    required: true
+
+  content_type_stats:
+    required: true

@@ -15,3 +15,9 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
       data: postData
       success: (data) ->
         return
+
+  uid:
+    required: true
+
+  emails:
+    required: true
