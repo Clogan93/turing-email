@@ -245,4 +245,33 @@ describe GmailAccount, :type => :model do
       end
     end
   end
+  
+  describe '#destroy' do
+    let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
+    
+    let!(:email_threads) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => gmail_account) }
+    let!(:people) { FactoryGirl.create_list(:person, SpecMisc::TINY_LIST_SIZE, :email_account => gmail_account) }
+    let!(:gmail_labels) { FactoryGirl.create_list(:gmail_label, SpecMisc::TINY_LIST_SIZE, :gmail_account => gmail_account) }
+    let!(:sync_failed_emails) { FactoryGirl.create_list(:sync_failed_email, SpecMisc::TINY_LIST_SIZE, :email_account => gmail_account) }
+    
+    before { create_email_thread_emails(email_threads) }
+
+    it 'should destroy the associated models' do
+      expect(GoogleOAuth2Token.where(:google_api => gmail_account).count).to eq(1)
+      expect(EmailThread.where(:email_account => gmail_account).count).to eq(email_threads.length)
+      expect(Person.where(:email_account => gmail_account).count).to eq(people.length)
+      expect(GmailLabel.where(:gmail_account => gmail_account).count).to eq(gmail_labels.length)
+      expect(SyncFailedEmail.where(:email_account => gmail_account).count).to eq(sync_failed_emails.length)
+      expect(Email.where(:email_account => gmail_account).count).to eq(email_threads.length * SpecMisc::TINY_LIST_SIZE)
+
+      expect(gmail_account.destroy).not_to eq(false)
+
+      expect(GoogleOAuth2Token.where(:google_api => gmail_account).count).to eq(0)
+      expect(EmailThread.where(:email_account => gmail_account).count).to eq(0)
+      expect(Person.where(:email_account => gmail_account).count).to eq(0)
+      expect(GmailLabel.where(:gmail_account => gmail_account).count).to eq(0)
+      expect(SyncFailedEmail.where(:email_account => gmail_account).count).to eq(0)
+      expect(Email.where(:email_account => gmail_account).count).to eq(0)
+    end
+  end
 end

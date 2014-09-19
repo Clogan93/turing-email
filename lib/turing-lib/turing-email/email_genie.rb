@@ -43,7 +43,7 @@ class EmailGenie
             pluck(:in_reply_to_message_id)
         not_replied_to_message_ids = sent_emails_message_ids - replied_to_message_ids
 
-        sent_emails_not_replied_to = user.emails.where(:message_id => not_replied_to_message_ids)
+        sent_emails_not_replied_to = user.emails.where(:message_id => not_replied_to_message_ids).order('date DESC')
       end
     else
       sent_emails_not_replied_to = []

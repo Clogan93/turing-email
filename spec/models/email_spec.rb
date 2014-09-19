@@ -134,4 +134,31 @@ describe Email, :type => :model do
       end
     end
   end
+  
+  describe '#destroy' do
+    let!(:email) { FactoryGirl.create(:email) }
+    
+    let!(:email_recipients) { FactoryGirl.create_list(:email_recipient, SpecMisc::TINY_LIST_SIZE, :email => email) }
+    let!(:email_references) { FactoryGirl.create_list(:email_reference, SpecMisc::TINY_LIST_SIZE, :email => email) }
+    let!(:email_in_reply_tos) { FactoryGirl.create_list(:email_in_reply_to, SpecMisc::TINY_LIST_SIZE, :email => email) }
+    let!(:email_attachments) { FactoryGirl.create_list(:email_attachment, SpecMisc::TINY_LIST_SIZE, :email => email) }
+    
+    before { create_email_folder_mappings([email]) }
+    
+    it 'should destroy the associated models' do
+      expect(EmailFolderMapping.where(:email => email).count).to eq(1)
+      expect(EmailRecipient.where(:email => email).count).to eq(email_recipients.length)
+      expect(EmailReference.where(:email => email).count).to eq(email_references.length)
+      expect(EmailInReplyTo.where(:email => email).count).to eq(email_in_reply_tos.length)
+      expect(EmailAttachment.where(:email => email).count).to eq(email_attachments.length)
+
+      expect(email.destroy).not_to be(false)
+
+      expect(EmailFolderMapping.where(:email => email).count).to eq(0)
+      expect(EmailRecipient.where(:email => email).count).to eq(0)
+      expect(EmailReference.where(:email => email).count).to eq(0)
+      expect(EmailInReplyTo.where(:email => email).count).to eq(0)
+      expect(EmailAttachment.where(:email => email).count).to eq(0)
+    end
+  end
 end

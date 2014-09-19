@@ -19,7 +19,7 @@ describe EmailThread, :type => :model do
     end
   end
 
-  context 'destroy' do
+  context '#destroy' do
     let(:emails) { create_email_thread_emails(email_threads) }
 
     it 'should destroy the emails' do

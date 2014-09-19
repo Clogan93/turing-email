@@ -2,6 +2,7 @@ class CreateSyncFailedEmails < ActiveRecord::Migration
   def change
     create_table :sync_failed_emails do |t|
       t.belongs_to :email_account, polymorphic: true
+      
       t.text :email_uid
       t.text :result
       t.text :exception

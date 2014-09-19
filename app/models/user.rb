@@ -17,7 +17,7 @@ class User < ActiveRecord::Base
            :through => :gmail_accounts
 
   validates :email,
-            :format     => { with: $config.email_validation_regex },
+            :format => { with: $config.email_validation_regex },
             :allow_nil => true
   
   has_many :genie_rules,

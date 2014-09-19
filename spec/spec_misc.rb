@@ -12,7 +12,7 @@ module SpecMisc
 
     email_threads.each do |email_thread|
       emails += FactoryGirl.create_list(:email, num_emails, :email_thread => email_thread)
-      create_email_folder_mappings(email_thread.emails, email_folder)
+      create_email_folder_mappings(email_thread.emails, email_folder) if email_folder
     end
 
     return emails
