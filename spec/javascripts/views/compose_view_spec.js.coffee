@@ -34,3 +34,17 @@ describe "ComposeView", ->
     expect(@composeView.$el.find("#compose_form #subject_input").val()).toEqual ""
     expect(@composeView.$el.find("#compose_form #compose_email_body").val()).toEqual ""
     expect(@composeView.$el.find("#compose_form #email_in_reply_to_uid_input").val()).toEqual ""
+
+  it "has setupComposeView bind the submit event to #compose_form", ->
+    @composeView.render()
+
+    element = @composeView.$el.find("#compose_form")[0]
+    events = $._data(element, "events")
+    expect(events.hasOwnProperty('submit')).toBe true
+
+  it "has setupComposeView bind the click event to save button", ->
+    @composeView.render()
+
+    element = @composeView.$el.find("#compose_form #save_button")[0]
+    events = $._data(element, "events")
+    expect(events.hasOwnProperty('click')).toBe true
