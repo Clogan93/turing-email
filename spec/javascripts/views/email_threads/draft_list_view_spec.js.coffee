@@ -12,7 +12,7 @@ describe "DraftListView", ->
   it "should be defined", ->
     expect(TuringEmailApp.Views.EmailThreads.DraftListView).toBeDefined()
  
-   it "should have the right collection", ->
+  it "should have the right collection", ->
     expect(@draftListView.collection).toEqual @emailThreads
 
   describe "when render is called", ->

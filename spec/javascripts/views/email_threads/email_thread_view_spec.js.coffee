@@ -11,7 +11,7 @@ describe "EmailThreadView", ->
   it "should be defined", ->
     expect(TuringEmailApp.Views.EmailThreads.EmailThreadView).toBeDefined()
  
-   it "should have the right model", ->
+  it "should have the right model", ->
     expect(@emailThreadView.model).toEqual @emailThread
 
   it "loads the list item template", ->

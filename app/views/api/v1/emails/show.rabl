@@ -1,7 +1,7 @@
 object @email
 
-node(:id) do
-  @email.uid
+node(:id) do |email|
+  email.uid
 end
 
 attributes :auto_filed
