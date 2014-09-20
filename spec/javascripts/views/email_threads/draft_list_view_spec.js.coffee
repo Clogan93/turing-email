@@ -59,7 +59,6 @@ describe "DraftListView", ->
 
       #Run expectations
       for emailThread, index in @emailThreads.models
-        console.log emailThread
         email = emailThread.get("emails")[0]
         
         expect(fromNames[index]).toEqual email.from_name

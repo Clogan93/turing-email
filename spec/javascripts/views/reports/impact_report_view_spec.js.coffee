@@ -13,7 +13,6 @@ describe "Impact Report View", ->
       @fixtures = fixture.load("reports/impact_report.fixture.json", true)
 
       @impactReportFixture = @fixtures[0]
-      console.log @impactReportFixture
 
       @server = sinon.fakeServer.create()
 

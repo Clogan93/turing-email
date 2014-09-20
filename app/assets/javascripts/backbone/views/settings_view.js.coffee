@@ -8,7 +8,7 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     @$el.remove()
 
   setupTheDeclareEmailBankruptcyButton: ->
-    $("#declare_email_bankruptcy").click ->
+    @$el.find("#declare_email_bankruptcy").click ->
       confirm_response = confirm("Are you sure you want to declare email bankruptcy?")
       if confirm_response
         $(@).parent().append('<br /><div class="alert alert-success" role="alert">You have successfully declared email bankruptcy!</div>')
@@ -23,13 +23,13 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
             TuringEmailApp.tattletale.send()
 
   setupGoLiveSwitch: ->
-    $("#go_live_switch").bootstrapSwitch()
-    $("#keyboard_shortcuts_on_off_switch").bootstrapSwitch()
-    $("#preview_on_off_switch").bootstrapSwitch()
-    $("#genie_on_off_switch").bootstrapSwitch()
+    @$el.find("#go_live_switch").bootstrapSwitch()
+    @$el.find("#keyboard_shortcuts_on_off_switch").bootstrapSwitch()
+    @$el.find("#preview_on_off_switch").bootstrapSwitch()
+    @$el.find("#genie_on_off_switch").bootstrapSwitch()
 
   setupSaveButton: ->
-    $("#user_settings_save_button").click ->
+    @$el.find("#user_settings_save_button").click ->
 
       postData = {}
 

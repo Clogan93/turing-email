@@ -28,8 +28,6 @@ describe "Threads Report View", ->
       @server.restore()
 
     it "should have the root element be a div", ->
-      console.log @threadsReportView
-      console.log @threadsReportView.el
       expect(@threadsReportView.el.nodeName).toEqual "DIV"
 
     it "should be defined", ->
