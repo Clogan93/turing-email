@@ -14,6 +14,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     @$el.html(@template(@model.toJSON()))
 
     @model.seenIs(true)
+    #TuringEmailApp.toolbarView.decrementInboxCount()
 
     @renderGenieReport()
     @renderHtmlPartsOfEmails()

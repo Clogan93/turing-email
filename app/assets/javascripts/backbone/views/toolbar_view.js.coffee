@@ -5,7 +5,13 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   remove: ->
     @$el.remove()
 
-  setup_toolbar_buttons: ->
+  # decrementInboxCount: ->
+  #   $(".inbox_count_badge").html(inboxFolder.get("num_unread_threads")) if inboxFolder?
+
+  # renderInboxCount: ->
+  #   @$el.find(".inbox_count_badge").html(TuringEmailApp.currentEmailFolder.get("num_unread_threads")) if TuringEmailApp.currentEmailFolder?
+
+  setupToolbarButtons: ->
     @setupRead()
     @setupUnread()
     @setupArchive()
@@ -180,5 +186,5 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
   render: ->
     @$el.html(@template({'emailFolders' : @collection.toJSON()} ))
-    @setup_toolbar_buttons()
+    @setupToolbarButtons()
     return this
