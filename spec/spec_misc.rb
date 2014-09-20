@@ -5,6 +5,7 @@ module SpecMisc
   LARGE_LIST_SIZE = 20
   
   GMAIL_TEST_EMAIL = 'turingemailtest1@gmail.com'
+  MAILINATOR_TEST_EMAIL = 'uexwvt3ei6ojrcbxspwjs8eohfsywasi@mailinator.com'
   GMAIL_TEST_PASSWORD = 'wZLcsS3XZUN3u2wy'
 
   def create_email_thread_emails(email_threads, email_folder: nil, num_emails: SpecMisc::TINY_LIST_SIZE, do_sleep: false)

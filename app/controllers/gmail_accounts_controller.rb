@@ -15,6 +15,7 @@ class GmailAccountsController < ApplicationController
       redirect_to(root_url)
     else
       token = nil
+      gmail_account = nil
       created_gmail_account = false
 
       begin

@@ -33,6 +33,7 @@ class GmailAccount < ActiveRecord::Base
 
   validates_presence_of(:user, :google_id, :email, :verified_email)
 
+  # TODO write tests
   def GmailAccount.mime_data_from_gmail_data(gmail_data)
     gmail_json = JSON.parse(gmail_data.to_json())
     mime_data = Base64.urlsafe_decode64(gmail_json['raw'])
@@ -40,11 +41,13 @@ class GmailAccount < ActiveRecord::Base
     return mime_data
   end
 
+  # TODO write tests
   def GmailAccount.email_raw_from_gmail_data(gmail_data)
     mime_data = GmailAccount.mime_data_from_gmail_data(gmail_data)
     return Email.email_raw_from_mime_data(mime_data)
   end
 
+  # TODO write tests
   def GmailAccount.email_from_gmail_data(gmail_data)
     mime_data = GmailAccount.mime_data_from_gmail_data(gmail_data)
     email = Email.email_from_mime_data(mime_data)
@@ -54,6 +57,7 @@ class GmailAccount < ActiveRecord::Base
     return email
   end
 
+  # TODO write tests
   def GmailAccount.init_email_from_gmail_data(email, gmail_data)
     email.uid = gmail_data['id']
     email.snippet = gmail_data['snippet']
@@ -63,26 +67,31 @@ class GmailAccount < ActiveRecord::Base
     return Google::GmailClient.new(self.google_o_auth2_token.api_client)
   end
 
+  # TODO write tests
   def init_email_from_gmail_data(email, gmail_data)
     GmailAccount.init_email_from_gmail_data(email, gmail_data)
 
     email.email_account = self
   end
 
+  # TODO write tests
   def gmail_data_from_gmail_id(gmail_id, format = 'raw')
     return self.gmail_client.messages_get('me', gmail_id, format: format)
   end
 
+  # TODO write tests
   def mime_data_from_gmail_id(gmail_id)
     gmail_data = self.gmail_data_from_gmail_id(gmail_id)
     return GmailAccount.mime_data_from_gmail_data(gmail_data)
   end
 
+  # TODO write tests
   def email_raw_from_gmail_id(gmail_id)
     mime_data = self.mime_data_from_gmail_id(gmail_id)
     return Email.email_raw_from_mime_data(mime_data)
   end
 
+  # TODO write tests
   def email_from_gmail_id(gmail_id)
     gmail_data = self.gmail_data_from_gmail_id(gmail_id, 'raw')
     email =  GmailAccount.email_from_gmail_data(gmail_data)
@@ -132,6 +141,57 @@ class GmailAccount < ActiveRecord::Base
     self.save! if do_save
   end
 
+  # polymorphic call
+  def move_email_to_folder(email, folder_id: nil, folder_name: nil, set_auto_filed_folder: false)
+    if folder_id.nil? && folder_name.nil?
+      log_console("MOVING FAILED #{email.uid} TO folder_id AND folder_name are NIL!")
+      return false
+    end
+
+    log_console("MOVING #{email.uid} TO folder_id=#{folder_id} folder_name=#{folder_name}")
+
+    EmailFolderMapping.destroy_all(:email => email)
+    self.apply_label_to_email(email, label_id: folder_id, label_name: folder_name,
+                              set_auto_filed_folder: set_auto_filed_folder)
+
+    return true
+  end
+
+  def apply_label_to_email(email, label_id: nil, label_name: nil, set_auto_filed_folder: false)
+    if label_id.nil? && label_name.nil?
+      log_console("APPLY LABEL TO #{email.uid} FAILED label_id=#{label_id} label_name=#{label_name}")
+      return false
+    end
+
+    #log_console("APPLY LABEL TO #{email.uid} label_id=#{label_id} label_name=#{label_name}")
+
+    gmail_label = GmailLabel.find_by(:gmail_account => self, :label_id => label_id) if label_id
+    gmail_label = GmailLabel.find_by(:gmail_account => self,
+                                     :name => label_name) if gmail_label.nil? && label_name
+
+    if gmail_label.nil?
+      log_console("LABEL DNE! Creating!!")
+
+      gmail_label = GmailLabel.new()
+
+      gmail_label.gmail_account = email.email_account
+      gmail_label.label_id = label_id || SecureRandom.uuid()
+      gmail_label.name = label_name || 'New Label'
+      gmail_label.label_type = 'user'
+
+      gmail_label.save!
+    end
+
+    gmail_label.apply_to_emails([email])
+
+    if set_auto_filed_folder
+      email.auto_filed_folder = gmail_label
+      email.save!
+    end
+
+    return true
+  end
+
   def search_threads(query, nextPageToken = nil, max_results = GmailAccount::SEARCH_RESULTS_PER_PAGE)
     log_console("SEARCH threads query=#{query} nextPageToken=#{nextPageToken} max_results=#{max_results}")
     
@@ -146,6 +206,13 @@ class GmailAccount < ActiveRecord::Base
     log_console("FOUND #{threads_data.length} threads nextPageToken=#{nextPageToken}")
 
     return thread_uids, nextPageToken
+  end
+
+  def process_sync_failed_emails()
+    log_console("process_sync_failed_emails #{self.sync_failed_emails.count} emails!")
+
+    gmail_ids = self.sync_failed_emails.pluck(:email_uid)
+    self.sync_gmail_ids(gmail_ids)
   end
 
   def sync_email(labelIds: nil)
@@ -229,64 +296,6 @@ class GmailAccount < ActiveRecord::Base
 
       self.apply_label_to_email(email, label_id: gmail_label.label_id, label_name: gmail_label.name)
     end
-  end
-
-  # polymorphic call
-  def move_email_to_folder(email, folder_id: nil, folder_name: nil, set_auto_filed_folder: false)
-    if folder_id.nil? && folder_name.nil?
-      log_console("MOVING FAILED #{email.uid} TO folder_id AND folder_name are NIL!")
-      return false
-    end
-    
-    log_console("MOVING #{email.uid} TO folder_id=#{folder_id} folder_name=#{folder_name}")
-
-    EmailFolderMapping.destroy_all(:email => email)
-    self.apply_label_to_email(email, label_id: folder_id, label_name: folder_name,
-                              set_auto_filed_folder: set_auto_filed_folder)
-    
-    return true
-  end
-
-  def apply_label_to_email(email, label_id: nil, label_name: nil, set_auto_filed_folder: false)
-    if label_id.nil? && label_name.nil?
-      log_console("APPLY LABEL TO #{email.uid} FAILED label_id=#{label_id} label_name=#{label_name}")
-      return false
-    end
-    
-    #log_console("APPLY LABEL TO #{email.uid} label_id=#{label_id} label_name=#{label_name}")
-
-    gmail_label = GmailLabel.find_by(:gmail_account => self, :label_id => label_id) if label_id
-    gmail_label = GmailLabel.find_by(:gmail_account => self,
-                                     :name => label_name) if gmail_label.nil? && label_name
-
-    if gmail_label.nil?
-      log_console("LABEL DNE! Creating!!")
-
-      gmail_label = GmailLabel.new()
-
-      gmail_label.gmail_account = email.email_account
-      gmail_label.label_id = label_id || SecureRandom.uuid()
-      gmail_label.name = label_name || 'New Label'
-      gmail_label.label_type = 'user'
-
-      gmail_label.save!
-    end
-
-    gmail_label.apply_to_emails([email])
-
-    if set_auto_filed_folder
-      email.auto_filed_folder = gmail_label
-      email.save!
-    end
-    
-    return true
-  end
-  
-  def process_sync_failed_emails()
-    log_console("process_sync_failed_emails #{self.sync_failed_emails.count} emails!")
-    
-    gmail_ids = self.sync_failed_emails.pluck(:email_uid)
-    self.sync_gmail_ids(gmail_ids)
   end
 
   def sync_email_full(labelIds: nil)

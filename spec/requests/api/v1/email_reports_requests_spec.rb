@@ -440,7 +440,7 @@ describe Api::V1::EmailsController, :type => :request do
       
       let!(:inbox_folder) { FactoryGirl.create(:gmail_label_inbox, :gmail_account => gmail_account) }
       let!(:sent_folder) { FactoryGirl.create(:gmail_label_sent, :gmail_account => gmail_account) }
-      let!(:draft_folder) { FactoryGirl.create(:gmail_label_draft, :gmail_account => gmail_account) }
+      let!(:drafts_folder) { FactoryGirl.create(:gmail_label_drafts, :gmail_account => gmail_account) }
       let!(:trash_folder) { FactoryGirl.create(:gmail_label_trash, :gmail_account => gmail_account) }
       let!(:spam_folder) { FactoryGirl.create(:gmail_label_spam, :gmail_account => gmail_account) }
       let!(:starred_folder) { FactoryGirl.create(:gmail_label_starred, :gmail_account => gmail_account) }
@@ -448,7 +448,7 @@ describe Api::V1::EmailsController, :type => :request do
       before do
         create_email_folder_mappings(inbox_emails, inbox_folder)
         create_email_folder_mappings(sent_emails, sent_folder)
-        create_email_folder_mappings(draft_emails, draft_folder)
+        create_email_folder_mappings(draft_emails, drafts_folder)
         create_email_folder_mappings(trash_emails, trash_folder)
         create_email_folder_mappings(spam_emails, spam_folder)
         create_email_folder_mappings(starred_emails, starred_folder)

@@ -3,7 +3,47 @@ require 'rails_helper'
 describe GmailAccount, :type => :model do
   let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
   
-  context 'move_email_to_folder' do
+  describe '#inbox' do
+    let!(:inbox_label) { FactoryGirl.create(:gmail_label_inbox, :gmail_account => gmail_account) }
+    
+    it 'should return the inbox folder' do
+      expect(gmail_account.inbox_folder.id).to eq(inbox_label.id)
+    end
+  end
+
+  describe '#sent' do
+    let!(:sent_label) { FactoryGirl.create(:gmail_label_sent, :gmail_account => gmail_account) }
+
+    it 'should return the sent folder' do
+      expect(gmail_account.sent_folder.id).to eq(sent_label.id)
+    end
+  end
+
+  describe '#drafts' do
+    let!(:drafts_label) { FactoryGirl.create(:gmail_label_drafts, :gmail_account => gmail_account) }
+
+    it 'should return the drafts folder' do
+      expect(gmail_account.drafts_folder.id).to eq(drafts_label.id)
+    end
+  end
+
+  describe '#trash' do
+    let!(:trash_label) { FactoryGirl.create(:gmail_label_trash, :gmail_account => gmail_account) }
+
+    it 'should return the trash folder' do
+      expect(gmail_account.trash_folder.id).to eq(trash_label.id)
+    end
+  end
+  
+  describe '#set_last_history_id_synced' do
+    it 'should update last_history_id_synced' do
+      gmail_account.set_last_history_id_synced('test')
+      gmail_account.reload
+      expect(gmail_account.last_history_id_synced).to eq('test')
+    end
+  end
+  
+  describe '#move_email_to_folder' do
     let!(:email) { FactoryGirl.create(:email, :email_account => gmail_account) }
 
     context 'when the email is in a folder' do

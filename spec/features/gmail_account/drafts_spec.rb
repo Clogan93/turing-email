@@ -39,9 +39,9 @@ describe 'Gmail drafts support', :type => :feature, :js => true, :link_gmail_acc
   
   it 'should send a draft' do
     # create draft
-    draft_id, email_draft = gmail_account.create_draft('test@turinginc.com', nil, nil,
+    draft_id, email_draft = gmail_account.create_draft(SpecMisc::MAILINATOR_TEST_EMAIL, nil, nil,
                                                        'test', 'body')
-    expect(email_draft.email_recipients.to.first.person.email_address).to eq('test@turinginc.com')
+    expect(email_draft.email_recipients.to.first.person.email_address).to eq(SpecMisc::MAILINATOR_TEST_EMAIL)
     expect(email_draft.subject).to eq('test')
     expect(email_draft.text_part).to eq('body')
 

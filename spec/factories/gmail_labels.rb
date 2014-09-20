@@ -23,7 +23,7 @@ FactoryGirl.define do
     label_type 'system'
   end
 
-  factory :gmail_label_draft, :parent => :gmail_label do
+  factory :gmail_label_drafts, :parent => :gmail_label do
     label_id 'DRAFT'
     name 'DRAFT'
     label_type 'system'
