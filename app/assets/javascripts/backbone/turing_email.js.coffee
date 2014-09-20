@@ -17,6 +17,9 @@ window.TuringEmailApp = new(Backbone.View.extend({
     @user = new TuringEmailApp.Models.User()
     @user.fetch()
 
+    @userSettings = new TuringEmailApp.Models.UserSettings()
+    @userSettings.fetch()
+
     @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection()
     @emailFoldersRouter = new TuringEmailApp.Routers.EmailFoldersRouter()
     @emailFoldersTreeView = new TuringEmailApp.Views.EmailFolders.TreeView(
@@ -55,9 +58,6 @@ window.TuringEmailApp = new(Backbone.View.extend({
     @analyticsRouter = new TuringEmailApp.Routers.AnalyticsRouter()
     @settingsRouter = new TuringEmailApp.Routers.SettingsRouter()
     @searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()
-
-    @userSettings = new TuringEmailApp.Models.UserSettings()
-    @userSettings.fetch()
 
     @start_error_logging()    
 

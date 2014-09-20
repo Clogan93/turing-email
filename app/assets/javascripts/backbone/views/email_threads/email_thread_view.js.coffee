@@ -27,7 +27,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
   setupReplyButtons: ->
     $(".email_reply_button").click =>
       last_email_in_thread = TuringEmailApp.currentEmailThread.get("emails")[0]
-      TuringEmailApp.emailThreadsListView.prepareComposeModalWithEmailThreadData last_email_in_thread
+      TuringEmailApp.composeView.prepareComposeModalWithEmailData last_email_in_thread
       $("#compose_form #email_in_reply_to_uid_input").val(last_email_in_thread.uid)
 
   setupForwardButton: ->
@@ -35,7 +35,8 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
       last_email_in_thread = TuringEmailApp.currentEmailThread.get("emails")[0]
 
       $("#compose_form #subject_input").val("Fwd: " + last_email_in_thread.subject)
-      $("#compose_form #compose_email_body").val("\n\n\n\n\n" + last_email_in_thread.body_text)
+
+      TuringEmailApp.composeView.prepareEmailBodyWithEmailThreadData last_email_in_thread
 
       $("#composeModal").modal "show"
 

@@ -43,12 +43,12 @@ class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
     TuringEmailApp.emailThreads.drafts.fetch()
 
     if TuringEmailApp.currentEmailThread?
-      TuringEmailApp.emailThreadsListView.prepareComposeModalWithEmailThreadData TuringEmailApp.currentEmailThread.get("emails")[0], ""
+      TuringEmailApp.composeView.prepareComposeModalWithEmailData TuringEmailApp.currentEmailThread.get("emails")[0], ""
     else
       TuringEmailApp.currentEmailThread = new TuringEmailApp.Models.EmailThread()
       TuringEmailApp.currentEmailThread.url = "/api/v1/email_threads/show/" + emailThreadUID
       
       TuringEmailApp.currentEmailThread.fetch(
         success: (model, response, options) =>
-          TuringEmailApp.emailThreadsListView.prepareComposeModalWithEmailThreadData model.get("emails")[0], ""
+          TuringEmailApp.composeView.prepareComposeModalWithEmailData model.get("emails")[0], ""
       )
