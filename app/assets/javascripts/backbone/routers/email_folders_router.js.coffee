@@ -17,6 +17,7 @@ class TuringEmailApp.Routers.EmailFoldersRouter extends Backbone.Router
       reset: true
     )
 
+    TuringEmailApp.currentFolderId = folder_id
     TuringEmailApp.toolbarView.renderLabelTitleAndUnreadCount folder_id
 
   showDraftFolder: ->
@@ -36,4 +37,5 @@ class TuringEmailApp.Routers.EmailFoldersRouter extends Backbone.Router
       reset: true
     )
 
+    TuringEmailApp.currentFolderId = folder_id
     TuringEmailApp.toolbarView.renderLabelTitleAndUnreadCount "DRAFT"
