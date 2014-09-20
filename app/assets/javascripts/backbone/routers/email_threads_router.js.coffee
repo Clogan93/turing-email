@@ -50,6 +50,5 @@ class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
       
       TuringEmailApp.currentEmailThread.fetch(
         success: (model, response, options) =>
-          console.log model
           TuringEmailApp.emailThreadsListView.prepareComposeModalWithEmailThreadData model.get("emails")[0], ""
       )

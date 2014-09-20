@@ -26,10 +26,6 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
       emailThread = @getEmailThread emailThreadUID
       emailThread.seenIs(seenValue)
 
-  parse: (response, options) ->
-    console.log response
-    return response
-
   sendEmail: ->
     $("#inbox_title_header").append('<div id="email_sent_success_alert" class="alert alert-info col-md-4" role="alert">Your message has been sent. <span id="undo_email_send">Undo</span></div>')
 

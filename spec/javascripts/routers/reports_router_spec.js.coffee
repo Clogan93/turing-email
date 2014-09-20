@@ -4,7 +4,8 @@ describe "ReportsRouter", ->
     @router = new TuringEmailApp.Routers.ReportsRouter()
     @routeSpy = sinon.spy()
     try
-      TuringEmailApp.start()
+      Backbone.history.start
+        silent: true
 
   it "has a attachments_report route and points to the showAttachmentsReport method", ->
     expect(@router.routes["attachments_report"]).toEqual "showAttachmentsReport"
@@ -38,3 +39,67 @@ describe "ReportsRouter", ->
 
   it "Has the right number of routes", ->
     expect(_.size(@router.routes)).toEqual 11
+
+  it "fires the showAttachmentsReport route with attachments_report", ->
+    @router.bind "route:showAttachmentsReport", @routeSpy
+    @router.navigate "attachments_report",
+      trigger: true
+    expect(@routeSpy).toHaveBeenCalledOnce()
+    expect(@routeSpy).toHaveBeenCalledWith()
+    return
+
+  it "fires the showEmailVolumeReport route with email_volume_report", ->
+    @router.bind "route:showEmailVolumeReport", @routeSpy
+    @router.navigate "email_volume_report",
+      trigger: true
+    expect(@routeSpy).toHaveBeenCalledOnce()
+    expect(@routeSpy).toHaveBeenCalledWith()
+    return
+
+  it "fires the showGeoReport route with geo_report", ->
+    @router.bind "route:showGeoReport", @routeSpy
+    @router.navigate "geo_report",
+      trigger: true
+    expect(@routeSpy).toHaveBeenCalledOnce()
+    expect(@routeSpy).toHaveBeenCalledWith()
+    return
+
+  it "fires the showImpactReport route with impact_report", ->
+    @router.bind "route:showImpactReport", @routeSpy
+    @router.navigate "impact_report",
+      trigger: true
+    expect(@routeSpy).toHaveBeenCalledOnce()
+    expect(@routeSpy).toHaveBeenCalledWith()
+    return
+
+  it "fires the showListsReport route with lists_report", ->
+    @router.bind "route:showListsReport", @routeSpy
+    @router.navigate "lists_report",
+      trigger: true
+    expect(@routeSpy).toHaveBeenCalledOnce()
+    expect(@routeSpy).toHaveBeenCalledWith()
+    return
+
+  it "fires the showRecommendedRulesReport route with recommended_rules_report", ->
+    @router.bind "route:showRecommendedRulesReport", @routeSpy
+    @router.navigate "recommended_rules_report",
+      trigger: true
+    expect(@routeSpy).toHaveBeenCalledOnce()
+    expect(@routeSpy).toHaveBeenCalledWith()
+    return
+
+  it "fires the showThreadsReport route with threads_report", ->
+    @router.bind "route:showThreadsReport", @routeSpy
+    @router.navigate "threads_report",
+      trigger: true
+    expect(@routeSpy).toHaveBeenCalledOnce()
+    expect(@routeSpy).toHaveBeenCalledWith()
+    return
+
+  it "fires the showContactsReport route with top_contacts", ->
+    @router.bind "route:showContactsReport", @routeSpy
+    @router.navigate "top_contacts",
+      trigger: true
+    expect(@routeSpy).toHaveBeenCalledOnce()
+    expect(@routeSpy).toHaveBeenCalledWith()
+    return

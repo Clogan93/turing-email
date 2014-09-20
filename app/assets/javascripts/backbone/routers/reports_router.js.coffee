@@ -16,7 +16,7 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
   ########################## Show Reports ##########################
   ##################################################################
 
-  showReport: (target_element, ReportModel, ReportView) ->
+  showReport: (target_element = "#reports", ReportModel, ReportView) ->
     reportModel = new ReportModel()
     reportView = new ReportView(
       model: reportModel
@@ -25,28 +25,28 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
 
     reportModel.fetch()
 
-  showAttachmentsReport: (target_element = "#reports") ->
+  showAttachmentsReport: ->
     @showReport "#reports", TuringEmailApp.Models.AttachmentsReport, TuringEmailApp.Views.Reports.AttachmentsReportView
 
-  showEmailVolumeReport: (target_element = "#reports") ->
+  showEmailVolumeReport: ->
     @showReport "#reports", TuringEmailApp.Models.EmailVolumeReport, TuringEmailApp.Views.Reports.EmailVolumeReportView
 
-  showGeoReport: (target_element = "#reports") ->
+  showGeoReport: ->
     @showReport "#reports", TuringEmailApp.Models.GeoReport, TuringEmailApp.Views.Reports.GeoReportView
 
-  showImpactReport: (target_element="#reports") ->
+  showImpactReport: ->
     @showReport "#reports", TuringEmailApp.Models.ImpactReport, TuringEmailApp.Views.Reports.ImpactReportView
 
-  showListsReport: (target_element="#reports") ->
+  showListsReport: ->
     @showReport "#reports", TuringEmailApp.Models.ListsReport, TuringEmailApp.Views.Reports.ListsReportView
 
-  showRecommendedRulesReport: (target_element="#reports") ->
+  showRecommendedRulesReport: ->
     @showReport "#reports", TuringEmailApp.Models.RecommendedRulesReport, TuringEmailApp.Views.Reports.RecommendedRulesReportView
 
-  showThreadsReport: (target_element="#reports") ->
+  showThreadsReport: ->
     @showReport "#reports", TuringEmailApp.Models.ThreadsReport, TuringEmailApp.Views.Reports.ThreadsReportView
 
-  showContactsReport: (target_element="#reports") ->
+  showContactsReport: ->
     @showReport "#reports", TuringEmailApp.Models.ContactsReport, TuringEmailApp.Views.Reports.ContactsReportView
 
   #################################################################
