@@ -59,11 +59,28 @@ window.TuringEmailApp = new(Backbone.View.extend({
     @userSettings = new TuringEmailApp.Models.UserSettings()
     @userSettings.fetch()
 
-    @tattletale = new Tattletale('/api/v1/log.json')
+    @start_error_logging()    
 
     @start_email_sync()
 
     Backbone.history.start()
+
+  start_error_logging: ->
+
+    @tattletale = new Tattletale('/api/v1/log.json')
+
+    window.onerror = (message, url, lineNumber, column, errorObj) ->
+      
+      #save error and send to server for example.
+      TuringEmailApp.tattletale.log(JSON.stringify(message))
+      TuringEmailApp.tattletale.log(JSON.stringify(url.toString()))
+      TuringEmailApp.tattletale.log(JSON.stringify("Line number: " + lineNumber.toString()))
+
+      if errorObj?
+        TuringEmailApp.tattletale.log(JSON.stringify(errorObj.stack))
+
+      TuringEmailApp.tattletale.send()
+      false
 
   start_email_sync: ->
     window.setInterval (->
