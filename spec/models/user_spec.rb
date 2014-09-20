@@ -3,6 +3,34 @@ require 'rails_helper'
 describe User, :type => :model do
   let(:user_template) { FactoryGirl.build(:user) }
 
+  context 'validations' do
+    let(:email_address) { 'FOO@bar.com' }
+    
+    it 'should fail to save without password and matching password confirmation' do
+      user = User.new
+      expect(user.save).to be(false)
+
+      user.password = 'password'
+      expect(user.save).to be(false)
+      
+      user.password = nil
+      user.password_confirmation = 'password'
+      expect(user.save).to be(false)
+
+      user.password = user.password_confirmation = 'password'
+      expect(user.save).to be(true)
+    end
+
+    it 'should cleanse the email address' do
+      user = User.new
+      user.password = user.password_confirmation = 'password'
+      
+      user.email = email_address
+      expect(user.save).to be(true)
+      expect(user.email).to eq(cleanse_email(email_address))
+    end
+  end
+  
   context 'get_unique_violation_error' do
     it 'should return the email error message when the email is in use' do
       begin
@@ -24,7 +52,7 @@ describe User, :type => :model do
     let(:params) {  ActionController::Parameters.new(
                       :user => { :email => user_template.email,
                                  :password => user_template.password,
-                                 :confirm_password => user_template.password}
+                                 :password_confirmation => user_template.password}
                       ) }
 
     it 'should create a user when the email and password are valid' do
@@ -100,7 +128,7 @@ describe User, :type => :model do
     end
   end
   
-  context 'apply_email_rules_to_inbox' do
+  describe '#apply_email_rules_to_folder' do
     let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
     let!(:email_rule) { FactoryGirl.create(:email_rule, :user => gmail_account.user,
                                            :from_address => nil, :to_address => nil, :subject => nil) }
@@ -123,7 +151,7 @@ describe User, :type => :model do
       expect(gmail_label.emails.count).to eq(0)
       expect(inbox_label.emails.count).to eq(emails.length)
 
-      gmail_account.user.apply_email_rules_to_inbox()
+      gmail_account.user.apply_email_rules_to_folder(gmail_account.inbox_folder)
 
       gmail_label.reload
       inbox_label.reload

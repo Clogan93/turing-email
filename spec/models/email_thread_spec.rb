@@ -32,6 +32,14 @@ describe EmailThread, :type => :model do
     end
   end
 
+  describe '#user' do
+    let(:email_thread) { FactoryGirl.create(:email_thread) }
+
+    it 'returns the user' do
+      expect(email_thread.user).not_to be(nil)
+    end
+  end
+
   context '#destroy' do
     let(:emails) { create_email_thread_emails(email_threads) }
 
