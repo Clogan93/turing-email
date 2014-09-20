@@ -36,13 +36,18 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     else
       $("#compose_form #to_input").val(email.from_address)
 
-    $("#compose_form #subject_input").val(subject_prefix + email.subject)
+    @prepareEmailSubjectWithEmailData email, subject_prefix   
 
-    @prepareEmailBodyWithEmailThreadData email
+    @prepareEmailBodyWithEmailData email
 
     $("#composeModal").modal "show"
 
-  prepareEmailBodyWithEmailThreadData: (email) ->
+  prepareEmailSubjectWithEmailData: (email, subject_prefix) ->
+    subjectWithoutForwardPrefix = email.subject.replace("Fwd: ", "")
+    subjectWithoutForwardAndReplyPrefixes = subjectWithoutForwardPrefix.replace("Re: ", "")
+    $("#compose_form #subject_input").val(subject_prefix + subjectWithoutForwardAndReplyPrefixes)
+
+  prepareEmailBodyWithEmailData: (email) ->
     if email.text_part?
       $("#compose_form #compose_email_body").val("\r\n\r\n\r\n\r\n" + email.text_part)
     else
