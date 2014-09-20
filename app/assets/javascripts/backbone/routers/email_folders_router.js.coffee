@@ -17,6 +17,8 @@ class TuringEmailApp.Routers.EmailFoldersRouter extends Backbone.Router
       reset: true
     )
 
+    TuringEmailApp.toolbarView.renderLabelTitleAndUnreadCount folder_id
+
   showDraftFolder: ->
     TuringEmailApp.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(
       folder_id: "DRAFT"
@@ -33,3 +35,5 @@ class TuringEmailApp.Routers.EmailFoldersRouter extends Backbone.Router
     TuringEmailApp.emailThreads.fetch(
       reset: true
     )
+
+    TuringEmailApp.toolbarView.renderLabelTitleAndUnreadCount "DRAFT"

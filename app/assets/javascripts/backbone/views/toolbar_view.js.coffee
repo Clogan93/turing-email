@@ -8,8 +8,10 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   # decrementInboxCount: ->
   #   $(".inbox_count_badge").html(inboxFolder.get("num_unread_threads")) if inboxFolder?
 
-  # renderInboxCount: ->
-  #   @$el.find(".inbox_count_badge").html(TuringEmailApp.currentEmailFolder.get("num_unread_threads")) if TuringEmailApp.currentEmailFolder?
+  renderLabelTitleAndUnreadCount: (folder_id) ->
+    currentFolder = TuringEmailApp.emailFolders.getEmailFolder(folder_id)
+    @$el.find(".label_name").html(currentFolder.get("name")) if currentFolder?
+    @$el.find(".label_count_badge").html(currentFolder.get("num_unread_threads")) if currentFolder?
 
   setupToolbarButtons: ->
     @setupRead()
