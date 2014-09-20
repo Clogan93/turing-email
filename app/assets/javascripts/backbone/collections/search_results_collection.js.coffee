@@ -4,4 +4,4 @@ class TuringEmailApp.Collections.SearchResultsCollection extends TuringEmailApp.
     @url = options.url
 
   parse: (response, options) ->
-  	return response.email_threads
+    return response.email_threads

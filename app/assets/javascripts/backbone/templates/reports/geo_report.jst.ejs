@@ -1,17 +1,17 @@
 <%
-	function drawRegionsMap(geoData) {
+  function drawRegionsMap(geoData) {
 
-	  var data = google.visualization.arrayToDataTable(geoData);
+    var data = google.visualization.arrayToDataTable(geoData);
 
-	  var options = {
+    var options = {
       region: 'US',
       displayMode: 'markers'
     };
 
-	  var chart = new google.visualization.GeoChart(document.getElementById('geo_chart_div'));
+    var chart = new google.visualization.GeoChart(document.getElementById('geo_chart_div'));
 
-	  chart.draw(data, options);
-	}
+    chart.draw(data, options);
+  }
 
   google.load('visualization', '1.0',
               {'callback': function() {drawRegionsMap(obj.geoData); },
@@ -23,4 +23,4 @@
   <h1 class="h1">Reports <small>geo</small></h1>
 </div>
 
-<div id="geo_chart_div" style="width: 900px; height: 500px;"></div>	
+<div id="geo_chart_div" style="width: 900px; height: 500px;"></div>  
