@@ -11,26 +11,34 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
   render: ->
     @addAll()
+
+    console.log "Render!"
+
     return this
 
   addOne: (thread) ->
     listItemView = new TuringEmailApp.Views.EmailThreads.ListItemView(model: thread)
     @$el.append(listItemView.render().el)
 
+    console.log "addOne!"
+
   addAll: ->
     @$el.empty()
     @collection.forEach(@addOne, this)
     @moveReportToTop()
 
-    $(".i-checks").iCheck
-      checkboxClass: "icheckbox_square-green"
-      radioClass: "iradio_square-green"
+    @renderCheckboxes()
 
     @addKeyboardShortcutHighlight()
 
     if TuringEmailApp.userSettings.get("split_pane_mode") is "horizontal"
       $("#preview_panel").show()
       @renderEmailPreview()
+
+  renderCheckboxes: ->
+    $(".i-checks").iCheck
+      checkboxClass: "icheckbox_square-green"
+      radioClass: "iradio_square-green"
 
   addKeyboardShortcutHighlight: ->
     $("#email_table_body tr:nth-child(1)").addClass("email_thread_highlight")

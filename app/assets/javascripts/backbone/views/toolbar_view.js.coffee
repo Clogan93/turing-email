@@ -27,6 +27,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @setupLabelAsLinks()
     @setupMoveToFolder()
     @setupSearch()
+    @setupRefresh()
 
   setupSearch: ->
     $("#search_input").change ->
@@ -189,6 +190,10 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
         newQuery = "?page=" + newPageNumber.toString()
         if window.location.hash.indexOf("page=") then hashUrlComponent = window.location.hash.split("?page=")[0] else hashUrlComponent = window.location.hash
         window.location = window.location.origin + window.location.pathname + hashUrlComponent + newQuery
+
+  setupRefresh: ->
+    @$el.find("#refresh_button").click ->
+      TuringEmailApp.emailThreads.fetch()
 
   render: ->
     @$el.html(@template({'emailFolders' : @collection.toJSON()} ))
