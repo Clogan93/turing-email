@@ -126,7 +126,7 @@ class @KeyboardShortcutHandler
         $("#compose_form #to_input").val(last_email_in_thread.from_address)
 
       $("#compose_form #subject_input").val("Re: " + last_email_in_thread.subject)
-      $("#compose_form #compose_email_body").val("\n\n\n\n\n" + last_email_in_thread.body_text)
+      $("#compose_form #compose_email_body").val("\n\n\n\n\n" + TuringEmailApp.composeView.retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes(last_email_in_thread))
 
       $("#composeModal").modal "show"
 

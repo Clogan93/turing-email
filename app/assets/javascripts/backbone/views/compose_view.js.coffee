@@ -48,7 +48,14 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     $("#compose_form #subject_input").val(subject_prefix + subjectWithoutForwardAndReplyPrefixes)
 
   prepareEmailBodyWithEmailData: (email) ->
-    if email.text_part?
-      $("#compose_form #compose_email_body").val("\r\n\r\n\r\n\r\n" + email.text_part)
+    $("#compose_form #compose_email_body").val("\r\n\r\n\r\n\r\n" + @retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes(email))
+
+  retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes: (email) ->
+    if email.html_part?
+      return email.html_part
+    else if email.text_part?
+      return email.text_part
+    else if email.body_text?
+      return email.body_text
     else
-      $("#compose_form #compose_email_body").val("\r\n\r\n\r\n\r\n" + email.body_text)
+      return ""

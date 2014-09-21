@@ -140,6 +140,10 @@ body
   .bullet_span
   {
     cursor: pointer;
+    float: left;
+    padding-top: 2px;
+    padding-right: 7px;
+    font-size: 22px;
   }
 
   .label_without_children
