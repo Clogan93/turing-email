@@ -76,11 +76,11 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
       $("#undo_email_send").parent().remove()
     ), 5000
 
-    $("#undo_email_send").click ->
+    $("#undo_email_send").click =>
       clearTimeout(TuringEmailApp.sendEmailTimeout)
-      @loadEmail(model.toJSON())
+      @loadEmail(emailToSend.toJSON())
       @show()
-      
+
       $("#undo_email_send").parent().remove()
   
   updateDraft: ->
