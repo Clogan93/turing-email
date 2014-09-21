@@ -14,7 +14,6 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     @$el.html(@template(@model.toJSON()))
 
     @model.seenIs(true)
-    #TuringEmailApp.toolbarView.decrementInboxCount()
 
     @renderGenieReport()
     @renderHtmlPartsOfEmails()
@@ -23,8 +22,9 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     @setupReplyButtons()
     @setupForwardButton()
 
-    return
+    @setupArchive()
 
+    return
 
   setupReplyButtons: ->
     $(".email_reply_button").click =>
@@ -37,6 +37,27 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
       last_email_in_thread = TuringEmailApp.currentEmailThread.get("emails")[0]
       TuringEmailApp.composeView.loadBodyFromEmail last_email_in_thread
       TuringEmailApp.composeView.show()
+
+  setupArchive: ->
+    @$el.find("i.fa-archive").parent().click =>
+      postData = {}
+      emailThreadUIds = []
+      emailThreadUIds.push(TuringEmailApp.currentEmailThread.get("uid"))
+      postData.email_thread_uids = emailThreadUIds
+      postData.email_folder_id = TuringEmailApp.currentFolderId
+
+      url = "/api/v1/email_threads/remove_from_folder.json"
+      $.ajax
+        type: "POST"
+        url: url
+        data: postData
+        success: (data) ->
+          return
+        error: (data) ->
+          TuringEmailApp.tattletale.log(JSON.stringify(data))
+          TuringEmailApp.tattletale.send()
+
+      window.location = "/mail"
 
   insertHtmlIntoIframe: (email, index) ->
     @$el.find("#email_iframe" + index.toString()).contents().find("body").append(email.html_part)
@@ -72,7 +93,9 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
           thread_elements = $(@).attr("href").split("#")
           thread_id = thread_elements[thread_elements.length - 1]
           $.get "/api/v1/email_threads/show/" + thread_id, (data) ->
-            $('#composeModal #compose_email_body').val("\n\n\n\n" + data.emails[data.emails.length - 1].text_part)
+            email_from_email_thread = data.emails[data.emails.length - 1]
+            $('#composeModal #compose_email_body').val("\n\n\n\n" + TuringEmailApp.composeView.retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes(email_from_email_thread))
+            $('#compose_form #email_in_reply_to_uid_input').val(email_from_email_thread.uid)
 
         @$el.find("#email_iframe" + index.toString()).contents().find("body").find('a[href^="#from_address"]').click (event) ->
           event.preventDefault()

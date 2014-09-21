@@ -2,6 +2,10 @@ class TuringEmailApp.Routers.EmailFoldersRouter extends Backbone.Router
   routes:
     "folder#DRAFT": "showDraftFolder"
     "folder#:folder_id": "showFolder"
+    "inbox": "showInboxFolder"
+
+  showInboxFolder: ->
+    @showFolder "INBOX"
 
   showFolder: (folder_id) ->
     TuringEmailApp.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(

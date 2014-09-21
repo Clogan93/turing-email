@@ -140,6 +140,10 @@ body
   .bullet_span
   {
     cursor: pointer;
+    float: left;
+    padding-top: 2px;
+    padding-right: 7px;
+    font-size: 22px;
   }
 
   .label_without_children
@@ -410,3 +414,14 @@ a#refresh_link
     height: 100%;
   }
 }
+
+.read td
+{
+  background-color: whitesmoke !important;
+}
+
+.unread td
+{
+ background-color: white !important; 
+}
+  

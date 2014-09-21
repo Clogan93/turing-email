@@ -15,8 +15,12 @@
 
     if (emailDatePlus18H > Date.now()) {%>
       <%= emailDate.toLocaleTimeString(navigator.language, {hour: "2-digit", minute: "2-digit"}) %><%
-    } else {%>
-      <%= emails[0].date.substring(0, 10) %><%
+    } else {
+      var formattedDateStringComponents = emailDate.toDateString().split(" ");
+      var formattedDateString = formattedDateStringComponents[1] + " " + formattedDateStringComponents[2];
+      %>
+      <%= formattedDateString %>
+      <%
     }
   }
 %>
