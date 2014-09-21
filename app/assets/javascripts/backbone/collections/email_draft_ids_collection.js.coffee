@@ -5,16 +5,16 @@ class TuringEmailApp.Collections.EmailDraftIDsCollection extends Backbone.Collec
     parsedResponse = []
 
     for uid, draftID of response
-      draftData = {}
-      draftData["uid"] = uid
-      draftData["draftID"] = draftID
-      parsedResponse.push(draftData)
+      draftID = {}
+      draftID["uid"] = uid
+      draftID["draftID"] = draftID
+      parsedResponse.push(draftID)
 
     return parsedResponse
 
   getEmailDraftID: (emailUID) ->
-    emailDraftIDs = @filter((draftData) ->
-      draftData.get("uid") is emailUID
+    emailDraftIDs = @filter((draftID) ->
+      draftID.get("uid") is emailUID
     )
 
     return if emailDraftIDs.length > 0 then emailDraftIDs[0].get("draftID") else null

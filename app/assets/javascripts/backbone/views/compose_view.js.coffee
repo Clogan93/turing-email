@@ -4,7 +4,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
   initialize: ->
     $("#compose_button").click =>
       @resetView()
-      $("#composeModal").modal "show"
+      @show()
   
   remove: ->
     @$el.remove()
@@ -21,12 +21,68 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
         @currentDraft.save()
         @currentDraft.send()
       else
-        TuringEmailApp.emailThreads.sendEmail()
+        @sendEmail()
+
+      return false
 
     @$el.find("#compose_form #save_button").click =>
       @updateDraft()
       @currentDraft.save()
 
+  show: ->
+    $("#composeModal").modal "show"
+    
+  hide: ->
+    $("#composeModal").modal "hide"
+
+  resetView: ->
+    $("#compose_form #email_sent_error_alert").remove()
+
+    @currentDraft = null
+
+    @$el.find("#compose_form #email_draft_id_input").val("")
+    @$el.find("#compose_form #email_in_reply_to_uid_input").val("")
+
+    @$el.find("#compose_form #to_input").val("")
+    @$el.find("#compose_form #cc_input").val("")
+    @$el.find("#compose_form #bcc_input").val("")
+
+    @$el.find("#compose_form #subject_input").val("")
+    @$el.find("#compose_form #compose_email_body").val("")
+
+  sendEmail: ->
+    $("#inbox_title_header").append('<div id="email_sent_success_alert" class="alert alert-info col-md-4" role="alert">
+                                       Your message has been sent. <span id="undo_email_send">Undo</span>
+                                     </div>')
+    
+    emailToSend = new TuringEmailApp.Models.Email(url: "/api/v1/email_accounts/send_email")
+    @updateEmail(emailToSend)
+    @resetView()
+    @hide()
+    
+    TuringEmailApp.sendEmailTimeout = setTimeout (=>
+      emailToSend.save(null, {
+        error: (model, response, options)=>
+          @loadEmail(model.toJSON())
+          @show()
+          
+          $("#compose_form").prepend('<div id="email_sent_error_alert" class="alert alert-danger" role="alert">
+                                     There was an error in sending your email!</div>')
+          
+          TuringEmailApp.tattletale.log(JSON.stringify(response))
+          TuringEmailApp.tattletale.send()
+      })
+
+      $("#undo_email_send").parent().remove()
+    ), 5000
+
+    $("#undo_email_send").click ->
+      clearTimeout(TuringEmailApp.sendEmailTimeout)
+      @loadEmail(model.toJSON())
+      @show()
+
+      $("#undo_email_send").parent().remove()
+  
   updateDraft: ->
     if not @currentDraft?
       @currentDraft = new TuringEmailApp.Models.Draft()
@@ -35,47 +91,37 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
         @currentDraft.set("id", emailDraftID)
         @currentDraft.set("draft_id", emailDraftID)
 
-    @currentDraft.set("email_in_reply_to_uid", $("#compose_form #email_in_reply_to_uid_input").val())
-      
-    @currentDraft.set("tos", $("#compose_form").find("#to_input").val().split(","))
-    @currentDraft.set("ccs", $("#compose_form").find("#cc_input").val().split(","))
-    @currentDraft.set("bccs",  $("#compose_form").find("#bcc_input").val().split(","))
-
-    @currentDraft.set("subject", $("#compose_form").find("#subject_input").val())
-    @currentDraft.set("email_body", $("#compose_form").find("#compose_email_body").val())
-
-  resetView: ->
-    @currentDraft = null
+    @updateEmail(@currentDraft)
     
-    @$el.find("#compose_form #email_draft_id_input").val("")
-    @$el.find("#compose_form #email_in_reply_to_uid_input").val("")
-    
-    @$el.find("#compose_form #to_input").val("")
-    @$el.find("#compose_form #cc_input").val("")
-    @$el.find("#compose_form #bcc_input").val("")
-    
-    @$el.find("#compose_form #subject_input").val("")
-    @$el.find("#compose_form #compose_email_body").val("")
+  updateEmail:(email) ->
+    email.set("email_in_reply_to_uid", $("#compose_form #email_in_reply_to_uid_input").val())
 
-  loadEmailDraft: (emailDraft, emailInReplyToUID="") ->
+    email.set("tos", $("#compose_form").find("#to_input").val().split(","))
+    email.set("ccs", $("#compose_form").find("#cc_input").val().split(","))
+    email.set("bccs",  $("#compose_form").find("#bcc_input").val().split(","))
+
+    email.set("subject", $("#compose_form").find("#subject_input").val())
+    email.set("email_body", $("#compose_form").find("#compose_email_body").val())
+
+  loadEmail: (email, insertReplyHeader=false) ->
     @resetView()
+    
+    $("#compose_form #to_input").val(email.tos)
+    $("#compose_form #cc_input").val(email.ccs)
+    $("#compose_form #bcc_input").val(email.bccs)
+
+    $("#compose_form #subject_input").val(email.subject)
+
+    @loadBodyFromEmail(email, insertReplyHeader)
+    
+  loadEmailDraft: (emailDraft, emailInReplyToUID="") ->
+    @loadEmail(emailDraft)
     
     emailDraftID = TuringEmailApp.emailDraftIDs.getEmailDraftID(emailDraft.uid)
     $("#compose_form #email_draft_id_input").val(emailDraftID)
     $("#compose_form #email_in_reply_to_uid_input").val(emailInReplyToUID)
-    
-    $("#compose_form #to_input").val(emailDraft.tos)
-    $("#compose_form #cc_input").val(emailDraft.ccs)
-    $("#compose_form #bcc_input").val(emailDraft.bccs)
 
-    $("#compose_form #to_input").val(if emailDraft.reply_to_address? then emailDraft.reply_to_address else emailDraft.from_address)
-    $("#compose_form #subject_input").val(emailDraft.subject)
-  
-    @loadBodyFromEmail emailDraft
-  
-    $("#composeModal").modal "show"
-
-  loadEmail: (email, subject_prefix="Re: ") ->
+  loadEmailAsReply: (email, subject_prefix="Re: ") ->
     @resetView()
     
     $("#compose_form #email_in_reply_to_uid_input").val(email.uid)
@@ -85,8 +131,13 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
 
     @loadBodyFromEmail(email, true)
 
-    $("#composeModal").modal "show"
-
+  loadEmailAsForward: (email) ->
+    @resetView()
+    
+    $("#compose_form #subject_input").val("Fwd: " + email.subject)
+    
+    @loadBodyFromEmail(email, true)
+    
   loadBodyFromEmail: (email, insertReplyHeader=false) ->
     body = ""
     body += "\r\n\r\n\r\n\r\n" if insertReplyHeader
