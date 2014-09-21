@@ -4,7 +4,9 @@ describe "AttachmentsReportView", ->
     @attachmentsReport = new TuringEmailApp.Models.AttachmentsReport()
     TuringEmailApp.user = new TuringEmailApp.Models.User()
     TuringEmailApp.reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
-    @attachmentsReportView = null
+    @attachmentsReportView = new TuringEmailApp.Views.Reports.AttachmentsReportView(
+      model: @attachmentsReport
+    )
 
   describe "when render is called", ->
 
@@ -20,29 +22,15 @@ describe "AttachmentsReportView", ->
       TuringEmailApp.user.fetch()
       @server.respond()
 
-      @server.respondWith "GET", "/api/v1/emails/attachments_report", JSON.stringify(@attachmentsReportFixture)
+      @server.respondWith "GET", "/api/v1/email_reports/attachments_report", JSON.stringify(@attachmentsReportFixture)
 
-      @attachmentsReport.fetch(
-        success: (model, response, options) =>
-          @attachmentsReportView = new TuringEmailApp.Views.Reports.AttachmentsReportView(
-            model: model
-          )
-
-          @attachmentsReportView.render()
-
-          return
-      )
-
+      @attachmentsReport.fetch()
       @server.respond()
 
     afterEach ->
       @server.restore()
 
     it "should have the root element be a div", ->
-      console.log @attachmentsReport
-      console.log @attachmentsReportView
-      console.log @attachmentsReportView.el
-
       expect(@attachmentsReportView.el.nodeName).toEqual "DIV"
 
     it "should be defined", ->
@@ -54,11 +42,11 @@ describe "AttachmentsReportView", ->
     it "loads the attachment report template", ->
       expect(@attachmentsReportView.template).toEqual JST["backbone/templates/reports/attachments_report"]
 
-    #   it "should render the number of attachments chart title", ->
-    #     console.log $("#reports")
-    #     console.log @attachmentsReportView.el
-    #     console.log @attachmentsReportView.$el.find('#num_attachments_chart_div')
-    #     console.log @attachmentsReportView.$el.find('#num_attachments_chart_div').find("div:contains('Number of Attachments')")
+    # it "should render the number of attachments chart title", ->
+    #   console.log $("#reports")
+    #   console.log @attachmentsReportView.el
+    #   console.log @attachmentsReportView.$el.find('#num_attachments_chart_div')
+    #   console.log @attachmentsReportView.$el.find('#num_attachments_chart_div').find("div:contains('Number of Attachments')")
 
     # it "should render the attachment file size chart title", ->
 

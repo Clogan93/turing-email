@@ -1,6 +1,4 @@
-TuringEmailApp.Views.Reports ||= {}
-
-class TuringEmailApp.Views.Reports.SettingsView extends Backbone.View
+class TuringEmailApp.Views.SettingsView extends Backbone.View
   template: JST["backbone/templates/settings"]
 
   initialize: ->
@@ -10,7 +8,7 @@ class TuringEmailApp.Views.Reports.SettingsView extends Backbone.View
     @$el.remove()
 
   setupTheDeclareEmailBankruptcyButton: ->
-    $("#declare_email_bankruptcy").click ->
+    @$el.find("#declare_email_bankruptcy").click ->
       confirm_response = confirm("Are you sure you want to declare email bankruptcy?")
       if confirm_response
         $(@).parent().append('<br /><div class="alert alert-success" role="alert">You have successfully declared email bankruptcy!</div>')
@@ -20,16 +18,18 @@ class TuringEmailApp.Views.Reports.SettingsView extends Backbone.View
           url: url
           success: (data) ->
             return
+          error: (data) ->
+            TuringEmailApp.tattletale.log(JSON.stringify(data))
+            TuringEmailApp.tattletale.send()
 
   setupGoLiveSwitch: ->
-    $("#go_live_switch").bootstrapSwitch()
-    $("#keyboard_shortcuts_on_off_switch").bootstrapSwitch()
-    $("#preview_on_off_switch").bootstrapSwitch()
-    $("#genie_on_off_switch").bootstrapSwitch()
+    @$el.find("#go_live_switch").bootstrapSwitch()
+    @$el.find("#keyboard_shortcuts_on_off_switch").bootstrapSwitch()
+    @$el.find("#preview_on_off_switch").bootstrapSwitch()
+    @$el.find("#genie_on_off_switch").bootstrapSwitch()
 
   setupSaveButton: ->
-    $("#user_settings_save_button").click ->
-      console.log "Saving user settings."
+    @$el.find("#user_settings_save_button").click ->
 
       postData = {}
 
@@ -49,22 +49,19 @@ class TuringEmailApp.Views.Reports.SettingsView extends Backbone.View
         data: postData
         dataType : 'json'
         }).done((data, status) ->
-          console.log status
-          console.log data
+          return
         ).fail (data, status) ->
-          console.log status
-          console.log data
+          TuringEmailApp.tattletale.log(JSON.stringify(status))
+          TuringEmailApp.tattletale.log(JSON.stringify(data))
+          TuringEmailApp.tattletale.send()
 
   render: ->
     TuringEmailApp.reportsRouter.restyle_other_elements()
 
-    console.log @model.toJSON()
     @$el.html(@template(@model.toJSON()))
 
     @setupTheDeclareEmailBankruptcyButton()
-
     @setupGoLiveSwitch()
-
     @setupSaveButton()
 
     return this

@@ -72,7 +72,8 @@ module SpecMisc
   end
   
   def validate_email(email, email_rendered)
-    expected_attributes = %w(auto_filed
+    expected_attributes = %w(id
+                             auto_filed
                              uid message_id list_id
                              seen snippet date
                              from_name from_address
@@ -81,7 +82,7 @@ module SpecMisc
                              tos ccs bccs
                              subject
                              html_part text_part body_text)
-    expected_attributes_to_skip = %w(date)
+    expected_attributes_to_skip = %w(id date)
 
     spec_validate_attributes(expected_attributes, email, email_rendered, expected_attributes_to_skip)
     expect(email_rendered['date']).to eq(email.date.as_json)

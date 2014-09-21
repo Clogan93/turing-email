@@ -39,18 +39,3 @@ describe "User model", ->
       @user.fetch()
       @server.respond()
       expect(@user.get("email")).toBeDefined()
-
-  describe "Validations", ->
-
-    attrs = {}
- 
-    beforeEach ->
-      attrs =
-        email: 'test44@gmail.com'
- 
-    afterEach ->
-      newUser = new TuringEmailApp.Models.User attrs
-      expect(newUser.isValid()).toBeFalsy()
- 
-    it "should validate the presence of email", ->
-      attrs["email"] = null

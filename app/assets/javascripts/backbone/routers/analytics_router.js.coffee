@@ -3,7 +3,7 @@ class TuringEmailApp.Routers.AnalyticsRouter extends Backbone.Router
     "analytics": "showAnalytics"
     
   showAnalytics: ->
-    analyticsView = new TuringEmailApp.Views.Reports.AnalyticsView(
+    analyticsView = new TuringEmailApp.Views.AnalyticsView(
       el: $("#reports")
     )
   

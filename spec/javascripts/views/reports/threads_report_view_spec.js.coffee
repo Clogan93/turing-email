@@ -14,16 +14,13 @@ describe "Threads Report View", ->
 
       @server = sinon.fakeServer.create()
 
-      @server.respondWith "GET", "/api/v1/emails/threads_report", JSON.stringify(@threadsReportFixture)
+      @server.respondWith "GET", "/api/v1/email_reports/threads_report", JSON.stringify(@threadsReportFixture)
 
-      @threadsReport.fetch(
-        success: (model, response, options) =>
-          @threadsReportView = new TuringEmailApp.Views.Reports.ThreadsReportView(
-            model: model
-          )
-          
-          @threadsReportView.render()
+      @threadsReportView = new TuringEmailApp.Views.Reports.ThreadsReportView(
+        model: @threadsReport
       )
+      
+      @threadsReport.fetch()
 
       @server.respond()
 

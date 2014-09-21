@@ -1,0 +1,28 @@
+<div class="modal fade" id="composeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">Compose</h4>
+      </div>
+      <form id="compose_form">
+        <div class="modal-body">
+            <input id="to_input" type="text" class="form-control" placeholder="To"/><br />
+            <input id="cc_input" type="text" class="form-control" placeholder="CC"/><br />
+            <input id="bcc_input" type="text" class="form-control" placeholder="BCC"/><br />
+            <input id="subject_input" type="text" class="form-control" placeholder="Subject"/><br />
+            <label id="compose_form_attachments_label">Attachments</label><input id="compose_form_attachments_input" type="file" name="attachment" multiple />
+            <br />
+            <br />
+            <textarea id="compose_email_body" class="form-control" rows="8"></textarea>
+            <input id="email_in_reply_to_uid_input" type="hidden" class="form-control" placeholder="Subject"/><br />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button id="save_button" type="button" class="btn btn-info" data-dismiss="modal">Save</button>
+          <button type="submit" class="btn btn-primary">Send</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

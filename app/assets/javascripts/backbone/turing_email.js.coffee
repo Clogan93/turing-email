@@ -17,6 +17,9 @@ window.TuringEmailApp = new(Backbone.View.extend({
     @user = new TuringEmailApp.Models.User()
     @user.fetch()
 
+    @userSettings = new TuringEmailApp.Models.UserSettings()
+    @userSettings.fetch()
+
     @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection()
     @emailFoldersRouter = new TuringEmailApp.Routers.EmailFoldersRouter()
     @emailFoldersTreeView = new TuringEmailApp.Views.EmailFolders.TreeView(
@@ -39,6 +42,11 @@ window.TuringEmailApp = new(Backbone.View.extend({
         @toolbarView.render()
     )
 
+    @composeView = new TuringEmailApp.Views.ComposeView(
+      el: $("#modals")
+    )
+    @composeView.render()
+
     @emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
 
     windowLocationHash = window.location.hash.toString()
@@ -51,16 +59,31 @@ window.TuringEmailApp = new(Backbone.View.extend({
     @settingsRouter = new TuringEmailApp.Routers.SettingsRouter()
     @searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()
 
-    @userSettings = new TuringEmailApp.Models.UserSettings()
-    @userSettings.fetch()
+    @start_error_logging()    
 
     @start_email_sync()
 
     Backbone.history.start()
 
+  start_error_logging: ->
+
+    @tattletale = new Tattletale('/api/v1/log.json')
+
+    window.onerror = (message, url, lineNumber, column, errorObj) ->
+      
+      #save error and send to server for example.
+      TuringEmailApp.tattletale.log(JSON.stringify(message))
+      TuringEmailApp.tattletale.log(JSON.stringify(url.toString()))
+      TuringEmailApp.tattletale.log(JSON.stringify("Line number: " + lineNumber.toString()))
+
+      if errorObj?
+        TuringEmailApp.tattletale.log(JSON.stringify(errorObj.stack))
+
+      TuringEmailApp.tattletale.send()
+      false
+
   start_email_sync: ->
     window.setInterval (->
-      console.log "Email sync called"
       $.ajax({
         url: 'api/v1/email_accounts/sync.json'
         type: 'POST'
@@ -68,7 +91,10 @@ window.TuringEmailApp = new(Backbone.View.extend({
         }).done((data, status) =>
           if data.synced_emails
             TuringEmailApp.emailThreads.fetch()
-        )
+        ).fail (data, status) ->
+          TuringEmailApp.tattletale.log(JSON.stringify(status))
+          TuringEmailApp.tattletale.log(JSON.stringify(data))
+          TuringEmailApp.tattletale.send()
     #/ call your function here
     ), 60000
 

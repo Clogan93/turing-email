@@ -2,20 +2,6 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
-#######################################################
-#################### Email Sending ####################
-#######################################################
-
-$ ->
-  $("#compose_form").submit ->
-    if TuringEmailApp.currentEmailThread? and TuringEmailApp.currentEmailThread.get("uid")? and TuringEmailApp.emailThreads? and TuringEmailApp.emailThreads.draftIds? and TuringEmailApp.emailThreads.draftIds.models? and TuringEmailApp.emailThreads.draftIds.models[0].attributes?
-      TuringEmailApp.emailThreadsRouter.updateDraft(true)
-    else
-      TuringEmailApp.emailThreadsRouter.sendEmail()
-
-  $("#compose_form #save_button").click ->
-    TuringEmailApp.emailThreadsRouter.updateDraft()
-
 #########################################################
 #################### Email Filtering ####################
 #########################################################

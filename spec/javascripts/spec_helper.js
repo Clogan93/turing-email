@@ -31,3 +31,4 @@
 //= require application
 //
 //= require sinon
+//= require jasmine-sinon

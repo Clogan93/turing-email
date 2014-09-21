@@ -1,5 +1,9 @@
 object @email
 
+node(:id) do |email|
+  email.uid
+end
+
 attributes :auto_filed
 attributes :uid, :message_id, :list_id
 attributes :seen, :snippet, :date

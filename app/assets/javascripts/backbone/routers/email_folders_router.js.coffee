@@ -15,10 +15,6 @@ class TuringEmailApp.Routers.EmailFoldersRouter extends Backbone.Router
 
     TuringEmailApp.emailThreads.fetch(
       reset: true
-
-      # reenable when we have preview pane
-      #success: (collection, response, options) ->
-        #TuringEmailApp.emailThreadsRouter.showEmailThread(collection.models[0].get("uid")) if collection.length > 0
     )
 
   showDraftFolder: ->
@@ -26,8 +22,8 @@ class TuringEmailApp.Routers.EmailFoldersRouter extends Backbone.Router
       folder_id: "DRAFT"
     )
 
-    TuringEmailApp.emailThreads.draftIds = new TuringEmailApp.Collections.DraftsCollection()
-    TuringEmailApp.emailThreads.draftIds.fetch()
+    TuringEmailApp.emailThreads.drafts = new TuringEmailApp.Collections.DraftsCollection()
+    TuringEmailApp.emailThreads.drafts.fetch()
 
     TuringEmailApp.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.DraftListView({
       el: $("#email_table_body")
@@ -36,8 +32,4 @@ class TuringEmailApp.Routers.EmailFoldersRouter extends Backbone.Router
 
     TuringEmailApp.emailThreads.fetch(
       reset: true
-
-      # reenable when we have preview pane
-      #success: (collection, response, options) ->
-        #TuringEmailApp.emailThreadsRouter.showEmailThread(collection.models[0].get("uid")) if collection.length > 0
     )

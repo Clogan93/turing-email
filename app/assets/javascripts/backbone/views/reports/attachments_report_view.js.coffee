@@ -12,6 +12,5 @@ class TuringEmailApp.Views.Reports.AttachmentsReportView extends Backbone.View
 
   render: ->
     TuringEmailApp.reportsRouter.restyle_other_elements()
-
     @$el.html(@template(@model.toJSON()))
     return this

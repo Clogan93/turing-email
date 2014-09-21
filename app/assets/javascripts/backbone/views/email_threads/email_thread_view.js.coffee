@@ -13,16 +13,13 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
   render: ->
     @$el.html(@template(@model.toJSON()))
 
-    @render_genie_report()
+    @model.seenIs(true)
 
-    @render_html_parts_of_emails()
+    @renderGenieReport()
+    @renderHtmlPartsOfEmails()
 
-    @bindEmailClick()
-
-    @seenIs()
-
+    @setupEmailExpandAndCollapse()
     @setupReplyButtons()
-
     @setupForwardButton()
 
     return
@@ -30,7 +27,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
   setupReplyButtons: ->
     $(".email_reply_button").click =>
       last_email_in_thread = TuringEmailApp.currentEmailThread.get("emails")[0]
-      TuringEmailApp.emailThreadsListView.prepareComposeModalWithEmailThreadData last_email_in_thread
+      TuringEmailApp.composeView.prepareComposeModalWithEmailData last_email_in_thread
       $("#compose_form #email_in_reply_to_uid_input").val(last_email_in_thread.uid)
 
   setupForwardButton: ->
@@ -38,29 +35,33 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
       last_email_in_thread = TuringEmailApp.currentEmailThread.get("emails")[0]
 
       $("#compose_form #subject_input").val("Fwd: " + last_email_in_thread.subject)
-      $("#compose_form #compose_email_body").val("\n\n\n\n\n" + last_email_in_thread.body_text)
+
+      TuringEmailApp.composeView.prepareEmailBodyWithEmailThreadData last_email_in_thread
 
       $("#composeModal").modal "show"
 
-  insert_html_into_iframe: (email, index) ->
+  insertHtmlIntoIframe: (email, index) ->
     @$el.find("#email_iframe" + index.toString()).contents().find("body").append(email.html_part)
     body_height_sum = 0
+    
     @$el.find("#email_iframe" + index.toString()).contents().find("body").children().each ->
       body_height = $(@).height()
       body_height_sum += body_height
+    
     body_height_adjusted = body_height_sum + 25
     body_height_adjusted_string = body_height_adjusted.toString() + "px"
+    
     @$el.find("#email_iframe" + index.toString()).css("height", body_height_adjusted_string)
 
-  render_html_parts_of_emails: ->
+  renderHtmlPartsOfEmails: ->
     for email, index in @model.get("emails")
       if email.html_part?
-        @insert_html_into_iframe email, index
+        @insertHtmlIntoIframe email, index
 
-  render_genie_report: ->
+  renderGenieReport: ->
     for email, index in @model.get("emails")
       if email.subject is "Turing Email - Your daily Genie Report!"
-        @insert_html_into_iframe email, index
+        @insertHtmlIntoIframe email, index
 
         @$el.find("#email_iframe" + index.toString()).contents().find("body").find('a[href^="#email_thread"]').click (event) ->
           event.preventDefault()
@@ -89,14 +90,13 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
           $('.dropdown a').trigger('click.bs.dropdown')
           return false
 
-  bindEmailClick: ->
+  setupEmailExpandAndCollapse: ->
     @$el.find(".email").click ->
+
       $(this).find(".email_body").show()
       $(this).removeClass("collapsed_email")
 
       $(this).siblings(".email").each ->
+
         $(this).addClass "collapsed_email"
         $(this).find(".email_body").hide()
-
-  seenIs: ->
-    @model.seenIs()

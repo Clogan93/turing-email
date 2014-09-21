@@ -76,6 +76,7 @@ gem 'mail', '~> 2.5.4'
 # backbone
 #gem 'backbone-rails', '~> 1.1.2'
 gem 'rails-backbone', '~> 1.1.2', git:'https://github.com/codebrew/backbone-rails'
+gem 'backbone-validation-rails', '~> 0.7.1.1'
 
 # ejs
 gem 'ejs', '~> 1.1.1'
@@ -98,4 +99,5 @@ group :development, :test do
   gem 'phantomjs', '~> 1.9.7.1'
   gem 'teaspoon', '~> 0.8.0'
   gem 'sinon-rails', '~> 1.10.3'
+  gem 'jasmine-sinon-rails', '~> 1.3.4'
 end

@@ -15,9 +15,10 @@ describe "Attachments report model", ->
       @fixtures = fixture.load("reports/attachments_report.fixture.json", true);
 
       @attachmentReport = @fixtures[0]
-
       @server = sinon.fakeServer.create()
       @server.respondWith "GET", "/api/v1/email_reports/attachments_report", JSON.stringify(@attachmentReport)
+
+      @attachmentReport = @attachments_report.parse @attachmentReport
       return
 
     afterEach ->
@@ -34,7 +35,7 @@ describe "Attachments report model", ->
       @attachments_report.fetch()
       @server.respond()
 
-      expect(@attachments_report.get("data")).toEqual @attachmentReport
+      expect(@attachments_report.get("data")).toEqual @attachmentReport.data
       return
 
     it "should have the attributes", ->

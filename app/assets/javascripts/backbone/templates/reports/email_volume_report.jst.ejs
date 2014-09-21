@@ -3,9 +3,9 @@
   // instantiates the pie chart, passes in the data and
   // draws it.
   function drawCharts(dailyEmailVolumeData, weeklyEmailVolumeData, monthlyEmailVolumeData) {
-		drawMonthlyEmailVolumeChart(monthlyEmailVolumeData);
-		drawWeeklyEmailVolumeChart(weeklyEmailVolumeData);
-		drawDailyEmailVolumeChart(dailyEmailVolumeData);
+    drawMonthlyEmailVolumeChart(monthlyEmailVolumeData);
+    drawWeeklyEmailVolumeChart(weeklyEmailVolumeData);
+    drawDailyEmailVolumeChart(dailyEmailVolumeData);
   }
 
   function drawMonthlyEmailVolumeChart(emailVolumeData) {
@@ -49,12 +49,10 @@
 
   // Load the Visualization API and the piechart package, and set a callback to run when the Google Visualization API is loaded.
 
-  setTimeout(function() {
-    google.load('visualization', '1.0',
-                {'callback': function() {drawCharts(dailyEmailVolumeData, weeklyEmailVolumeData, monthlyEmailVolumeData); },
-                'packages':['corechart']}
-                )
-  }, 1000);
+  google.load('visualization', '1.0',
+              {'callback': function() {drawCharts(obj.dailyEmailVolumeData, obj.weeklyEmailVolumeData, obj.monthlyEmailVolumeData); },
+              'packages':['corechart']}
+              );
 %>
 
 <div class="page-header">
@@ -62,7 +60,7 @@
 </div>
 
 <div>
-	<div id="daily_chart_div" style="width: 900px; height: 500px;"></div>
+  <div id="daily_chart_div" style="width: 900px; height: 500px;"></div>
   <div id="weekly_chart_div" style="width: 900px; height: 500px;"></div>
   <div id="monthly_chart_div" style="width: 900px; height: 500px;"></div>
 </div>

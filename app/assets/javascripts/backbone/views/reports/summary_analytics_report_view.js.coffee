@@ -12,6 +12,5 @@ class TuringEmailApp.Views.Reports.SummaryAnalyticsReportView extends Backbone.V
 
   render: ->
     TuringEmailApp.reportsRouter.restyle_other_elements()
-
     @$el.html(@template(@model.toJSON()))
     return this

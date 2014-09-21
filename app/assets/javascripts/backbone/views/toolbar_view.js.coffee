@@ -44,6 +44,9 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
         data: postData
         success: (data) ->
           return
+        error: (data) ->
+          TuringEmailApp.tattletale.log(JSON.stringify(data))
+          TuringEmailApp.tattletale.send()
 
       #Alter UI
       tr_element = $(".check-mail .checked").parent().parent()
@@ -65,6 +68,9 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
         data: postData
         success: (data) ->
           return
+        error: (data) ->
+          TuringEmailApp.tattletale.log(JSON.stringify(data))
+          TuringEmailApp.tattletale.send()
 
       #Alter UI
       $(".check-mail .checked").each ->
@@ -90,6 +96,9 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
         data: postData
         success: (data) ->
           return
+        error: (data) ->
+          TuringEmailApp.tattletale.log(JSON.stringify(data))
+          TuringEmailApp.tattletale.send()
 
       #Alter UI
       tr_element = $(".check-mail .checked").parent().parent()
@@ -111,6 +120,9 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
         data: postData
         success: (data) ->
           return
+        error: (data) ->
+          TuringEmailApp.tattletale.log(JSON.stringify(data))
+          TuringEmailApp.tattletale.send()
 
       #Alter UI
       tr_element = $(".check-mail .checked").parent().parent()
@@ -121,7 +133,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   setupRead: ->
     @$el.find("i.fa-eye").parent().click =>
       checkedUIDs = @retrieveCheckedUIDs()
-      TuringEmailApp.emailThreads.seenIs checkedUIDs
+      TuringEmailApp.emailThreads.seenIs checkedUIDs, true
 
       #Alter UI
       tr_element = $(".check-mail .checked").parent().parent()
@@ -133,7 +145,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   setupUnread: ->
     @$el.find("i.fa-eye-slash").parent().click =>
       checkedUIDs = @retrieveCheckedUIDs()
-      TuringEmailApp.emailThreads.setUnseen checkedUIDs
+      TuringEmailApp.emailThreads.seenIs checkedUIDs, false
 
       #Alter classes
       tr_element = $(".check-mail .checked").parent().parent()

@@ -11,7 +11,7 @@ describe "EmailThreadView", ->
   it "should be defined", ->
     expect(TuringEmailApp.Views.EmailThreads.EmailThreadView).toBeDefined()
  
-   it "should have the right model", ->
+  it "should have the right model", ->
     expect(@emailThreadView.model).toEqual @emailThread
 
   it "loads the list item template", ->
@@ -49,19 +49,15 @@ describe "EmailThreadView", ->
     it "should render the attributes of all the email threads", ->
       #Set up lists
       fromNames = []
-      snippets = []
       textParts = []
 
       #Collect Attributes from the rendered DOM.
       @emailThreadView.$el.find('.email_information .col-md-3').each ->
         fromNames.push $(this).text().trim()
-      @emailThreadView.$el.find('.email_information .col-md-4').each ->
-        snippets.push $(this).text().trim()
       @emailThreadView.$el.find('.email_body .col-md-11').each ->
         textParts.push $(this).text().trim()
 
       #Run expectations
       for email, index in @emailThread.get("emails")
         expect(fromNames[index]).toEqual email.from_name
-        expect(snippets[index]).toEqual email.snippet
         expect(textParts[index]).toEqual email.text_part

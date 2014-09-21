@@ -2,7 +2,9 @@ describe "Impact Report View", ->
 
   beforeEach ->
     @impactReport = new TuringEmailApp.Models.ImpactReport()
-    @impactReportView = null
+    @impactReportView = new TuringEmailApp.Views.Reports.ImpactReportView(
+      model: @impactReport
+    )
     TuringEmailApp.reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
 
   describe "when render is called", ->
@@ -14,17 +16,8 @@ describe "Impact Report View", ->
 
       @server = sinon.fakeServer.create()
 
-      @server.respondWith "GET", "/api/v1/emails/impact_report", JSON.stringify(@impactReportFixture)
-
-      @impactReport.fetch(
-        success: (model, response, options) =>
-          @impactReportView = new TuringEmailApp.Views.Reports.ImpactReportView(
-            model: model
-          )
-          
-          @impactReportView.render()
-      )
-
+      @server.respondWith "GET", "/api/v1/email_reports/impact_report", JSON.stringify(@impactReportFixture)
+      @impactReport.fetch()
       @server.respond()
 
     afterEach ->

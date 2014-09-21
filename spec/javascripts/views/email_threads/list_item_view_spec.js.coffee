@@ -51,7 +51,3 @@ describe "ListItemView", ->
 
     it "should render the correct link for email thread", ->
       expect(@listItemView.$el.find('a').attr("href")).toEqual "#email_thread#" + @emailThread.get("uid")
-
-    # The snippet is no longer currently included in the emai list view.
-    # it "should render the snippet attribute", ->
-    #   expect(@listItemView.$el.find('.email_snippet').text().trim()).toEqual @emailThread.get("emails")[0].snippet

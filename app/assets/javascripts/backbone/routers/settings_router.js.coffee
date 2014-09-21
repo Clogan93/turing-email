@@ -13,7 +13,7 @@ class TuringEmailApp.Routers.SettingsRouter extends Backbone.Router
       @renderSettingsView()
 
   renderSettingsView: ->
-    settingsView = new TuringEmailApp.Views.Reports.SettingsView(
+    settingsView = new TuringEmailApp.Views.SettingsView(
       model: TuringEmailApp.userSettings
       el: $("#reports")
     )
