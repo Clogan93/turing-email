@@ -55,8 +55,8 @@ class Email < ActiveRecord::Base
 
     email_in_reply_to = nil
 
-    if email_in_reply_to_uid
-      email_in_reply_to = self.emails.includes(:email_thread).find_by(:uid => email_in_reply_to_uid)
+    if !email_in_reply_to_uid.blank?
+      email_in_reply_to = self.email_account.emails.includes(:email_thread).find_by(:uid => email_in_reply_to_uid)
 
       if email_in_reply_to
         log_console("FOUND email_in_reply_to=#{email_in_reply_to.id}")

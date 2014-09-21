@@ -49,7 +49,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
           $("#compose_form").find("#to_input").val("")
           $("#compose_form").find("#subject_input").val("")
           $("#compose_form").find("#compose_email_body").val("")
-          TuringEmailApp.composeView.clearComposeModal()
+          TuringEmailApp.composeView.resetView()
 
         ).fail (data, status) ->
           $("#composeModal").modal "show"

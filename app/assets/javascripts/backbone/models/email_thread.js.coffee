@@ -1,5 +1,4 @@
 class TuringEmailApp.Models.EmailThread extends Backbone.Model
-
   seenIs: (seenValue=true)->
     postData = {}
     emailUids = []

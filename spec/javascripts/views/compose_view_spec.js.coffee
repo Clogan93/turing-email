@@ -9,7 +9,7 @@ describe "ComposeView", ->
   it "loads the list item template", ->
     expect(@composeView.template).toEqual JST["backbone/templates/compose"]
 
-  it "clears the compose view input fields upon calling clearComposeModal", ->
+  it "clears the compose view input fields upon calling resetView", ->
     @composeView.render()
 
     @composeView.$el.find("#compose_form #to_input").val("This is the to input.")
@@ -26,7 +26,7 @@ describe "ComposeView", ->
     expect(@composeView.$el.find("#compose_form #compose_email_body").val()).toEqual "This is the compose email body."
     expect(@composeView.$el.find("#compose_form #email_in_reply_to_uid_input").val()).toEqual "This is the email in reply to uid input."
 
-    @composeView.clearComposeModal()
+    @composeView.resetView()
 
     expect(@composeView.$el.find("#compose_form #to_input").val()).toEqual ""
     expect(@composeView.$el.find("#compose_form #cc_input").val()).toEqual ""

@@ -22,8 +22,7 @@ class TuringEmailApp.Routers.EmailFoldersRouter extends Backbone.Router
       folder_id: "DRAFT"
     )
 
-    TuringEmailApp.emailThreads.drafts = new TuringEmailApp.Collections.DraftsCollection()
-    TuringEmailApp.emailThreads.drafts.fetch()
+    TuringEmailApp.emailDraftIDs.fetch()
 
     TuringEmailApp.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.DraftListView({
       el: $("#email_table_body")
