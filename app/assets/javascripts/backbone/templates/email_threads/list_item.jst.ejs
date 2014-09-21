@@ -5,15 +5,19 @@
 <td class="mail-subject"><a href="#email_thread#<%= uid %>"> <%= emails[0].subject == "" ? "(no subject)" : emails[0].subject %> </a></td>
 <td class="text-right mail-date">
 <%
-  var emailDate = new Date(emails[0].date);
-  var emailDatePlus18H = new Date(emails[0].date);
+  //This is a check in case the date field is null.
+  if(emails[0].date) {
 
-  emailDatePlus18H.setHours(emailDate.getHours() + 18);
+    var emailDate = new Date(emails[0].date);
+    var emailDatePlus18H = new Date(emails[0].date);
 
-  if (emailDatePlus18H > Date.now()) {%>
-    <%= emailDate.toLocaleTimeString(navigator.language, {hour: "2-digit", minute: "2-digit"}) %><%
-  } else {%>
-    <%= emails[0].date.substring(0, 10) %><%
+    emailDatePlus18H.setHours(emailDate.getHours() + 18);
+
+    if (emailDatePlus18H > Date.now()) {%>
+      <%= emailDate.toLocaleTimeString(navigator.language, {hour: "2-digit", minute: "2-digit"}) %><%
+    } else {%>
+      <%= emails[0].date.substring(0, 10) %><%
+    }
   }
 %>
 </td>

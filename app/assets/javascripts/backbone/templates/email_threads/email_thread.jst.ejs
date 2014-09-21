@@ -21,7 +21,7 @@
 
   <div class="mail-box">
     <div class="mail-body">
-      <% _.each(emails, function(email, index) { %>
+      <% _.each(emails.reverse(), function(email, index) { %>
         <div class="email<%= (emails.length > 1 && index < emails.length - 1) && email.seen ? " collapsed_email" : "" %>">
           <div class="email_information">
             <div class="col-md-3">
