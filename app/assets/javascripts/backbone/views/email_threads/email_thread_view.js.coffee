@@ -76,7 +76,9 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
           thread_elements = $(@).attr("href").split("#")
           thread_id = thread_elements[thread_elements.length - 1]
           $.get "/api/v1/email_threads/show/" + thread_id, (data) ->
-            $('#composeModal #compose_email_body').val("\n\n\n\n" + data.emails[data.emails.length - 1].text_part)
+            email_from_email_thread = data.emails[data.emails.length - 1]
+            $('#composeModal #compose_email_body').val("\n\n\n\n" + email_from_email_thread.text_part)
+            $('#compose_form #email_in_reply_to_uid_input').val(email_from_email_thread.uid)
 
         @$el.find("#email_iframe" + index.toString()).contents().find("body").find('a[href^="#from_address"]').click (event) ->
           event.preventDefault()
