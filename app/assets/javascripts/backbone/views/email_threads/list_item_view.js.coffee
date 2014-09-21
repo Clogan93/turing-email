@@ -12,9 +12,6 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     @$el.remove()
 
   render: ->
-    if TuringEmailApp.user.get("email") == @model.get("emails")[0].from_address
-      @model.attributes.emails[0].from_name = "me"
-
     if @model.get("emails")[0].seen
       @$el.addClass("read")
     else

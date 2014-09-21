@@ -1,5 +1,6 @@
 #= require_self
 #= require_tree ./templates
+#= require ./models/email
 #= require_tree ./models
 #= require_tree ./collections
 #= require ./views/email_threads/list_item_view
@@ -43,6 +44,8 @@ window.TuringEmailApp = new(Backbone.View.extend({
         @toolbarView.renderLabelTitleAndUnreadCount "INBOX"
     )
 
+    @emailDraftIDs = new TuringEmailApp.Collections.EmailDraftIDsCollection()
+
     @composeView = new TuringEmailApp.Views.ComposeView(
       el: $("#modals")
     )
@@ -62,16 +65,14 @@ window.TuringEmailApp = new(Backbone.View.extend({
 
     @start_error_logging()    
 
-    @start_email_sync()
+    #@start_email_sync()
 
     Backbone.history.start()
 
   start_error_logging: ->
-
     @tattletale = new Tattletale('/api/v1/log.json')
 
-    window.onerror = (message, url, lineNumber, column, errorObj) ->
-      
+    window.onerror = (message, url, lineNumber, column, errorObj) ->      
       #save error and send to server for example.
       TuringEmailApp.tattletale.log(JSON.stringify(message))
       TuringEmailApp.tattletale.log(JSON.stringify(url.toString()))

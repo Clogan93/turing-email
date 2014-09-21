@@ -1,10 +1,11 @@
 class TuringEmailApp.Models.EmailThread extends Backbone.Model
-
   seenIs: (seenValue=true)->
     postData = {}
     emailUids = []
-    for email in @.get("emails")
+
+    for email in @get("emails")
       emailUids.push email.uid
+    
     postData.email_uids = emailUids
     postData.seen = seenValue
 

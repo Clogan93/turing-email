@@ -2,8 +2,10 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
   template: JST["backbone/templates/compose"]
 
   initialize: ->
-    return
-
+    $("#compose_button").click =>
+      @resetView()
+      @show()
+  
   remove: ->
     @$el.remove()
 
@@ -13,49 +15,143 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     return this
 
   setupComposeView: ->
-    @$el.find("#compose_form").submit ->
-      if TuringEmailApp.currentEmailThread? and TuringEmailApp.currentEmailThread.get("uid")? and TuringEmailApp.emailThreads? and TuringEmailApp.emailThreads.drafts? and TuringEmailApp.emailThreads.drafts.models? and TuringEmailApp.emailThreads.drafts.models[0].attributes?
-        TuringEmailApp.emailThreads.drafts.updateDraft(true)
+    @$el.find("#compose_form").submit =>
+      if @currentDraft?
+        @updateDraft()
+        @currentDraft.save()
+        @currentDraft.send()
       else
-        TuringEmailApp.emailThreads.sendEmail()
+        @sendEmail()
 
-    @$el.find("#compose_form #save_button").click ->
-      TuringEmailApp.emailThreads.drafts.updateDraft()
+      return false
 
-  clearComposeModal: ->
+    @$el.find("#compose_form #save_button").click =>
+      @updateDraft()
+      @currentDraft.save()
+
+  show: ->
+    $("#composeModal").modal "show"
+    
+  hide: ->
+    $("#composeModal").modal "hide"
+
+  resetView: ->
+    $("#compose_form #email_sent_error_alert").remove()
+
+    @currentDraft = null
+
+    @$el.find("#compose_form #email_draft_id_input").val("")
+    @$el.find("#compose_form #email_in_reply_to_uid_input").val("")
+
     @$el.find("#compose_form #to_input").val("")
     @$el.find("#compose_form #cc_input").val("")
     @$el.find("#compose_form #bcc_input").val("")
+
     @$el.find("#compose_form #subject_input").val("")
     @$el.find("#compose_form #compose_email_body").val("")
-    @$el.find("#compose_form #email_in_reply_to_uid_input").val("")
 
-  prepareComposeModalWithEmailData: (email, subject_prefix="Re: ") ->
-    if email.reply_to_address?
-      $("#compose_form #to_input").val(email.reply_to_address)
-    else
-      $("#compose_form #to_input").val(email.from_address)
+  sendEmail: ->
+    $("#inbox_title_header").append('<div id="email_sent_success_alert" class="alert alert-info col-md-4" role="alert">
+                                       Your message has been sent. <span id="undo_email_send">Undo</span>
+                                     </div>')
+    
+    emailToSend = new TuringEmailApp.Models.Email(url: "/api/v1/email_accounts/send_email")
+    @updateEmail(emailToSend)
+    @resetView()
+    @hide()
+    
+    TuringEmailApp.sendEmailTimeout = setTimeout (=>
+      emailToSend.save(null, {
+        error: (model, response, options)=>
+          @loadEmail(model.toJSON())
+          @show()
+          
+          $("#compose_form").prepend('<div id="email_sent_error_alert" class="alert alert-danger" role="alert">
+                                     There was an error in sending your email!</div>')
 
-    @prepareEmailSubjectWithEmailData email, subject_prefix   
+          TuringEmailApp.tattletale.log(reponse)
+          TuringEmailApp.tattletale.send()
+      })
 
-    @prepareEmailBodyWithEmailData email
+      $("#undo_email_send").parent().remove()
+    ), 5000
 
-    $("#composeModal").modal "show"
+    $("#undo_email_send").click ->
+      clearTimeout(TuringEmailApp.sendEmailTimeout)
+      @loadEmail(model.toJSON())
+      @show()
+      
+      $("#undo_email_send").parent().remove()
+  
+  updateDraft: ->
+    if not @currentDraft?
+      @currentDraft = new TuringEmailApp.Models.Draft()
+      emailDraftID = $("#compose_form #email_draft_id_input").val()
+      if emailDraftID
+        @currentDraft.set("id", emailDraftID)
+        @currentDraft.set("draft_id", emailDraftID)
 
-  prepareEmailSubjectWithEmailData: (email, subject_prefix) ->
+    @updateEmail(@currentDraft)
+    
+  updateEmail:(email) ->
+    email.set("email_in_reply_to_uid", $("#compose_form #email_in_reply_to_uid_input").val())
+
+    email.set("tos", $("#compose_form").find("#to_input").val().split(","))
+    email.set("ccs", $("#compose_form").find("#cc_input").val().split(","))
+    email.set("bccs",  $("#compose_form").find("#bcc_input").val().split(","))
+
+    email.set("subject", $("#compose_form").find("#subject_input").val())
+    email.set("email_body", $("#compose_form").find("#compose_email_body").val())
+
+  subjectWithPrefixFromEmail: (email, subjectPrefix="") ->
+    return subjectPrefix if not email.subject
+    
     subjectWithoutForwardPrefix = email.subject.replace("Fwd: ", "")
     subjectWithoutForwardAndReplyPrefixes = subjectWithoutForwardPrefix.replace("Re: ", "")
-    $("#compose_form #subject_input").val(subject_prefix + subjectWithoutForwardAndReplyPrefixes)
+    $("#compose_form #subject_input").val(subjectPrefix + subjectWithoutForwardAndReplyPrefixes)    
+    
+  loadEmail: (email, insertReplyHeader=false) ->
+    @resetView()
+    
+    $("#compose_form #to_input").val(email.tos)
+    $("#compose_form #cc_input").val(email.ccs)
+    $("#compose_form #bcc_input").val(email.bccs)
 
-  prepareEmailBodyWithEmailData: (email) ->
-    $("#compose_form #compose_email_body").val("\r\n\r\n\r\n\r\n" + @retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes(email))
+    $("#compose_form #subject_input").val(@subjectWithPrefixFromEmail(email.subject))
 
-  retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes: (email) ->
-    if email.html_part?
-      return email.html_part
-    else if email.text_part?
-      return email.text_part
-    else if email.body_text?
-      return email.body_text
+    @loadBodyFromEmail(email, insertReplyHeader)
+    
+  loadEmailDraft: (emailDraft, emailInReplyToUID="") ->
+    @loadEmail(emailDraft)
+    
+    emailDraftID = TuringEmailApp.emailDraftIDs.getEmailDraftID(emailDraft.uid)
+    $("#compose_form #email_draft_id_input").val(emailDraftID)
+    $("#compose_form #email_in_reply_to_uid_input").val(emailInReplyToUID)
+
+  loadEmailAsReply: (email, subjectPrefix="Re: ") ->
+    @resetView()
+    
+    $("#compose_form #email_in_reply_to_uid_input").val(email.uid)
+
+    $("#compose_form #to_input").val(if email.reply_to_address? then email.reply_to_address else email.from_address)
+    $("#compose_form #subject_input").val(@subjectWithPrefixFromEmail(email.subject, subjectPrefix))
+
+    @loadBodyFromEmail(email, true)
+
+  loadEmailAsForward: (email) ->
+    @resetView()
+
+    $("#compose_form #subject_input").val(@subjectWithPrefixFromEmail(email.subject, "Fwd: "))
+    
+    @loadBodyFromEmail(email, true)
+    
+  loadBodyFromEmail: (email, insertReplyHeader=false) ->
+    body = ""
+    body += "\r\n\r\n\r\n\r\n" if insertReplyHeader
+
+    if email.text_part?
+      body += email.text_part if email.text_part
     else
-      return ""
+      body += email.body_text if email.body_text
+
+    $("#compose_form #compose_email_body").val(body)
