@@ -108,7 +108,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     
     subjectWithoutForwardPrefix = email.subject.replace("Fwd: ", "")
     subjectWithoutForwardAndReplyPrefixes = subjectWithoutForwardPrefix.replace("Re: ", "")
-    $("#compose_form #subject_input").val(subjectPrefix + subjectWithoutForwardAndReplyPrefixes)    
+    return subjectPrefix + subjectWithoutForwardAndReplyPrefixes    
     
   loadEmail: (email, insertReplyHeader=false) ->
     @resetView()
