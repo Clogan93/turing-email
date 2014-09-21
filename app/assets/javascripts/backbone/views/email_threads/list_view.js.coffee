@@ -11,16 +11,11 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
   render: ->
     @addAll()
-
-    console.log "Render!"
-
     return this
 
   addOne: (thread) ->
     listItemView = new TuringEmailApp.Views.EmailThreads.ListItemView(model: thread)
     @$el.append(listItemView.render().el)
-
-    console.log "addOne!"
 
   addAll: ->
     @$el.empty()

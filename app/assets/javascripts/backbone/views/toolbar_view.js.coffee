@@ -169,31 +169,19 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
   setupGoLeft: ->
     @$el.find("#paginate_left_link").click ->
-      if window.location.href.indexOf("page=") != -1
-        currentPageNumber = window.location.href.split("page=")[1]
-      else
-        currentPageNumber = "1"
-      newPageNumber = parseInt(currentPageNumber) - 1
-      if newPageNumber >= 1
-        newQuery = "?page=" + newPageNumber.toString()
-        if window.location.hash.indexOf("page=") then hashUrlComponent = window.location.hash.split("?page=")[0] else hashUrlComponent = window.location.hash
-        window.location = window.location.origin + window.location.pathname + hashUrlComponent + newQuery
+      TuringEmailApp.emailThreads.fetchPreviousPage()
 
   setupGoRight: ->
     @$el.find("#paginate_right_link").click ->
       if TuringEmailApp.emailThreads.length is 50
-        if window.location.href.indexOf("page=") != -1
-          currentPageNumber = window.location.href.split("page=")[1]
-        else
-          currentPageNumber = "1"
-        newPageNumber = parseInt(currentPageNumber) + 1
-        newQuery = "?page=" + newPageNumber.toString()
-        if window.location.hash.indexOf("page=") then hashUrlComponent = window.location.hash.split("?page=")[0] else hashUrlComponent = window.location.hash
-        window.location = window.location.origin + window.location.pathname + hashUrlComponent + newQuery
+        TuringEmailApp.emailThreads.fetchNextPage()
 
   setupRefresh: ->
     @$el.find("#refresh_button").click ->
-      TuringEmailApp.emailThreads.fetch()
+      TuringEmailApp.emailThreads.fetch(
+        success: (collection, response, options) =>
+          TuringEmailApp.emailThreadsListView.renderCheckboxes()
+      )
 
   render: ->
     @$el.html(@template({'emailFolders' : @collection.toJSON()} ))

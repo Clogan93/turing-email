@@ -5,11 +5,13 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
   initialize: (options) ->
     @on("remove", @hideModel)
 
-    page = getQuerystringNameValue("page")
+    @page = getQuerystringNameValue("page")
     @url = "/api/v1/email_threads/in_folder?folder_id=" + options.folder_id
 
-    if page != null
-      @url += "&page=" + page
+    if @page != null
+      @url += "&page=" + @page
+    else
+      @page = "1"
 
   hideModel: (model) ->
     model.trigger("hide")
@@ -25,3 +27,21 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
     for emailThreadUID in emailThreadUIDs
       emailThread = @getEmailThread emailThreadUID
       emailThread.seenIs(seenValue)
+
+  fetchPreviousPage: ->
+    page_number = parseInt(@page)
+    if page_number > 1
+      @page = (page_number - 1).toString()
+      @url = "/api/v1/email_threads/in_folder?folder_id=" + TuringEmailApp.currentFolderId + "&page=" + @page
+      @fetch(
+        success: (collection, response, options) =>
+          TuringEmailApp.emailThreadsListView.renderCheckboxes()
+      )
+
+  fetchNextPage: ->
+    @page = (parseInt(@page) + 1).toString()
+    @url = "/api/v1/email_threads/in_folder?folder_id=" + TuringEmailApp.currentFolderId + "&page=" + @page
+    @fetch(
+      success: (collection, response, options) =>
+        TuringEmailApp.emailThreadsListView.renderCheckboxes()
+    )
