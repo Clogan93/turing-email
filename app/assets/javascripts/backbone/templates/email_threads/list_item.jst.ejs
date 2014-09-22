@@ -2,7 +2,7 @@
     <input type="checkbox" class="i-checks">
 </td>
 <td class="mail-ontact"><a href="#email_thread#<%= uid %>"><%= emails[0].from_name == null ? emails[0].from_address : emails[0].from_name %></a></td>
-<td class="mail-subject"><a href="#email_thread#<%= uid %>"> <%= emails[0].subject == "" ? "(no subject)" : emails[0].subject %> </a></td>
+<td class="mail-subject"><a href="#email_thread#<%= uid %>"><%= emails[0].subject == "" ? "(no subject)" : emails[0].subject %></a></td>
 <td class="text-right mail-date">
 <%
   //This is a check in case the date field is null.
