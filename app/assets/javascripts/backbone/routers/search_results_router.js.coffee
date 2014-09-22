@@ -14,6 +14,4 @@ class TuringEmailApp.Routers.SearchResultsRouter extends Backbone.Router
       data: {'query': query}
       type: 'POST'
       reset: true
-      success: (collection, response, options) ->
-        TuringEmailApp.emailThreads.next_page_token = response.next_page_token
     )

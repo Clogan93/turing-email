@@ -24,6 +24,7 @@ Rails.application.routes.draw do
       post '/users/declare_email_bankruptcy', to: 'users#declare_email_bankruptcy'
 
       get '/user_configurations', to: 'user_configurations#show'
+      put '/user_configurations', to: 'user_configurations#update'
       patch '/user_configurations', to: 'user_configurations#update'
 
       resources :sessions, only: [:create]
@@ -36,7 +37,6 @@ Rails.application.routes.draw do
       get '/email_accounts/get_draft_ids', to: 'email_accounts#get_draft_ids'
       post '/email_accounts/drafts', to: 'email_accounts#create_draft'
       put '/email_accounts/drafts', to: 'email_accounts#update_draft'
-      patch '/email_accounts/drafts', to: 'email_accounts#update_draft'
       post '/email_accounts/send_draft', to: 'email_accounts#send_draft'
       
       get '/emails/show/:email_uid', to: 'emails#show'

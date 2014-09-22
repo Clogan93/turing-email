@@ -68,9 +68,6 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
           
           $("#compose_form").prepend('<div id="email_sent_error_alert" class="alert alert-danger" role="alert">
                                      There was an error in sending your email!</div>')
-
-          TuringEmailApp.tattletale.log(reponse)
-          TuringEmailApp.tattletale.send()
       })
 
       $("#undo_email_send").parent().remove()

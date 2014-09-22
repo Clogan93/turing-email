@@ -8,6 +8,20 @@
 #= require_tree ./views
 #= require_tree ./routers
 
+originalBackboneSync = Backbone.sync
+
+Backbone.sync = (method, model, options) ->
+  options = {} if not options
+  error = options.error if options.error?
+  
+  options.error = (model, response, options) ->
+    error(model, response, options) if error?
+    
+    TuringEmailApp.tattletale.log(response)
+    TuringEmailApp.tattletale.send()
+
+  originalBackboneSync(method, model, options)
+  
 window.TuringEmailApp = new(Backbone.View.extend({
   Models: {}
   Views: {}
@@ -100,4 +114,18 @@ window.TuringEmailApp = new(Backbone.View.extend({
     #/ call your function here
     ), 60000
 
+  #################################################################
+  ########################### Re-styling ##########################
+  #################################################################
+  
+  #TODO: re-factor mail.html.erb so that this is not longer necessary.
+  restyle_other_elements: ->
+    $("#preview_panel").hide()
+    $(".mail-box-header").hide()
+    $("table.table-mail").hide()
+    $("#pages").hide()
+    $("#email_table").hide()
+    $("#preview_pane").hide()
+    $(".main_email_list_content").css("height", "100%")
+    
 }))({el: document.body})

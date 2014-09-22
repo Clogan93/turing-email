@@ -2,12 +2,23 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
   template: JST["backbone/templates/settings"]
 
   initialize: ->
-    return
+    @listenTo(@model, "change", @render)
+    @listenTo(@model, "hide destroy", @remove)
 
   remove: ->
     @$el.remove()
 
-  setupTheDeclareEmailBankruptcyButton: ->
+  render: ->
+    TuringEmailApp.restyle_other_elements()
+    @$el.html(@template(@model.toJSON()))
+
+    @setupEmailBankruptcyButton()
+    @setupSwitches()
+    @setupSaveButton()
+
+    return this
+
+  setupEmailBankruptcyButton: ->
     @$el.find("#declare_email_bankruptcy").click ->
       confirm_response = confirm("Are you sure you want to declare email bankruptcy?")
       if confirm_response
@@ -16,52 +27,23 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
         $.ajax
           type: "POST"
           url: url
-          success: (data) ->
-            return
           error: (data) ->
             TuringEmailApp.tattletale.log(JSON.stringify(data))
             TuringEmailApp.tattletale.send()
 
-  setupGoLiveSwitch: ->
+  setupSwitches: ->
     @$el.find("#go_live_switch").bootstrapSwitch()
     @$el.find("#keyboard_shortcuts_on_off_switch").bootstrapSwitch()
     @$el.find("#preview_on_off_switch").bootstrapSwitch()
     @$el.find("#genie_on_off_switch").bootstrapSwitch()
 
   setupSaveButton: ->
-    @$el.find("#user_settings_save_button").click ->
-
-      postData = {}
-
-      if $("#genie_on_off_switch").parent().parent().hasClass("switch-on")
-        postData.genie_enabled = true
-      else
-        postData.genie_enabled = false
+    @$el.find("#user_settings_save_button").click =>
+      @model.set("genie_enabled", $("#genie_on_off_switch").parent().parent().hasClass("switch-on"))
 
       if $("#preview_on_off_switch").parent().parent().hasClass("switch-on")
-        postData.split_pane_mode = "horizontal"
+        @model.set("split_pane_mode", "horizontal")
       else
-        postData.split_pane_mode = "off"
+        @model.set("split_pane_mode", "off")
 
-      $.ajax({
-        url: 'api/v1/user_configurations.json'
-        type: 'PATCH'
-        data: postData
-        dataType : 'json'
-        }).done((data, status) ->
-          return
-        ).fail (data, status) ->
-          TuringEmailApp.tattletale.log(JSON.stringify(status))
-          TuringEmailApp.tattletale.log(JSON.stringify(data))
-          TuringEmailApp.tattletale.send()
-
-  render: ->
-    TuringEmailApp.reportsRouter.restyle_other_elements()
-
-    @$el.html(@template(@model.toJSON()))
-
-    @setupTheDeclareEmailBankruptcyButton()
-    @setupGoLiveSwitch()
-    @setupSaveButton()
-
-    return this
+      @model.save(null, {patch: true})
