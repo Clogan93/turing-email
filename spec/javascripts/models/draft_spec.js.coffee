@@ -1,6 +1,6 @@
 describe "UserSettings model", ->
   beforeEach ->
-    @draft = new TuringEmailApp.Models.Draft()
+    @draft = new TuringEmailApp.Models.EmailDraft()
 
   it "should exist", ->
-    expect(TuringEmailApp.Models.Draft).toBeDefined()
+    expect(TuringEmailApp.Models.EmailDraft).toBeDefined()
