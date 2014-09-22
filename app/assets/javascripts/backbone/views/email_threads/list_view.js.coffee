@@ -10,6 +10,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     @$el.remove()
 
   render: ->
+    console.log "ListView render called."
     @addAll()
     return this
 

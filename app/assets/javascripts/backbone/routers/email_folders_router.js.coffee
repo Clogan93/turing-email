@@ -38,7 +38,9 @@ class TuringEmailApp.Routers.EmailFoldersRouter extends Backbone.Router
 
     TuringEmailApp.emailThreads.fetch(
       reset: true
+      success: (collection, response, options) ->
+        TuringEmailApp.emailThreadsListView.setupDraftComposeView()
     )
 
-    TuringEmailApp.currentFolderId = folder_id
+    TuringEmailApp.currentFolderId = "DRAFT"
     TuringEmailApp.toolbarView.renderLabelTitleAndUnreadCount "DRAFT"
