@@ -39,11 +39,8 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
 
   setupSaveButton: ->
     @$el.find("#user_settings_save_button").click =>
-      @model.set("genie_enabled", $("#genie_on_off_switch").parent().parent().hasClass("switch-on"))
-
-      if $("#preview_on_off_switch").parent().parent().hasClass("switch-on")
-        @model.set("split_pane_mode", "horizontal")
-      else
-        @model.set("split_pane_mode", "off")
-
+      genie_enabled = $("#genie_on_off_switch").parent().parent().hasClass("switch-on")
+      split_pane_mode = if $("#preview_on_off_switch").parent().parent().hasClass("switch-on") then "horizontal" else "off"
+      
+      @model.set(genie_enabled: genie_enabled, split_pane_mode: split_pane_mode)
       @model.save(null, {patch: true})
