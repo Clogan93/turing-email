@@ -13,7 +13,7 @@ class Api::V1::EmailFoldersController < ApiController
 
   def index
     @gmail_labels = GmailLabel.where(:gmail_account => current_user.gmail_accounts.first)
-
+    
     render 'api/v1/gmail_labels/index'
   end
 end

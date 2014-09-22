@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140916063746) do
+ActiveRecord::Schema.define(version: 20140922053306) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,6 +33,7 @@ ActiveRecord::Schema.define(version: 20140916063746) do
     t.datetime "updated_at"
   end
 
+  add_index "email_folder_mappings", ["email_folder_id", "email_folder_type"], name: "index_email_folder_mappings_on_email_folder", using: :btree
   add_index "email_folder_mappings", ["email_id", "email_folder_id", "email_folder_type"], name: "index_email_folder_mappings_on_email_id_and_email_folder", unique: true, using: :btree
 
   create_table "email_in_reply_tos", force: true do |t|
@@ -129,9 +130,12 @@ ActiveRecord::Schema.define(version: 20140916063746) do
     t.datetime "updated_at"
   end
 
+  add_index "emails", ["date"], name: "index_emails_on_date", using: :btree
   add_index "emails", ["email_account_type", "email_account_id", "uid"], name: "index_emails_on_email_account_type_and_email_account_id_and_uid", unique: true, using: :btree
   add_index "emails", ["email_account_type", "email_account_id"], name: "index_emails_on_email_account_type_and_email_account_id", using: :btree
   add_index "emails", ["email_thread_id"], name: "index_emails_on_email_thread_id", using: :btree
+  add_index "emails", ["id", "date"], name: "index_emails_on_id_and_date", using: :btree
+  add_index "emails", ["id"], name: "index_emails_on_id", where: "(NOT seen)", using: :btree
   add_index "emails", ["message_id"], name: "index_emails_on_message_id", using: :btree
   add_index "emails", ["uid"], name: "index_emails_on_uid", using: :btree
 
