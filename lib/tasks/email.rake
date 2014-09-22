@@ -111,7 +111,7 @@ task :run_email_rules => :environment do
     begin
       log_console("PROCESSING account #{user.email}")
       
-      user.apply_email_rules_to_inbox()
+      user.apply_email_rules_to_folder(user.email_account.inbox_folder)
     rescue Exception => ex
       log_email_exception(ex)
     end

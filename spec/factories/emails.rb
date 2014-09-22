@@ -15,13 +15,13 @@ FactoryGirl.define do
     auto_filed_folder nil
 
     sequence(:uid) { |n| "#{n}" }
-    sequence(:message_id) { |n| "#{n}" }
+    sequence(:message_id) { |n| "foo#{n}@bar.com" }
     list_id 'test_list'
 
     seen false
     sequence(:snippet) { |n| "test email #{n} snippet" }
 
-    date DateTime.now.rfc2822
+    date { DateTime.now.rfc2822 }
 
     from_name 'From Name'
     from_address 'from@address.com'

@@ -4,7 +4,7 @@ class CreateEmailRecipients < ActiveRecord::Migration
       t.belongs_to :email
       t.belongs_to :person
       
-      t.integer :recipient_type, :default => 0
+      t.integer :recipient_type
 
       t.timestamps
     end

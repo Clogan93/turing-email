@@ -3,6 +3,34 @@ require 'rails_helper'
 describe User, :type => :model do
   let(:user_template) { FactoryGirl.build(:user) }
 
+  context 'validations' do
+    let(:email_address) { 'FOO@bar.com' }
+    
+    it 'should fail to save without password and matching password confirmation' do
+      user = User.new
+      expect(user.save).to be(false)
+
+      user.password = 'password'
+      expect(user.save).to be(false)
+      
+      user.password = nil
+      user.password_confirmation = 'password'
+      expect(user.save).to be(false)
+
+      user.password = user.password_confirmation = 'password'
+      expect(user.save).to be(true)
+    end
+
+    it 'should cleanse the email address' do
+      user = User.new
+      user.password = user.password_confirmation = 'password'
+      
+      user.email = email_address
+      expect(user.save).to be(true)
+      expect(user.email).to eq(cleanse_email(email_address))
+    end
+  end
+  
   context 'get_unique_violation_error' do
     it 'should return the email error message when the email is in use' do
       begin
@@ -24,7 +52,7 @@ describe User, :type => :model do
     let(:params) {  ActionController::Parameters.new(
                       :user => { :email => user_template.email,
                                  :password => user_template.password,
-                                 :confirm_password => user_template.password}
+                                 :password_confirmation => user_template.password}
                       ) }
 
     it 'should create a user when the email and password are valid' do
@@ -100,7 +128,7 @@ describe User, :type => :model do
     end
   end
   
-  context 'apply_email_rules_to_inbox' do
+  describe '#apply_email_rules_to_folder' do
     let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
     let!(:email_rule) { FactoryGirl.create(:email_rule, :user => gmail_account.user,
                                            :from_address => nil, :to_address => nil, :subject => nil) }
@@ -123,7 +151,7 @@ describe User, :type => :model do
       expect(gmail_label.emails.count).to eq(0)
       expect(inbox_label.emails.count).to eq(emails.length)
 
-      gmail_account.user.apply_email_rules_to_inbox()
+      gmail_account.user.apply_email_rules_to_folder(gmail_account.inbox_folder)
 
       gmail_label.reload
       inbox_label.reload
@@ -132,28 +160,30 @@ describe User, :type => :model do
     end
   end
 
-  context 'destroy' do
+  describe '#destroy' do
     let!(:user) { FactoryGirl.create(:user) }
+
     let!(:user_auth_keys) { FactoryGirl.create_list(:user_auth_key, SpecMisc::SMALL_LIST_SIZE, :user => user) }
     let!(:email_accounts) { FactoryGirl.create_list(:gmail_account, SpecMisc::SMALL_LIST_SIZE, :user => user) }
-    let!(:emails) { FactoryGirl.create_list(:email, SpecMisc::SMALL_LIST_SIZE, :email_account => email_accounts[0]) }
     let!(:genie_rules) { FactoryGirl.create_list(:genie_rule, SpecMisc::SMALL_LIST_SIZE, :user => user) }
     let!(:email_rules) { FactoryGirl.create_list(:email_rule, SpecMisc::SMALL_LIST_SIZE, :user => user) }
 
-    it 'should destroy the associated user_auth_keys, gmail_accounts, and emails' do
+    it 'should destroy the associated models' do
       expect(UserAuthKey.where(:user => user).count).to eq(user_auth_keys.length)
       expect(GmailAccount.where(:user => user).count).to eq(email_accounts.length)
-      expect(Email.where(:email_account => email_accounts[0]).count).to eq(emails.length)
       expect(GenieRule.where(:user => user).count).to eq(genie_rules.length)
       expect(EmailRule.where(:user => user).count).to eq(email_rules.length)
+      
+      expect(UserConfiguration.where(:user => user).count).to eq(1)
 
       expect(user.destroy).not_to be(false)
 
       expect(UserAuthKey.where(:user => user).count).to eq(0)
       expect(GmailAccount.where(:user => user).count).to eq(0)
-      expect(Email.where(:email_account => email_accounts[0]).count).to eq(0)
       expect(GenieRule.where(:user => user).count).to eq(0)
       expect(EmailRule.where(:user => user).count).to eq(0)
+      
+      expect(UserConfiguration.where(:user => user).count).to eq(0)
     end
   end
 end

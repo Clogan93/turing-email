@@ -24,10 +24,10 @@ class Api::V1::EmailAccountsController < ApiController
 
   # TODO write tests
   def send_email
-    @email_account.send_email(params[:tos], params[:ccs], params[:bccs],
-                              params[:subject], params[:email_body],
-                              params[:email_in_reply_to_uid])
-    render :json => {}
+    @email = @email_account.send_email(params[:tos], params[:ccs], params[:bccs],
+                                       params[:subject], params[:email_body],
+                                       params[:email_in_reply_to_uid])
+    render 'api/v1/emails/show'
   end
 
   swagger_api :sync do
@@ -88,6 +88,7 @@ class Api::V1::EmailAccountsController < ApiController
     response :ok
   end
 
+  # TODO write tests
   def create_draft
     @draft_id, @email = @email_account.create_draft(params[:tos], params[:ccs], params[:bccs],
                                                     params[:subject], params[:email_body],
@@ -134,5 +135,20 @@ class Api::V1::EmailAccountsController < ApiController
     @email = @email_account.send_draft(params[:draft_id])
 
     render 'api/v1/emails/show'
+  end
+
+  swagger_api :delete_draft do
+    summary 'Delete email draft.'
+
+    param :form, :draft_id, :string, :required, 'Draft ID'
+
+    response :ok
+  end
+
+  # TODO write tests
+  def delete_draft
+    @email_account.delete_draft(params[:draft_id])
+
+    render :json => {}
   end
 end
