@@ -6,6 +6,8 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     @listenTo(@collection, "reset", @addAll)
     @listenTo(@collection, "destroy", @remove)
 
+    @listenTo(TuringEmailApp, 'currentEmailThreadChanged', @changeRenderedCurrentEmailThread);
+
   remove: ->
     @$el.remove()
 
@@ -33,9 +35,17 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
     @setupTdClicksOfLinks()
 
+    @currentlySelectedEmailThread = @collection.models[0]
+    @highlightEmailThread @currentlySelectedEmailThread
+
     if TuringEmailApp.models.userSettings.get("split_pane_mode") is "horizontal"
       $("#preview_panel").show()
-      @renderEmailPreview()
+      @renderEmailPreview(@currentlySelectedEmailThread)
+
+  changeRenderedCurrentEmailThread: ->
+    @unhighlightEmailThread @currentlySelectedEmailThread
+    @highlightEmailThread TuringEmailApp.currentEmailThread
+    @currentlySelectedEmailThread = TuringEmailApp.currentEmailThread
 
   renderCheckboxes: ->
     $(".i-checks").iCheck
@@ -58,20 +68,29 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
       $("#email_table_body").prepend("<tr height='59px;' class='" + report_email.attr("class") + "'>" +
                                      report_email.html() + "</tr>")
 
-  renderEmailPreview: ->
-    TuringEmailApp.views.emailThreadsListView.currentEmailThread = @collection.models[0]
+  renderEmailPreview: (emailThread) ->
+    TuringEmailApp.currentEmailThreadIs emailThread
     TuringEmailApp.views.previewEmailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
-      model: TuringEmailApp.views.emailThreadsListView.currentEmailThread
+      model: TuringEmailApp.currentEmailThread
       el: $("#preview_content")
     )
     TuringEmailApp.views.previewEmailThreadView.render()
 
-  setupCurrentEmailHighlighting: ->
-    aTag = @$el.find('a[href^="#email_thread"]')
-    aTag.click ->
-      $(@).parent().parent().removeClass("read")
-      $(@).parent().parent().removeClass("unread")
-      $(@).parent().parent().addClass("currently_being_read")
+  highlightEmailThread: (emailThread) ->
+    console.log "highlightEmailThread"
+    aTag = @$el.find('a[href^="#email_thread#' + emailThread.get("uid") + '"]')
+    aTag.parent().parent().removeClass("read")
+    aTag.parent().parent().removeClass("unread")
+    aTag.parent().parent().addClass("currently_being_read")
+
+  unhighlightEmailThread: (emailThread) ->
+    if emailThread?
+      console.log "unhighlightEmailThread"
+      aTag = @$el.find('a[href^="#email_thread#' + emailThread.get("uid") + '"]')
+      console.log aTag
+      aTag.parent().parent().removeClass("currently_being_read")
+      aTag.parent().parent().addClass("read")
+      console.log aTag.parent().parent()
 
   setupReadUnreadRendering: ->
     aTag = @$el.find('a[href^="#email_thread"]')

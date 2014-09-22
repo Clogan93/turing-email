@@ -33,13 +33,13 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
 
   setupReplyButtons: ->
     $(".email_reply_button").click =>
-      last_email_in_thread = TuringEmailApp.views.emailThreadsListView.currentEmailThread.get("emails")[0]
+      last_email_in_thread = TuringEmailApp.currentEmailThread.get("emails")[0]
       TuringEmailApp.views.composeView.loadEmailAsReply last_email_in_thread
       TuringEmailApp.views.composeView.show()
 
   setupForwardButton: ->
     $(".email_forward_button").click ->
-      last_email_in_thread = TuringEmailApp.views.emailThreadsListView.currentEmailThread.get("emails")[0]
+      last_email_in_thread = TuringEmailApp.currentEmailThread.get("emails")[0]
       TuringEmailApp.views.composeView.loadBodyFromEmail last_email_in_thread
       TuringEmailApp.views.composeView.show()
 
@@ -47,7 +47,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     @$el.find("i.fa-archive").parent().click =>
       postData = {}
       emailThreadUIds = []
-      emailThreadUIds.push(TuringEmailApp.views.emailThreadsListView.currentEmailThread.get("uid"))
+      emailThreadUIds.push(TuringEmailApp.currentEmailThread.get("uid"))
       postData.email_thread_uids = emailThreadUIds
       postData.email_folder_id = TuringEmailApp.currentFolderId
 
@@ -72,7 +72,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     @$el.find("i.fa-trash-o").parent().click =>
       postData = {}
       emailThreadUIds = []
-      emailThreadUIds.push(TuringEmailApp.views.emailThreadsListView.currentEmailThread.get("uid"))
+      emailThreadUIds.push(TuringEmailApp.currentEmailThread.get("uid"))
       postData.email_thread_uids = emailThreadUIds
 
       url = "/api/v1/email_threads/trash.json"

@@ -88,6 +88,11 @@ window.TuringEmailApp = new(Backbone.View.extend({
 
     Backbone.history.start()
 
+  currentEmailThreadIs: (emailThread) ->
+    if @currentEmailThread isnt emailThread
+      @currentEmailThread = emailThread
+      @trigger "currentEmailThreadChanged"
+
   start_error_logging: ->
     @tattletale = new Tattletale('/api/v1/log.json')
 
