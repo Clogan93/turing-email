@@ -19,14 +19,4 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
 
     @$el.html(@template(@model.toJSON()))
 
-    @setupReadUnreadRendering()
-
     return this
-
-  setupReadUnreadRendering: ->
-    @$el.find('a[href^="#email_thread"]').click ->
-      if $(@).parent().parent().hasClass("unread")
-        currentFolderId = TuringEmailApp.currentFolderId
-        TuringEmailApp.toolbarView.decrementUnreadCountOfCurrentFolder(currentFolderId)
-      $(@).parent().parent().removeClass("unread")
-      $(@).parent().parent().addClass("read")

@@ -27,6 +27,10 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
     @addKeyboardShortcutHighlight()
 
+    @setupReadUnreadRendering()
+
+    @setupTdClicksOfLinks()
+
     if TuringEmailApp.userSettings.get("split_pane_mode") is "horizontal"
       $("#preview_panel").show()
       @renderEmailPreview()
@@ -59,3 +63,24 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
       el: $("#preview_content")
     )
     TuringEmailApp.previewEmailThreadView.render()
+
+  setupReadUnreadRendering: ->
+    aTag = @$el.find('a[href^="#email_thread"]')
+    aTag.click =>
+      @updateToMarkAsRead aTag
+
+  updateToMarkAsRead: (aTag) ->
+    if aTag.parent().parent().hasClass("unread")
+      currentFolderId = TuringEmailApp.currentFolderId
+      TuringEmailApp.toolbarView.decrementUnreadCountOfCurrentFolder(currentFolderId)
+    aTag.parent().parent().removeClass("unread")
+    aTag.parent().parent().addClass("read")
+
+  setupTdClicksOfLinks: ->
+    tds = @$el.find('td.mail-ontact, td.mail-subject, td.mail-date')
+    tds.click =>
+      aTag = tds.find('a[href^="#email_thread"]').first()
+      @updateToMarkAsRead aTag
+      link_components = aTag.attr("href").split("#")
+      uid = link_components[link_components.length - 1]
+      TuringEmailApp.emailThreadsRouter.showEmailThread uid
