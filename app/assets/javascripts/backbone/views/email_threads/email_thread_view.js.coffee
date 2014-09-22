@@ -23,8 +23,13 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     @setupForwardButton()
 
     @setupArchive()
+    @setupDelete()
 
     return
+
+  renderNoConversationsSelected: ->
+    TuringEmailApp.userSettings.get("split_pane_mode") is "horizontal"
+    $("#preview_panel").append("<div id='preview_content'><div id='no_conversations_selected' align=center>No conversations selected</div></div>")
 
   setupReplyButtons: ->
     $(".email_reply_button").click =>
@@ -57,7 +62,35 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
           TuringEmailApp.tattletale.log(JSON.stringify(data))
           TuringEmailApp.tattletale.send()
 
-      window.location = "/mail"
+      for emailThreadUID in emailThreadUIds
+        emailThread = TuringEmailApp.emailThreads.getEmailThread emailThreadUID
+        TuringEmailApp.emailThreads.remove emailThread
+
+      @renderNoConversationsSelected()
+
+  setupDelete: ->
+    @$el.find("i.fa-trash-o").parent().click =>
+      postData = {}
+      emailThreadUIds = []
+      emailThreadUIds.push(TuringEmailApp.currentEmailThread.get("uid"))
+      postData.email_thread_uids = emailThreadUIds
+
+      url = "/api/v1/email_threads/trash.json"
+      $.ajax
+        type: "POST"
+        url: url
+        data: postData
+        success: (data) ->
+          return
+        error: (data) ->
+          TuringEmailApp.tattletale.log(JSON.stringify(data))
+          TuringEmailApp.tattletale.send()
+
+      for emailThreadUID in emailThreadUIds
+        emailThread = TuringEmailApp.emailThreads.getEmailThread emailThreadUID
+        TuringEmailApp.emailThreads.remove emailThread
+
+      @renderNoConversationsSelected()
 
   insertHtmlIntoIframe: (email, index) ->
     @$el.find("#email_iframe" + index.toString()).contents().find("body").append(email.html_part)

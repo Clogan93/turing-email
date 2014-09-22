@@ -398,6 +398,7 @@ a#refresh_link
   z-index: 1000;
   overflow-y: scroll;
   display: none;
+  background-color: white;
 
   #resize_border
   {
@@ -425,3 +426,8 @@ a#refresh_link
  background-color: white !important; 
 }
   
+#no_conversations_selected
+{
+  padding-top: 10%;
+  font-size: 20px;
+}
