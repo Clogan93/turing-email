@@ -1,5 +1,5 @@
 class Integer
-  N_BYTES = [42].pack('i').size
+  N_BYTES = [0].pack('i').size
   N_BITS = N_BYTES * 8
   MAX = 2 ** (N_BITS - 1) - 1
   MIN = -MAX - 1
@@ -20,6 +20,17 @@ end
 class ActiveSupport::TimeWithZone
   def to_s_local(time_zone_name: $config.default_time_zone, format: '%b %d at %l:%M %p')
     return self.in_time_zone(time_zone_name).strftime(format)
+  end
+end
+
+module Mail
+  class Message
+    def encoded_with_bcc
+      email_rfc2822 = self.encoded
+      email_rfc2822 = "#{self[:bcc].do_encode('Bcc')}#{email_rfc2822}" if self.bcc
+      
+      return email_rfc2822
+    end
   end
 end
 
@@ -87,7 +98,6 @@ def reserve_key(object, keys = {:key => nil}, length = 256)
   end
 end
 
-# TODO write tests
 def retry_block(max_attempts: 2, sleep_seconds: nil, exceptions_to_catch: nil, exceptions_to_ignore: nil, log: false)
   attempts = 0
 

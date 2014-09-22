@@ -24,10 +24,8 @@ class Api::V1::UserConfigurationsController < ApiController
   
   def update
     @user_configuration = current_user.user_configuration
-    
-    @user_configuration.genie_enabled = params[:genie_enabled] if params[:genie_enabled]
-    @user_configuration.split_pane_mode = params[:split_pane_mode] if params[:split_pane_mode]
-    @user_configuration.save!
+    permitted_params = params.permit(:genie_enabled, :split_pane_mode)
+    @user_configuration.update_attributes!(permitted_params)
     
     render 'api/v1/user_configurations/show'
   end

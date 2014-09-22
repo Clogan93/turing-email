@@ -1,4 +1,4 @@
-class TuringEmailApp.Models.Draft extends TuringEmailApp.Models.Email
+class TuringEmailApp.Models.EmailDraft extends TuringEmailApp.Models.Email
   url: "/api/v1/email_accounts/drafts"
 
   sendDraft: (draft_id) ->

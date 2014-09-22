@@ -28,7 +28,7 @@ class Email < ActiveRecord::Base
   def Email.lists_email_daily_average(user, limit: nil, where: nil)
     return user.emails.where("list_id IS NOT NULL").where(where).
                 group(:list_name, :list_id).order('daily_average DESC').limit(limit).
-                pluck('list_name, list_id, COUNT(*) / GREATEST(1, EXTRACT(day FROM now() - MIN(date))) AS daily_average')
+                pluck('list_name, list_id, COUNT(*) / (1 + EXTRACT(day FROM now() - MIN(date))) AS daily_average')
   end
   
   def Email.trash_emails(email_ids, trash_folder = nil)
@@ -36,7 +36,7 @@ class Email < ActiveRecord::Base
     trash_folder.apply_to_emails(email_ids) if trash_folder
   end
   
-  def Email.email_raw_from_params(tos, ccs, bccs, subject, body, email_in_reply_to_uid = nil)
+  def Email.email_raw_from_params(tos, ccs, bccs, subject, body, email_account = nil, email_in_reply_to_uid = nil)
     email_raw = Mail.new do
       to tos
       cc ccs
@@ -48,46 +48,19 @@ class Email < ActiveRecord::Base
       body body
     end
 
-    email_raw.html_part = Mail::Part.new do
-      content_type 'text/html; charset=UTF-8'
-      body body
-    end
-
     email_in_reply_to = nil
-
     if !email_in_reply_to_uid.blank?
       email_in_reply_to = self.email_account.emails.includes(:email_thread).find_by(:uid => email_in_reply_to_uid)
 
       if email_in_reply_to
         log_console("FOUND email_in_reply_to=#{email_in_reply_to.id}")
-
-        email_raw.in_reply_to = "<#{email_in_reply_to.message_id}>" if !email_in_reply_to.message_id.blank?
-
-        references_header_string = ''
-
-        reference_message_ids = email_in_reply_to.email_references.order(:position).pluck(:references_message_id)
-        if reference_message_ids.length > 0
-          log_console("reference_message_ids.length=#{reference_message_ids.length}")
-
-          references_header_string = '<' + reference_message_ids.join("><") + '>'
-        elsif email_in_reply_to.email_in_reply_tos.count == 1
-          log_console("email_in_reply_tos.count=#{email_in_reply_tos.count}")
-
-          references_header_string =
-              '<' + reference_message_ids.email_in_reply_tos.order(:position)[0].in_reply_to_message_id + '>'
-        end
-
-        references_header_string << "<#{email_in_reply_to.message_id}>" if !email_in_reply_to.message_id.blank?
-
-        log_console("references_header_string = #{references_header_string}")
-
-        email_raw.references = references_header_string
+        Email.add_reply_headers(email_raw, email_in_reply_to)
       end
     end
     
     return email_raw, email_in_reply_to
   end
-  
+
   def Email.email_raw_from_mime_data(mime_data)
     mail_data_file = Tempfile.new('turing')
     mail_data_file.binmode
@@ -185,13 +158,37 @@ class Email < ActiveRecord::Base
   end
 
   def Email.part_has_calendar_attachment(part)
-    return true if part.content_type =~ /text\/calendar/i
+    return true if part.content_type =~ /text\/calendar|application\/ics/i
 
     part.parts.each do |current_part|
       return true if Email.part_has_calendar_attachment(current_part)
     end
 
     return false
+  end
+
+  def Email.add_reply_headers(email_raw, email_in_reply_to)
+    email_raw.in_reply_to = "<#{email_in_reply_to.message_id}>" if !email_in_reply_to.message_id.blank?
+
+    references_header_string = ''
+
+    reference_message_ids = email_in_reply_to.email_references.order(:position).pluck(:references_message_id)
+    if reference_message_ids.length > 0
+      log_console("reference_message_ids.length=#{reference_message_ids.length}")
+
+      references_header_string = '<' + reference_message_ids.join("><") + '>'
+    elsif email_in_reply_to.email_in_reply_tos.count == 1
+      log_console("email_in_reply_tos.count=#{email_in_reply_to.email_in_reply_tos.count}")
+
+      references_header_string =
+          '<' + email_in_reply_to.email_in_reply_tos.first.in_reply_to_message_id + '>'
+    end
+
+    references_header_string << "<#{email_in_reply_to.message_id}>" if !email_in_reply_to.message_id.blank?
+
+    log_console("references_header_string = #{references_header_string}")
+
+    email_raw.references = references_header_string
   end
 
   def user
@@ -250,7 +247,6 @@ class Email < ActiveRecord::Base
     end
   end
   
-  # TODO write test
   def add_attachments(email_raw)
     if !email_raw.multipart? && email_raw.content_type && email_raw.content_type !~ /text/i
       self.add_attachment(email_raw)
@@ -261,13 +257,12 @@ class Email < ActiveRecord::Base
     end
   end
 
-  # TODO write test
   def add_attachment(attachment)
     email_attachment = EmailAttachment.new
     
     email_attachment.email = self
     email_attachment.filename = attachment.filename
-    email_attachment.content_type = attachment.content_type.split(';')[0].strip if attachment.content_type
+    email_attachment.content_type = attachment.content_type.split(';')[0].downcase.strip if attachment.content_type
     email_attachment.file_size = attachment.decoded.length
     
     email_attachment.save!

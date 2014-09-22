@@ -50,20 +50,6 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
     @showReport "#reports", TuringEmailApp.Models.ContactsReport, TuringEmailApp.Views.Reports.ContactsReportView
 
   #################################################################
-  ########################### Re-styling ##########################
-  #################################################################
-
-  #TODO: re-factor mail.html.erb so that this is not longer necessary.
-  restyle_other_elements: ->
-    $("#preview_panel").hide()
-    $(".mail-box-header").hide()
-    $("table.table-mail").hide()
-    $("#pages").hide()
-    $("#email_table").hide()
-    $("#preview_pane").hide()
-    $(".main_email_list_content").css("height", "100%")
-
-  #################################################################
   ################### Sample Data Based Reports ###################
   #################################################################
 

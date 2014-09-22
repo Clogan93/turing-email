@@ -16,10 +16,10 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
 
   setupComposeView: ->
     @$el.find("#compose_form").submit =>
-      if @currentDraft?
+      if @currentEmailDraft?
         @updateDraft()
-        @currentDraft.save()
-        @currentDraft.send()
+        @currentEmailDraft.save()
+        @currentEmailDraft.send()
       else
         @sendEmail()
 
@@ -27,7 +27,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
 
     @$el.find("#compose_form #save_button").click =>
       @updateDraft()
-      @currentDraft.save()
+      @currentEmailDraft.save()
 
   show: ->
     $("#composeModal").modal "show"
@@ -38,7 +38,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
   resetView: ->
     $("#compose_form #email_sent_error_alert").remove()
 
-    @currentDraft = null
+    @currentEmailDraft = null
 
     @$el.find("#compose_form #email_draft_id_input").val("")
     @$el.find("#compose_form #email_in_reply_to_uid_input").val("")
@@ -68,9 +68,6 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
           
           $("#compose_form").prepend('<div id="email_sent_error_alert" class="alert alert-danger" role="alert">
                                      There was an error in sending your email!</div>')
-
-          TuringEmailApp.tattletale.log(reponse)
-          TuringEmailApp.tattletale.send()
       })
 
       $("#undo_email_send").parent().remove()
@@ -84,14 +81,14 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
       $("#undo_email_send").parent().remove()
   
   updateDraft: ->
-    if not @currentDraft?
-      @currentDraft = new TuringEmailApp.Models.Draft()
+    if not @currentEmailDraft?
+      @currentEmailDraft = new TuringEmailApp.Models.EmailDraft()
       emailDraftID = $("#compose_form #email_draft_id_input").val()
       if emailDraftID
-        @currentDraft.set("id", emailDraftID)
-        @currentDraft.set("draft_id", emailDraftID)
+        @currentEmailDraft.set("id", emailDraftID)
+        @currentEmailDraft.set("draft_id", emailDraftID)
 
-    @updateEmail(@currentDraft)
+    @updateEmail(@currentEmailDraft)
     
   updateEmail:(email) ->
     email.set("email_in_reply_to_uid", $("#compose_form #email_in_reply_to_uid_input").val())

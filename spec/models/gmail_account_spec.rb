@@ -3,7 +3,47 @@ require 'rails_helper'
 describe GmailAccount, :type => :model do
   let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
   
-  context 'move_email_to_folder' do
+  describe '#inbox' do
+    let!(:inbox_label) { FactoryGirl.create(:gmail_label_inbox, :gmail_account => gmail_account) }
+    
+    it 'should return the inbox folder' do
+      expect(gmail_account.inbox_folder.id).to eq(inbox_label.id)
+    end
+  end
+
+  describe '#sent' do
+    let!(:sent_label) { FactoryGirl.create(:gmail_label_sent, :gmail_account => gmail_account) }
+
+    it 'should return the sent folder' do
+      expect(gmail_account.sent_folder.id).to eq(sent_label.id)
+    end
+  end
+
+  describe '#drafts' do
+    let!(:drafts_label) { FactoryGirl.create(:gmail_label_drafts, :gmail_account => gmail_account) }
+
+    it 'should return the drafts folder' do
+      expect(gmail_account.drafts_folder.id).to eq(drafts_label.id)
+    end
+  end
+
+  describe '#trash' do
+    let!(:trash_label) { FactoryGirl.create(:gmail_label_trash, :gmail_account => gmail_account) }
+
+    it 'should return the trash folder' do
+      expect(gmail_account.trash_folder.id).to eq(trash_label.id)
+    end
+  end
+  
+  describe '#set_last_history_id_synced' do
+    it 'should update last_history_id_synced' do
+      gmail_account.set_last_history_id_synced('test')
+      gmail_account.reload
+      expect(gmail_account.last_history_id_synced).to eq('test')
+    end
+  end
+  
+  describe '#move_email_to_folder' do
     let!(:email) { FactoryGirl.create(:email, :email_account => gmail_account) }
 
     context 'when the email is in a folder' do
@@ -243,6 +283,35 @@ describe GmailAccount, :type => :model do
         expect(email.gmail_labels.first.label_id).to eq(label_id)
         expect(email.gmail_labels.first.name).to eq(label_name)
       end
+    end
+  end
+  
+  describe '#destroy' do
+    let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
+    
+    let!(:email_threads) { FactoryGirl.create_list(:email_thread, SpecMisc::TINY_LIST_SIZE, :email_account => gmail_account) }
+    let!(:people) { FactoryGirl.create_list(:person, SpecMisc::TINY_LIST_SIZE, :email_account => gmail_account) }
+    let!(:gmail_labels) { FactoryGirl.create_list(:gmail_label, SpecMisc::TINY_LIST_SIZE, :gmail_account => gmail_account) }
+    let!(:sync_failed_emails) { FactoryGirl.create_list(:sync_failed_email, SpecMisc::TINY_LIST_SIZE, :email_account => gmail_account) }
+    
+    before { create_email_thread_emails(email_threads) }
+
+    it 'should destroy the associated models' do
+      expect(GoogleOAuth2Token.where(:google_api => gmail_account).count).to eq(1)
+      expect(EmailThread.where(:email_account => gmail_account).count).to eq(email_threads.length)
+      expect(Person.where(:email_account => gmail_account).count).to eq(people.length)
+      expect(GmailLabel.where(:gmail_account => gmail_account).count).to eq(gmail_labels.length)
+      expect(SyncFailedEmail.where(:email_account => gmail_account).count).to eq(sync_failed_emails.length)
+      expect(Email.where(:email_account => gmail_account).count).to eq(email_threads.length * SpecMisc::TINY_LIST_SIZE)
+
+      expect(gmail_account.destroy).not_to eq(false)
+
+      expect(GoogleOAuth2Token.where(:google_api => gmail_account).count).to eq(0)
+      expect(EmailThread.where(:email_account => gmail_account).count).to eq(0)
+      expect(Person.where(:email_account => gmail_account).count).to eq(0)
+      expect(GmailLabel.where(:gmail_account => gmail_account).count).to eq(0)
+      expect(SyncFailedEmail.where(:email_account => gmail_account).count).to eq(0)
+      expect(Email.where(:email_account => gmail_account).count).to eq(0)
     end
   end
 end

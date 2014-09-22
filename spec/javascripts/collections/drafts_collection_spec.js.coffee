@@ -7,7 +7,7 @@ describe "DraftsCollection", ->
     expect(TuringEmailApp.Collections.DraftsCollection).toBeDefined()
 
   it "should use the EmailFolder model", ->
-      expect(@draftsCollection.model).toEqual TuringEmailApp.Models.Draft
+      expect(@draftsCollection.model).toEqual TuringEmailApp.Models.EmailDraft
 
   it "should have the right url", ->
     expect(@draftsCollection.url).toEqual '/api/v1/email_accounts/get_draft_ids.json'

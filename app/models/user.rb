@@ -17,7 +17,7 @@ class User < ActiveRecord::Base
            :through => :gmail_accounts
 
   validates :email,
-            :format     => { with: $config.email_validation_regex },
+            :format => { with: $config.email_validation_regex },
             :allow_nil => true
   
   has_many :genie_rules,
@@ -28,6 +28,7 @@ class User < ActiveRecord::Base
 
   before_validation {
     self.email = cleanse_email(self.email) if self.email
+    self.password_confirmation = '' if self.password_confirmation.nil?
   }
 
   after_validation {
@@ -100,9 +101,8 @@ class User < ActiveRecord::Base
     end
   end
 
-  def apply_email_rules_to_inbox()
+  def apply_email_rules_to_folder(folder)
     email_account = self.gmail_accounts.first
-    inbox_folder = email_account.inbox_folder
 
     self.email_rules.each do |email_rule|
       where_conditions = ['', []]
@@ -112,9 +112,9 @@ class User < ActiveRecord::Base
 
       if email_rule.to_address
         append_where_condition(where_conditions, 'LOWER("people"."email_address")=?', email_rule.to_address.downcase)
-        emails = inbox_folder.emails.joins(:email_recipients => :person).where(where_conditions)
+        emails = folder.emails.joins(:email_recipients => :person).where(where_conditions)
       else
-        emails = inbox_folder.emails.where(where_conditions)
+        emails = folder.emails.where(where_conditions)
       end
 
       emails.each do |email|

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Api::V1::EmailsController, :type => :request do
-  context 'ip_stats' do
+  describe '#ip_stats' do
     let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
     
     context 'no emails' do
@@ -48,7 +48,7 @@ describe Api::V1::EmailsController, :type => :request do
     end
   end
 
-  context 'volume_report' do
+  describe '#volume_report' do
     let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
     before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
 
@@ -137,8 +137,8 @@ describe Api::V1::EmailsController, :type => :request do
       end
     end
   end
-  
-  context 'contacts_report' do
+
+  describe '#contacts_report' do
     let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
     before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
     
@@ -232,8 +232,8 @@ describe Api::V1::EmailsController, :type => :request do
       end
     end
   end
-  
-  context 'attachments_report' do
+
+  describe '#attachments_report' do
     let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
     before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
 
@@ -293,36 +293,121 @@ describe Api::V1::EmailsController, :type => :request do
     end
   end
   
-  context 'threads_report' do
+  describe '#lists_report' do
     let(:gmail_account) { FactoryGirl.create(:gmail_account) }
-    let(:email_threads) { FactoryGirl.create_list(:email_thread, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account) }
 
     before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
-    
-    before do
-      num_emails = 1
-      
-      email_threads.each do |email_thread|
-        create_email_thread_emails([email_thread], num_emails: num_emails)
-        num_emails += 1
+
+    context 'without emails' do
+      it 'returns the lists report stats' do
+        get '/api/v1/email_reports/lists_report'
+
+        lists_report_stats = JSON.parse(response.body)
+
+        expect(lists_report_stats['lists_email_daily_average'].length).to eq(0)
+
+        expect(lists_report_stats['emails_per_list'].length).to eq(0)
+
+        expect(lists_report_stats['email_threads_per_list'].length).to eq(0)
+
+        expect(lists_report_stats['email_threads_replied_to_per_list'].length).to eq(0)
       end
     end
-    
-    let!(:num_emails) { email_threads.length * (email_threads.length + 1) / 2 }
-    
-    it 'returns the threads report stats' do
-      get '/api/v1/email_reports/threads_report'
 
-      threads_report_stats = JSON.parse(response.body)
+    context 'with emails' do
+      let!(:today) { DateTime.now.utc }
+      let!(:yesterday) { today - 2.day }
+
+      let!(:today_str) { today.strftime($config.volume_report_date_format) }
+      let!(:yesterday_str) { yesterday.strftime($config.volume_report_date_format) }
       
-      expect(threads_report_stats['average_thread_length']).to eq(num_emails / email_threads.length)
-      verify_models_expected(email_threads.reverse, threads_report_stats['top_email_threads'], 'uid')
+      let(:email_threads) { FactoryGirl.create_list(:email_thread, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account) }
+      
+      before do
+        email_threads.each_with_index do |email_thread, i|
+          FactoryGirl.create_list(:email, SpecMisc::TINY_LIST_SIZE,
+                                  :email_thread => email_thread,
+                                  :email_account => gmail_account,
+                                  :date => today,
+                                  :list_id => "foo#{i}.bar.com")
+
+          FactoryGirl.create_list(:email, SpecMisc::TINY_LIST_SIZE * (i + 1),
+                                  :email_thread => email_thread,
+                                  :email_account => gmail_account,
+                                  :date => yesterday,
+                                  :list_id => "foo#{i}.bar.com")
+        end
+      end
+      
+      it 'returns the lists report stats' do
+        get '/api/v1/email_reports/lists_report'
+
+        lists_report_stats = JSON.parse(response.body)
+
+        lists_report_stats['lists_email_daily_average'].each do |list_email_daily_average|
+          i = list_email_daily_average[1].match(/(\d)/)[1].to_i
+          expect(list_email_daily_average[2]).to eq((SpecMisc::TINY_LIST_SIZE + SpecMisc::TINY_LIST_SIZE * (i + 1)) / 2.0)
+        end
+
+        lists_report_stats['emails_per_list'].each do |email_list_stats|
+          i = email_list_stats[1].match(/(\d)/)[1].to_i
+          expect(email_list_stats[2]).to eq(SpecMisc::TINY_LIST_SIZE + SpecMisc::TINY_LIST_SIZE * (i + 1))
+        end
+
+        lists_report_stats['email_threads_per_list'].each do |email_thread_list_stats|
+          expect(email_thread_list_stats[2]).to eq(1)
+        end
+
+        lists_report_stats['email_threads_replied_to_per_list'].each do |email_thread_replied_to_list_stats|
+          i = email_thread_replied_to_list_stats[1].match(/(\d)/)[1].to_i
+          expect(email_thread_replied_to_list_stats[2]).to eq(SpecMisc::TINY_LIST_SIZE + SpecMisc::TINY_LIST_SIZE * (i + 1))
+        end
+      end
     end
   end
-  
-  context 'folders_report' do
+
+  describe '#threads_report' do
     let(:gmail_account) { FactoryGirl.create(:gmail_account) }
-    let(:other_emails) { FactoryGirl.create_list(:email, SpecMisc::LARGE_LIST_SIZE) }
+
+    before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
+
+    context 'without emails' do
+      it 'returns the threads report stats' do
+        get '/api/v1/email_reports/threads_report'
+
+        threads_report_stats = JSON.parse(response.body)
+
+        expect(threads_report_stats['average_thread_length']).to eq(0)
+      end
+    end
+
+    context 'with emails' do
+      let(:email_threads) { FactoryGirl.create_list(:email_thread, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account) }
+      
+      before do
+        num_emails = 1
+        
+        email_threads.each do |email_thread|
+          create_email_thread_emails([email_thread], num_emails: num_emails)
+          num_emails += 1
+        end
+      end
+      
+      let!(:num_emails) { email_threads.length * (email_threads.length + 1) / 2 }
+      
+      it 'returns the threads report stats' do
+        get '/api/v1/email_reports/threads_report'
+  
+        threads_report_stats = JSON.parse(response.body)
+        
+        expect(threads_report_stats['average_thread_length']).to eq(num_emails / email_threads.length)
+        verify_models_expected(email_threads.reverse, threads_report_stats['top_email_threads'], 'uid')
+      end
+    end
+  end
+
+  describe '#folders_report' do
+    let(:gmail_account) { FactoryGirl.create(:gmail_account) }
     
     before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
 
@@ -343,6 +428,8 @@ describe Api::V1::EmailsController, :type => :request do
     end
     
     context 'with emails' do
+      let(:other_emails) { FactoryGirl.create_list(:email, SpecMisc::LARGE_LIST_SIZE) }
+      
       let!(:inbox_emails) { FactoryGirl.create_list(:email, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account) }
       let!(:read_emails) { FactoryGirl.create_list(:email, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account, :seen => true) }
       let!(:sent_emails) { FactoryGirl.create_list(:email, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account) }
@@ -353,7 +440,7 @@ describe Api::V1::EmailsController, :type => :request do
       
       let!(:inbox_folder) { FactoryGirl.create(:gmail_label_inbox, :gmail_account => gmail_account) }
       let!(:sent_folder) { FactoryGirl.create(:gmail_label_sent, :gmail_account => gmail_account) }
-      let!(:draft_folder) { FactoryGirl.create(:gmail_label_draft, :gmail_account => gmail_account) }
+      let!(:drafts_folder) { FactoryGirl.create(:gmail_label_drafts, :gmail_account => gmail_account) }
       let!(:trash_folder) { FactoryGirl.create(:gmail_label_trash, :gmail_account => gmail_account) }
       let!(:spam_folder) { FactoryGirl.create(:gmail_label_spam, :gmail_account => gmail_account) }
       let!(:starred_folder) { FactoryGirl.create(:gmail_label_starred, :gmail_account => gmail_account) }
@@ -361,7 +448,7 @@ describe Api::V1::EmailsController, :type => :request do
       before do
         create_email_folder_mappings(inbox_emails, inbox_folder)
         create_email_folder_mappings(sent_emails, sent_folder)
-        create_email_folder_mappings(draft_emails, draft_folder)
+        create_email_folder_mappings(draft_emails, drafts_folder)
         create_email_folder_mappings(trash_emails, trash_folder)
         create_email_folder_mappings(spam_emails, spam_folder)
         create_email_folder_mappings(starred_emails, starred_folder)
@@ -379,6 +466,45 @@ describe Api::V1::EmailsController, :type => :request do
         expect(folders_report_stats['percent_trash']).to eq(trash_emails.length / gmail_account.emails.count.to_f)
         expect(folders_report_stats['percent_spam']).to eq(spam_emails.length / gmail_account.emails.count.to_f)
         expect(folders_report_stats['percent_starred']).to eq(starred_emails.length / gmail_account.emails.count.to_f)
+      end
+    end
+  end
+
+  describe '#impact_report' do
+    let(:gmail_account) { FactoryGirl.create(:gmail_account) }
+
+    before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
+
+    context 'without emails' do
+      it 'returns the impact report stats' do
+        get '/api/v1/email_reports/impact_report'
+
+        impact_report_stats = JSON.parse(response.body)
+
+        expect(impact_report_stats['percent_sent_emails_replied_to']).to eq(0)
+      end
+    end
+    
+    context 'with emails' do
+      let!(:sent_emails) { FactoryGirl.create_list(:email, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account) }
+      let!(:sent_folder) { FactoryGirl.create(:gmail_label_sent, :gmail_account => gmail_account) }
+
+      let!(:reply_emails) { FactoryGirl.create_list(:email, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account) }
+      
+      before do
+        create_email_folder_mappings(sent_emails, sent_folder)
+        
+        reply_emails.zip(sent_emails).each do |email, sent_email|
+          FactoryGirl.create(:email_in_reply_to, :email => email, :in_reply_to_message_id => sent_email.message_id)
+        end
+      end
+      
+      it 'returns the impact report stats' do
+        get '/api/v1/email_reports/impact_report'
+
+        impact_report_stats = JSON.parse(response.body)
+
+        expect(impact_report_stats['percent_sent_emails_replied_to']).to eq(reply_emails.length / sent_emails.length.to_f)
       end
     end
   end

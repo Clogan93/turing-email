@@ -15,7 +15,7 @@ describe UsersController, :type => :request do
     let(:user) { FactoryGirl.create(:user) }
 
     it 'should not create the account' do
-      post users_path, :user => { :email => user.email, :password => user.password }
+      post users_path, :user => { :email => user.email, :password => user.password, :password_confirmation => user.password }
 
       expect(response).to have_http_status(:ok)
       expect(response).to render_template('new')
@@ -27,7 +27,7 @@ describe UsersController, :type => :request do
     let(:user) { FactoryGirl.build(:user) }
 
     it 'should not create the account' do
-      post users_path, :user => { :email => 'invalid_email', :password => user.password }
+      post users_path, :user => { :email => 'invalid_email', :password => user.password, :password_confirmation => user.password }
 
       expect(response).to have_http_status(:ok)
       expect(response).to render_template('new')
@@ -35,11 +35,35 @@ describe UsersController, :type => :request do
     end
   end
 
-  context 'when the email and password are valid' do
+  context 'when there is no password confirmation' do
+    let(:user) { FactoryGirl.build(:user) }
+
+    it 'should not create the account' do
+      post users_path, :user => { :email => 'invalid_email', :password => user.password }
+
+      expect(response).to have_http_status(:ok)
+      expect(response).to render_template('new')
+      expect(response.body).to match(/Password confirmation doesn&#39;t match Password/)
+    end
+  end
+
+  context 'when the password confirmation does not match' do
+    let(:user) { FactoryGirl.build(:user) }
+
+    it 'should not create the account' do
+      post users_path, :user => { :email => 'invalid_email', :password => user.password, :password_confirmation => 'test' }
+
+      expect(response).to have_http_status(:ok)
+      expect(response).to render_template('new')
+      expect(response.body).to match(/Password confirmation doesn&#39;t match Password/)
+    end
+  end
+
+  context 'when the email and password are valid and matches password confirmation' do
     let(:user) { FactoryGirl.build(:user) }
 
     it 'should create the account' do
-      post users_path, :user => { :email => user.email, :password => user.password }
+      post users_path, :user => { :email => user.email, :password => user.password, :password_confirmation => user.password }
 
       expect(response).to redirect_to(root_url)
     end
@@ -59,7 +83,7 @@ describe UsersController, :type => :request do
     end
 
     it 'should not create an account' do
-      post users_path, :user => { :email => user.email, :password => user.password }
+      post users_path, :user => { :email => user.email, :password => user.password, :password_confirmation => user.password }
 
       expect(response).to redirect_to(root_url)
       expect(request.flash[:info]).to match(/already have an account/)
