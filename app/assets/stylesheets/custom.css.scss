@@ -425,7 +425,12 @@ a#refresh_link
 {
  background-color: white !important; 
 }
-  
+ 
+.currently_being_read td
+{
+  background-color: rgb(231, 246, 236) !important; 
+}
+
 #no_conversations_selected
 {
   padding-top: 10%;

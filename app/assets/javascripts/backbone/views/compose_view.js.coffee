@@ -121,7 +121,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
   loadEmailDraft: (emailDraft, emailInReplyToUID="") ->
     @loadEmail(emailDraft)
     
-    emailDraftID = TuringEmailApp.emailDraftIDs.getEmailDraftID(emailDraft.uid)
+    emailDraftID = TuringEmailApp.collections.emailDraftIDs.getEmailDraftID(emailDraft.uid)
     $("#compose_form #email_draft_id_input").val(emailDraftID)
     $("#compose_form #email_in_reply_to_uid_input").val(emailInReplyToUID)
 

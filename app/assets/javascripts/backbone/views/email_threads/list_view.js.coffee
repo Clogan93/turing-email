@@ -29,9 +29,11 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
     @setupReadUnreadRendering()
 
+    @setupCurrentEmailHighlighting()
+
     @setupTdClicksOfLinks()
 
-    if TuringEmailApp.userSettings.get("split_pane_mode") is "horizontal"
+    if TuringEmailApp.models.userSettings.get("split_pane_mode") is "horizontal"
       $("#preview_panel").show()
       @renderEmailPreview()
 
@@ -57,22 +59,29 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
                                      report_email.html() + "</tr>")
 
   renderEmailPreview: ->
-    TuringEmailApp.currentEmailThread = @collection.models[0]
-    TuringEmailApp.previewEmailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
-      model: TuringEmailApp.currentEmailThread
+    TuringEmailApp.views.emailThreadsListView.currentEmailThread = @collection.models[0]
+    TuringEmailApp.views.previewEmailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
+      model: TuringEmailApp.views.emailThreadsListView.currentEmailThread
       el: $("#preview_content")
     )
-    TuringEmailApp.previewEmailThreadView.render()
+    TuringEmailApp.views.previewEmailThreadView.render()
+
+  setupCurrentEmailHighlighting: ->
+    aTag = @$el.find('a[href^="#email_thread"]')
+    aTag.click ->
+      $(@).parent().parent().removeClass("read")
+      $(@).parent().parent().removeClass("unread")
+      $(@).parent().parent().addClass("currently_being_read")
 
   setupReadUnreadRendering: ->
     aTag = @$el.find('a[href^="#email_thread"]')
     aTag.click ->
-      TuringEmailApp.emailThreadsListView.updateToMarkAsRead $(@)
+      TuringEmailApp.views.emailThreadsListView.updateToMarkAsRead $(@)
 
   updateToMarkAsRead: (aTag) ->
     if aTag.parent().parent().hasClass("unread")
       currentFolderId = TuringEmailApp.currentFolderId
-      TuringEmailApp.toolbarView.decrementUnreadCountOfCurrentFolder(currentFolderId)
+      TuringEmailApp.views.toolbarView.decrementUnreadCountOfCurrentFolder(currentFolderId)
     aTag.parent().parent().removeClass("unread")
     aTag.parent().parent().addClass("read")
 
@@ -80,7 +89,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     tds = @$el.find('td.mail-ontact, td.mail-subject, td.mail-date')
     tds.click ->
       aTag = $(@).find('a[href^="#email_thread"]').first()
-      TuringEmailApp.emailThreadsListView.updateToMarkAsRead aTag
+      TuringEmailApp.views.emailThreadsListView.updateToMarkAsRead aTag
       link_components = aTag.attr("href").split("#")
       uid = link_components[link_components.length - 1]
-      TuringEmailApp.emailThreadsRouter.showEmailThread uid
+      TuringEmailApp.routers.emailThreadsRouter.showEmailThread uid

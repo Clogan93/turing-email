@@ -28,26 +28,26 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     return
 
   renderNoConversationsSelected: ->
-    TuringEmailApp.userSettings.get("split_pane_mode") is "horizontal"
+    TuringEmailApp.models.userSettings.get("split_pane_mode") is "horizontal"
     $("#preview_panel").append("<div id='preview_content'><div id='no_conversations_selected' align=center>No conversations selected</div></div>")
 
   setupReplyButtons: ->
     $(".email_reply_button").click =>
-      last_email_in_thread = TuringEmailApp.currentEmailThread.get("emails")[0]
-      TuringEmailApp.composeView.loadEmailAsReply last_email_in_thread
-      TuringEmailApp.composeView.show()
+      last_email_in_thread = TuringEmailApp.views.emailThreadsListView.currentEmailThread.get("emails")[0]
+      TuringEmailApp.views.composeView.loadEmailAsReply last_email_in_thread
+      TuringEmailApp.views.composeView.show()
 
   setupForwardButton: ->
     $(".email_forward_button").click ->
-      last_email_in_thread = TuringEmailApp.currentEmailThread.get("emails")[0]
-      TuringEmailApp.composeView.loadBodyFromEmail last_email_in_thread
-      TuringEmailApp.composeView.show()
+      last_email_in_thread = TuringEmailApp.views.emailThreadsListView.currentEmailThread.get("emails")[0]
+      TuringEmailApp.views.composeView.loadBodyFromEmail last_email_in_thread
+      TuringEmailApp.views.composeView.show()
 
   setupArchive: ->
     @$el.find("i.fa-archive").parent().click =>
       postData = {}
       emailThreadUIds = []
-      emailThreadUIds.push(TuringEmailApp.currentEmailThread.get("uid"))
+      emailThreadUIds.push(TuringEmailApp.views.emailThreadsListView.currentEmailThread.get("uid"))
       postData.email_thread_uids = emailThreadUIds
       postData.email_folder_id = TuringEmailApp.currentFolderId
 
@@ -63,8 +63,8 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
           TuringEmailApp.tattletale.send()
 
       for emailThreadUID in emailThreadUIds
-        emailThread = TuringEmailApp.emailThreads.getEmailThread emailThreadUID
-        TuringEmailApp.emailThreads.remove emailThread
+        emailThread = TuringEmailApp.collections.emailThreads.getEmailThread emailThreadUID
+        TuringEmailApp.collections.emailThreads.remove emailThread
 
       @renderNoConversationsSelected()
 
@@ -72,7 +72,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     @$el.find("i.fa-trash-o").parent().click =>
       postData = {}
       emailThreadUIds = []
-      emailThreadUIds.push(TuringEmailApp.currentEmailThread.get("uid"))
+      emailThreadUIds.push(TuringEmailApp.views.emailThreadsListView.currentEmailThread.get("uid"))
       postData.email_thread_uids = emailThreadUIds
 
       url = "/api/v1/email_threads/trash.json"
@@ -87,8 +87,8 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
           TuringEmailApp.tattletale.send()
 
       for emailThreadUID in emailThreadUIds
-        emailThread = TuringEmailApp.emailThreads.getEmailThread emailThreadUID
-        TuringEmailApp.emailThreads.remove emailThread
+        emailThread = TuringEmailApp.collections.emailThreads.getEmailThread emailThreadUID
+        TuringEmailApp.collections.emailThreads.remove emailThread
 
       @renderNoConversationsSelected()
 
@@ -127,7 +127,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
           thread_id = thread_elements[thread_elements.length - 1]
           $.get "/api/v1/email_threads/show/" + thread_id, (data) ->
             email_from_email_thread = data.emails[data.emails.length - 1]
-            $('#composeModal #compose_email_body').val("\n\n\n\n" + TuringEmailApp.composeView.retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes(email_from_email_thread))
+            $('#composeModal #compose_email_body').val("\n\n\n\n" + TuringEmailApp.views.composeView.retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes(email_from_email_thread))
             $('#compose_form #email_in_reply_to_uid_input').val(email_from_email_thread.uid)
 
         @$el.find("#email_iframe" + index.toString()).contents().find("body").find('a[href^="#from_address"]').click (event) ->

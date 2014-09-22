@@ -11,4 +11,4 @@ class TuringEmailApp.Views.EmailThreads.DraftListView extends TuringEmailApp.Vie
       event.preventDefault()
       link_components = $(@).attr("href").split("#")
       uid = link_components[link_components.length - 1]
-      TuringEmailApp.emailThreadsRouter.showEmailDraft uid
+      TuringEmailApp.routers.emailThreadsRouter.showEmailDraft uid

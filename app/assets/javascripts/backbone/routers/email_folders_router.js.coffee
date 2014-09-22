@@ -8,39 +8,39 @@ class TuringEmailApp.Routers.EmailFoldersRouter extends Backbone.Router
     @showFolder "INBOX"
 
   showFolder: (folder_id) ->
-    TuringEmailApp.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(
+    TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(
       folder_id: folder_id
     )
 
-    TuringEmailApp.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView({
+    TuringEmailApp.views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView({
       el: $("#email_table_body")
-      collection: TuringEmailApp.emailThreads
+      collection: TuringEmailApp.collections.emailThreads
     })
 
-    TuringEmailApp.emailThreads.fetch(
+    TuringEmailApp.collections.emailThreads.fetch(
       reset: true
     )
 
     TuringEmailApp.currentFolderId = folder_id
-    TuringEmailApp.toolbarView.renderLabelTitleAndUnreadCount folder_id
+    TuringEmailApp.views.toolbarView.renderLabelTitleAndUnreadCount folder_id
 
   showDraftFolder: ->
-    TuringEmailApp.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(
+    TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(
       folder_id: "DRAFT"
     )
 
-    TuringEmailApp.emailDraftIDs.fetch()
+    TuringEmailApp.collections.emailDraftIDs.fetch()
 
-    TuringEmailApp.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.DraftListView({
+    TuringEmailApp.views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.DraftListView({
       el: $("#email_table_body")
-      collection: TuringEmailApp.emailThreads
+      collection: TuringEmailApp.collections.emailThreads
     })
 
-    TuringEmailApp.emailThreads.fetch(
+    TuringEmailApp.collections.emailThreads.fetch(
       reset: true
       success: (collection, response, options) ->
-        TuringEmailApp.emailThreadsListView.setupDraftComposeView()
+        TuringEmailApp.views.emailThreadsListView.setupDraftComposeView()
     )
 
     TuringEmailApp.currentFolderId = "DRAFT"
-    TuringEmailApp.toolbarView.renderLabelTitleAndUnreadCount "DRAFT"
+    TuringEmailApp.views.toolbarView.renderLabelTitleAndUnreadCount "DRAFT"
