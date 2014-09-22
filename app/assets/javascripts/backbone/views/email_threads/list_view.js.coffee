@@ -66,8 +66,8 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
   setupReadUnreadRendering: ->
     aTag = @$el.find('a[href^="#email_thread"]')
-    aTag.click =>
-      @updateToMarkAsRead aTag
+    aTag.click ->
+      TuringEmailApp.emailThreadsListView.updateToMarkAsRead $(@)
 
   updateToMarkAsRead: (aTag) ->
     if aTag.parent().parent().hasClass("unread")
@@ -78,9 +78,9 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
   setupTdClicksOfLinks: ->
     tds = @$el.find('td.mail-ontact, td.mail-subject, td.mail-date')
-    tds.click =>
-      aTag = tds.find('a[href^="#email_thread"]').first()
-      @updateToMarkAsRead aTag
+    tds.click ->
+      aTag = $(@).find('a[href^="#email_thread"]').first()
+      TuringEmailApp.emailThreadsListView.updateToMarkAsRead aTag
       link_components = aTag.attr("href").split("#")
       uid = link_components[link_components.length - 1]
       TuringEmailApp.emailThreadsRouter.showEmailThread uid

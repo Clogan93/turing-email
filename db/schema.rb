@@ -50,7 +50,7 @@ ActiveRecord::Schema.define(version: 20140922053306) do
   create_table "email_recipients", force: true do |t|
     t.integer  "email_id"
     t.integer  "person_id"
-    t.integer  "recipient_type"
+    t.integer  "recipient_type", default: 0
     t.datetime "created_at"
     t.datetime "updated_at"
   end
