@@ -8,7 +8,7 @@ describe EmailRecipient, :type => :model do
     it 'should fail to save without an email, person, and recipient type' do
       email_recipient = EmailRecipient.new
       expect(email_recipient.save).to be(false)
-  
+
       email_recipient.email = email
       expect(email_recipient.save).to be(false)
   

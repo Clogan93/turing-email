@@ -9,7 +9,7 @@
     if (emails[0].from_name == null) { %>
       <%= emails[0].from_address %><%
     } else {
-      if (TuringEmailApp.user.get("email") == emails[0].from_address) {%>
+      if (TuringEmailApp.models.user.get("email") == emails[0].from_address) {%>
         <%= "me" %><%
       } else {%>
         <%= emails[0].from_name %><%
