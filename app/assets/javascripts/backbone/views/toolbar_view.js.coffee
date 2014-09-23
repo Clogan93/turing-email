@@ -192,6 +192,10 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
         TuringEmailApp.routers.searchResultsRouter.showSearchResultsRouter $(@).val()
       return
 
+    $("#top-search-form").submit ->
+      TuringEmailApp.routers.searchResultsRouter.showSearchResultsRouter $(@).find("input").val()
+      return false
+
   setupRefresh: ->
     @$el.find("#refresh_button").click ->
       TuringEmailApp.collections.emailThreads.fetch(
