@@ -1,4 +1,7 @@
 class TuringEmailApp.Models.EmailThread extends Backbone.Model
+  initialize: (options) ->
+    @url = options.url if options?.url?
+
   seenIs: (seenValue=true)->
     postData = {}
     emailUids = []

@@ -6,7 +6,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     @listenTo(@collection, "reset", @addAll)
     @listenTo(@collection, "destroy", @remove)
 
-    @listenTo(TuringEmailApp, 'currentEmailThreadChanged', @changeRenderedCurrentEmailThread);
+    @listenTo(TuringEmailApp, 'currentEmailThreadChanged', @currentEmailThreadChanged);
 
   remove: ->
     @$el.remove()
@@ -39,10 +39,25 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
       $("#preview_panel").show()
       @renderEmailPreview(@currentlySelectedEmailThread)
 
-  changeRenderedCurrentEmailThread: ->
+  currentEmailThreadChanged: ->
     @unhighlightEmailThread @currentlySelectedEmailThread
     @highlightEmailThread TuringEmailApp.currentEmailThread
     @currentlySelectedEmailThread = TuringEmailApp.currentEmailThread
+
+    if TuringEmailApp.isSplitPaneMode()
+      $("#preview_panel").show()
+      emailThreadViewEl = "#preview_content"
+    else
+      emailThreadViewEl = "#email_table_body"
+      $("#email-folder-mail-header").hide()
+
+    emailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
+      model: TuringEmailApp.currentEmailThread
+      el: $(emailThreadViewEl)
+    )
+    emailThreadView.render()
+
+    TuringEmailApp.views.previewEmailThreadView = emailThreadView if TuringEmailApp.isSplitPaneMode()
 
   renderCheckboxes: ->
     $(".i-checks").iCheck

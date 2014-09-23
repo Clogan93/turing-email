@@ -86,6 +86,10 @@ window.TuringEmailApp = new(Backbone.View.extend({
 
     Backbone.history.start()
 
+  isSplitPaneMode: ->
+    splitPaneMode = TuringEmailApp.models.userSettings.get("split_pane_mode")
+    return splitPaneMode is "horizontal" || splitPaneMode is "vertical"
+    
   currentEmailThreadIs: (emailThread) ->
     if @currentEmailThread isnt emailThread
       @currentEmailThread = emailThread
