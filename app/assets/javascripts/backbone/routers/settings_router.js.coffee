@@ -3,9 +3,9 @@ class TuringEmailApp.Routers.SettingsRouter extends Backbone.Router
     "settings": "showSettings"
     
   showSettings: ->
-    if TuringEmailApp.userSettings?
-      TuringEmailApp.userSettings = new TuringEmailApp.Models.UserSettings()
-      TuringEmailApp.userSettings.fetch(
+    if TuringEmailApp.models.userSettings?
+      TuringEmailApp.models.userSettings = new TuringEmailApp.Models.UserSettings()
+      TuringEmailApp.models.userSettings.fetch(
         success: (model, response, options) =>
           @renderSettingsView()
       )
@@ -14,7 +14,7 @@ class TuringEmailApp.Routers.SettingsRouter extends Backbone.Router
 
   renderSettingsView: ->
     settingsView = new TuringEmailApp.Views.SettingsView(
-      model: TuringEmailApp.userSettings
+      model: TuringEmailApp.models.userSettings
       el: $("#settings")
     )
   

@@ -398,6 +398,7 @@ a#refresh_link
   z-index: 1000;
   overflow-y: scroll;
   display: none;
+  background-color: white;
 
   #resize_border
   {
@@ -410,7 +411,6 @@ a#refresh_link
   }
   #preview_content
   {
-    overflow-y: scroll;
     height: 100%;
   }
 }
@@ -424,4 +424,19 @@ a#refresh_link
 {
  background-color: white !important; 
 }
-  
+ 
+.currently_being_read td
+{
+  background-color: rgb(231, 246, 236) !important; 
+}
+
+#no_conversations_selected
+{
+  padding-top: 10%;
+  font-size: 20px;
+}
+
+.mail-box
+{
+  padding-bottom: 27.5%;
+}

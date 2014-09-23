@@ -28,20 +28,20 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
       emailThread = @getEmailThread emailThreadUID
       emailThread.seenIs(seenValue)
 
-  fetchPreviousPage: ->
-    page_number = parseInt(@page)
-    if page_number > 1
-      @page = (page_number - 1).toString()
+  previousPage: ->
+    pageNumber = parseInt(@page)
+    if pageNumber > 1
+      @page = (pageNumber - 1).toString()
       @url = "/api/v1/email_threads/in_folder?folder_id=" + TuringEmailApp.currentFolderId + "&page=" + @page
       @fetch(
         success: (collection, response, options) =>
-          TuringEmailApp.emailThreadsListView.renderCheckboxes()
+          TuringEmailApp.views.emailThreadsListView.renderCheckboxes()
       )
 
-  fetchNextPage: ->
+  nextPage: ->
     @page = (parseInt(@page) + 1).toString()
     @url = "/api/v1/email_threads/in_folder?folder_id=" + TuringEmailApp.currentFolderId + "&page=" + @page
     @fetch(
       success: (collection, response, options) =>
-        TuringEmailApp.emailThreadsListView.renderCheckboxes()
+        TuringEmailApp.views.emailThreadsListView.renderCheckboxes()
     )

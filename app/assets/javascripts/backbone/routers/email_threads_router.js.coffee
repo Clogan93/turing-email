@@ -4,22 +4,22 @@ class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
     "email_draft#:uid": "showEmailDraft"
 
   showEmailThread: (emailThreadUID) ->
-    if TuringEmailApp.userSettings.get("split_pane_mode") is "horizontal"
+    TuringEmailApp.currentEmailThreadIs TuringEmailApp.collections.emailThreads.getEmailThread(emailThreadUID)
+    
+    if TuringEmailApp.models.userSettings.get("split_pane_mode") is "horizontal"
       $("#preview_panel").show()
-      TuringEmailApp.currentEmailThread = TuringEmailApp.emailThreads.getEmailThread(emailThreadUID)
 
-      TuringEmailApp.previewEmailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
+      TuringEmailApp.views.previewEmailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
         model: TuringEmailApp.currentEmailThread
         el: $("#preview_content")
       )
-      TuringEmailApp.previewEmailThreadView.render()
+      TuringEmailApp.views.previewEmailThreadView.render()
     else
-      TuringEmailApp.currentEmailThread = TuringEmailApp.emailThreads.getEmailThread(emailThreadUID)
-      
       if TuringEmailApp.currentEmailThread?
         @renderEmailThread TuringEmailApp.currentEmailThread
       else
-        TuringEmailApp.currentEmailThread = new TuringEmailApp.Models.EmailThread()
+        newEmailThread = new TuringEmailApp.Models.EmailThread()
+        TuringEmailApp.currentEmailThreadIs newEmailThread
         TuringEmailApp.currentEmailThread.url = "/api/v1/email_threads/show/" + emailThreadUID
         
         TuringEmailApp.currentEmailThread.fetch(
@@ -37,17 +37,18 @@ class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
     emailThreadView.render()
 
   showEmailDraft: (emailThreadUID) ->
-    TuringEmailApp.currentEmailThread = TuringEmailApp.emailThreads.getEmailThread(emailThreadUID)
+    TuringEmailApp.currentEmailThreadIs TuringEmailApp.collections.emailThreads.getEmailThread(emailThreadUID)
 
     if TuringEmailApp.currentEmailThread?
-      TuringEmailApp.composeView.loadEmailDraft TuringEmailApp.currentEmailThread.get("emails")[0]
-      TuringEmailApp.composeView.show()
+      TuringEmailApp.views.composeView.loadEmailDraft TuringEmailApp.currentEmailThread.get("emails")[0]
+      TuringEmailApp.views.composeView.show()
     else
-      TuringEmailApp.currentEmailThread = new TuringEmailApp.Models.EmailThread()
+      newEmailThread = new TuringEmailApp.Models.EmailThread()
+      TuringEmailApp.currentEmailThreadIs newEmailThread
       TuringEmailApp.currentEmailThread.url = "/api/v1/email_threads/show/" + emailThreadUID
       
       TuringEmailApp.currentEmailThread.fetch(
         success: (model, response, options) =>
-          TuringEmailApp.composeView.loadEmailDraft model.get("emails")[0]
-          TuringEmailApp.composeView.show()
+          TuringEmailApp.views.composeView.loadEmailDraft model.get("emails")[0]
+          TuringEmailApp.views.composeView.show()
       )

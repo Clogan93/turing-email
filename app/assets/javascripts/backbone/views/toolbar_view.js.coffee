@@ -6,14 +6,14 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @$el.remove()
 
   decrementUnreadCountOfCurrentFolder: (folder_id) ->
-    currentFolder = TuringEmailApp.emailFolders.getEmailFolder(folder_id)
+    currentFolder = TuringEmailApp.collections.emailFolders.getEmailFolder(folder_id)
     currentFolder.set("num_unread_threads", currentFolder.get("num_unread_threads") - 1)
     @$el.find(".label_count_badge").html(currentFolder.get("num_unread_threads")) if currentFolder?
     if folder_id is "INBOX"
       $(".inbox_count_badge").html(currentFolder.get("num_unread_threads")) if currentFolder?
 
   renderLabelTitleAndUnreadCount: (folder_id) ->
-    currentFolder = TuringEmailApp.emailFolders.getEmailFolder(folder_id)
+    currentFolder = TuringEmailApp.collections.emailFolders.getEmailFolder(folder_id)
     @$el.find(".label_name").html(currentFolder.get("name")) if currentFolder?
     @$el.find(".label_count_badge").html(currentFolder.get("num_unread_threads")) if currentFolder?
 
@@ -146,7 +146,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   setupRead: ->
     @$el.find("i.fa-eye").parent().click =>
       checkedUIDs = @retrieveCheckedUIDs()
-      TuringEmailApp.emailThreads.seenIs checkedUIDs, true
+      TuringEmailApp.collections.emailThreads.seenIs checkedUIDs, true
 
       #Alter UI
       tr_element = $(".check-mail .checked").parent().parent()
@@ -158,7 +158,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   setupUnread: ->
     @$el.find("i.fa-eye-slash").parent().click =>
       checkedUIDs = @retrieveCheckedUIDs()
-      TuringEmailApp.emailThreads.seenIs checkedUIDs, false
+      TuringEmailApp.collections.emailThreads.seenIs checkedUIDs, false
 
       #Alter classes
       tr_element = $(".check-mail .checked").parent().parent()
@@ -169,18 +169,18 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
   setupGoLeft: ->
     @$el.find("#paginate_left_link").click ->
-      TuringEmailApp.emailThreads.fetchPreviousPage()
+      TuringEmailApp.collections.emailThreads.previousPage()
 
   setupGoRight: ->
     @$el.find("#paginate_right_link").click ->
-      if TuringEmailApp.emailThreads.length is 50
-        TuringEmailApp.emailThreads.fetchNextPage()
+      if TuringEmailApp.collections.emailThreads.length is 50
+        TuringEmailApp.collections.emailThreads.nextPage()
 
   setupRefresh: ->
     @$el.find("#refresh_button").click ->
-      TuringEmailApp.emailThreads.fetch(
+      TuringEmailApp.collections.emailThreads.fetch(
         success: (collection, response, options) =>
-          TuringEmailApp.emailThreadsListView.renderCheckboxes()
+          TuringEmailApp.views.emailThreadsListView.renderCheckboxes()
       )
 
   render: ->

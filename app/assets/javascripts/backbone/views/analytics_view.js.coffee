@@ -9,11 +9,11 @@ class TuringEmailApp.Views.AnalyticsView extends Backbone.View
 
     @$el.html(@template())
 
-    TuringEmailApp.reportsRouter.showAttachmentsReport "#attachments_report"
-    TuringEmailApp.reportsRouter.showEmailVolumeReport "#email_volume_report"
-    TuringEmailApp.reportsRouter.showGeoReport "#geo_report"
-    TuringEmailApp.reportsRouter.showListsReport "#lists_report"
-    TuringEmailApp.reportsRouter.showThreadsReport "#threads_report"
-    TuringEmailApp.reportsRouter.showContactsReport "#contacts_report"
+    TuringEmailApp.routers.reportsRouter.showAttachmentsReport "#attachments_report"
+    TuringEmailApp.routers.reportsRouter.showEmailVolumeReport "#email_volume_report"
+    TuringEmailApp.routers.reportsRouter.showGeoReport "#geo_report"
+    TuringEmailApp.routers.reportsRouter.showListsReport "#lists_report"
+    TuringEmailApp.routers.reportsRouter.showThreadsReport "#threads_report"
+    TuringEmailApp.routers.reportsRouter.showContactsReport "#contacts_report"
 
     return this

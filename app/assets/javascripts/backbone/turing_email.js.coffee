@@ -29,57 +29,67 @@ window.TuringEmailApp = new(Backbone.View.extend({
   Routers: {}
 
   start: ->
-    @user = new TuringEmailApp.Models.User()
-    @user.fetch()
+    @models = {}
+    @views = {}
+    @collections = {}
+    @routers = {}
 
-    @userSettings = new TuringEmailApp.Models.UserSettings()
-    @userSettings.fetch()
+    @models.user = new TuringEmailApp.Models.User()
+    @models.user.fetch()
 
-    @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection()
-    @emailFoldersRouter = new TuringEmailApp.Routers.EmailFoldersRouter()
-    @emailFoldersTreeView = new TuringEmailApp.Views.EmailFolders.TreeView(
+    @models.userSettings = new TuringEmailApp.Models.UserSettings()
+    @models.userSettings.fetch()
+
+    @collections.emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection()
+    @routers.emailFoldersRouter = new TuringEmailApp.Routers.EmailFoldersRouter()
+    @views.emailFoldersTreeView = new TuringEmailApp.Views.EmailFolders.TreeView(
       el: $("#email_folders")
-      collection: @emailFolders
+      collection: @collections.emailFolders
     )
-    @toolbarView = new TuringEmailApp.Views.ToolbarView(
+    @views.toolbarView = new TuringEmailApp.Views.ToolbarView(
       el: $("#email-folder-mail-header")
-      collection: @emailFolders
+      collection: @collections.emailFolders
     )
-    @toolbarView.render()
+    @views.toolbarView.render()
 
-    @emailFolders.fetch(
+    @collections.emailFolders.fetch(
       reset: true
 
       success: (collection, response, options) =>
         # Set the inbox count to the number of emails in the inbox.
-        inboxFolder = TuringEmailApp.emailFolders.getEmailFolder("INBOX")
+        inboxFolder = TuringEmailApp.collections.emailFolders.getEmailFolder("INBOX")
         $(".inbox_count_badge").html(inboxFolder.get("num_unread_threads")) if inboxFolder?
 
-        @toolbarView.renderLabelTitleAndUnreadCount "INBOX"
+        @views.toolbarView.renderLabelTitleAndUnreadCount "INBOX"
     )
 
-    @composeView = new TuringEmailApp.Views.ComposeView(
+    @views.composeView = new TuringEmailApp.Views.ComposeView(
       el: $("#modals")
     )
-    @composeView.render()
+    @views.composeView.render()
 
-    @emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
+    @routers.emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
 
     windowLocationHash = window.location.hash.toString()
     if windowLocationHash.indexOf("#folder#") == -1
-      @emailFoldersRouter.showFolder("INBOX")
+      @routers.emailFoldersRouter.showFolder("INBOX")
 
     #Routers
-    @reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
-    @analyticsRouter = new TuringEmailApp.Routers.AnalyticsRouter()
-    @settingsRouter = new TuringEmailApp.Routers.SettingsRouter()
-    @searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()
+    @routers.reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
+    @routers.analyticsRouter = new TuringEmailApp.Routers.AnalyticsRouter()
+    @routers.settingsRouter = new TuringEmailApp.Routers.SettingsRouter()
+    @routers.searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()
 
     @start_error_logging()    
 
     #@start_email_sync()
 
     Backbone.history.start()
+
+  currentEmailThreadIs: (emailThread) ->
+    if @currentEmailThread isnt emailThread
+      @currentEmailThread = emailThread
+      @trigger "currentEmailThreadChanged"
 
   start_error_logging: ->
     @tattletale = new Tattletale('/api/v1/log.json')
