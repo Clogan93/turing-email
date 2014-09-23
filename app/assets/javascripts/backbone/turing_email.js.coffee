@@ -93,6 +93,22 @@ window.TuringEmailApp = new(Backbone.View.extend({
   currentEmailThreadIs: (emailThread) ->
     if @currentEmailThread isnt emailThread
       @currentEmailThread = emailThread
+
+      if TuringEmailApp.isSplitPaneMode()
+        $("#preview_panel").show()
+        emailThreadViewEl = "#preview_content"
+      else
+        emailThreadViewEl = "#email_table_body"
+        $("#email-folder-mail-header").hide()
+  
+      emailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
+        model: TuringEmailApp.currentEmailThread
+        el: $(emailThreadViewEl)
+      )
+      emailThreadView.render()
+  
+      TuringEmailApp.views.previewEmailThreadView = emailThreadView if TuringEmailApp.isSplitPaneMode()
+      
       @trigger "currentEmailThreadChanged"
 
   start_error_logging: ->

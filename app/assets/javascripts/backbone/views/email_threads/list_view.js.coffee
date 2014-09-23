@@ -44,21 +44,6 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     @highlightEmailThread TuringEmailApp.currentEmailThread
     @currentlySelectedEmailThread = TuringEmailApp.currentEmailThread
 
-    if TuringEmailApp.isSplitPaneMode()
-      $("#preview_panel").show()
-      emailThreadViewEl = "#preview_content"
-    else
-      emailThreadViewEl = "#email_table_body"
-      $("#email-folder-mail-header").hide()
-
-    emailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
-      model: TuringEmailApp.currentEmailThread
-      el: $(emailThreadViewEl)
-    )
-    emailThreadView.render()
-
-    TuringEmailApp.views.previewEmailThreadView = emailThreadView if TuringEmailApp.isSplitPaneMode()
-
   renderCheckboxes: ->
     $(".i-checks").iCheck
       checkboxClass: "icheckbox_square-green"
