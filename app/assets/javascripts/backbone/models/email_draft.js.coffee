@@ -1,7 +1,7 @@
 class TuringEmailApp.Models.EmailDraft extends TuringEmailApp.Models.Email
   url: "/api/v1/email_accounts/drafts"
 
-  sendDraft: (draft_id) ->
+  sendDraft: (successCallback=null) ->
     postData = {}
     postData.draft_id = @get("draft_id")
     $.ajax({
@@ -11,6 +11,8 @@ class TuringEmailApp.Models.EmailDraft extends TuringEmailApp.Models.Email
       dataType : 'json'
     }).done((data, status) ->
       return
+    ).success((data) ->
+      successCallback(data) if successCallback
     ).fail (data, status) ->
       TuringEmailApp.tattletale.log(JSON.stringify(status))
       TuringEmailApp.tattletale.log(JSON.stringify(data))

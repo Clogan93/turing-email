@@ -7,9 +7,6 @@ class TuringEmailApp.Views.Reports.InboxEfficiencyReportView extends Backbone.Vi
     @listenTo(@model, "change", @render)
     @listenTo(@model, "hide destroy", @remove)
 
-  remove: ->
-    @$el.remove()
-
   render: ->
     TuringEmailApp.showReport()
     @$el.html(@template(@model.toJSON()))

@@ -6,10 +6,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     @listenTo(@collection, "reset", @addAll)
     @listenTo(@collection, "destroy", @remove)
 
-    @listenTo(TuringEmailApp, 'currentEmailThreadChanged', @currentEmailThreadChanged);
-
-  remove: ->
-    @$el.remove()
+    @listenTo(TuringEmailApp, 'change:currentEmailThread', @currentEmailThreadChanged)
 
   render: ->
     @addAll()

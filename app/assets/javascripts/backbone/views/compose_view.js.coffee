@@ -37,6 +37,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
         success: (model, response, options) =>
           console.log "SAVED! setting draft_id to " + response.draft_id
           model.set("draft_id", response.draft_id)
+          @trigger "change:draft"
           
           @savingDraft = false
           
@@ -100,12 +101,12 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     @currentEmailDraft = new TuringEmailApp.Models.EmailDraft(emailDraftJSON)
     @emailInReplyToUID = emailInReplyToUID
 
-  loadEmailAsReply: (emailJSON, subjectPrefix="Re: ") ->
+  loadEmailAsReply: (emailJSON) ->
     console.log("ComposeView loadEmailAsReply!!")
     @resetView()
 
     $("#compose_form #to_input").val(if emailJSON.reply_to_address? then emailJSON.reply_to_address else emailJSON.from_address)
-    $("#compose_form #subject_input").val(@subjectWithPrefixFromEmail(emailJSON, subjectPrefix))
+    $("#compose_form #subject_input").val(@subjectWithPrefixFromEmail(emailJSON, "Re: "))
     @loadEmailBody(emailJSON, true)
 
     @emailInReplyToUID = emailJSON.uid
@@ -190,6 +191,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
           success: (model, response, options) =>
             console.log "SAVED! setting draft_id to " + response.draft_id
             draftToSend.set("draft_id", response.draft_id)
+            @trigger "change:draft"
             
             @sendEmailDelayed(draftToSend)
         })
@@ -213,7 +215,9 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
       
       if emailToSend.sendDraft?
         console.log "sendDraft!"
-        emailToSend.sendDraft()
+        emailToSend.sendDraft(=>
+          @trigger "change:draft"
+        )
       else
         console.log "send email!"
         emailToSend.save(null, {

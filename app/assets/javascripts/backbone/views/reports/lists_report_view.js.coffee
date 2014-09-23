@@ -7,9 +7,6 @@ class TuringEmailApp.Views.Reports.ListsReportView extends Backbone.View
     @listenTo(@model, "change", @render)
     @listenTo(@model, "hide destroy", @remove)
 
-  remove: ->
-    @$el.remove()
-
   render: ->
     TuringEmailApp.showReport()
     @$el.html(@template(@model.toJSON()))

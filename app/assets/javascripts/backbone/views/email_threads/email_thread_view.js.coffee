@@ -7,9 +7,6 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     @listenTo(@model, "change", @render)
     @listenTo(@model, "hide destroy", @remove)
 
-  remove: ->
-    @$el.remove()
-
   render: ->
     @$el.html(@template(@model.toJSON()))
 
@@ -24,24 +21,64 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
 
     @setupArchive()
     @setupDelete()
+    
+    return this
 
-    return
+  renderGenieReport: ->
+    for email, index in @model.get("emails")
+      if email.subject is "Turing Email - Your daily Genie Report!"
+        @insertHtmlIntoIframe email, index
 
-  renderNoConversationsSelected: ->
-    TuringEmailApp.models.userSettings.get("split_pane_mode") is "horizontal"
-    $("#preview_panel").append("<div id='preview_content'><div id='no_conversations_selected' align=center>No conversations selected</div></div>")
+        @$el.find("#email_iframe" + index.toString()).contents().find("body").find('a[href^="#email_thread"]').click (event) ->
+          event.preventDefault()
+          $('#composeModal').modal()
+          subject = "Re: " + $(@).text()
+          $('#composeModal #subject_input').val(subject)
+          reply_link = $(@).parent().parent().find('a[href^="mailto:"]').attr("href").replace "mailto:", ""
+          $('#composeModal #to_input').val(reply_link)
+
+          thread_elements = $(@).attr("href").split("#")
+          thread_id = thread_elements[thread_elements.length - 1]
+          $.get "/api/v1/email_threads/show/" + thread_id, (data) ->
+            email_from_email_thread = data.emails[data.emails.length - 1]
+            $('#composeModal #compose_email_body').val("\n\n\n\n" + TuringEmailApp.views.composeView.retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes(email_from_email_thread))
+            $('#compose_form #email_in_reply_to_uid_input').val(email_from_email_thread.uid)
+
+        @$el.find("#email_iframe" + index.toString()).contents().find("body").find('a[href^="#from_address"]').click (event) ->
+          event.preventDefault()
+          $("#email_filter_from").val($(@).attr("href").split("=")[1])
+          $(window).scrollTop($('.navbar-header').position().top)
+          $('.dropdown a').trigger('click.bs.dropdown')
+          return false
+
+        @$el.find("#email_iframe" + index.toString()).contents().find("body").find('a[href^="#list_id"]').click (event) ->
+          event.preventDefault()
+          $("#email_filter_list").val($(@).attr("href").split("=")[1])
+          $(window).scrollTop($('.navbar-header').position().top)
+          $('.dropdown a').trigger('click.bs.dropdown')
+          return false
+
+  renderHtmlPartsOfEmails: ->
+    for email, index in @model.get("emails")
+      if email.html_part?
+        @insertHtmlIntoIframe email, index
+
+  setupEmailExpandAndCollapse: ->
+    @$el.find(".email").click ->
+      $(this).find(".email_body").show()
+      $(this).removeClass("collapsed_email")
+
+      $(this).siblings(".email").each ->
+        $(this).addClass "collapsed_email"
+        $(this).find(".email_body").hide()
 
   setupReplyButtons: ->
     $(".email_reply_button").click =>
-      last_email_in_thread = TuringEmailApp.currentEmailThread.get("emails")[0]
-      TuringEmailApp.views.composeView.loadEmailAsReply last_email_in_thread
-      TuringEmailApp.views.composeView.show()
+      TuringEmailApp.showEmailEditorWithEmailThread(TuringEmailApp.currentEmailThread.get("uid"), "reply")
 
   setupForwardButton: ->
     $(".email_forward_button").click ->
-      last_email_in_thread = TuringEmailApp.currentEmailThread.get("emails")[0]
-      TuringEmailApp.views.composeView.loadBodyFromEmail last_email_in_thread
-      TuringEmailApp.views.composeView.show()
+      TuringEmailApp.showEmailEditorWithEmailThread(TuringEmailApp.currentEmailThread.get("uid"), "forward")
 
   setupArchive: ->
     @$el.find("i.fa-archive").parent().click =>
@@ -111,52 +148,6 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     
     @$el.find("#email_iframe" + index.toString()).css("height", body_height_adjusted_string)
 
-  renderHtmlPartsOfEmails: ->
-    for email, index in @model.get("emails")
-      if email.html_part?
-        @insertHtmlIntoIframe email, index
-
-  renderGenieReport: ->
-    for email, index in @model.get("emails")
-      if email.subject is "Turing Email - Your daily Genie Report!"
-        @insertHtmlIntoIframe email, index
-
-        @$el.find("#email_iframe" + index.toString()).contents().find("body").find('a[href^="#email_thread"]').click (event) ->
-          event.preventDefault()
-          $('#composeModal').modal()
-          subject = "Re: " + $(@).text()
-          $('#composeModal #subject_input').val(subject)
-          reply_link = $(@).parent().parent().find('a[href^="mailto:"]').attr("href").replace "mailto:", ""
-          $('#composeModal #to_input').val(reply_link)
-
-          thread_elements = $(@).attr("href").split("#")
-          thread_id = thread_elements[thread_elements.length - 1]
-          $.get "/api/v1/email_threads/show/" + thread_id, (data) ->
-            email_from_email_thread = data.emails[data.emails.length - 1]
-            $('#composeModal #compose_email_body').val("\n\n\n\n" + TuringEmailApp.views.composeView.retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes(email_from_email_thread))
-            $('#compose_form #email_in_reply_to_uid_input').val(email_from_email_thread.uid)
-
-        @$el.find("#email_iframe" + index.toString()).contents().find("body").find('a[href^="#from_address"]').click (event) ->
-          event.preventDefault()
-          $("#email_filter_from").val($(@).attr("href").split("=")[1])
-          $(window).scrollTop($('.navbar-header').position().top)
-          $('.dropdown a').trigger('click.bs.dropdown')
-          return false
-
-        @$el.find("#email_iframe" + index.toString()).contents().find("body").find('a[href^="#list_id"]').click (event) ->
-          event.preventDefault()
-          $("#email_filter_list").val($(@).attr("href").split("=")[1])
-          $(window).scrollTop($('.navbar-header').position().top)
-          $('.dropdown a').trigger('click.bs.dropdown')
-          return false
-
-  setupEmailExpandAndCollapse: ->
-    @$el.find(".email").click ->
-
-      $(this).find(".email_body").show()
-      $(this).removeClass("collapsed_email")
-
-      $(this).siblings(".email").each ->
-
-        $(this).addClass "collapsed_email"
-        $(this).find(".email_body").hide()
+  renderNoConversationsSelected: ->
+    TuringEmailApp.models.userSettings.get("split_pane_mode") is "horizontal"
+    $("#preview_panel").append("<div id='preview_content'><div id='no_conversations_selected' align=center>No conversations selected</div></div>")

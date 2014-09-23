@@ -7,9 +7,6 @@ class TuringEmailApp.Views.Reports.SummaryAnalyticsReportView extends Backbone.V
     @listenTo(@model, "change", @render)
     @listenTo(@model, "hide destroy", @remove)
 
-  remove: ->
-    @$el.remove()
-
   render: ->
     TuringEmailApp.showReport()
     @$el.html(@template(@model.toJSON()))

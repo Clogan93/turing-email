@@ -66,6 +66,7 @@ window.TuringEmailApp = new(Backbone.View.extend({
     @views.composeView = new TuringEmailApp.Views.ComposeView(
       el: $("#modals")
     )
+    @listenTo(@views.composeView, "change:draft", @draftChanged)
     @views.composeView.render()
 
     @routers.emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
@@ -122,14 +123,22 @@ window.TuringEmailApp = new(Backbone.View.extend({
     
         TuringEmailApp.views.previewEmailThreadView = emailThreadView if TuringEmailApp.isSplitPaneMode()
         
-        @trigger "currentEmailThreadChanged"
+        @trigger "change:currentEmailThread"
 
     TuringEmailApp.loadEmailThread(emailThreadUID, callback)
 
-  showEmailEditorWithEmailThread:(emailThreadUID) ->
+  showEmailEditorWithEmailThread:(emailThreadUID, mode="draft") ->
     callback = (emailThread) =>
-      TuringEmailApp.currentEmailThreadIs emailThread
-      TuringEmailApp.views.composeView.loadEmailDraft emailThread.get("emails")[0]
+      TuringEmailApp.currentEmailThreadIs emailThread.get("uid")
+
+      switch mode
+        when "forward"
+          TuringEmailApp.views.composeView.loadEmailAsForward(emailThread.get("emails")[0])
+        when "reply"
+          TuringEmailApp.views.composeView.loadEmailAsReply(emailThread.get("emails")[0])
+        else
+          TuringEmailApp.views.composeView.loadEmailDraft emailThread.get("emails")[0]
+      
       TuringEmailApp.views.composeView.show()
 
     TuringEmailApp.loadEmailThread(emailThreadUID, callback)
@@ -152,6 +161,9 @@ window.TuringEmailApp = new(Backbone.View.extend({
     TuringEmailApp.views.toolbarView.renderLabelTitleAndUnreadCount folderID
     TuringEmailApp.showEmails()
     
+  draftChanged: ->
+    @collections.emailThreads.fetch(reset: true) if TuringEmailApp.currentFolderId is "DRAFT"
+
   start_error_logging: ->
     @tattletale = new Tattletale('/api/v1/log.json')
 

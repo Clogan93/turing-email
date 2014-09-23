@@ -7,9 +7,6 @@ class TuringEmailApp.Views.Reports.RecommendedRulesReportView extends Backbone.V
     @listenTo(@model, "change", @render)
     @listenTo(@model, "hide destroy", @remove)
 
-  remove: ->
-    @$el.remove()
-
   setupRecommendedRulesLinks: ->
     $(".rule_recommendation_link").click (event) ->
       event.preventDefault()

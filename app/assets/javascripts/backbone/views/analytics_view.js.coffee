@@ -1,9 +1,6 @@
 class TuringEmailApp.Views.AnalyticsView extends Backbone.View
   template: JST["backbone/templates/analytics"]
 
-  remove: ->
-    @$el.remove()
-
   render: ->
     TuringEmailApp.showReport()
 

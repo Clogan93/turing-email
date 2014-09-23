@@ -8,9 +8,6 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     @listenTo(@model, "change", @render)
     @listenTo(@model, "hide destroy", @remove)
 
-  remove: ->
-    @$el.remove()
-
   render: ->
     if @model.get("emails")[0].seen
       @$el.addClass("read")
