@@ -12,7 +12,6 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     @$el.remove()
 
   render: ->
-    console.log "ListView render called."
     @addAll()
     return this
 
@@ -30,8 +29,6 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     @addKeyboardShortcutHighlight()
 
     @setupReadUnreadRendering()
-
-    @setupCurrentEmailHighlighting()
 
     @setupTdClicksOfLinks()
 
@@ -77,7 +74,6 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     TuringEmailApp.views.previewEmailThreadView.render()
 
   highlightEmailThread: (emailThread) ->
-    console.log "highlightEmailThread"
     aTag = @$el.find('a[href^="#email_thread#' + emailThread.get("uid") + '"]')
     aTag.parent().parent().removeClass("read")
     aTag.parent().parent().removeClass("unread")
@@ -85,12 +81,9 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
   unhighlightEmailThread: (emailThread) ->
     if emailThread?
-      console.log "unhighlightEmailThread"
       aTag = @$el.find('a[href^="#email_thread#' + emailThread.get("uid") + '"]')
-      console.log aTag
       aTag.parent().parent().removeClass("currently_being_read")
       aTag.parent().parent().addClass("read")
-      console.log aTag.parent().parent()
 
   setupReadUnreadRendering: ->
     aTag = @$el.find('a[href^="#email_thread"]')
