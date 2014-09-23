@@ -32,12 +32,8 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
     @setupTdClicksOfLinks()
 
-    @currentlySelectedEmailThread = @collection.models[0]
-    @highlightEmailThread @currentlySelectedEmailThread
-
-    if TuringEmailApp.models.userSettings.get("split_pane_mode") is "horizontal"
-      $("#preview_panel").show()
-      @renderEmailPreview(@currentlySelectedEmailThread)
+    if @collections?.length() > 0
+      TuringEmailApp.currentEmailThreadIs(@collection.models[0].get("uid")) if TuringEmailApp.isSplitPaneMode()
 
   currentEmailThreadChanged: ->
     @unhighlightEmailThread @currentlySelectedEmailThread
@@ -65,14 +61,6 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
       $("#email_table_body").prepend("<tr height='59px;' class='" + report_email.attr("class") + "'>" +
                                      report_email.html() + "</tr>")
 
-  renderEmailPreview: (emailThread) ->
-    TuringEmailApp.currentEmailThreadIs emailThread
-    TuringEmailApp.views.previewEmailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
-      model: TuringEmailApp.currentEmailThread
-      el: $("#preview_content")
-    )
-    TuringEmailApp.views.previewEmailThreadView.render()
-
   highlightEmailThread: (emailThread) ->
     aTag = @$el.find('a[href^="#email_thread#' + emailThread.get("uid") + '"]')
     aTag.parent().parent().removeClass("read")
@@ -92,16 +80,24 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
   updateToMarkAsRead: (aTag) ->
     if aTag.parent().parent().hasClass("unread")
-      currentFolderId = TuringEmailApp.currentFolderId
-      TuringEmailApp.views.toolbarView.decrementUnreadCountOfCurrentFolder(currentFolderId)
+      TuringEmailApp.views.toolbarView.decrementUnreadCountOfCurrentFolder(TuringEmailApp.currentFolderId)
+
     aTag.parent().parent().removeClass("unread")
     aTag.parent().parent().addClass("read")
 
   setupTdClicksOfLinks: ->
-    tds = @$el.find('td.mail-ontact, td.mail-subject, td.mail-date')
+    tds = @$el.find('td.mail-contact, td.mail-subject, td.mail-date')
     tds.click ->
       aTag = $(@).find('a[href^="#email_thread"]').first()
-      TuringEmailApp.views.emailThreadsListView.updateToMarkAsRead aTag
-      link_components = aTag.attr("href").split("#")
-      uid = link_components[link_components.length - 1]
-      TuringEmailApp.routers.emailThreadsRouter.showEmailThread uid
+      if aTag.length > 0
+        TuringEmailApp.views.emailThreadsListView.updateToMarkAsRead aTag
+        link_components = aTag.attr("href").split("#")
+        uid = link_components[link_components.length - 1]
+        TuringEmailApp.routers.emailThreadsRouter.showEmailThread uid
+      else
+        aTag = $(@).find('a[href^="#email_draft"]').first()
+        if aTag.length > 0
+          link_components = aTag.attr("href").split("#")
+          uid = link_components[link_components.length - 1]
+          TuringEmailApp.routers.emailThreadsRouter.showEmailDraft uid
+        

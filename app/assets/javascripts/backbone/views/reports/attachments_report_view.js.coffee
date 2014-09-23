@@ -11,6 +11,6 @@ class TuringEmailApp.Views.Reports.AttachmentsReportView extends Backbone.View
     @$el.remove()
 
   render: ->
-    TuringEmailApp.restyle_other_elements()
+    TuringEmailApp.showReport()
     @$el.html(@template(@model.toJSON()))
     return this

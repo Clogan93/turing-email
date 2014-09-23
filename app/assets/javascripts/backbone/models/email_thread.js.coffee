@@ -17,8 +17,6 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
       type: "POST"
       url: url
       data: postData
-      success: (data) ->
-        return
       error: (data) ->
         TuringEmailApp.tattletale.log(data)
         TuringEmailApp.tattletale.send()

@@ -6,7 +6,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
     @on("remove", @hideModel)
 
     @page = getQuerystringNameValue("page")
-    @url = "/api/v1/email_threads/in_folder?folder_id=" + options.folder_id
+    @url = "/api/v1/email_threads/in_folder?folder_id=" + options.folder_id if options?.folder_id?
 
     if @page != null
       @url += "&page=" + @page

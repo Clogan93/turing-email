@@ -9,7 +9,7 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     @$el.remove()
 
   render: ->
-    TuringEmailApp.restyle_other_elements()
+    TuringEmailApp.showSettings()
     @$el.html(@template(@model.toJSON()))
 
     @setupEmailBankruptcyButton()

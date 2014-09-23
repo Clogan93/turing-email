@@ -89,28 +89,69 @@ window.TuringEmailApp = new(Backbone.View.extend({
   isSplitPaneMode: ->
     splitPaneMode = TuringEmailApp.models.userSettings.get("split_pane_mode")
     return splitPaneMode is "horizontal" || splitPaneMode is "vertical"
-    
-  currentEmailThreadIs: (emailThread) ->
-    if @currentEmailThread isnt emailThread
-      @currentEmailThread = emailThread
-
-      if TuringEmailApp.isSplitPaneMode()
-        $("#preview_panel").show()
-        emailThreadViewEl = "#preview_content"
-      else
-        emailThreadViewEl = "#email_table_body"
-        $("#email-folder-mail-header").hide()
   
-      emailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
-        model: TuringEmailApp.currentEmailThread
-        el: $(emailThreadViewEl)
+  loadEmailThread:(emailThreadUID, callback) ->
+    emailThread = TuringEmailApp.collections.emailThreads.getEmailThread(emailThreadUID)
+
+    if emailThread?
+      callback(emailThread)
+    else
+      emailThread = new TuringEmailApp.Models.EmailThread(url: "/api/v1/email_threads/show/" + emailThreadUID)
+      emailThread.fetch(
+        success: (model, response, options) =>
+          callback(emailThread)
       )
-      emailThreadView.render()
-  
-      TuringEmailApp.views.previewEmailThreadView = emailThreadView if TuringEmailApp.isSplitPaneMode()
       
-      @trigger "currentEmailThreadChanged"
+  currentEmailThreadIs: (emailThreadUID) ->
+    callback = (emailThread) =>   
+      if @currentEmailThread isnt emailThread
+        @currentEmailThread = emailThread
+  
+        if TuringEmailApp.isSplitPaneMode()
+          $("#preview_panel").show()
+          emailThreadViewEl = "#preview_content"
+        else
+          emailThreadViewEl = "#email_table_body"
+          $("#email-folder-mail-header").hide()
+    
+        emailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
+          model: TuringEmailApp.currentEmailThread
+          el: $(emailThreadViewEl)
+        )
+        emailThreadView.render()
+    
+        TuringEmailApp.views.previewEmailThreadView = emailThreadView if TuringEmailApp.isSplitPaneMode()
+        
+        @trigger "currentEmailThreadChanged"
 
+    TuringEmailApp.loadEmailThread(emailThreadUID, callback)
+
+  showEmailEditorWithEmailThread:(emailThreadUID) ->
+    callback = (emailThread) =>
+      TuringEmailApp.currentEmailThreadIs emailThread
+      TuringEmailApp.views.composeView.loadEmailDraft emailThread.get("emails")[0]
+      TuringEmailApp.views.composeView.show()
+
+    TuringEmailApp.loadEmailThread(emailThreadUID, callback)
+
+  currentEmailFolderIs: (folderID) ->
+    TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(
+      folder_id: folderID
+    )
+
+    TuringEmailApp.views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView({
+      el: $("#email_table_body")
+      collection: TuringEmailApp.collections.emailThreads
+    })
+
+    TuringEmailApp.collections.emailThreads.fetch(
+      reset: true
+    )
+
+    TuringEmailApp.currentFolderId = folderID
+    TuringEmailApp.views.toolbarView.renderLabelTitleAndUnreadCount folderID
+    TuringEmailApp.showEmails()
+    
   start_error_logging: ->
     @tattletale = new Tattletale('/api/v1/log.json')
 
@@ -142,18 +183,33 @@ window.TuringEmailApp = new(Backbone.View.extend({
     #/ call your function here
     ), 60000
 
-  #################################################################
-  ########################### Re-styling ##########################
-  #################################################################
-  
-  #TODO: re-factor mail.html.erb so that this is not longer necessary.
-  restyle_other_elements: ->
+  showEmails: ->
+    $("#reports").hide()
+    $("#settings").hide()
+    
+    $("#preview_panel").show()
+    $(".mail-box-header").show()
+    $("table.table-mail").show()
+    $("#pages").show()
+    $("#email_table").show()
+    
+  hideEmails: ->
     $("#preview_panel").hide()
     $(".mail-box-header").hide()
     $("table.table-mail").hide()
     $("#pages").hide()
     $("#email_table").hide()
-    $("#preview_pane").hide()
+    
+  showSettings: ->
+    @hideEmails()
+    $("#reports").hide()
+    $("#settings").show()
+    $(".main_email_list_content").css("height", "100%")
+    
+  showReport: ->
+    @hideEmails()
+    $("#reports").show()
+    $("#settings").hide()
     $(".main_email_list_content").css("height", "100%")
     
 }))({el: document.body})

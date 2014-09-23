@@ -3,7 +3,7 @@ class TuringEmailApp.Routers.SettingsRouter extends Backbone.Router
     "settings": "showSettings"
     
   showSettings: ->
-    if TuringEmailApp.models.userSettings?
+    if not TuringEmailApp.models.userSettings?
       TuringEmailApp.models.userSettings = new TuringEmailApp.Models.UserSettings()
       TuringEmailApp.models.userSettings.fetch(
         success: (model, response, options) =>
