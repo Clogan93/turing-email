@@ -61,17 +61,6 @@ class Api::V1::EmailAccountsController < ApiController
     email_thread_uids, @next_page_token = @email_account.search_threads(params[:query], params[:next_page_token])
     @email_threads = EmailThread.where(:uid => email_thread_uids).joins(:emails).includes(:emails).order('"emails"."date" DESC')
   end
-  
-  swagger_api :get_draft_ids do
-    summary 'Return email draft IDs.'
-
-    response :ok
-  end
-
-  # TODO write tests
-  def get_draft_ids
-    render :json => @email_account.get_draft_ids()
-  end
 
   swagger_api :create_draft do
     summary 'Create email draft.'
@@ -90,10 +79,10 @@ class Api::V1::EmailAccountsController < ApiController
 
   # TODO write tests
   def create_draft
-    @draft_id, @email = @email_account.create_draft(params[:tos], params[:ccs], params[:bccs],
-                                                    params[:subject], params[:email_body],
-                                                    params[:email_in_reply_to_uid])
-    render 'api/v1/emails/show_draft'
+    @email = @email_account.create_draft(params[:tos], params[:ccs], params[:bccs],
+                                         params[:subject], params[:email_body],
+                                         params[:email_in_reply_to_uid])
+    render 'api/v1/emails/show'
   end
 
   swagger_api :update_draft do
@@ -115,11 +104,11 @@ class Api::V1::EmailAccountsController < ApiController
 
   # TODO write tests
   def update_draft
-    @draft_id, @email = @email_account.update_draft(params[:draft_id],
-                                                    params[:tos], params[:ccs], params[:bccs],
-                                                    params[:subject], params[:email_body],
-                                                    params[:email_in_reply_to_uid])
-    render 'api/v1/emails/show_draft'
+    @email = @email_account.update_draft(params[:draft_id],
+                                         params[:tos], params[:ccs], params[:bccs],
+                                         params[:subject], params[:email_body],
+                                         params[:email_in_reply_to_uid])
+    render 'api/v1/emails/show'
   end
 
   swagger_api :send_draft do

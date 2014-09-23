@@ -44,7 +44,7 @@ describe "ListItemView", ->
       expect(@listItemView.el.nodeName).toEqual "TR"
 
     it "should render the from_name attribute", ->
-      expect(@listItemView.$el.find('td.mail-ontact a').text().trim()).toEqual @emailThread.get("emails")[0].from_name
+      expect(@listItemView.$el.find('td.mail-contact a').text().trim()).toEqual @emailThread.get("emails")[0].from_name
 
     it "should render the subject attribute", ->
       expect(@listItemView.$el.find('td.mail-subject a').text().trim()).toEqual @emailThread.get("emails")[0].subject

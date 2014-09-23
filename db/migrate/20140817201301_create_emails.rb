@@ -11,6 +11,7 @@ class CreateEmails < ActiveRecord::Migration
       t.belongs_to :auto_filed_folder, polymorphic: true
 
       t.text :uid
+      t.text :draft_id
       t.text :message_id
       t.text :list_name
       t.text :list_id
@@ -36,10 +37,17 @@ class CreateEmails < ActiveRecord::Migration
       t.timestamps
     end
 
-    add_index :emails, [:email_account_type, :email_account_id, :uid], :unique => true
-    add_index :emails, [:email_account_type, :email_account_id]
+    add_index :emails, [:email_account_id, :email_account_type]
+    add_index :emails, [:email_account_id, :email_account_type, :uid], :unique => true
+    add_index :emails, [:email_account_id, :email_account_type, :draft_id],
+              :unique => true, :name => 'index_emails_on_email_account_and_draft_id'
+    
+    add_index :emails, :id, :where => 'NOT seen'
     add_index :emails, :uid
     add_index :emails, :message_id
     add_index :emails, :email_thread_id
+    
+    add_index :emails, :date, :order => {:date => :desc}
+    add_index :emails, [:date, :id], :order => {:date => :desc, :id => :desc}
   end
 end
