@@ -16,5 +16,5 @@ class TuringEmailApp.Models.EmailDraft extends TuringEmailApp.Models.Email
       TuringEmailApp.tattletale.log(JSON.stringify(data))
       TuringEmailApp.tattletale.send()
 
-    TuringEmailApp.composeView.resetView()
+    TuringEmailApp.views.composeView.resetView()
     $("#composeModal").modal "hide"
