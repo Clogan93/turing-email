@@ -66,7 +66,10 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
         emailThread = TuringEmailApp.collections.emailThreads.getEmailThread emailThreadUID
         TuringEmailApp.collections.emailThreads.remove emailThread
 
-      @renderNoConversationsSelected()
+      if TuringEmailApp.models.userSettings.get("split_pane_mode") is "horizontal"
+        @renderNoConversationsSelected()
+      else
+        window.location = "/mail"
 
   setupDelete: ->
     @$el.find("i.fa-trash-o").parent().click =>
@@ -90,7 +93,10 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
         emailThread = TuringEmailApp.collections.emailThreads.getEmailThread emailThreadUID
         TuringEmailApp.collections.emailThreads.remove emailThread
 
-      @renderNoConversationsSelected()
+      if TuringEmailApp.models.userSettings.get("split_pane_mode") is "horizontal"
+        @renderNoConversationsSelected()
+      else
+        window.location = "/mail"
 
   insertHtmlIntoIframe: (email, index) ->
     @$el.find("#email_iframe" + index.toString()).contents().find("body").append(email.html_part)
