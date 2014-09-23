@@ -224,9 +224,15 @@ class GmailAccount < ActiveRecord::Base
       synced_emails = self.sync_email_full(labelIds: labelIds)
       synced_emails = self.sync_email_partial() || synced_emails
       
+      self.sync_draft_ids()
+      
       return synced_emails
     else
-      return self.sync_email_partial()
+      synced_emails = self.sync_email_partial()
+
+      self.sync_draft_ids()
+      
+      return synced_emails 
     end
   end
 
@@ -551,14 +557,28 @@ class GmailAccount < ActiveRecord::Base
 
     return draft_ids
   end
+  
+  # TODO write tests
+  def sync_draft_ids
+    draft_ids = self.get_draft_ids()
+    
+    draft_ids.each do |gmail_id, draft_id|
+      self.emails.where(:uid => gmail_id).update_all(:draft_id => draft_id)
+    end
+  end
 
   def sync_draft_data(draft_data)
     draft_id = draft_data['id']
     gmail_id = draft_data['message']['id']
+    
+    self.emails.where(:draft_id => draft_id).destroy_all()
+    
     sync_gmail_ids([gmail_id])
     draft_email = self.emails.find_by(:uid => gmail_id)
+    draft_email.draft_id = draft_id
+    draft_email.save!
 
-    return draft_id, draft_email
+    return draft_email
   end
 
   def create_draft(tos, ccs, bccs, subject, body, email_in_reply_to_uid = nil)
@@ -590,6 +610,7 @@ class GmailAccount < ActiveRecord::Base
 
   def send_draft(draft_id)
     gmail_data = self.gmail_client.drafts_send('me', draft_id)
+    self.emails.where(:draft_id => draft_id).destroy_all if !draft_id.blank?
 
     gmail_id = gmail_data['id']
     sync_gmail_ids([gmail_id])
@@ -600,5 +621,7 @@ class GmailAccount < ActiveRecord::Base
   
   def delete_draft(draft_id)
     self.gmail_client.drafts_delete('me', draft_id)
+    email = self.emails.find_by(:draft_id => draft_id)
+    email.destroy if email
   end
 end

@@ -3,9 +3,9 @@ class TuringEmailApp.Models.EmailDraft extends TuringEmailApp.Models.Email
 
   sendDraft: (draft_id) ->
     postData = {}
-    postData.draft_id = draft_id
+    postData.draft_id = @get("draft_id")
     $.ajax({
-      url: 'api/v1/email_accounts/send_draft.json'
+      url: '/api/v1/email_accounts/send_draft.json'
       type: 'POST'
       data: postData
       dataType : 'json'

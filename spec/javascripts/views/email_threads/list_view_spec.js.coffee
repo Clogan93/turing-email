@@ -49,7 +49,7 @@ describe "ListView", ->
       links = []
 
       #Collect Attributes from the rendered DOM.
-      @listView.$el.find('td.mail-ontact a').each ->
+      @listView.$el.find('td.mail-contact a').each ->
         fromNames.push $(this).text().trim()
       @listView.$el.find('td.mail-subject a').each ->
         subjects.push $(this).text().trim()

@@ -7,7 +7,11 @@ class CreateEmailFolderMappings < ActiveRecord::Migration
       t.timestamps
     end
 
+    add_index :email_folder_mappings, [:email_folder_id, :email_folder_type],
+              :name => 'index_email_folder_mappings_on_email_folder'
+    add_index :email_folder_mappings, [:email_folder_id, :email_folder_type, :email_id],
+              :name => 'index_email_folder_mappings_on_email_folder_type_and_email'
     add_index :email_folder_mappings, [:email_id, :email_folder_id, :email_folder_type],
-              :unique => true, :name => 'index_email_folder_mappings_on_email_id_and_email_folder'
+              :unique => true, :name => 'index_email_folder_mappings_on_email_and_email_folder'
   end
 end

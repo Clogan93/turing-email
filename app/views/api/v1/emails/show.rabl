@@ -5,7 +5,7 @@ node(:id) do |email|
 end
 
 attributes :auto_filed
-attributes :uid, :message_id, :list_id
+attributes :uid, :draft_id, :message_id, :list_id
 attributes :seen, :snippet, :date
 
 attributes :from_name, :from_address

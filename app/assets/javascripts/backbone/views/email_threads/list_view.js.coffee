@@ -37,7 +37,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
   moveReportToTop: ->
     report_email = null
-    @$el.find("td.mail-ontact a").each ->
+    @$el.find("td.mail-contact a").each ->
       text_value = $(@).text()
       
       if text_value is "Turing Email"

@@ -58,8 +58,6 @@ window.TuringEmailApp = new(Backbone.View.extend({
         @toolbarView.renderLabelTitleAndUnreadCount "INBOX"
     )
 
-    @emailDraftIDs = new TuringEmailApp.Collections.EmailDraftIDsCollection()
-
     @composeView = new TuringEmailApp.Views.ComposeView(
       el: $("#modals")
     )

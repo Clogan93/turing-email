@@ -34,7 +34,6 @@ Rails.application.routes.draw do
       post '/email_accounts/sync', to: 'email_accounts#sync'
       post '/email_accounts/search_threads', to: 'email_accounts#search_threads'
       
-      get '/email_accounts/get_draft_ids', to: 'email_accounts#get_draft_ids'
       post '/email_accounts/drafts', to: 'email_accounts#create_draft'
       put '/email_accounts/drafts', to: 'email_accounts#update_draft'
       post '/email_accounts/send_draft', to: 'email_accounts#send_draft'
