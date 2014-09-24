@@ -37,12 +37,21 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     @highlightEmailThread TuringEmailApp.currentEmailThread
     @currentlySelectedEmailThread = TuringEmailApp.currentEmailThread
 
+  checkboxCheckedValueIs: (checkbox, isChecked) ->
+    if isChecked
+      checkbox.iCheck("check")
+      checkbox.parent().parent().addClass("checked_email_thread")
+    else
+      checkbox.iCheck("uncheck")
+      checkbox.parent().parent().removeClass("checked_email_thread")
+
   checkAllCheckboxes: ->
     $("#email_table_body div.icheckbox_square-green").each ->
-      $(@).iCheck("check")
+      TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@), true
 
   uncheckAllCheckboxes: ->
     $("#email_table_body div.icheckbox_square-green").each ->
+      TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@), false
       $(@).iCheck("uncheck")
 
   renderCheckboxes: ->
@@ -55,6 +64,14 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
         TuringEmailApp.views.emailThreadsListView.checkAllCheckboxes()
       else
         TuringEmailApp.views.emailThreadsListView.uncheckAllCheckboxes()
+
+    $("#email_table_body div.icheckbox_square-green ins").click ->
+      if $(@).parent().hasClass "checked"
+        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@).parent(), true
+        return false
+      else
+        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@).parent(), false
+        return false
 
   addKeyboardShortcutHighlight: ->
     $("#email_table_body tr:nth-child(1)").addClass("email_thread_highlight")

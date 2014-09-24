@@ -77,15 +77,15 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
     @$el.find("#read_bulk_action").click =>
       $("#email_table_body tr.read div.icheckbox_square-green, #email_table_body tr.currently_being_read div.icheckbox_square-green").each ->
-        $(@).iCheck("check")
+        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@), true
       $("#email_table_body tr.unread div.icheckbox_square-green").each ->
-        $(@).iCheck("uncheck")
+        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@), false
 
     @$el.find("#unread_bulk_action").click =>
       $("#email_table_body tr.read div.icheckbox_square-green, #email_table_body tr.currently_being_read div.icheckbox_square-green").each ->
-        $(@).iCheck("uncheck")
+        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@), false
       $("#email_table_body tr.unread div.icheckbox_square-green").each ->
-        $(@).iCheck("check")
+        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@), true
 
   setupRead: ->
     @$el.find("i.fa-eye").parent().click =>

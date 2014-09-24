@@ -422,12 +422,17 @@ a#refresh_link
 
 .unread td
 {
- background-color: white !important; 
+ background-color: white !important;
 }
  
 .currently_being_read td
 {
-  background-color: rgb(231, 246, 236) !important; 
+  background-color: rgb(231, 246, 236) !important;
+}
+
+.checked_email_thread td
+{
+  background-color: rgb(252, 248, 227) !important;
 }
 
 #no_conversations_selected
