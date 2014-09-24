@@ -33,8 +33,12 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   renderLabelTitleAndUnreadCount: (folderID) ->
     currentFolder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
     if currentFolder?
+      console.log currentFolder.get("name")
       @$el.find(".label_name").html(currentFolder.get("name"))
-      @$el.find(".label_count_badge").html(currentFolder.get("num_threads"))
+      if currentFolder.get("label_id") is "DRAFT"
+        @$el.find(".label_count_badge").html(currentFolder.get("num_threads"))
+      else
+        @$el.find(".label_count_badge").html(currentFolder.get("num_unread_threads"))
 
   setupToolbarButtons: ->
     @setupRead()
