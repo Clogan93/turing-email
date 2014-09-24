@@ -10,8 +10,7 @@ describe "AnalyticsRouter", ->
   describe "#analytics", ->
     beforeEach ->
       @spy = sinon.spy(TuringEmailApp, "showAnalytics")
-      try
-        @analyticsRouter.navigate "#analytics", trigger: true
+      @analyticsRouter.navigate "#analytics", trigger: true
     
     it "shows an AnalyticsView", ->
       expect(@spy).toHaveBeenCalledOnce()

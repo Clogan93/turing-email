@@ -61,7 +61,12 @@ class Api::V1::EmailReportsController < ApiController
     volume_report_stats_short = {}
     volume_report_stats.each do |stat, data|
       volume_report_stats_short[stat] = {}
-      data.each { |date, num_emails| volume_report_stats_short[stat][date.strftime($config.volume_report_date_format)] = num_emails }
+      data.each { |date, num_emails|
+        if date
+          volume_report_stats_short[stat][date.strftime($config.volume_report_date_format)] = num_emails
+        else
+          volume_report_stats_short[stat][date] = num_emails
+      }
     end
   
     render :json => volume_report_stats_short
