@@ -33,8 +33,25 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   renderLabelTitleAndUnreadCount: (folderID) ->
     currentFolder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
     if currentFolder?
+      console.log currentFolder.get("name")
       @$el.find(".label_name").html(currentFolder.get("name"))
-      @$el.find(".label_count_badge").html(currentFolder.get("num_threads"))
+      if currentFolder.get("label_id") is "DRAFT"
+        @$el.find(".label_count_badge").html(currentFolder.get("num_threads"))
+      else
+        @$el.find(".label_count_badge").html(currentFolder.get("num_unread_threads"))
+
+  renderEmailsDisplayedCounter: (folderID) ->
+    currentFolder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
+    if currentFolder?
+      num_threads = currentFolder.get("num_threads")
+      @$el.find("#total_emails_number").html(num_threads)
+      number_of_pages = parseInt(TuringEmailApp.collections.emailThreads.page)
+      start_number = (number_of_pages - 1) * 50 + 1
+      @$el.find("#start_number").html(start_number)
+      end_number = number_of_pages * 50
+      if end_number > parseInt(num_threads)
+        end_number = num_threads
+      @$el.find("#end_number").html(end_number)
 
   setupToolbarButtons: ->
     @setupRead()
@@ -47,10 +64,28 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @setupMoveToFolder()
     @setupSearch()
     @setupRefresh()
-    
-  clearSelectedItems: ->
-    $(".check-mail .checked").each ->
-      $(@).removeClass("checked")
+    @setupBulkActions()
+
+  setupBulkActions: ->
+    @$el.find("#all_bulk_action").click =>
+      @$el.find("#bulk_action_checkbox_dropdown div.icheckbox_square-green").addClass("checked")
+      TuringEmailApp.views.emailThreadsListView.checkAllCheckboxes()
+
+    @$el.find("#none_bulk_action").click =>
+      @$el.find("#bulk_action_checkbox_dropdown div.icheckbox_square-green").removeClass("checked")
+      TuringEmailApp.views.emailThreadsListView.uncheckAllCheckboxes()
+
+    @$el.find("#read_bulk_action").click =>
+      $("#email_table_body tr.read div.icheckbox_square-green, #email_table_body tr.currently_being_read div.icheckbox_square-green").each ->
+        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@), true
+      $("#email_table_body tr.unread div.icheckbox_square-green").each ->
+        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@), false
+
+    @$el.find("#unread_bulk_action").click =>
+      $("#email_table_body tr.read div.icheckbox_square-green, #email_table_body tr.currently_being_read div.icheckbox_square-green").each ->
+        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@), false
+      $("#email_table_body tr.unread div.icheckbox_square-green").each ->
+        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@), true
 
   setupRead: ->
     @$el.find("i.fa-eye").parent().click =>
@@ -62,7 +97,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       tr_element.removeClass("unread")
       tr_element.addClass("read")
       
-      @clearSelectedItems()
+      TuringEmailApp.views.emailThreadsListView.uncheckAllCheckboxes()
 
   setupUnread: ->
     @$el.find("i.fa-eye-slash").parent().click =>
@@ -74,7 +109,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       tr_element.removeClass("read")
       tr_element.addClass("unread")
 
-      @clearSelectedItems()
+      TuringEmailApp.views.emailThreadsListView.uncheckAllCheckboxes()
 
   setupArchive: ->
     @$el.find("i.fa-archive").parent().click =>
@@ -104,7 +139,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       tr_element = $(".check-mail .checked").parent().parent()
       tr_element.remove()
 
-      @clearSelectedItems()
+      TuringEmailApp.views.emailThreadsListView.uncheckAllCheckboxes()
 
   setupDelete: ->
     @$el.find("i.fa-trash-o").parent().click =>
@@ -128,7 +163,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       tr_element = $(".check-mail .checked").parent().parent()
       tr_element.remove()
 
-      @clearSelectedItems()
+      TuringEmailApp.views.emailThreadsListView.uncheckAllCheckboxes()
 
   setupGoLeft: ->
     @$el.find("#paginate_left_link").click ->
@@ -158,7 +193,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
           TuringEmailApp.tattletale.send()
 
       #Alter UI
-      @clearSelectedItems()
+      TuringEmailApp.views.emailThreadsListView.uncheckAllCheckboxes()
 
   setupMoveToFolder: ->
     @$el.find(".move_to_folder_link").click (event) =>
@@ -182,11 +217,19 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       tr_element = $(".check-mail .checked").parent().parent()
       tr_element.remove()
 
-      @clearSelectedItems()
+      TuringEmailApp.views.emailThreadsListView.uncheckAllCheckboxes()
 
   setupSearch: ->
     $("#search_input").change ->
       $("a#search_button_link").attr("href", "#search#" + $(@).val())
+    $("#search_input").keypress (e) ->
+      if e.which is 13
+        TuringEmailApp.routers.searchResultsRouter.showSearchResultsRouter $(@).val()
+      return
+
+    $("#top-search-form").submit ->
+      TuringEmailApp.routers.searchResultsRouter.showSearchResultsRouter $(@).find("input").val()
+      return false
 
   setupRefresh: ->
     @$el.find("#refresh_button").click ->
