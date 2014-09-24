@@ -71,6 +71,7 @@
     "num_threads": 52,
     "num_unread_threads": 52
   }],
+  
   "additional": {
     "label_id": "NEWLABEL",
     "label_list_visibility": "labelShow",

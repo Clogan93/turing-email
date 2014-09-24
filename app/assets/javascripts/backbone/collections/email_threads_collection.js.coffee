@@ -3,7 +3,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
   url: "/api/v1/email_threads/inbox"
 
   initialize: (options) ->
-    @on("remove", @hideModel)
+    @listenTo(this, "remove", @hideModel)
 
     @page = getQuerystringNameValue("page")
     @url = "/api/v1/email_threads/in_folder?folder_id=" + options.folder_id if options?.folder_id?

@@ -32,3 +32,5 @@
 //
 //= require sinon
 //= require jasmine-sinon
+//
+//= require ./spec_misc

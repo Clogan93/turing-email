@@ -3,7 +3,7 @@ class TuringEmailApp.Collections.EmailFoldersCollection extends Backbone.Collect
   url: '/api/v1/email_folders'
 
   initialize: (options) ->
-    @on("remove", @hideModel)
+    @listenTo(this, "remove", @hideModel)
 
   hideModel: (model) ->
     model.trigger("hide")
