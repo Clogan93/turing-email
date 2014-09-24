@@ -61,6 +61,7 @@ window.TuringEmailApp = new(Backbone.View.extend({
         $(".inbox_count_badge").html(inboxFolder.get("num_unread_threads")) if inboxFolder?
 
         @views.toolbarView.renderLabelTitleAndUnreadCount "INBOX"
+        @views.toolbarView.renderEmailsDisplayedCounter "INBOX"
     )
 
     @views.composeView = new TuringEmailApp.Views.ComposeView(
@@ -160,6 +161,7 @@ window.TuringEmailApp = new(Backbone.View.extend({
     TuringEmailApp.views.emailFoldersTreeView.currentEmailFolderIs folderID
     TuringEmailApp.currentFolderId = folderID
     TuringEmailApp.views.toolbarView.renderLabelTitleAndUnreadCount folderID
+    TuringEmailApp.views.toolbarView.renderEmailsDisplayedCounter folderID
     TuringEmailApp.showEmails()
     
   draftChanged: ->

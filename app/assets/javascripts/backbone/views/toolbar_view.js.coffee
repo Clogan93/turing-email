@@ -40,6 +40,19 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       else
         @$el.find(".label_count_badge").html(currentFolder.get("num_unread_threads"))
 
+  renderEmailsDisplayedCounter: (folderID) ->
+    currentFolder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
+    if currentFolder?
+      num_threads = currentFolder.get("num_threads")
+      @$el.find("#total_emails_number").html(num_threads)
+      number_of_pages = parseInt(TuringEmailApp.collections.emailThreads.page)
+      start_number = (number_of_pages - 1) * 50 + 1
+      @$el.find("#start_number").html(start_number)
+      end_number = number_of_pages * 50
+      if end_number > parseInt(num_threads)
+        end_number = num_threads
+      @$el.find("#end_number").html(end_number)
+
   setupToolbarButtons: ->
     @setupRead()
     @setupUnread()

@@ -456,3 +456,14 @@ a#refresh_link
     margin-top: 34px;
   }
 }
+
+#current_emails_displayed_counter
+{
+  float: left;
+  margin-right: 5px;
+  margin-top: 9px;
+  span
+  {
+    font-weight: bold;
+  }
+}
