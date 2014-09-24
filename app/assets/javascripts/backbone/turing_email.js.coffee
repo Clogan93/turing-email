@@ -157,6 +157,7 @@ window.TuringEmailApp = new(Backbone.View.extend({
       reset: true
     )
 
+    TuringEmailApp.views.emailFoldersTreeView.currentEmailFolderIs folderID
     TuringEmailApp.currentFolderId = folderID
     TuringEmailApp.views.toolbarView.renderLabelTitleAndUnreadCount folderID
     TuringEmailApp.showEmails()
