@@ -39,11 +39,11 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
   checkAllCheckboxes: ->
     $("#email_table_body div.icheckbox_square-green").each ->
-      $(@).addClass("checked")
+      $(@).iCheck("check")
 
   uncheckAllCheckboxes: ->
     $("#email_table_body div.icheckbox_square-green").each ->
-      $(@).removeClass("checked")
+      $(@).iCheck("uncheck")
 
   renderCheckboxes: ->
     $(".i-checks").iCheck
@@ -111,4 +111,3 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
           link_components = aTag.attr("href").split("#")
           uid = link_components[link_components.length - 1]
           TuringEmailApp.routers.emailThreadsRouter.showEmailDraft uid
-        
