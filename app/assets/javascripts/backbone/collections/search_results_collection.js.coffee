@@ -6,3 +6,10 @@ class TuringEmailApp.Collections.EmailThreadsSearchResultsCollection extends Tur
     # that has two attributes - nextPageToken and emailThreads collection. 
     @nextPageToken = response.next_page_token
     return response.email_threads
+
+  search: (query) ->
+    @fetch(
+      data: {'query': query}
+      type: 'POST'
+      reset: true
+    )

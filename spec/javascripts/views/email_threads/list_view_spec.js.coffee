@@ -3,7 +3,7 @@ describe "ListView", ->
   beforeEach ->
     TuringEmailApp.user = new TuringEmailApp.Models.User()
     @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(
-      folder_id: "INBOX"
+      folderID: "INBOX"
     )
     @listView = new TuringEmailApp.Views.EmailThreads.ListView(
       collection: @emailThreads
@@ -21,7 +21,7 @@ describe "ListView", ->
       @fixtures = fixture.load("email_threads.fixture.json", "user.fixture.json", true)
 
       @validUser = @fixtures[1]["valid"]
-      @validEmailThreads = @fixtures[0]["valid"]
+      @validEmailThreadsFixture = @fixtures[0]["valid"]
 
       @server = sinon.fakeServer.create()
 
@@ -29,7 +29,7 @@ describe "ListView", ->
       TuringEmailApp.user.fetch()
       @server.respond()
 
-      @server.respondWith "GET", "/api/v1/email_threads/in_folder?folder_id=INBOX", JSON.stringify(@validEmailThreads)
+      @server.respondWith "GET", "/api/v1/email_threads/in_folder?folder_id=INBOX", JSON.stringify(@validEmailThreadsFixture)
       @emailThreads.fetch()
       @server.respond()
 

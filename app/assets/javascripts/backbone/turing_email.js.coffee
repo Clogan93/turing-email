@@ -7,20 +7,6 @@
 #= require ./views/email_threads/list_view
 #= require_tree ./views
 #= require_tree ./routers
-
-originalBackboneSync = Backbone.sync
-
-Backbone.sync = (method, model, options) ->
-  options = {} if not options
-  error = options.error if options.error?
-  
-  options.error = (model, response, options) ->
-    error(model, response, options) if error?
-    
-    TuringEmailApp.tattletale.log(response)
-    TuringEmailApp.tattletale.send()
-
-  originalBackboneSync(method, model, options)
   
 window.TuringEmailApp = new(Backbone.View.extend({
   Models: {}
@@ -79,13 +65,13 @@ window.TuringEmailApp = new(Backbone.View.extend({
     @routers.reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
     @routers.analyticsRouter = new TuringEmailApp.Routers.AnalyticsRouter()
     @routers.settingsRouter = new TuringEmailApp.Routers.SettingsRouter()
-    @routers.searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()
+    @routers.searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()    
 
-    @start_error_logging()    
+    #@startEmailSync()
 
-    #@start_email_sync()
-
-    Backbone.history.start()
+    if not @historyStarted
+      Backbone.history.start()
+      @historyStarted = true
 
   isSplitPaneMode: ->
     splitPaneMode = TuringEmailApp.models.userSettings.get("split_pane_mode")
@@ -97,7 +83,7 @@ window.TuringEmailApp = new(Backbone.View.extend({
     if emailThread?
       callback(emailThread)
     else
-      emailThread = new TuringEmailApp.Models.EmailThread(url: "/api/v1/email_threads/show/" + emailThreadUID)
+      emailThread = new TuringEmailApp.Models.EmailThread(emailThreadUID: emailThreadUID)
       emailThread.fetch(
         success: (model, response, options) =>
           callback(emailThread)
@@ -145,7 +131,7 @@ window.TuringEmailApp = new(Backbone.View.extend({
 
   currentEmailFolderIs: (folderID) ->
     TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(
-      folder_id: folderID
+      folderID: folderID
     )
 
     TuringEmailApp.views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView({
@@ -164,22 +150,7 @@ window.TuringEmailApp = new(Backbone.View.extend({
   draftChanged: ->
     @collections.emailThreads.fetch(reset: true) if TuringEmailApp.currentFolderId is "DRAFT"
 
-  start_error_logging: ->
-    @tattletale = new Tattletale('/api/v1/log.json')
-
-    window.onerror = (message, url, lineNumber, column, errorObj) ->      
-      #save error and send to server for example.
-      TuringEmailApp.tattletale.log(JSON.stringify(message))
-      TuringEmailApp.tattletale.log(JSON.stringify(url.toString()))
-      TuringEmailApp.tattletale.log(JSON.stringify("Line number: " + lineNumber.toString()))
-
-      if errorObj?
-        TuringEmailApp.tattletale.log(JSON.stringify(errorObj.stack))
-
-      TuringEmailApp.tattletale.send()
-      false
-
-  start_email_sync: ->
+  startEmailSync: ->
     window.setInterval (->
       $.ajax({
         url: 'api/v1/email_accounts/sync.json'
@@ -225,3 +196,36 @@ window.TuringEmailApp = new(Backbone.View.extend({
     $(".main_email_list_content").css("height", "100%")
     
 }))({el: document.body})
+
+TuringEmailApp.tattletale = new Tattletale('/api/v1/log.json')
+
+originalBackboneSync = Backbone.sync
+
+Backbone.sync = (method, model, options) ->
+  options = {} if not options
+  error = options.error if options.error?
+
+  options.error = (model, response, options) ->
+    error(model, response, options) if error?
+
+    TuringEmailApp.tattletale.log(response)
+    TuringEmailApp.tattletale.send()
+
+  originalBackboneSync(method, model, options)
+
+$(document).ajaxError((event, jqXHR, ajaxSettings, thrownError) ->
+  TuringEmailApp.tattletale.log(JSON.stringify(thrownError))
+  TuringEmailApp.tattletale.send()
+)
+
+window.onerror = (message, url, lineNumber, column, errorObj) ->
+  #save error and send to server for example.
+  TuringEmailApp.tattletale.log(JSON.stringify(message))
+  TuringEmailApp.tattletale.log(JSON.stringify(url.toString()))
+  TuringEmailApp.tattletale.log(JSON.stringify("Line number: " + lineNumber.toString()))
+
+  if errorObj?
+    TuringEmailApp.tattletale.log(JSON.stringify(errorObj.stack))
+
+  TuringEmailApp.tattletale.send()
+  return false

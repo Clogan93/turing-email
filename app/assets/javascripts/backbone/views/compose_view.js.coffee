@@ -198,7 +198,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     else
       # easy case - no draft just send the email!
       console.log "NO draft! Sending"
-      emailToSend = new TuringEmailApp.Models.Email(url: "/api/v1/email_accounts/send_email")
+      emailToSend = new TuringEmailApp.Models.Email()
       @updateEmail(emailToSend)
       @resetView()
       @hide()
@@ -215,15 +215,14 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
       
       if emailToSend.sendDraft?
         console.log "sendDraft!"
-        emailToSend.sendDraft(=>
+        emailToSend.sendDraft().done(->
           @trigger "change:draft"
         )
       else
         console.log "send email!"
-        emailToSend.save(null, {
-          error: (model, response, options)=>
-            @sendEmailDelayedError(model.toJSON())
-        })
+        emailToSend.sendEmail().fail(=>
+          @sendEmailDelayedError(emailToSend.toJSON())
+        )
     ), 5000
 
   sendEmailDelayedError:(emailToSendJSON) ->

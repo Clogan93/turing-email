@@ -1,25 +1,25 @@
 class TuringEmailApp.Models.EmailThread extends Backbone.Model
-  initialize: (options) ->
-    @url = options.url if options?.url?
+  initialize: (attributes) ->
+    if attributes?.emailThreadUID
+      @url = "/api/v1/email_threads/show/" + attributes.emailThreadUID
+      @unset("emailThreadUID")
 
   seenIs: (seenValue=true)->
     postData = {}
-    emailUids = []
+    emailUIDs = []
 
     for email in @get("emails")
-      emailUids.push email.uid
+      emailUIDs.push email.uid
     
-    postData.email_uids = emailUids
+    postData.email_uids = emailUIDs
     postData.seen = seenValue
 
-    url = "/api/v1/emails/set_seen.json"
+    url = "/api/v1/emails/set_seen"
     $.ajax
       type: "POST"
       url: url
       data: postData
-      error: (data) ->
-        TuringEmailApp.tattletale.log(data)
-        TuringEmailApp.tattletale.send()
+      dataType : "json"
 
   uid:
     required: true

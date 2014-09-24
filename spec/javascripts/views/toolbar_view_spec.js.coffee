@@ -2,7 +2,7 @@ describe "ToolbarView", ->
 
   beforeEach ->
     @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(
-      folder_id: "INBOX"
+      folderID: "INBOX"
     )
     @toolbarView = new TuringEmailApp.Views.ToolbarView(
       collection: @emailFolders
@@ -19,10 +19,10 @@ describe "ToolbarView", ->
     beforeEach ->
       @fixtures = fixture.load("email_folders.fixture.json", true)
 
-      @validEmailFolders = @fixtures[0]["valid"]
+      @validEmailFoldersFixture = @fixtures[0]["valid"]
 
       @server = sinon.fakeServer.create()
-      @server.respondWith "GET", "/api/v1/email_folders", JSON.stringify(@validEmailFolders)
+      @server.respondWith "GET", "/api/v1/email_folders", JSON.stringify(@validEmailFoldersFixture)
 
       @emailFolders.fetch()
       @server.respond()

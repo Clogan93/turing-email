@@ -1,20 +1,20 @@
-describe "EmailFolders collection", ->
+describe "EmailFoldersCollection", ->
   beforeEach ->
+    emailFoldersFixtures = fixture.load("email_folders.fixture.json")
+    @validEmailFoldersFixture = emailFoldersFixtures[0]["valid"]
+
     @url = "/api/v1/email_folders"
     @emailFoldersCollection = new TuringEmailApp.Collections.EmailFoldersCollection()
-    
-    emailFolders = fixture.load("email_folders.fixture.json")
-    @validEmailFolders = emailFolders[0]["valid"]
 
     @server = sinon.fakeServer.create()
-    @server.respondWith "GET", @url, JSON.stringify(@validEmailFolders)
+    @server.respondWith "GET", @url, JSON.stringify(@validEmailFoldersFixture)
 
     @emailFoldersCollection.fetch()
     @server.respond()
 
   afterEach ->
     @server.restore()
-    
+
   it "should use the EmailFolder model", ->
     expect(@emailFoldersCollection.model).toEqual TuringEmailApp.Models.EmailFolder
 
@@ -23,8 +23,8 @@ describe "EmailFolders collection", ->
 
   describe "#fetch", ->
     it "loads the email folders", ->
-      expect(@emailFoldersCollection.length).toEqual @validEmailFolders.length
-      expect(@emailFoldersCollection.toJSON()).toEqual @validEmailFolders
+      expect(@emailFoldersCollection.length).toEqual @validEmailFoldersFixture.length
+      expect(@emailFoldersCollection.toJSON()).toEqual @validEmailFoldersFixture
 
       for emailFolder in @emailFoldersCollection.models
         validateEmailFolderAttributes(emailFolder.toJSON())

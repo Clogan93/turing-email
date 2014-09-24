@@ -3,7 +3,7 @@ TuringEmailApp.Views.EmailFolders ||= {}
 class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
   template: JST["backbone/templates/email_folders/tree"]
 
-  initialize: (options) ->
+  initialize: ->
     @listenTo(@collection, "add", @render)
     @listenTo(@collection, "reset", @render)
     @listenTo(@collection, "destroy", @remove)

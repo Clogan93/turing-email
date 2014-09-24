@@ -23,7 +23,7 @@ describe "ListItemView", ->
       @fixtures = fixture.load("email_thread.fixture.json", "user.fixture.json", true)
 
       @validUser = @fixtures[1]["valid"]
-      @validEmailThread = @fixtures[0]["valid"]
+      @validEmailThreadFixture = @fixtures[0]["valid"]
 
       @server = sinon.fakeServer.create()
 
@@ -31,7 +31,7 @@ describe "ListItemView", ->
       TuringEmailApp.user.fetch()
       @server.respond()
 
-      @server.respondWith "GET", "/api/v1/email_threads", JSON.stringify(@validEmailThread)
+      @server.respondWith "GET", "/api/v1/email_threads", JSON.stringify(@validEmailThreadFixture)
       @emailThread.fetch()
       @server.respond()
 

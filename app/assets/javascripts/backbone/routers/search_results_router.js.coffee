@@ -10,8 +10,4 @@ class TuringEmailApp.Routers.SearchResultsRouter extends Backbone.Router
       collection: TuringEmailApp.collections.emailThreads
     })
 
-    TuringEmailApp.collections.emailThreads.fetch(
-      data: {'query': query}
-      type: 'POST'
-      reset: true
-    )
+    TuringEmailApp.collections.emailThreads.search(query)

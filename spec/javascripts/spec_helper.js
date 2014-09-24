@@ -33,4 +33,5 @@
 //= require sinon
 //= require jasmine-sinon
 //
+//= require ./unserialize.jquery.latest.js
 //= require ./spec_misc

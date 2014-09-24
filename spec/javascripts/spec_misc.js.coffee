@@ -6,6 +6,14 @@ window.validateAttributes = (objectJSON, expectedAttributes) ->
   
   expect(keys).toEqual expectedAttributes
 
+window.validateUserAttributes = (userJSON) ->
+  expectedAttributes = ["email"]
+  validateAttributes(userJSON, expectedAttributes)
+  
+window.validateUserSettingsAttributes = (userSettingsJSON) ->
+  expectedAttributes = ["genie_enabled", "split_pane_mode"]
+  validateAttributes(userSettingsJSON, expectedAttributes)
+  
 window.validateEmailFolderAttributes = (emailFolderJSON) ->
   expectedAttributes = ["label_id", "name",
                          "message_list_visibility", "label_list_visibility",
@@ -17,7 +25,7 @@ window.validateEmailFolderAttributes = (emailFolderJSON) ->
 window.validateEmailThreadAttributes = (emailThreadJSON) ->
   expectedAttributes = ["uid", "emails"]
   validateAttributes(emailThreadJSON, expectedAttributes)
-
+  
 window.validateEmailAttributes = (emailJSON) ->
   expectedAttributes = ["auto_filed",
                         "uid", "draft_id", "message_id", "list_id",

@@ -21,11 +21,11 @@ describe "TreeView", ->
       #Load fixtures
       @fixtures = fixture.load("email_folders.fixture.json", true)
 
-      @validEmailFolders = @fixtures[0]["valid"]
+      @validEmailFoldersFixture = @fixtures[0]["valid"]
       @additional_email = @fixtures[0]["additional"]
 
       @server = sinon.fakeServer.create()
-      @server.respondWith "GET", "/api/v1/email_folders", JSON.stringify(@validEmailFolders)
+      @server.respondWith "GET", "/api/v1/email_folders", JSON.stringify(@validEmailFoldersFixture)
 
       @emailFolders.fetch()
       @server.respond()

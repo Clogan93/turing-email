@@ -1,13 +1,13 @@
-describe "EmailThreads collection", ->
+describe "EmailThreadsCollection", ->
   beforeEach ->
+    emailThreadsFixtures = fixture.load("email_threads.fixture.json");
+    @validEmailThreadsFixture = emailThreadsFixtures[0]["valid"]
+    
     @url = "/api/v1/email_threads/in_folder?folder_id=INBOX"
-    @emailThreadsCollection = new TuringEmailApp.Collections.EmailThreadsCollection(folder_id: "INBOX")
-
-    emailThreads = fixture.load("email_threads.fixture.json");
-    @validEmailThreads = emailThreads[0]["valid"]
+    @emailThreadsCollection = new TuringEmailApp.Collections.EmailThreadsCollection(folderID: "INBOX")
 
     @server = sinon.fakeServer.create()
-    @server.respondWith "GET", @url, JSON.stringify(@validEmailThreads)
+    @server.respondWith "GET", @url, JSON.stringify(@validEmailThreadsFixture)
 
     @emailThreadsCollection.fetch()
     @server.respond()
@@ -23,8 +23,8 @@ describe "EmailThreads collection", ->
 
   describe "#fetch", ->
     it "loads the email threads", ->
-      expect(@emailThreadsCollection.length).toEqual @validEmailThreads.length
-      expect(@emailThreadsCollection.toJSON()).toEqual @validEmailThreads
+      expect(@emailThreadsCollection.length).toEqual @validEmailThreadsFixture.length
+      expect(@emailThreadsCollection.toJSON()).toEqual @validEmailThreadsFixture
 
       for emailThread in @emailThreadsCollection.models
         validateEmailThreadAttributes(emailThread.toJSON())

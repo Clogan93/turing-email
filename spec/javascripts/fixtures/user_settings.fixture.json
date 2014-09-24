@@ -1,1 +1,6 @@
-{ "genie_enabled" : true, "split_pane_mode" : "off" }
+{
+  "valid": {
+    "genie_enabled": true,
+    "split_pane_mode": "off"
+  }
+}

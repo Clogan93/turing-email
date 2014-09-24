@@ -17,10 +17,10 @@ describe "SettingsView", ->
     beforeEach ->
       @fixtures = fixture.load("user_settings.fixture.json", true)
 
-      @validUserSettings = @fixtures[0]
+      @validUserSettingsFixture = @fixtures[0]
 
       @server = sinon.fakeServer.create()
-      @server.respondWith "GET", "/api/v1/user_configurations.json", JSON.stringify(@validUserSettings)
+      @server.respondWith "GET", "/api/v1/user_configurations.json", JSON.stringify(@validUserSettingsFixture)
       @userSettings.fetch()
       @server.respond()
       return
