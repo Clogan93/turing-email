@@ -27,6 +27,8 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
     @setupReadUnreadRendering()
 
+    @setupPreviewDragging()
+
     @setupTdClicksOfLinks()
 
     if @collections?.length() > 0
@@ -128,3 +130,19 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
           link_components = aTag.attr("href").split("#")
           uid = link_components[link_components.length - 1]
           TuringEmailApp.routers.emailThreadsRouter.showEmailDraft uid
+
+  setupPreviewDragging: ->
+    return
+    # if TuringEmailApp.isSplitPaneMode()
+    #   $("#resize_border").mousedown ->
+    #     TuringEmailApp.mouseStart = null
+    #     $(document).mousemove (event) ->
+    #       if !TuringEmailApp.mouseStart?
+    #         TuringEmailApp.mouseStart = event.pageY
+    #       if event.pageY - TuringEmailApp.mouseStart > 100
+    #         $("#preview_panel").height("30%")
+    #         TuringEmailApp.mouseStart = null
+    #       return
+
+    #     $(document).one "mouseup", ->
+    #       $(document).unbind "mousemove"
