@@ -19,7 +19,19 @@
 </div>
 
 <div class="mail-tools tooltip-demo m-t-md row">
-  <div class="col-md-3">
+  <div class="col-md-4">
+    <div class="dropdown" id="bulk_action_checkbox_dropdown">
+      <button class="btn" data-toggle="dropdown" type="button">
+        <input type="checkbox" class="i-checks">
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="labelAsDropdownMenu">
+        <li role="presentation"><a role="menuitem" tabindex="-1" id="all_bulk_action" href="#">All</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" id="none_bulk_action" href="#">None</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" id="read_bulk_action" href="#">Read</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" id="unread_bulk_action" href="#">Unread</a></li>
+      </ul>
+    </div>
     <button id="refresh_button" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="left" title="Refresh inbox"><i class="fa fa-refresh"></i> Refresh
     </button>
     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Mark as read"><i class="fa fa-eye"></i></button>

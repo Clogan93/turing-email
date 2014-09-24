@@ -440,3 +440,19 @@ a#refresh_link
 {
   padding-bottom: 27.5%;
 }
+
+#bulk_action_checkbox_dropdown
+{
+  button
+  {
+    background-color: white;
+    border: 1px solid #d2d2d2;
+    float: left;
+    margin-right: 10px;
+    margin-top: -3px;
+  }
+  ul
+  {
+    margin-top: 34px;
+  }
+}
