@@ -17,7 +17,6 @@
   };
 
   function drawChart(attachmentData, divId, chartTitle, vAxisTitle) {
-
     var data = google.visualization.arrayToDataTable(attachmentData);
 
     var options = {
@@ -33,10 +32,12 @@
 
   }
 
-  google.load('visualization', '1.0',
-              {'callback': function() {drawCharts(obj.data.numAttachmentsData, obj.data.averageFileSizeAttachmentsData); },
-              'packages':['corechart']}
-              );
+  google.load("visualization", "1.0", {
+    callback: function() {
+      drawCharts(data.numAttachmentsData,data.averageFileSizeAttachmentsData)
+    },
+    packages:["corechart"]
+  })
 %>
 
 <div class="page-header">

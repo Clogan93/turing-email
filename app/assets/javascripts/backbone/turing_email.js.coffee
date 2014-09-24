@@ -69,9 +69,7 @@ window.TuringEmailApp = new(Backbone.View.extend({
 
     #@startEmailSync()
 
-    if not @historyStarted
-      Backbone.history.start()
-      @historyStarted = true
+    Backbone.history.start()
 
   isSplitPaneMode: ->
     splitPaneMode = TuringEmailApp.models.userSettings.get("split_pane_mode")
@@ -166,6 +164,13 @@ window.TuringEmailApp = new(Backbone.View.extend({
     #/ call your function here
     ), 60000
 
+  showAnalytics: ->
+    analyticsView = new TuringEmailApp.Views.AnalyticsView(
+      el: $("#reports")
+    )
+
+    analyticsView.render()
+    
   showEmails: ->
     $("#reports").hide()
     $("#settings").hide()

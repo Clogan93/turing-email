@@ -1,3 +1,11 @@
+window.specStartTuringEmailApp = ->
+  TuringEmailApp.models = {}
+  TuringEmailApp.views = {}
+  TuringEmailApp.collections = {}
+  TuringEmailApp.routers = {}
+
+  Backbone.history.start(silent: true)
+
 window.validateAttributes = (objectJSON, expectedAttributes) ->
   keys = (key for key in Object.keys(objectJSON))
   keys.sort()

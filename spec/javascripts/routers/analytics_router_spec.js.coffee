@@ -1,20 +1,17 @@
 describe "AnalyticsRouter", ->
-
+  specStartTuringEmailApp()
+  
   beforeEach ->
-    @router = new TuringEmailApp.Routers.AnalyticsRouter()
-    TuringEmailApp.reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
-    @routeSpy = sinon.spy()
-    try
-      Backbone.history.start
-        silent: true
+    @analyticsRouter = new TuringEmailApp.Routers.AnalyticsRouter()
 
-  it "has a analytics route and points to the showAnalytics method", ->
-    expect(@router.routes["analytics"]).toEqual "showAnalytics"
+  it "has the expected routes", ->
+    expect(@analyticsRouter.routes["analytics"]).toEqual "showAnalytics"
 
-  it "fires the showAnalytics route with analytics", ->
-    @router.bind "route:showAnalytics", @routeSpy
-    @router.navigate "analytics",
-      trigger: true
-    expect(@routeSpy).toHaveBeenCalledOnce()
-    expect(@routeSpy).toHaveBeenCalledWith()
-    return
+  describe "#analytics", ->
+    beforeEach ->
+      @spy = sinon.spy(TuringEmailApp, "showAnalytics")
+      try
+        @analyticsRouter.navigate "#analytics", trigger: true
+    
+    it "shows an AnalyticsView", ->
+      expect(@spy).toHaveBeenCalledOnce()

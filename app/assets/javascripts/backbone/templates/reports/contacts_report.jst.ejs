@@ -26,11 +26,13 @@
   }
 
   // Load the Visualization API and the piechart package, and set a callback to run when the Google Visualization API is loaded.
-
-  google.load('visualization', '1.0',
-              {'callback': function() {drawEmailVolumeCharts(obj.incomingEmailData, obj.outgoingEmailData); },
-              'packages':['corechart']}
-              );
+  
+  google.load("visualization", "1.0", {
+    callback: function () {
+      drawEmailVolumeCharts(obj.incomingEmailData, obj.outgoingEmailData);
+    },
+    packages: ["corechart"]
+  })
 %>
 
 <div class="page-header">
