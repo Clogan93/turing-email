@@ -1,13 +1,40 @@
 describe "EmailThreadsRouter", ->
+  specStartTuringEmailApp()
 
   beforeEach ->
-    @router = new TuringEmailApp.Routers.EmailThreadsRouter()
-    @routeSpy = sinon.spy()
-    try
-      TuringEmailApp.start()
+    @emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
 
-  it "has a email_thread route and points to the showEmailThread method", ->
-    expect(@router.routes["email_thread#:uid"]).toEqual "showEmailThread"
+    @server = sinon.fakeServer.create()
 
-  it "Has the right number of routes", ->
-    expect(_.size(@router.routes)).toEqual 2
+  afterEach ->
+    @server.restore()
+
+  it "has the expected routes", ->
+    expect(@emailThreadsRouter.routes["email_thread/:emailThreadUID"]).toEqual "showEmailThread"
+    expect(@emailThreadsRouter.routes["email_draft/:emailThreadUID"]).toEqual "showEmailDraft"
+
+  describe "email_thread/:emailThreadUID", ->
+    beforeEach ->
+      @emailThreadUID = "12345"
+      
+      @spy = sinon.spy(TuringEmailApp, "currentEmailThreadIs")
+      @emailThreadsRouter.navigate "email_thread/" + @emailThreadUID, trigger: true
+
+    afterEach ->
+      @spy.restore()
+
+    it "shows the email thread", ->
+      expect(@spy.calledWith(@emailThreadUID)).toBeTruthy()
+
+  describe "email_draft/:emailThreadUID", ->
+    beforeEach ->
+      @emailThreadUID = "12345"
+
+      @spy = sinon.spy(TuringEmailApp, "showEmailEditorWithEmailThread")
+      @emailThreadsRouter.navigate "email_draft/" + @emailThreadUID, trigger: true
+
+    afterEach ->
+      @spy.restore()
+
+    it "shows the email editor with the email thread", ->
+      expect(@spy.calledWith(@emailThreadUID)).toBeTruthy()

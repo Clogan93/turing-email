@@ -46,7 +46,7 @@ describe "Threads Report View", ->
       subjects = []
       uids = []
       @threadsReportView.$el.find("ul li a").each ->
-        uids.push $(@).attr("href").split("#")[2]
+        uids.push $(@).attr("href").split("/")[2]
         subjects.push $(@).text()
 
       for email_thread, index in @threadsReport.get("top_email_threads")

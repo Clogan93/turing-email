@@ -13,6 +13,6 @@
 <h4 class="h4">Top Email Threads</h4>
 <ul>
   <% for(var i = 0; i < top_email_threads.length; i++) { %>
-    <li><a href="#email_thread#<%= top_email_threads[i].uid %>"><%= top_email_threads[i].emails[0].subject %></a></li>
+    <li><a href="#email_thread/<%= top_email_threads[i].uid %>"><%= top_email_threads[i].emails[0].subject %></a></li>
   <% } %>
 </ul>

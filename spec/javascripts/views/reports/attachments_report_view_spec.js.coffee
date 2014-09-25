@@ -76,4 +76,4 @@ describe "AttachmentsReportView", ->
     #     expect(fromNames[index]).toEqual email.from_name
     #     expect(subjects[index]).toEqual email.subject
     #     #expect(snippets[index]).toEqual email.snippet
-    #     expect(links[index]).toEqual "#email_thread#" + emailThread.get("uid")
+    #     expect(links[index]).toEqual "#email_thread/" + emailThread.get("uid")

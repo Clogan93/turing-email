@@ -1,7 +1,7 @@
 class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
   routes:
-    "email_thread#:uid": "showEmailThread"
-    "email_draft#:uid": "showEmailDraft"
+    "email_thread/:emailThreadUID": "showEmailThread"
+    "email_draft/:emailThreadUID": "showEmailDraft"
 
   showEmailThread: (emailThreadUID) ->
     TuringEmailApp.currentEmailThreadIs(emailThreadUID)

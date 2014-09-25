@@ -43,7 +43,7 @@ if (emailFolder) {
         <% if (have_children) { %>
           <span class="bullet_span">‣ </span>
         <% } %>
-        <a class="label_link" href="#folder#<%= emailFolder.label_id %>">
+        <a class="label_link" href="#email_folder/<%= emailFolder.label_id %>">
           <%= nodeName %> <span class="badge"><%= badge_string %></span>
         </a><%
   }

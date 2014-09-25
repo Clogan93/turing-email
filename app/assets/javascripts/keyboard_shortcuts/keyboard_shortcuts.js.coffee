@@ -80,7 +80,7 @@ class @KeyboardShortcutHandler
     tr_element = $("#email_table_body tr:nth-child(" + TuringEmailApp.current_email_thread_index + ")")
     tr_element.addClass("email_thread_highlight")
 
-    link_components = tr_element.find("a").first().attr("href").split("#")
+    link_components = tr_element.find("a").first().attr("href").split("/")
     uid = link_components[link_components.length - 1]
 
     if TuringEmailApp.models.userSettings.get("split_pane_mode") is "horizontal"
@@ -102,7 +102,7 @@ class @KeyboardShortcutHandler
     tr_element = $("#email_table_body tr:nth-child(" + TuringEmailApp.current_email_thread_index + ")")
     tr_element.addClass("email_thread_highlight")
 
-    link_components = tr_element.find("a").first().attr("href").split("#")
+    link_components = tr_element.find("a").first().attr("href").split("/")
     uid = link_components[link_components.length - 1]
 
     if TuringEmailApp.models.userSettings.get("split_pane_mode") is "horizontal"

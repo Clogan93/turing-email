@@ -59,12 +59,12 @@ window.TuringEmailApp = new(Backbone.View.extend({
     @routers.emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
 
     windowLocationHash = window.location.hash.toString()
-    if windowLocationHash.indexOf("#folder#") == -1
+    if windowLocationHash.indexOf("#email_folder/") == -1
       @routers.emailFoldersRouter.showFolder("INBOX")
 
     #Routers
     @routers.reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
-    @routers.emailFoldersRouter = new TuringEmailApp.Routers.AnalyticsRouter()
+    @routers.analyticsRouter = new TuringEmailApp.Routers.AnalyticsRouter()
     @routers.settingsRouter = new TuringEmailApp.Routers.SettingsRouter()
     @routers.searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()    
 
@@ -77,7 +77,7 @@ window.TuringEmailApp = new(Backbone.View.extend({
     return splitPaneMode is "horizontal" || splitPaneMode is "vertical"
   
   loadEmailThread:(emailThreadUID, callback) ->
-    emailThread = TuringEmailApp.collections.emailThreads.getEmailThread(emailThreadUID)
+    emailThread = TuringEmailApp.collections.emailThreads?.getEmailThread(emailThreadUID)
 
     if emailThread?
       callback(emailThread)
@@ -128,9 +128,9 @@ window.TuringEmailApp = new(Backbone.View.extend({
 
     TuringEmailApp.loadEmailThread(emailThreadUID, callback)
 
-  currentEmailFolderIs: (folderID) ->
+  currentEmailFolderIs: (emailFolderID) ->
     TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(
-      folderID: folderID
+      folderID: emailFolderID
     )
 
     TuringEmailApp.views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView({
@@ -142,10 +142,10 @@ window.TuringEmailApp = new(Backbone.View.extend({
       reset: true
     )
 
-    TuringEmailApp.views.emailFoldersTreeView.currentEmailFolderIs folderID
-    TuringEmailApp.currentFolderId = folderID
-    TuringEmailApp.views.toolbarView.renderLabelTitleAndUnreadCount folderID
-    TuringEmailApp.views.toolbarView.renderEmailsDisplayedCounter folderID
+    TuringEmailApp.views.emailFoldersTreeView.currentEmailFolderIs emailFolderID
+    TuringEmailApp.currentFolderId = emailFolderID
+    TuringEmailApp.views.toolbarView.renderLabelTitleAndUnreadCount emailFolderID
+    TuringEmailApp.views.toolbarView.renderEmailsDisplayedCounter emailFolderID
     TuringEmailApp.showEmails()
     
   draftChanged: ->

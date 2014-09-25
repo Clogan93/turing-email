@@ -49,7 +49,7 @@ describe "TreeView", ->
       
       for emailFolder in @emailFolders.models
         if emailFolder.get("label_type") is "user"
-          expect(links).toContain "#folder#" + emailFolder.get("label_id")
+          expect(links).toContain "#email_folder/" + emailFolder.get("label_id")
 
     it "should render when an element is added to the collection", ->
       @emailFolders.add @additional_email

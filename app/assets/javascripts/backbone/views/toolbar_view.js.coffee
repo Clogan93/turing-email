@@ -12,7 +12,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     
     links_of_checked_emails = $(".check-mail .checked").parent().parent().find('a[href^="#email_thread"]')
     links_of_checked_emails.each ->
-      link_components = $(@).attr("href").split("#")
+      link_components = $(@).attr("href").split("/")
       uid = link_components[link_components.length - 1]
       checkedUIDs.push uid
     
@@ -120,7 +120,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       if window.location.hash is ""
         postData.email_folder_id = "INBOX"
       else
-        url_components = window.location.hash.split("#")
+        url_components = window.location.hash.split("/")
         folder_id = url_components[url_components.length - 1]
         postData.email_folder_id = folder_id
 

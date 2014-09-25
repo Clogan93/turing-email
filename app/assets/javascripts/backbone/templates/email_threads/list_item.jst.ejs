@@ -1,10 +1,10 @@
-<% var href_link = emails[0].draft_id ? "email_draft" : "email_thread" %>
+<% var hrefLink = emails[0].draft_id ? "email_draft" : "email_thread" %>
 
 <td class="check-mail">
     <input type="checkbox" class="i-checks">
 </td>
 <td class="mail-contact">
-  <a href="#<%= href_link %>#<%= uid %>">
+  <a href="#<%= hrefLink %>/<%= uid %>">
     <%
     if (emails[0].from_name == null) { %>
       <%= emails[0].from_address %><%
@@ -18,7 +18,7 @@
     %>
   </a>
 </td>
-<td class="mail-subject"><a href="#<%= href_link %>#<%= uid %>"><%= emails[0].subject == "" ? "(no subject)" : emails[0].subject %> </a></td>
+<td class="mail-subject"><a href="#<%= hrefLink %>/<%= uid %>"><%= emails[0].subject == "" ? "(no subject)" : emails[0].subject %> </a></td>
 <td class="text-right mail-date">
 <%
   //This is a check in case the date field is null.

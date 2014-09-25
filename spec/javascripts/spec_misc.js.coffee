@@ -1,3 +1,5 @@
+specStartedHistory = false
+
 window.specStartTuringEmailApp = ->
   TuringEmailApp.models = {}
   TuringEmailApp.views = {}
@@ -26,11 +28,13 @@ window.specStartTuringEmailApp = ->
 
   #Routers
   TuringEmailApp.routers.reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
-  TuringEmailApp.routers.emailFoldersRouter = new TuringEmailApp.Routers.AnalyticsRouter()
+  TuringEmailApp.routers.analyticsRouter = new TuringEmailApp.Routers.AnalyticsRouter()
   TuringEmailApp.routers.settingsRouter = new TuringEmailApp.Routers.SettingsRouter()
   TuringEmailApp.routers.searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()
 
-  Backbone.history.start(silent: true)
+  if not specStartedHistory
+    Backbone.history.start(silent: true)
+    specStartedHistory = true
 
 window.validateAttributes = (objectJSON, expectedAttributes) ->
   keys = (key for key in Object.keys(objectJSON))

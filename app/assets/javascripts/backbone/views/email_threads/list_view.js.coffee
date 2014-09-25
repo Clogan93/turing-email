@@ -92,14 +92,14 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
                                      report_email.html() + "</tr>")
 
   highlightEmailThread: (emailThread) ->
-    aTag = @$el.find('a[href^="#email_thread#' + emailThread.get("uid") + '"]')
+    aTag = @$el.find('a[href^="#email_thread/' + emailThread.get("uid") + '"]')
     aTag.parent().parent().removeClass("read")
     aTag.parent().parent().removeClass("unread")
     aTag.parent().parent().addClass("currently_being_read")
 
   unhighlightEmailThread: (emailThread) ->
     if emailThread?
-      aTag = @$el.find('a[href^="#email_thread#' + emailThread.get("uid") + '"]')
+      aTag = @$el.find('a[href^="#email_thread/' + emailThread.get("uid") + '"]')
       aTag.parent().parent().removeClass("currently_being_read")
       aTag.parent().parent().addClass("read")
 
@@ -119,17 +119,23 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     tds = @$el.find('td.mail-contact, td.mail-subject, td.mail-date')
     tds.click ->
       aTag = $(@).find('a[href^="#email_thread"]').first()
+      
       if aTag.length > 0
         TuringEmailApp.views.emailThreadsListView.updateToMarkAsRead aTag
-        link_components = aTag.attr("href").split("#")
-        uid = link_components[link_components.length - 1]
-        TuringEmailApp.routers.emailThreadsRouter.showEmailThread uid
+        link_components = aTag.attr("href").split("/")
+        emailThreadUID = link_components[link_components.length - 1]
+        TuringEmailApp.routers.emailThreadsRouter.showEmailThread emailThreadUID
+        
+        return false
       else
         aTag = $(@).find('a[href^="#email_draft"]').first()
+        
         if aTag.length > 0
-          link_components = aTag.attr("href").split("#")
-          uid = link_components[link_components.length - 1]
-          TuringEmailApp.routers.emailThreadsRouter.showEmailDraft uid
+          link_components = aTag.attr("href").split("/")
+          emailThreadUID = link_components[link_components.length - 1]
+          TuringEmailApp.routers.emailThreadsRouter.showEmailDraft emailThreadUID
+
+          return false
 
   setupPreviewDragging: ->
     return

@@ -1,10 +1,10 @@
 class TuringEmailApp.Routers.EmailFoldersRouter extends Backbone.Router
   routes:
     "inbox": "showInbox"
-    "folder/:folder_id": "showFolder"
+    "email_folder/:emailFolderID": "showFolder"
 
   showInbox: ->
     @showFolder "INBOX"
 
-  showFolder: (folderID) ->
-    TuringEmailApp.currentEmailFolderIs(folderID)
+  showFolder: (emailFolderID) ->
+    TuringEmailApp.currentEmailFolderIs(emailFolderID)

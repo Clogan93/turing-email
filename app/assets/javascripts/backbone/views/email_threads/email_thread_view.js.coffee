@@ -38,7 +38,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
           reply_link = $(@).parent().parent().find('a[href^="mailto:"]').attr("href").replace "mailto:", ""
           $('#composeModal #to_input').val(reply_link)
 
-          thread_elements = $(@).attr("href").split("#")
+          thread_elements = $(@).attr("href").split("/")
           thread_id = thread_elements[thread_elements.length - 1]
           $.get "/api/v1/email_threads/show/" + thread_id, (data) ->
             email_from_email_thread = data.emails[data.emails.length - 1]

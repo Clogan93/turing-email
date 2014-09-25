@@ -11,7 +11,7 @@ describe "EmailFoldersRouter", ->
 
   it "has the expected routes", ->
     expect(@emailFoldersRouter.routes["inbox"]).toEqual "showInbox"
-    expect(@emailFoldersRouter.routes["folder/:folder_id"]).toEqual "showFolder"
+    expect(@emailFoldersRouter.routes["email_folder/:emailFolderID"]).toEqual "showFolder"
 
   describe "inbox", ->
     beforeEach ->
@@ -24,16 +24,15 @@ describe "EmailFoldersRouter", ->
     it "shows the inbox", ->
       expect(@spy.calledWith("INBOX")).toBeTruthy()
 
-  describe "folder#:folder_id", ->
+  describe "email_folder/:emailFolderID", ->
     beforeEach ->
-      @testFolderName = "test"
+      @folderName = "test"
       
       @spy = sinon.spy(TuringEmailApp, "currentEmailFolderIs")
-      @emailFoldersRouter.navigate "folder/" + @testFolderName, trigger: true
+      @emailFoldersRouter.navigate "email_folder/" + @folderName, trigger: true
 
     afterEach ->
       @spy.restore()
 
     it "shows the folder", ->
-      expect(@spy.calledWith(@testFolderName)).toBeTruthy()
-      
+      expect(@spy.calledWith(@folderName)).toBeTruthy()

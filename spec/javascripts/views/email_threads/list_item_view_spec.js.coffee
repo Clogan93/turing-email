@@ -50,4 +50,4 @@ describe "ListItemView", ->
       expect(@listItemView.$el.find('td.mail-subject a').text().trim()).toEqual @emailThread.get("emails")[0].subject
 
     it "should render the correct link for email thread", ->
-      expect(@listItemView.$el.find('a').attr("href")).toEqual "#email_thread#" + @emailThread.get("uid")
+      expect(@listItemView.$el.find('a').attr("href")).toEqual "#email_thread/" + @emailThread.get("uid")
