@@ -36,6 +36,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
       @fetch(
         success: (collection, response, options) =>
           TuringEmailApp.views.emailThreadsListView.renderCheckboxes()
+          TuringEmailApp.views.toolbarView.renderEmailsDisplayedCounter TuringEmailApp.currentFolderId
       )
 
   nextPage: ->
@@ -44,4 +45,5 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
     @fetch(
       success: (collection, response, options) =>
         TuringEmailApp.views.emailThreadsListView.renderCheckboxes()
+        TuringEmailApp.views.toolbarView.renderEmailsDisplayedCounter TuringEmailApp.currentFolderId
     )

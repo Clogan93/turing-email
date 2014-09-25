@@ -16,6 +16,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     @renderHtmlPartsOfEmails()
 
     @setupEmailExpandAndCollapse()
+    @setupBackButton()
     @setupReplyButtons()
     @setupForwardButton()
 
@@ -71,6 +72,11 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
       $(this).siblings(".email").each ->
         $(this).addClass "collapsed_email"
         $(this).find(".email_body").hide()
+
+  setupBackButton: ->
+    if !TuringEmailApp.isSplitPaneMode()
+      $("#email_back_button").click ->
+        TuringEmailApp.routers.emailFoldersRouter.showFolder(TuringEmailApp.currentFolderId)
 
   setupReplyButtons: ->
     $(".email_reply_button").click =>
