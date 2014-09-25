@@ -1,7 +1,7 @@
 describe "EmailFoldersRouter", ->
-  specStartTuringEmailApp()
-
   beforeEach ->
+    specStartTuringEmailApp()
+
     @emailFoldersRouter = new TuringEmailApp.Routers.EmailFoldersRouter()
 
     @server = sinon.fakeServer.create()

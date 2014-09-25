@@ -1,8 +1,8 @@
 class TuringEmailApp.Routers.SearchResultsRouter extends Backbone.Router
   routes:
-    "search#:query": "showSearchResultsRouter"
+    "search/:query": "showSearchResults"
 
-  showSearchResultsRouter: (query) ->
+  showSearchResults: (query) ->
     TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsSearchResultsCollection()
 
     TuringEmailApp.views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView({

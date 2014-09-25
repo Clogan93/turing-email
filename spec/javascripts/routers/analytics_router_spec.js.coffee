@@ -1,7 +1,7 @@
 describe "AnalyticsRouter", ->
-  specStartTuringEmailApp()
-  
   beforeEach ->
+    specStartTuringEmailApp()
+
     @analyticsRouter = new TuringEmailApp.Routers.AnalyticsRouter()
 
     @server = sinon.fakeServer.create()
@@ -16,6 +16,9 @@ describe "AnalyticsRouter", ->
     beforeEach ->
       @spy = sinon.spy(TuringEmailApp.Views, "AnalyticsView")
       @analyticsRouter.navigate "analytics", trigger: true
-    
+
+    afterEach ->
+      @spy.restore()
+
     it "shows an AnalyticsView", ->
       expect(@spy.called).toBeTruthy()

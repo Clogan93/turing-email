@@ -1,7 +1,7 @@
 describe "EmailThreadsRouter", ->
-  specStartTuringEmailApp()
-
   beforeEach ->
+    specStartTuringEmailApp()
+
     @emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
 
     @server = sinon.fakeServer.create()

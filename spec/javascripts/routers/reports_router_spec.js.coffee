@@ -1,105 +1,144 @@
 describe "ReportsRouter", ->
-
   beforeEach ->
-    @router = new TuringEmailApp.Routers.ReportsRouter()
-    @routeSpy = sinon.spy()
-    try
-      Backbone.history.start
-        silent: true
+    specStartTuringEmailApp()
 
-  it "has a attachments_report route and points to the showAttachmentsReport method", ->
-    expect(@router.routes["attachments_report"]).toEqual "showAttachmentsReport"
+    @reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
+    
+    @server = sinon.fakeServer.create()
 
-  it "has a email_volume_report route and points to the showEmailVolumeReport method", ->
-    expect(@router.routes["email_volume_report"]).toEqual "showEmailVolumeReport"
+  afterEach ->
+    @server.restore()
 
-  it "has a geo_report route and points to the showGeoReport method", ->
-    expect(@router.routes["geo_report"]).toEqual "showGeoReport"
+  it "has the expected routes", ->
+    expect(@reportsRouter.routes["attachments_report"]).toEqual "showAttachmentsReport"
+    expect(@reportsRouter.routes["email_volume_report"]).toEqual "showEmailVolumeReport"
+    expect(@reportsRouter.routes["geo_report"]).toEqual "showGeoReport"
+    expect(@reportsRouter.routes["impact_report"]).toEqual "showImpactReport"
+    expect(@reportsRouter.routes["inbox_efficiency_report"]).toEqual "showInboxEfficiencyReport"
+    expect(@reportsRouter.routes["lists_report"]).toEqual "showListsReport"
+    expect(@reportsRouter.routes["recommended_rules_report"]).toEqual "showRecommendedRulesReport"
+    expect(@reportsRouter.routes["threads_report"]).toEqual "showThreadsReport"
+    expect(@reportsRouter.routes["top_contacts"]).toEqual "showTopContactsReport"
+    expect(@reportsRouter.routes["summary_analytics_report"]).toEqual "showSummaryAnalyticsReport"
+    expect(@reportsRouter.routes["word_count_report"]).toEqual "showWordCountReport"
 
-  it "has a impact_report route and points to the showImpactReport method", ->
-    expect(@router.routes["impact_report"]).toEqual "showImpactReport"
+  describe "attachments_report", ->
+    beforeEach ->
+      @spy = sinon.spy(TuringEmailApp.Views.Reports, "AttachmentsReportView")
+      @reportsRouter.navigate "attachments_report", trigger: true
+    
+    afterEach ->
+      @spy.restore()
+    
+    it "shows an AttachmentsReportView", ->
+      expect(@spy.called).toBeTruthy()
 
-  it "has a inbox_efficiency_report route and points to the showInboxEfficiencyReport method", ->
-    expect(@router.routes["inbox_efficiency_report"]).toEqual "showInboxEfficiencyReport"
+  describe "email_volume_report", ->
+    beforeEach ->
+      @spy = sinon.spy(TuringEmailApp.Views.Reports, "EmailVolumeReportView")
+      @reportsRouter.navigate "email_volume_report", trigger: true
 
-  it "has a lists_report route and points to the showListsReport method", ->
-    expect(@router.routes["lists_report"]).toEqual "showListsReport"
+    afterEach ->
+      @spy.restore()
 
-  it "has a threads_report route and points to the showThreadsReport method", ->
-    expect(@router.routes["threads_report"]).toEqual "showThreadsReport"
+    it "shows an EmailVolumeReportView", ->
+      expect(@spy.called).toBeTruthy()
 
-  it "has a top_contacts route and points to the showContactsReport method", ->
-    expect(@router.routes["top_contacts"]).toEqual "showContactsReport"
+  describe "geo_report", ->
+    beforeEach ->
+      @spy = sinon.spy(TuringEmailApp.Views.Reports, "GeoReportView")
+      @reportsRouter.navigate "geo_report", trigger: true
 
-  it "has a summary_analytics_report route and points to the showSummaryAnalyticsReport method", ->
-    expect(@router.routes["summary_analytics_report"]).toEqual "showSummaryAnalyticsReport"
+    afterEach ->
+      @spy.restore()
 
-  it "has a word_count_report route and points to the showWordCountReport method", ->
-    expect(@router.routes["word_count_report"]).toEqual "showWordCountReport"
+    it "shows a GeoReportView", ->
+      expect(@spy.called).toBeTruthy()
 
-  it "Has the right number of routes", ->
-    expect(_.size(@router.routes)).toEqual 11
+  describe "impact_report", ->
+    beforeEach ->
+      @spy = sinon.spy(TuringEmailApp.Views.Reports, "ImpactReportView")
+      @reportsRouter.navigate "impact_report", trigger: true
 
-  it "fires the showAttachmentsReport route with attachments_report", ->
-    @router.bind "route:showAttachmentsReport", @routeSpy
-    @router.navigate "attachments_report",
-      trigger: true
-    expect(@routeSpy).toHaveBeenCalledOnce()
-    expect(@routeSpy).toHaveBeenCalledWith()
-    return
+    afterEach ->
+      @spy.restore()
 
-  it "fires the showEmailVolumeReport route with email_volume_report", ->
-    @router.bind "route:showEmailVolumeReport", @routeSpy
-    @router.navigate "email_volume_report",
-      trigger: true
-    expect(@routeSpy).toHaveBeenCalledOnce()
-    expect(@routeSpy).toHaveBeenCalledWith()
-    return
+    it "shows an ImpactReportView", ->
+      expect(@spy.called).toBeTruthy()
 
-  it "fires the showGeoReport route with geo_report", ->
-    @router.bind "route:showGeoReport", @routeSpy
-    @router.navigate "geo_report",
-      trigger: true
-    expect(@routeSpy).toHaveBeenCalledOnce()
-    expect(@routeSpy).toHaveBeenCalledWith()
-    return
+  describe "inbox_efficiency_report", ->
+    beforeEach ->
+      @spy = sinon.spy(TuringEmailApp.Views.Reports, "InboxEfficiencyReportView")
+      @reportsRouter.navigate "inbox_efficiency_report", trigger: true
 
-  it "fires the showImpactReport route with impact_report", ->
-    @router.bind "route:showImpactReport", @routeSpy
-    @router.navigate "impact_report",
-      trigger: true
-    expect(@routeSpy).toHaveBeenCalledOnce()
-    expect(@routeSpy).toHaveBeenCalledWith()
-    return
+    afterEach ->
+      @spy.restore()
 
-  it "fires the showListsReport route with lists_report", ->
-    @router.bind "route:showListsReport", @routeSpy
-    @router.navigate "lists_report",
-      trigger: true
-    expect(@routeSpy).toHaveBeenCalledOnce()
-    expect(@routeSpy).toHaveBeenCalledWith()
-    return
+    it "shows an InboxEfficiencyReportView", ->
+      expect(@spy.called).toBeTruthy()
 
-  it "fires the showRecommendedRulesReport route with recommended_rules_report", ->
-    @router.bind "route:showRecommendedRulesReport", @routeSpy
-    @router.navigate "recommended_rules_report",
-      trigger: true
-    expect(@routeSpy).toHaveBeenCalledOnce()
-    expect(@routeSpy).toHaveBeenCalledWith()
-    return
+  describe "lists_report", ->
+    beforeEach ->
+      @spy = sinon.spy(TuringEmailApp.Views.Reports, "ListsReportView")
+      @reportsRouter.navigate "lists_report", trigger: true
 
-  it "fires the showThreadsReport route with threads_report", ->
-    @router.bind "route:showThreadsReport", @routeSpy
-    @router.navigate "threads_report",
-      trigger: true
-    expect(@routeSpy).toHaveBeenCalledOnce()
-    expect(@routeSpy).toHaveBeenCalledWith()
-    return
+    afterEach ->
+      @spy.restore()
 
-  it "fires the showContactsReport route with top_contacts", ->
-    @router.bind "route:showContactsReport", @routeSpy
-    @router.navigate "top_contacts",
-      trigger: true
-    expect(@routeSpy).toHaveBeenCalledOnce()
-    expect(@routeSpy).toHaveBeenCalledWith()
-    return
+    it "shows a ListsReportView", ->
+      expect(@spy.called).toBeTruthy()
+
+  describe "recommended_rules_report", ->
+    beforeEach ->
+      @spy = sinon.spy(TuringEmailApp.Views.Reports, "RecommendedRulesReportView")
+      @reportsRouter.navigate "recommended_rules_report", trigger: true
+
+    afterEach ->
+      @spy.restore()
+
+    it "shows a RecommendedRulesReportView", ->
+      expect(@spy.called).toBeTruthy()
+
+  describe "threads_report", ->
+    beforeEach ->
+      @spy = sinon.spy(TuringEmailApp.Views.Reports, "ThreadsReportView")
+      @reportsRouter.navigate "threads_report", trigger: true
+
+    afterEach ->
+      @spy.restore()
+
+    it "shows a ThreadsReportView", ->
+      expect(@spy.called).toBeTruthy()
+
+  describe "top_contacts", ->
+    beforeEach ->
+      @spy = sinon.spy(TuringEmailApp.Views.Reports, "ContactsReportView")
+      @reportsRouter.navigate "top_contacts", trigger: true
+
+    afterEach ->
+      @spy.restore()
+
+    it "shows a ContactsReportView", ->
+      expect(@spy.called).toBeTruthy()
+
+  describe "summary_analytics_report", ->
+    beforeEach ->
+      @spy = sinon.spy(TuringEmailApp.Views.Reports, "SummaryAnalyticsReportView")
+      @reportsRouter.navigate "summary_analytics_report", trigger: true
+
+    afterEach ->
+      @spy.restore()
+
+    it "shows a SummaryAnalyticsReportView", ->
+      expect(@spy.called).toBeTruthy()
+
+  describe "word_count_report", ->
+    beforeEach ->
+      @spy = sinon.spy(TuringEmailApp.Views.Reports, "WordCountReportView")
+      @reportsRouter.navigate "word_count_report", trigger: true
+
+    afterEach ->
+      @spy.restore()
+
+    it "shows a WordCountReportView", ->
+      expect(@spy.called).toBeTruthy()

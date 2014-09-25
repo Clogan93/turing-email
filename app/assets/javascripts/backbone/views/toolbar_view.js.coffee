@@ -221,7 +221,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
   setupSearch: ->
     $("#search_input").change ->
-      $("a#search_button_link").attr("href", "#search#" + $(@).val())
+      $("a#search_button_link").attr("href", "#search/" + $(@).val())
     $("#search_input").keypress (e) ->
       if e.which is 13
         TuringEmailApp.routers.searchResultsRouter.showSearchResultsRouter $(@).val()
