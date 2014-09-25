@@ -422,12 +422,17 @@ a#refresh_link
 
 .unread td
 {
- background-color: white !important; 
+ background-color: white !important;
 }
  
 .currently_being_read td
 {
-  background-color: rgb(231, 246, 236) !important; 
+  background-color: rgb(231, 246, 236) !important;
+}
+
+.checked_email_thread td
+{
+  background-color: rgb(252, 248, 227) !important;
 }
 
 #no_conversations_selected
@@ -439,4 +444,31 @@ a#refresh_link
 .mail-box
 {
   padding-bottom: 27.5%;
+}
+
+#bulk_action_checkbox_dropdown
+{
+  button
+  {
+    background-color: white;
+    border: 1px solid #d2d2d2;
+    float: left;
+    margin-right: 10px;
+    margin-top: -3px;
+  }
+  ul
+  {
+    margin-top: 34px;
+  }
+}
+
+#current_emails_displayed_counter
+{
+  float: left;
+  margin-right: 5px;
+  margin-top: 9px;
+  span
+  {
+    font-weight: bold;
+  }
 }

@@ -27,6 +27,8 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
     @setupReadUnreadRendering()
 
+    @setupPreviewDragging()
+
     @setupTdClicksOfLinks()
 
     if @collections?.length() > 0
@@ -37,10 +39,41 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     @highlightEmailThread TuringEmailApp.currentEmailThread
     @currentlySelectedEmailThread = TuringEmailApp.currentEmailThread
 
+  checkboxCheckedValueIs: (checkbox, isChecked) ->
+    if isChecked
+      checkbox.iCheck("check")
+      checkbox.parent().parent().addClass("checked_email_thread")
+    else
+      checkbox.iCheck("uncheck")
+      checkbox.parent().parent().removeClass("checked_email_thread")
+
+  checkAllCheckboxes: ->
+    $("#email_table_body div.icheckbox_square-green").each ->
+      TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@), true
+
+  uncheckAllCheckboxes: ->
+    $("#email_table_body div.icheckbox_square-green").each ->
+      TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@), false
+      $(@).iCheck("uncheck")
+
   renderCheckboxes: ->
     $(".i-checks").iCheck
       checkboxClass: "icheckbox_square-green"
       radioClass: "iradio_square-green"
+
+    $("#bulk_action_checkbox_dropdown div.icheckbox_square-green ins").click ->
+      if $(@).parent().hasClass "checked"
+        TuringEmailApp.views.emailThreadsListView.checkAllCheckboxes()
+      else
+        TuringEmailApp.views.emailThreadsListView.uncheckAllCheckboxes()
+
+    $("#email_table_body div.icheckbox_square-green ins").click ->
+      if $(@).parent().hasClass "checked"
+        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@).parent(), true
+        return false
+      else
+        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@).parent(), false
+        return false
 
   addKeyboardShortcutHighlight: ->
     $("#email_table_body tr:nth-child(1)").addClass("email_thread_highlight")
@@ -97,4 +130,19 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
           link_components = aTag.attr("href").split("#")
           uid = link_components[link_components.length - 1]
           TuringEmailApp.routers.emailThreadsRouter.showEmailDraft uid
-        
+
+  setupPreviewDragging: ->
+    return
+    # if TuringEmailApp.isSplitPaneMode()
+    #   $("#resize_border").mousedown ->
+    #     TuringEmailApp.mouseStart = null
+    #     $(document).mousemove (event) ->
+    #       if !TuringEmailApp.mouseStart?
+    #         TuringEmailApp.mouseStart = event.pageY
+    #       if event.pageY - TuringEmailApp.mouseStart > 100
+    #         $("#preview_panel").height("30%")
+    #         TuringEmailApp.mouseStart = null
+    #       return
+
+    #     $(document).one "mouseup", ->
+    #       $(document).unbind "mousemove"
