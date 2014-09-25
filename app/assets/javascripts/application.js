@@ -16,8 +16,9 @@
 //
 //= require bootstrap-sprockets
 //
+//= require tattletale/tattletale
+//
 //= require underscore
-//= require tattletale
 //= require backbone
 //= require backbone_rails_sync
 //= require backbone_datalink
