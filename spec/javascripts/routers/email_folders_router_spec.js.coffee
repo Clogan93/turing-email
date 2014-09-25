@@ -1,16 +1,39 @@
 describe "EmailFoldersRouter", ->
+  specStartTuringEmailApp()
 
   beforeEach ->
-    @router = new TuringEmailApp.Routers.EmailFoldersRouter()
-    @routeSpy = sinon.spy()
-    try
-      Backbone.history.start
-        pushState: false
-        silent: true
+    @emailFoldersRouter = new TuringEmailApp.Routers.EmailFoldersRouter()
 
-  it "has a folder route and points to the showFolder method", ->
-    expect(@router.routes["folder#DRAFT"]).toEqual "showDraftFolder"
-    expect(@router.routes["folder#:folder_id"]).toEqual "showFolder"
+    @server = sinon.fakeServer.create()
 
-  it "Has the right number of routes", ->
-    expect(_.size(@router.routes)).toEqual 2
+  afterEach ->
+    @server.restore()
+
+  it "has the expected routes", ->
+    expect(@emailFoldersRouter.routes["inbox"]).toEqual "showInbox"
+    expect(@emailFoldersRouter.routes["folder/:folder_id"]).toEqual "showFolder"
+
+  describe "inbox", ->
+    beforeEach ->
+      @spy = sinon.spy(TuringEmailApp, "currentEmailFolderIs")
+      @emailFoldersRouter.navigate "inbox", trigger: true
+      
+    afterEach ->
+      @spy.restore()
+
+    it "shows the inbox", ->
+      expect(@spy.calledWith("INBOX")).toBeTruthy()
+
+  describe "folder#:folder_id", ->
+    beforeEach ->
+      @testFolderName = "test"
+      
+      @spy = sinon.spy(TuringEmailApp, "currentEmailFolderIs")
+      @emailFoldersRouter.navigate "folder/" + @testFolderName, trigger: true
+
+    afterEach ->
+      @spy.restore()
+
+    it "shows the folder", ->
+      expect(@spy.calledWith(@testFolderName)).toBeTruthy()
+      

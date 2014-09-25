@@ -64,7 +64,7 @@ window.TuringEmailApp = new(Backbone.View.extend({
 
     #Routers
     @routers.reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
-    @routers.analyticsRouter = new TuringEmailApp.Routers.AnalyticsRouter()
+    @routers.emailFoldersRouter = new TuringEmailApp.Routers.AnalyticsRouter()
     @routers.settingsRouter = new TuringEmailApp.Routers.SettingsRouter()
     @routers.searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()    
 

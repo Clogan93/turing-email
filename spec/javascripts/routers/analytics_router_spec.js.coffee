@@ -2,18 +2,20 @@ describe "AnalyticsRouter", ->
   specStartTuringEmailApp()
   
   beforeEach ->
-    @analyticsRouter = new TuringEmailApp.Routers.AnalyticsRouter()
+    @emailFoldersRouter = new TuringEmailApp.Routers.AnalyticsRouter()
 
     @server = sinon.fakeServer.create()
 
-  it "has the expected routes", ->
-    expect(@analyticsRouter.routes["analytics"]).toEqual "showAnalytics"
+  afterEach ->
+    @server.restore()
 
-  describe "#analytics", ->
+  it "has the expected routes", ->
+    expect(@emailFoldersRouter.routes["analytics"]).toEqual "showAnalytics"
+
+  describe "analytics", ->
     beforeEach ->
-      $("<div/>", {id: "reports"}).appendTo($("body"))
-      @analyticsRouter.navigate "#analytics", trigger: true
+      @spy = sinon.spy(TuringEmailApp.Views, "AnalyticsView")
+      @emailFoldersRouter.navigate "analytics", trigger: true
     
     it "shows an AnalyticsView", ->
-      console.log $("#contacts_report")
-      expect(true).toBeTruthy()
+      expect(@spy.called).toBeTruthy()
