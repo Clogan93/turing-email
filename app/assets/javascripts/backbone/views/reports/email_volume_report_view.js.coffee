@@ -8,6 +8,6 @@ class TuringEmailApp.Views.Reports.EmailVolumeReportView extends Backbone.View
     @listenTo(@model, "hide destroy", @remove)
 
   render: ->
-    TuringEmailApp.showReport()
+    TuringEmailApp.showReports()
     @$el.html(@template(@model.toJSON()))
     return this

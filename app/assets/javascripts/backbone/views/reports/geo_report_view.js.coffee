@@ -8,6 +8,6 @@ class TuringEmailApp.Views.Reports.GeoReportView extends Backbone.View
     @listenTo(@model, "hide destroy", @remove)
 
   render: ->
-    TuringEmailApp.showReport()
+    TuringEmailApp.showReports()
     @$el.html(@template(@model.get("data")))
     return this

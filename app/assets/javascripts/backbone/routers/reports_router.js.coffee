@@ -16,38 +16,38 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
   ########################## Show Reports ##########################
   ##################################################################
 
-  showReport: (target_element = "#reports", ReportModel, ReportView) ->
+  showReport: (divID, ReportModel, ReportView) ->
     reportModel = new ReportModel()
     reportView = new ReportView(
       model: reportModel
-      el: $(target_element)
+      el: $(divID)
     )
 
     reportModel.fetch()
 
-  showAttachmentsReport: ->
-    @showReport "#reports", TuringEmailApp.Models.AttachmentsReport, TuringEmailApp.Views.Reports.AttachmentsReportView
+  showAttachmentsReport: (divID="#reports") ->
+    @showReport divID, TuringEmailApp.Models.AttachmentsReport, TuringEmailApp.Views.Reports.AttachmentsReportView
 
-  showEmailVolumeReport: ->
-    @showReport "#reports", TuringEmailApp.Models.EmailVolumeReport, TuringEmailApp.Views.Reports.EmailVolumeReportView
+  showEmailVolumeReport: (divID="#reports") ->
+    @showReport divID, TuringEmailApp.Models.EmailVolumeReport, TuringEmailApp.Views.Reports.EmailVolumeReportView
 
-  showGeoReport: ->
-    @showReport "#reports", TuringEmailApp.Models.GeoReport, TuringEmailApp.Views.Reports.GeoReportView
+  showGeoReport: (divID="#reports") ->
+    @showReport divID, TuringEmailApp.Models.GeoReport, TuringEmailApp.Views.Reports.GeoReportView
 
-  showImpactReport: ->
-    @showReport "#reports", TuringEmailApp.Models.ImpactReport, TuringEmailApp.Views.Reports.ImpactReportView
+  showImpactReport: (divID="#reports") ->
+    @showReport divID, TuringEmailApp.Models.ImpactReport, TuringEmailApp.Views.Reports.ImpactReportView
 
-  showListsReport: ->
-    @showReport "#reports", TuringEmailApp.Models.ListsReport, TuringEmailApp.Views.Reports.ListsReportView
+  showListsReport: (divID="#reports") ->
+    @showReport divID, TuringEmailApp.Models.ListsReport, TuringEmailApp.Views.Reports.ListsReportView
 
-  showRecommendedRulesReport: ->
-    @showReport "#reports", TuringEmailApp.Models.RecommendedRulesReport, TuringEmailApp.Views.Reports.RecommendedRulesReportView
+  showRecommendedRulesReport: (divID="#reports") ->
+    @showReport divID, TuringEmailApp.Models.RecommendedRulesReport, TuringEmailApp.Views.Reports.RecommendedRulesReportView
 
-  showThreadsReport: ->
-    @showReport "#reports", TuringEmailApp.Models.ThreadsReport, TuringEmailApp.Views.Reports.ThreadsReportView
+  showThreadsReport: (divID="#reports") ->
+    @showReport divID, TuringEmailApp.Models.ThreadsReport, TuringEmailApp.Views.Reports.ThreadsReportView
 
-  showContactsReport: ->
-    @showReport "#reports", TuringEmailApp.Models.ContactsReport, TuringEmailApp.Views.Reports.ContactsReportView
+  showContactsReport: (divID="#reports") ->
+    @showReport divID, TuringEmailApp.Models.ContactsReport, TuringEmailApp.Views.Reports.ContactsReportView
 
   #################################################################
   ################### Sample Data Based Reports ###################

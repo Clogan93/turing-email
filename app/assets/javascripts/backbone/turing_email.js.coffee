@@ -164,16 +164,8 @@ window.TuringEmailApp = new(Backbone.View.extend({
     #/ call your function here
     ), 60000
 
-  showAnalytics: ->
-    analyticsView = new TuringEmailApp.Views.AnalyticsView(
-      el: $("#reports")
-    )
-
-    analyticsView.render()
-    
   showEmails: ->
-    $("#reports").hide()
-    $("#settings").hide()
+    @hideAll()
     
     $("#preview_panel").show()
     $(".mail-box-header").show()
@@ -189,37 +181,35 @@ window.TuringEmailApp = new(Backbone.View.extend({
     $("#email_table").hide()
     
   showSettings: ->
-    @hideEmails()
-    $("#reports").hide()
+    @hideAll()
+
     $("#settings").show()
     $(".main_email_list_content").css("height", "100%")
+
+  hideSettings: ->
+    $("#settings").hide()
     
-  showReport: ->
-    @hideEmails()
+  showReports: ->
+    @hideAll()
+
     $("#reports").show()
     $("#settings").hide()
     $(".main_email_list_content").css("height", "100%")
     
+  hideReports: ->
+    $("#reports").hide()
+
+  hideAll: ->
+    @hideEmails()
+    @hideReports()
+    @hideSettings()
+
 }))({el: document.body})
 
 TuringEmailApp.tattletale = new Tattletale('/api/v1/log.json')
 
-originalBackboneSync = Backbone.sync
-
-Backbone.sync = (method, model, options) ->
-  options = {} if not options
-  error = options.error if options.error?
-
-  options.error = (model, response, options) ->
-    error(model, response, options) if error?
-
-    TuringEmailApp.tattletale.log(response)
-    TuringEmailApp.tattletale.send()
-
-  originalBackboneSync(method, model, options)
-
 $(document).ajaxError((event, jqXHR, ajaxSettings, thrownError) ->
-  TuringEmailApp.tattletale.log(JSON.stringify(thrownError))
+  TuringEmailApp.tattletale.log(JSON.stringify(jqXHR))
   TuringEmailApp.tattletale.send()
 )
 

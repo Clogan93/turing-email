@@ -3,8 +3,8 @@
   // instantiates the pie chart, passes in the data and
   // draws it.
   function drawEmailVolumeCharts(incomingEmailData, outgoingEmailData) {
-    drawEmailVolumeChart(incomingEmailData, "incoming_email_volume_chart_div");
-    drawEmailVolumeChart(outgoingEmailData, "outgoing_email_volume_chart_div");
+    drawEmailVolumeChart(incomingEmailData, "incoming_email_data");
+    drawEmailVolumeChart(outgoingEmailData, "outgoing_email_data");
   }
 
   function drawEmailVolumeChart(email_data, div_id) {
@@ -39,6 +39,6 @@
   <h1 class="h1">Reports <small>top contacts</small></h1>
 </div>
 <div>
-  <div id="incoming_email_volume_chart_div" style="float: left;"></div>
-  <div id="outgoing_email_volume_chart_div" style="float: left;"></div>
+  <div id="incoming_email_data" style="float: left;"></div>
+  <div id="outgoing_email_data" style="float: left;"></div>
 </div>
