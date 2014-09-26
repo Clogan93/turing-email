@@ -22,7 +22,7 @@ describe "EmailFoldersRouter", ->
       @spy.restore()
 
     it "shows the inbox", ->
-      expect(@spy.calledWith("INBOX")).toBeTruthy()
+      expect(@spy).toHaveBeenCalledWith("INBOX")
 
   describe "email_folder/:emailFolderID", ->
     beforeEach ->
@@ -35,4 +35,4 @@ describe "EmailFoldersRouter", ->
       @spy.restore()
 
     it "shows the folder", ->
-      expect(@spy.calledWith(@folderName)).toBeTruthy()
+      expect(@spy).toHaveBeenCalledWith(@folderName)

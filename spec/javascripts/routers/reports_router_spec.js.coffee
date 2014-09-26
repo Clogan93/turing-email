@@ -31,7 +31,7 @@ describe "ReportsRouter", ->
       @spy.restore()
     
     it "shows an AttachmentsReportView", ->
-      expect(@spy.called).toBeTruthy()
+      expect(@spy).toHaveBeenCalled()
 
   describe "email_volume_report", ->
     beforeEach ->
@@ -42,7 +42,7 @@ describe "ReportsRouter", ->
       @spy.restore()
 
     it "shows an EmailVolumeReportView", ->
-      expect(@spy.called).toBeTruthy()
+      expect(@spy).toHaveBeenCalled()
 
   describe "geo_report", ->
     beforeEach ->
@@ -53,7 +53,7 @@ describe "ReportsRouter", ->
       @spy.restore()
 
     it "shows a GeoReportView", ->
-      expect(@spy.called).toBeTruthy()
+      expect(@spy).toHaveBeenCalled()
 
   describe "impact_report", ->
     beforeEach ->
@@ -64,7 +64,7 @@ describe "ReportsRouter", ->
       @spy.restore()
 
     it "shows an ImpactReportView", ->
-      expect(@spy.called).toBeTruthy()
+      expect(@spy).toHaveBeenCalled()
 
   describe "inbox_efficiency_report", ->
     beforeEach ->
@@ -75,7 +75,7 @@ describe "ReportsRouter", ->
       @spy.restore()
 
     it "shows an InboxEfficiencyReportView", ->
-      expect(@spy.called).toBeTruthy()
+      expect(@spy).toHaveBeenCalled()
 
   describe "lists_report", ->
     beforeEach ->
@@ -86,7 +86,7 @@ describe "ReportsRouter", ->
       @spy.restore()
 
     it "shows a ListsReportView", ->
-      expect(@spy.called).toBeTruthy()
+      expect(@spy).toHaveBeenCalled()
 
   describe "recommended_rules_report", ->
     beforeEach ->
@@ -97,7 +97,7 @@ describe "ReportsRouter", ->
       @spy.restore()
 
     it "shows a RecommendedRulesReportView", ->
-      expect(@spy.called).toBeTruthy()
+      expect(@spy).toHaveBeenCalled()
 
   describe "summary_analytics_report", ->
     beforeEach ->
@@ -108,7 +108,7 @@ describe "ReportsRouter", ->
       @spy.restore()
 
     it "shows a SummaryAnalyticsReportView", ->
-      expect(@spy.called).toBeTruthy()
+      expect(@spy).toHaveBeenCalled()
 
   describe "threads_report", ->
     beforeEach ->
@@ -119,7 +119,7 @@ describe "ReportsRouter", ->
       @spy.restore()
 
     it "shows a ThreadsReportView", ->
-      expect(@spy.called).toBeTruthy()
+      expect(@spy).toHaveBeenCalled()
 
   describe "top_contacts", ->
     beforeEach ->
@@ -130,7 +130,7 @@ describe "ReportsRouter", ->
       @spy.restore()
 
     it "shows a ContactsReportView", ->
-      expect(@spy.called).toBeTruthy()
+      expect(@spy).toHaveBeenCalled()
 
   describe "word_count_report", ->
     beforeEach ->
@@ -141,4 +141,4 @@ describe "ReportsRouter", ->
       @spy.restore()
 
     it "shows a WordCountReportView", ->
-      expect(@spy.called).toBeTruthy()
+      expect(@spy).toHaveBeenCalled()

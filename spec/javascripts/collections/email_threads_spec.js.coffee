@@ -18,7 +18,7 @@ describe "EmailThreadsCollection", ->
   it "should use the EmailThread model", ->
     expect(@emailThreadsCollection.model).toEqual TuringEmailApp.Models.EmailThread
 
-  it "should have the right url", ->
+  it "has the right url", ->
     expect(@emailThreadsCollection.url).toEqual @url
 
   describe "#fetch", ->

@@ -13,7 +13,7 @@ describe "AttachmentsReport", ->
   afterEach ->
     @server.restore()
 
-  it "should have the right url", ->
+  it "has the right url", ->
     expect(@attachmentsReport.url).toEqual @url
 
   describe "#fetch", ->

@@ -13,7 +13,7 @@ describe "EmailVolumeReport", ->
   afterEach ->
     @server.restore()
 
-  it "should have the right url", ->
+  it "has the right url", ->
     expect(@emailVolumeReport.url).toEqual @url
 
   describe "#fetch", ->

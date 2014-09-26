@@ -24,7 +24,7 @@ describe "EmailThreadsRouter", ->
       @spy.restore()
 
     it "shows the email thread", ->
-      expect(@spy.calledWith(@emailThreadUID)).toBeTruthy()
+      expect(@spy).toHaveBeenCalledWith(@emailThreadUID)
 
   describe "email_draft/:emailThreadUID", ->
     beforeEach ->
@@ -37,4 +37,4 @@ describe "EmailThreadsRouter", ->
       @spy.restore()
 
     it "shows the email editor with the email thread", ->
-      expect(@spy.calledWith(@emailThreadUID)).toBeTruthy()
+      expect(@spy).toHaveBeenCalledWith(@emailThreadUID)

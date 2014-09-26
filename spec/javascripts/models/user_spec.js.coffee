@@ -13,7 +13,7 @@ describe "User", ->
   afterEach ->
     @server.restore()
     
-  it "should have the right url", ->
+  it "has the right url", ->
     expect(@user.url).toEqual @url
 
   describe "#fetch", ->

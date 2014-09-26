@@ -13,7 +13,7 @@ describe "ImpactReport", ->
   afterEach ->
     @server.restore()
 
-  it "should have the right url", ->
+  it "has the right url", ->
     expect(@impactReport.url).toEqual @url
 
   describe "#fetch", ->

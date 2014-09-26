@@ -11,7 +11,7 @@ describe "EmailDraft", ->
   afterEach ->
     @server.restore()
 
-  it "should have the right url", ->
+  it "has the right url", ->
     expect(@emailDraft.url).toEqual @url
 
   describe "#sendDraft", ->

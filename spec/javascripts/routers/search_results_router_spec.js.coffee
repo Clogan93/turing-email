@@ -21,4 +21,4 @@ describe "SearchResultsRouter", ->
       @spy.restore()
 
     it "shows a ListView", ->
-      expect(@spy.called).toBeTruthy()
+      expect(@spy).toHaveBeenCalled()

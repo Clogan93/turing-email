@@ -21,4 +21,4 @@ describe "AnalyticsRouter", ->
       @spy.restore()
 
     it "shows an AnalyticsView", ->
-      expect(@spy.called).toBeTruthy()
+      expect(@spy).toHaveBeenCalled()

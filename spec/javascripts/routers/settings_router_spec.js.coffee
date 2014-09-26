@@ -30,4 +30,4 @@ describe "SettingsRouter", ->
       @spy.restore()
 
     it "shows a SettingsView", ->
-      expect(@spy.called).toBeTruthy()
+      expect(@spy).toHaveBeenCalled()

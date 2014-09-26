@@ -18,7 +18,7 @@ describe "EmailFoldersCollection", ->
   it "should use the EmailFolder model", ->
     expect(@emailFoldersCollection.model).toEqual TuringEmailApp.Models.EmailFolder
 
-  it "should have the right url", ->
+  it "has the right url", ->
     expect(@emailFoldersCollection.url).toEqual @url
 
   describe "#fetch", ->

@@ -24,7 +24,7 @@ class Api::V1::EmailRulesController < ApiController
     subject = params[:subject].blank? ? nil : params[:subject]
     list_id = params[:list_id].blank? ? nil : params[:list_id]
 
-    destination_folder_name = params[:destination_folder_name].blank? ? nil : params[:destination_folder_name]
+    destination_folder_name = params[:destination_folder_name]
 
     begin
       EmailRule.find_or_create_by!(:user => current_user,

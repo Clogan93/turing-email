@@ -32,6 +32,7 @@
 //
 //= require sinon
 //= require jasmine-sinon
+//= require support/jasmine-jquery-1.7.0
 //
 //= require ./unserialize.jquery.latest.js
 //= require ./spec_misc
