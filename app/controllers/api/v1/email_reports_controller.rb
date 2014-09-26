@@ -87,11 +87,11 @@ class Api::V1::EmailReportsController < ApiController
     contacts_report_stats = {
         :top_senders => current_user.emails.where('"emails"."id" NOT IN (?)', sent_emails_ids).
             group(:from_address).order('count_all DESC').limit(10).count,
-        :top_recipients => EmailRecipient.where(:email => sent_emails_ids).joins(:person).group(:email_address).
-            order('count_all DESC').limit(10).count,
-  
         :bottom_senders => current_user.emails.where('"emails"."id" NOT IN (?)', sent_emails_ids).
             group(:from_address).order('count_all ASC').limit(10).count,
+        
+        :top_recipients => EmailRecipient.where(:email => sent_emails_ids).joins(:person).group(:email_address).
+            order('count_all DESC').limit(10).count,
         :bottom_recipients => EmailRecipient.where(:email => sent_emails_ids).joins(:person).group(:email_address).
             order('count_all ASC').limit(10).count
     }

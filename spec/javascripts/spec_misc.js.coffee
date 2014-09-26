@@ -37,7 +37,7 @@ window.specStartTuringEmailApp = ->
     specStartedHistory = true
 
 window.validateAttributes = (objectJSON, expectedAttributes) ->
-  keys = (key for key in Object.keys(objectJSON))
+  keys = (key for key in _.keys(objectJSON))
   keys.sort()
 
   expectedAttributes = expectedAttributes.slice().sort()

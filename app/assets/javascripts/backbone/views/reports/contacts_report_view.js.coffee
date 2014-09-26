@@ -8,6 +8,23 @@ class TuringEmailApp.Views.Reports.ContactsReportView extends Backbone.View
     @listenTo(@model, "hide destroy", @remove)
 
   render: ->
+    googleChartData = @getGoogleChartData()
+
+    @$el.html(@template(googleChartData))
+
     TuringEmailApp.showReports()
-    @$el.html(@template(@model.toJSON()))
     return this
+
+  getGoogleChartData: ->
+    topSenders = @model.get("top_senders")
+    topRecipients = @model.get("top_recipients")
+    
+    data =
+      topSenders: [["Person", "Percent"]].concat(
+        _.zip(_.keys(topSenders), _.values(topSenders))
+      )
+      topRecipients: [["Person", "Percent"]].concat(
+        _.zip(_.keys(topRecipients), _.values(topRecipients))
+      )
+
+    return data

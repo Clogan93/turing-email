@@ -1,22 +1,20 @@
 { 
-  "valid": {
-    "average_file_size" : 200280,
+  "average_file_size" : 200280,
+  
+  "content_type_stats" : {
+    "image/png": {
+      "num_attachments": 14,
+      "average_file_size": 24711
+    },
     
-    "content_type_stats" : {
-      "image/png": {
-        "num_attachments": 14,
-        "average_file_size": 24711
-      },
-      
-      "application/msword": {
-        "num_attachments": 2,
-        "average_file_size": 1068192
-      },
-      
-      "application/pdf": {
-        "num_attachments": 2,
-        "average_file_size": 561352
-      }
+    "application/msword": {
+      "num_attachments": 2,
+      "average_file_size": 1068192
+    },
+    
+    "application/pdf": {
+      "num_attachments": 2,
+      "average_file_size": 561352
     }
   }
 }

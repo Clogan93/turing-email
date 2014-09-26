@@ -26,6 +26,13 @@
     
     chart.draw(dataTable, options);
   }
+
+  google.load("visualization", "1.0", {
+    callback: function() {
+      drawCharts()
+    },
+    packages:["corechart"]
+  })
   
   function humanizeFileSizeGChartAxis(chart, dataTable, options) {
     // get the axis values and reformat them
@@ -112,13 +119,6 @@
     
     return {suffix: suffix, formattedVal: formattedVal};
   }
-
-  google.load("visualization", "1.0", {
-    callback: function() {
-      drawCharts()
-    },
-    packages:["corechart"]
-  })
 %>
 
 <div class="page-header">

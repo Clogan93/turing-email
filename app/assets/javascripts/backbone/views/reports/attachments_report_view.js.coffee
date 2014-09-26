@@ -22,12 +22,12 @@ class TuringEmailApp.Views.Reports.AttachmentsReportView extends Backbone.View
     data =
       averageFileSize: @model.get("average_file_size")
       numAttachmentsGChartData: [["Attachment Type", "Number of Attachments"]].concat(
-        _.zip(Object.keys(reducedContentTypeStats), _.pluck(reducedContentTypeStats, "numAttachments")).sort((a,b) ->
+        _.zip(_.keys(reducedContentTypeStats), _.pluck(reducedContentTypeStats, "numAttachments")).sort((a,b) ->
           a[0].localeCompare(b[0])
         )
       )
       averageFileSizeGChartData: [["Attachment Type", "Average File Size"]].concat(
-        _.zip(Object.keys(reducedContentTypeStats), _.pluck(reducedContentTypeStats, "averageFileSize")).sort((a,b) ->
+        _.zip(_.keys(reducedContentTypeStats), _.pluck(reducedContentTypeStats, "averageFileSize")).sort((a,b) ->
           a[0].localeCompare(b[0])
         )
       )

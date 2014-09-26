@@ -1,7 +1,7 @@
 describe "AttachmentsReport", ->
   beforeEach ->
     attachmentsReportFixtures = fixture.load("reports/attachments_report.fixture.json", true);
-    @validAttachmentsReportFixture = attachmentsReportFixtures[0]["valid"]
+    @validAttachmentsReportFixture = attachmentsReportFixtures[0]
 
     @attachmentsReport = new TuringEmailApp.Models.AttachmentsReport()
 
