@@ -17,9 +17,9 @@ describe "ReportsRouter", ->
     expect(@reportsRouter.routes["inbox_efficiency_report"]).toEqual "showInboxEfficiencyReport"
     expect(@reportsRouter.routes["lists_report"]).toEqual "showListsReport"
     expect(@reportsRouter.routes["recommended_rules_report"]).toEqual "showRecommendedRulesReport"
+    expect(@reportsRouter.routes["summary_analytics_report"]).toEqual "showSummaryAnalyticsReport"
     expect(@reportsRouter.routes["threads_report"]).toEqual "showThreadsReport"
     expect(@reportsRouter.routes["top_contacts"]).toEqual "showTopContactsReport"
-    expect(@reportsRouter.routes["summary_analytics_report"]).toEqual "showSummaryAnalyticsReport"
     expect(@reportsRouter.routes["word_count_report"]).toEqual "showWordCountReport"
 
   describe "attachments_report", ->
@@ -99,6 +99,17 @@ describe "ReportsRouter", ->
     it "shows a RecommendedRulesReportView", ->
       expect(@spy.called).toBeTruthy()
 
+  describe "summary_analytics_report", ->
+    beforeEach ->
+      @spy = sinon.spy(TuringEmailApp.Views.Reports, "SummaryAnalyticsReportView")
+      @reportsRouter.navigate "summary_analytics_report", trigger: true
+
+    afterEach ->
+      @spy.restore()
+
+    it "shows a SummaryAnalyticsReportView", ->
+      expect(@spy.called).toBeTruthy()
+
   describe "threads_report", ->
     beforeEach ->
       @spy = sinon.spy(TuringEmailApp.Views.Reports, "ThreadsReportView")
@@ -119,17 +130,6 @@ describe "ReportsRouter", ->
       @spy.restore()
 
     it "shows a ContactsReportView", ->
-      expect(@spy.called).toBeTruthy()
-
-  describe "summary_analytics_report", ->
-    beforeEach ->
-      @spy = sinon.spy(TuringEmailApp.Views.Reports, "SummaryAnalyticsReportView")
-      @reportsRouter.navigate "summary_analytics_report", trigger: true
-
-    afterEach ->
-      @spy.restore()
-
-    it "shows a SummaryAnalyticsReportView", ->
       expect(@spy.called).toBeTruthy()
 
   describe "word_count_report", ->
