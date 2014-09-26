@@ -8,6 +8,25 @@ class TuringEmailApp.Views.Reports.GeoReportView extends Backbone.View
     @listenTo(@model, "hide destroy", @remove)
 
   render: ->
+    googleChartData = @getGoogleChartData()
+
+    @$el.html(@template(googleChartData))
+
     TuringEmailApp.showReports()
-    @$el.html(@template(@model.get("data")))
     return this
+
+  getGoogleChartData: ->
+    ipStats = @model.get("ip_stats")
+
+    cityStats = {}
+    
+    for ipStat in ipStats
+      cityStats[ipStat.ip_info.city] ?= 0
+      cityStats[ipStat.ip_info.city] += ipStat.num_emails
+    
+    data =
+      cityStats: [["City", "Number of Emails"]].concat(
+        _.zip(_.keys(cityStats), _.values(cityStats))
+      )
+
+    return data

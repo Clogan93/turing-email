@@ -1,22 +1,22 @@
 <%
-  function drawRegionsMap(geoData) {
-
-    var data = google.visualization.arrayToDataTable(geoData);
-
+  function drawGeoChart(divID) {
     var options = {
       region: 'US',
       displayMode: 'markers'
     };
 
-    var chart = new google.visualization.GeoChart(document.getElementById('geo_chart_div'));
+    var chart = new google.visualization.GeoChart($("#" + divID)[0]);
+    var dataTable = google.visualization.arrayToDataTable(obj.cityStats);
 
-    chart.draw(data, options);
+    chart.draw(dataTable, options);
   }
 
-  google.load('visualization', '1.0',
-              {'callback': function() {drawRegionsMap(obj.geoData); },
-              'packages':['corechart']}
-              )
+  google.load('visualization', '1.0', {
+    callback: function() {
+      drawGeoChart("geo_chart_div");
+    },
+    packages: ['corechart']
+  })
 %>
 
 <div class="page-header">
