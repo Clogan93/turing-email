@@ -1,4 +1,11 @@
 class TuringEmailApp.Models.EmailThread extends Backbone.Model
+  validation:
+    uid:
+      required: true
+
+    emails:
+      required: true
+
   initialize: (attributes) ->
     if attributes?.emailThreadUID
       @url = "/api/v1/email_threads/show/" + attributes.emailThreadUID
@@ -20,9 +27,3 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
       url: url
       data: postData
       dataType : "json"
-
-  uid:
-    required: true
-
-  emails:
-    required: true
