@@ -1,46 +1,25 @@
-describe "Attachments report model", ->
-
+describe "AttachmentsReport", ->
   beforeEach ->
-    @attachments_report = new TuringEmailApp.Models.AttachmentsReport()
+    attachmentsReportFixtures = fixture.load("reports/attachments_report.fixture.json", true);
+    @validAttachmentsReportFixture = attachmentsReportFixtures[0]["valid"]
 
-  it "should exist", ->
-    expect(TuringEmailApp.Models.AttachmentsReport).toBeDefined()
+    @attachmentsReport = new TuringEmailApp.Models.AttachmentsReport()
+
+    @server = sinon.fakeServer.create()
+
+    @url = "/api/v1/email_reports/attachments_report"
+    @server.respondWith "GET", @url, JSON.stringify(@validAttachmentsReportFixture)
+
+  afterEach ->
+    @server.restore()
 
   it "should have the right url", ->
-    expect(@attachments_report.url).toEqual '/api/v1/email_reports/attachments_report'
+    expect(@attachmentsReport.url).toEqual @url
 
-  describe "when instantiated using fetch with data from the server", ->
-
+  describe "#fetch", ->
     beforeEach ->
-      @fixtures = fixture.load("reports/attachments_report.fixture.json", true);
-
-      @attachmentReport = @fixtures[0]
-      @server = sinon.fakeServer.create()
-      @server.respondWith "GET", "/api/v1/email_reports/attachments_report", JSON.stringify(@attachmentReport)
-
-      @attachmentReport = @attachments_report.parse @attachmentReport
-      return
-
-    afterEach ->
-      @server.restore()
-
-    it "should make the correct request", ->
-      @attachments_report.fetch()
-      expect(@server.requests.length).toEqual 1
-      expect(@server.requests[0].method).toEqual "GET"
-      expect(@server.requests[0].url).toEqual "/api/v1/email_reports/attachments_report"
-      return
-
-    it "should parse the attributes from the response", ->
-      @attachments_report.fetch()
+      @attachmentsReport.fetch()
       @server.respond()
 
-      expect(@attachments_report.get("data")).toEqual @attachmentReport.data
-      return
-
-    it "should have the attributes", ->
-      @attachments_report.fetch()
-      @server.respond()
-      
-      expect(@attachments_report.get("data")).toBeDefined()
-      return
+    it "loads the attachments report", ->
+      validateAttributes(@attachmentsReport.toJSON(), ["average_file_size", "content_type_stats"])

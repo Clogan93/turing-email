@@ -1,40 +1,121 @@
 <%
-  function drawCharts(numAttachmentsData, averageFileSizeAttachmentsData) {
-    drawChart(numAttachmentsData, 'num_attachments_chart_div', "Number of Attachments", "Number of Attachments");
-    drawChart(averageFileSizeAttachmentsData, 'average_file_size_chart_div', "Attachment File Size", "Average File Size");
+  function drawCharts() {
+    drawChart(obj.numAttachmentsGChartData, 'num_attachments_chart_div', "Number of Attachments");
+    drawChart(obj.averageFileSizeGChartData, 'average_file_size_chart_div', "Average File Size", true);
   }
 
-  function humanFileSize(bytes, si) {
-      var thresh = si ? 1000 : 1024;
-      if(bytes < thresh) return bytes + ' B';
-      var units = si ? ['kB','MB','GB','TB','PB','EB','ZB','YB'] : ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
-      var u = -1;
-      do {
-          bytes /= thresh;
-          ++u;
-      } while(bytes >= thresh);
-      return bytes.toFixed(1)+' '+units[u];
-  };
-
-  function drawChart(attachmentData, divId, chartTitle, vAxisTitle) {
-    var data = google.visualization.arrayToDataTable(attachmentData);
+  function drawChart(data, divID, chartTitle, humanizeFileSize) {
+    if (humanizeFileSize == null) {
+      humanizeFileSize = false;
+    }
 
     var options = {
       title: chartTitle,
       legend: {position: 'none'},
-      hAxis: {title: 'Attachment Type', titleTextStyle: {color: 'black'}},
-      vAxis: {title: vAxisTitle, titleTextStyle: {color: 'black'}}
+      hAxis: {titleTextStyle: {color: 'black'}},
+      vAxis: {titleTextStyle: {color: 'black'}}
     };
 
-    var chart = new google.visualization.ColumnChart(document.getElementById(divId));
+    var chart = new google.visualization.ColumnChart($("#" + divID)[0]);
+    var dataTable = google.visualization.arrayToDataTable(data);
+    
+    if (humanizeFileSize) {
+      humanizeFileSizeGChartData(dataTable);
+      humanizeFileSizeGChartAxis(chart, dataTable, options);
+    }
+    
+    chart.draw(dataTable, options);
+  }
+  
+  function humanizeFileSizeGChartAxis(chart, dataTable, options) {
+    // get the axis values and reformat them
+    var runOnce = google.visualization.events.addListener(chart, 'ready', function () {
+      google.visualization.events.removeListener(runOnce);
+      
+      var boundingBox, val, formattedVal, suffix, ticks = [], cli = chart.getChartLayoutInterface();
+      
+      for (var i = 0; boundingBox = cli.getBoundingBox('vAxis#0#gridline#' + i); i++) {
+        val = cli.getVAxisValue(boundingBox.top);
+        // sometimes, the axis value falls 1/2 way though the pixel height of the gridline,
+        // so we need to add in 1/2 the height
+        // this assumes that all axis values will be integers
+        if (val != parseInt(val)) {
+          val = cli.getVAxisValue(boundingBox.top + boundingBox.height / 2);
+        }
 
-    chart.draw(data, options);
+        // convert from base-10 counting to 2^10 counting
+        for (var fileSizePower = 0; val >= 1000; fileSizePower++) {
+          val /= 1000;
+        }
+        formattedVal = val;
+        val *= Math.pow(1024, fileSizePower);
 
+        var fileSizeInfo = getFileSizeSuffix(fileSizePower, formattedVal);
+        suffix = fileSizeInfo.suffix;
+        formattedVal = fileSizeInfo.formattedVal;
+
+        ticks.push({v: val, f: formattedVal + suffix});
+      }
+
+      options.vAxis = options.vAxis || {};
+      options.vAxis.ticks = ticks;
+      chart.draw(dataTable, options);
+    });
+  }
+  
+  function humanizeFileSizeGChartData(data) {
+    // custom format data values
+    for (var i = 0; i < data.getNumberOfRows(); i++) {
+      var val = data.getValue(i, 1);
+      var suffix;
+      for (var fileSizePower = 0, formattedVal = val; formattedVal >= 1024; fileSizePower++) {
+        formattedVal /= 1024;
+      }
+
+      var fileSizeInfo = getFileSizeSuffix(fileSizePower, formattedVal);
+      suffix = fileSizeInfo.suffix;
+      formattedVal = fileSizeInfo.formattedVal;
+
+      // round to nearest decimal
+      formattedVal = (Math.round(formattedVal * 10) / 10) + suffix;
+      data.setFormattedValue(i, 1, formattedVal);
+    }
+  };
+  
+  function getFileSizeSuffix(fileSizePower, formattedVal) {
+    switch (fileSizePower) {
+      case 0:
+        suffix = 'B';
+        break;
+      
+      case 1:
+        suffix = 'KB';
+        break;
+      
+      case 2:
+        suffix = 'MB';
+        break;
+      
+      case 3:
+        suffix = 'GB';
+        break;
+      
+      default:
+        // format to GB
+        while (fileSizePower > 3) {
+          formattedVal *= 1024;
+          fileSizePower--;
+        }
+              
+        suffix = 'GB'
+    }
+    
+    return {suffix: suffix, formattedVal: formattedVal};
   }
 
   google.load("visualization", "1.0", {
     callback: function() {
-      drawCharts(data.numAttachmentsData, data.averageFileSizeAttachmentsData)
+      drawCharts()
     },
     packages:["corechart"]
   })
@@ -43,5 +124,6 @@
 <div class="page-header">
   <h1 class="h1">Reports <small>attachments</small></h1>
 </div>
+
 <div id="num_attachments_chart_div" style="width: 900px; height: 500px;"></div>
 <div id="average_file_size_chart_div" style="width: 900px; height: 500px;"></div>
