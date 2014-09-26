@@ -5,13 +5,13 @@ class Api::V1::EmailReportsController < ApiController
 
   swagger_controller :email_reports, 'Email Reports Controller'
 
-  swagger_api :ip_stats do
+  swagger_api :ip_stats_report do
     summary 'Return email sender IP stats.'
   
     response :ok
   end
   
-  def ip_stats
+  def ip_stats_report
     email_ip_info_counts = current_user.emails.group(:ip_info_id).count
     ip_infos = IpInfo.where(:id => email_ip_info_counts.keys)
   

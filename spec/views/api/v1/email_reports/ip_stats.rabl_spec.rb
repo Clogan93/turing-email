@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'api/v1/email_reports/ip_stats', :type => :view do
+describe 'api/v1/email_reports/ip_stats_report', :type => :view do
   let(:ip_infos) { FactoryGirl.create_list(:ip_info, SpecMisc::MEDIUM_LIST_SIZE) }
   let(:email_ip_stats) do
     num_emails = 0

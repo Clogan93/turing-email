@@ -23,5 +23,6 @@
 //= require backbone_rails_sync
 //= require backbone_datalink
 //= require backbone/turing_email
+//= require backbone-validation
 //
 //= require_tree .

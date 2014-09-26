@@ -54,7 +54,7 @@ Rails.application.routes.draw do
       post '/email_threads/remove_from_folder', to: 'email_threads#remove_from_folder'
       post '/email_threads/trash', to: 'email_threads#trash'
       
-      get '/email_reports/ip_stats', to: 'email_reports#ip_stats'
+      get '/email_reports/ip_stats_report', to: 'email_reports#ip_stats_report'
       get '/email_reports/volume_report', to: 'email_reports#volume_report'
       get '/email_reports/contacts_report', to: 'email_reports#contacts_report'
       get '/email_reports/attachments_report', to: 'email_reports#attachments_report'

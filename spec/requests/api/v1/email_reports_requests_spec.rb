@@ -1,14 +1,14 @@
 require 'rails_helper'
 
 describe Api::V1::EmailsController, :type => :request do
-  describe '#ip_stats' do
+  describe '#ip_stats_report' do
     let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
     
     context 'no emails' do
       before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
 
       it 'should return email sender IP statistics' do
-        get '/api/v1/email_reports/ip_stats'
+        get '/api/v1/email_reports/ip_stats_report'
         email_ip_stats = JSON.parse(response.body)
         expect(email_ip_stats.length).to eq(0)
       end
@@ -27,7 +27,7 @@ describe Api::V1::EmailsController, :type => :request do
       before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
       
       it 'should return email sender IP statistics' do
-        get '/api/v1/email_reports/ip_stats'
+        get '/api/v1/email_reports/ip_stats_report'
         email_ip_stats = JSON.parse(response.body)
         expect(email_ip_stats.length).to eq(2)
   

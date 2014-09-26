@@ -1,47 +1,25 @@
-describe "Geo report model", ->
-
+describe "GeoReport", ->
   beforeEach ->
-    @geo_report = new TuringEmailApp.Models.GeoReport()
+    geoReportFixtures = fixture.load("reports/geo_report.fixture.json", true);
+    @validGeoReportFixture = geoReportFixtures[0]
 
-  it "should exist", ->
-    expect(TuringEmailApp.Models.GeoReport).toBeDefined()
+    @geoReport = new TuringEmailApp.Models.GeoReport()
+
+    @server = sinon.fakeServer.create()
+
+    @url = "/api/v1/email_reports/ip_stats_report"
+    @server.respondWith "GET", @url, JSON.stringify(@validGeoReportFixture)
+
+  afterEach ->
+    @server.restore()
 
   it "should have the right url", ->
-    expect(@geo_report.url).toEqual '/api/v1/email_reports/ip_stats'
+    expect(@geoReport.url).toEqual @url
 
-  describe "when instantiated using fetch with data from the server", ->
-
+  describe "#fetch", ->
     beforeEach ->
-      @fixtures = fixture.load("reports/geo_report.fixture.json", true);
-
-      @geoReport = @fixtures[0]
-
-      @server = sinon.fakeServer.create()
-      @server.respondWith "GET", "/api/v1/email_reports/ip_stats", JSON.stringify(@geoReport)
-
-      @geoReport = @geo_report.parse @geoReport
-      return
-
-    afterEach ->
-      @server.restore()
-
-    it "should make the correct request", ->
-      @geo_report.fetch()
-      expect(@server.requests.length).toEqual 1
-      expect(@server.requests[0].method).toEqual "GET"
-      expect(@server.requests[0].url).toEqual "/api/v1/email_reports/ip_stats"
-      return
-
-    it "should parse the attributes from the response", ->
-      @geo_report.fetch()
+      @geoReport.fetch()
       @server.respond()
 
-      expect(@geo_report.get("data")).toEqual @geoReport.data
-      return
-
-    it "should have the attributes", ->
-      @geo_report.fetch()
-      @server.respond()
-
-      expect(@geo_report.get("data")).toBeDefined()
-      return
+    it "loads the contacts report", ->
+      validateAttributes(@geoReport.toJSON(), ["ip_stats"])
