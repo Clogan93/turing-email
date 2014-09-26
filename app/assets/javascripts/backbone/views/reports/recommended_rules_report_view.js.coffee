@@ -7,20 +7,20 @@ class TuringEmailApp.Views.Reports.RecommendedRulesReportView extends Backbone.V
     @listenTo(@model, "change", @render)
     @listenTo(@model, "hide destroy", @remove)
 
+  render: ->
+    @$el.html(@template(@model.toJSON()))
+    @setupRecommendedRulesLinks()
+
+    TuringEmailApp.showReports()
+    return this
+
   setupRecommendedRulesLinks: ->
     $(".rule_recommendation_link").click (event) ->
       event.preventDefault()
 
-      $(@).parent().append('<br /><div class="col-md-4 alert alert-success" role="alert">You have successfully created an email rule!</div>')
+      $(@).parent().append('<br />
+                            <div class="col-md-4 alert alert-success" role="alert">
+                              You have successfully created an email rule!
+                            </div>')
       $(@).hide()
-      $.post "/api/v1/email_rules", { list_id: $(@).attr("href"), destination_folder: $(@).text() }, (data) =>
-        return
-
-  render: ->
-    TuringEmailApp.showReports()
-
-    @$el.html(@template(@model.toJSON()))
-
-    @setupRecommendedRulesLinks()
-
-    return this
+      $.post "/api/v1/email_rules", { list_id: $(@).attr("href"), destination_folder: $(@).text() }

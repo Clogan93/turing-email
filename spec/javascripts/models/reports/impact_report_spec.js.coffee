@@ -1,45 +1,25 @@
-describe "Impact report model", ->
-
+describe "ImpactReport", ->
   beforeEach ->
-    @impact_report = new TuringEmailApp.Models.ImpactReport()
+    impactFixtures = fixture.load("reports/impact_report.fixture.json", true);
+    @impactFixture = impactFixtures[0]
 
-  it "should exist", ->
-    expect(TuringEmailApp.Models.ImpactReport).toBeDefined()
+    @impactReport = new TuringEmailApp.Models.ImpactReport()
+
+    @server = sinon.fakeServer.create()
+
+    @url = "/api/v1/email_reports/impact_report"
+    @server.respondWith "GET", @url, JSON.stringify(@impactFixture)
+
+  afterEach ->
+    @server.restore()
 
   it "should have the right url", ->
-    expect(@impact_report.url).toEqual '/api/v1/email_reports/impact_report'
+    expect(@impactReport.url).toEqual @url
 
-  describe "when instantiated using fetch with data from the server", ->
-
+  describe "#fetch", ->
     beforeEach ->
-      @fixtures = fixture.load("reports/impact_report.fixture.json", true);
-
-      @impactReport = @fixtures[0]
-
-      @server = sinon.fakeServer.create()
-      @server.respondWith "GET", "/api/v1/email_reports/impact_report", JSON.stringify(@impactReport)
-      return
-
-    afterEach ->
-      @server.restore()
-
-    it "should make the correct request", ->
-      @impact_report.fetch()
-      expect(@server.requests.length).toEqual 1
-      expect(@server.requests[0].method).toEqual "GET"
-      expect(@server.requests[0].url).toEqual "/api/v1/email_reports/impact_report"
-      return
-
-    it "should parse the attributes from the response", ->
-      @impact_report.fetch()
+      @impactReport.fetch()
       @server.respond()
 
-      expect(@impact_report.get("percent_sent_emails_replied_to")).toEqual @impactReport.percent_sent_emails_replied_to
-      return
-
-    it "should have the attributes", ->
-      @impact_report.fetch()
-      @server.respond()
-
-      expect(@impact_report.get("percent_sent_emails_replied_to")).toBeDefined()
-      return
+    it "loads the contacts report", ->
+      validateAttributes(@impactReport.toJSON(), ["percent_sent_emails_replied_to"])

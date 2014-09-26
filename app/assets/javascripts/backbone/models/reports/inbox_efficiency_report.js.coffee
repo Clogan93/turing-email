@@ -1,4 +1,11 @@
 class TuringEmailApp.Models.InboxEfficiencyReport extends Backbone.Model
+  validation:
+    average_response_time_in_minutes:
+      required: true
+    
+    percent_archived:
+      required: true
+    
   fetch: (options) ->
     attributes =
       average_response_time_in_minutes: 7.5

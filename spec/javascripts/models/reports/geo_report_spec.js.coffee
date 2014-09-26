@@ -1,14 +1,14 @@
 describe "GeoReport", ->
   beforeEach ->
     geoReportFixtures = fixture.load("reports/geo_report.fixture.json", true);
-    @validGeoReportFixture = geoReportFixtures[0]
+    @geoReportFixture = geoReportFixtures[0]
 
     @geoReport = new TuringEmailApp.Models.GeoReport()
 
     @server = sinon.fakeServer.create()
 
     @url = "/api/v1/email_reports/ip_stats_report"
-    @server.respondWith "GET", @url, JSON.stringify(@validGeoReportFixture)
+    @server.respondWith "GET", @url, JSON.stringify(@geoReportFixture)
 
   afterEach ->
     @server.restore()

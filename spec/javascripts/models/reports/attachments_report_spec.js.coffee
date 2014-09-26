@@ -1,14 +1,14 @@
 describe "AttachmentsReport", ->
   beforeEach ->
     attachmentsReportFixtures = fixture.load("reports/attachments_report.fixture.json", true);
-    @validAttachmentsReportFixture = attachmentsReportFixtures[0]
+    @attachmentsReportFixture = attachmentsReportFixtures[0]
 
     @attachmentsReport = new TuringEmailApp.Models.AttachmentsReport()
 
     @server = sinon.fakeServer.create()
 
     @url = "/api/v1/email_reports/attachments_report"
-    @server.respondWith "GET", @url, JSON.stringify(@validAttachmentsReportFixture)
+    @server.respondWith "GET", @url, JSON.stringify(@attachmentsReportFixture)
 
   afterEach ->
     @server.restore()

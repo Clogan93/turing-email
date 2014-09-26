@@ -1,14 +1,14 @@
 describe "ContactsReport", ->
   beforeEach ->
     contactsReportFixtures = fixture.load("reports/contacts_report.fixture.json", true);
-    @validContactsReportFixture = contactsReportFixtures[0]
+    @contactsReportFixture = contactsReportFixtures[0]
 
     @contactsReport = new TuringEmailApp.Models.ContactsReport()
 
     @server = sinon.fakeServer.create()
 
     @url = "/api/v1/email_reports/contacts_report"
-    @server.respondWith "GET", @url, JSON.stringify(@validContactsReportFixture)
+    @server.respondWith "GET", @url, JSON.stringify(@contactsReportFixture)
 
   afterEach ->
     @server.restore()

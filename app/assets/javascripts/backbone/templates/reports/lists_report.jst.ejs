@@ -3,14 +3,14 @@
 </div>
 
 <%
-function print_list_stats_rows(list_stats) {
-  if (list_stats[0] != null && list_stats[0] != "") { %>
-    <td><%= list_stats[0] %></td>
+function printListStatsRows(listStats) {
+  if (listStats[0] != null && listStats[0] != "") { %>
+    <td><%= listStats[0] %></td>
   <% } else { %>
-    <td><%= list_stats[1] %></td>
+    <td><%= listStats[1] %></td>
 <%   } %>
 
-    <td><%= list_stats[2] %></td>
+    <td><%= listStats[2] %></td>
 <%
 }
 %>
@@ -21,7 +21,7 @@ function print_list_stats_rows(list_stats) {
   <table>
     <% for(var i=0; i < lists_email_daily_average.length; i++) {%>
       <tr>
-        <% print_list_stats_rows(lists_email_daily_average[i]) %>
+        <% printListStatsRows(lists_email_daily_average[i]) %>
       </tr>
     <% } %>
   </table>
@@ -30,7 +30,7 @@ function print_list_stats_rows(list_stats) {
   <table>
     <% for(var i=0; i < emails_per_list.length; i++) {%>
       <tr>
-        <% print_list_stats_rows(emails_per_list[i]) %>
+        <% printListStatsRows(emails_per_list[i]) %>
       </tr>
     <% } %>
   </table>
@@ -39,7 +39,7 @@ function print_list_stats_rows(list_stats) {
   <table>
     <% for(var i=0; i < email_threads_per_list.length; i++) {%>
       <tr>
-        <% print_list_stats_rows(email_threads_per_list[i]) %>
+        <% printListStatsRows(email_threads_per_list[i]) %>
       </tr>
     <% } %>
   </table>
@@ -48,7 +48,7 @@ function print_list_stats_rows(list_stats) {
   <table>
     <% for(var i=0; i < email_threads_replied_to_per_list.length; i++) {%>
       <tr>
-        <% print_list_stats_rows(email_threads_replied_to_per_list[i]) %>
+        <% printListStatsRows(email_threads_replied_to_per_list[i]) %>
       </tr>
     <% } %>
   </table>
@@ -57,7 +57,7 @@ function print_list_stats_rows(list_stats) {
   <table>
     <% for(var i=0; i < sent_emails_per_list.length; i++) {%>
       <tr>
-        <% print_list_stats_rows(sent_emails_per_list[i]) %>
+        <% printListStatsRows(sent_emails_per_list[i]) %>
       </tr>
     <% } %>
   </table>
@@ -67,7 +67,7 @@ function print_list_stats_rows(list_stats) {
     <% for(var i=0; i < sent_emails_replied_to_per_list.length; i++) { %>
       <% if (sent_emails_replied_to_per_list[i].length > 0) { %>
         <tr>
-          <% print_list_stats_rows(sent_emails_replied_to_per_list[i]) %>
+          <% printListStatsRows(sent_emails_replied_to_per_list[i]) %>
         </tr>
       <% } %>
     <% } %>

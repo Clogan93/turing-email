@@ -82,7 +82,7 @@ class Api::V1::EmailRulesController < ApiController
       rules_recommended << { :list_id => list_id, :destination_folder_name => "List Emails/#{subfolder}" }
     end
 
-    render :json => rules_recommended
+    render :json => { :rules_recommended => rules_recommended }
   end
   
   private
