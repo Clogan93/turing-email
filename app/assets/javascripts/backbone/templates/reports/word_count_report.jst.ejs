@@ -1,25 +1,27 @@
 <%
-  function drawChart(wordCountData) {
-    var data = google.visualization.arrayToDataTable(wordCountData);
-
+  function drawChart(data, divID, chartTitle) {
     var options = {
-      title: 'Word Count',
-      hAxis: {title: 'words', titleTextStyle: {color: 'black'}},
-      vAxis: {title: '% of messages', titleTextStyle: {color: 'black'}}
+      title: chartTitle,
+      hAxis: {titleTextStyle: {color: 'black'}},
+      vAxis: {titleTextStyle: {color: 'black'}}
     };
-
-    var chart = new google.visualization.ColumnChart(document.getElementById('word_count_chart_div'));
-
-    chart.draw(data, options);
+  
+    var chart = new google.visualization.ColumnChart($("#" + divID)[0]);
+    var dataTable = google.visualization.arrayToDataTable(data);
+  
+    chart.draw(dataTable, options);
   }
 
-  google.load('visualization', '1.0',
-              {'callback': function() {drawChart(obj.wordCountData); },
-              'packages':['corechart']});
+  google.load("visualization", "1.0", {
+    callback: function() {
+      drawCharts(obj.wordCountsGChartData, "word_count_chart_div", "Word Counts")
+    },
+    packages:["corechart"]
+  })
 %>
 
 <div class="page-header">
-  <h1 class="h1">Reports <small>word count</small></h1>
+  <h1 class="h1">Reports <small>word counts</small></h1>
 </div>
 
 <div id="word_count_chart_div" style="width: 900px; height: 500px;"></div>

@@ -1,58 +1,29 @@
 <%
-  // Callback that creates and populates a data table,
-  // instantiates the pie chart, passes in the data and
-  // draws it.
-  function drawCharts(dailyEmailVolumeData, weeklyEmailVolumeData, monthlyEmailVolumeData) {
-    drawMonthlyEmailVolumeChart(monthlyEmailVolumeData);
-    drawWeeklyEmailVolumeChart(weeklyEmailVolumeData);
-    drawDailyEmailVolumeChart(dailyEmailVolumeData);
+  function drawCharts() {
+    drawChart(obj.emailsPerDayGChartData, "emails_per_day_chart_div", "Daily Email Volume");
+    drawChart(obj.emailsPerWeekGChartData, "emails_per_week_chart_div", "Weekly Email Volume");
+    drawChart(obj.emailsPerMonthGChartData, "emails_per_month_chart_div", "Monthly Email Volume");
   }
 
-  function drawMonthlyEmailVolumeChart(emailVolumeData) {
-    var data = google.visualization.arrayToDataTable(emailVolumeData.data);
-
+  function drawChart(data, divID, chartTitle) {
     var options = {
-      title: 'Monthly Email Volume',
-      hAxis: {title: 'Month',  titleTextStyle: {color: '#333'}},
+      title: chartTitle,
+      hAxis: {titleTextStyle: {color: '#333'}},
       vAxis: {minValue: 0}
     };
 
-    var chart = new google.visualization.AreaChart(document.getElementById('monthly_chart_div'));
-    chart.draw(data, options);
+    var chart = new google.visualization.AreaChart($("#" + divID)[0]);
+    var dataTable = google.visualization.arrayToDataTable(data);
+
+    chart.draw(dataTable, options);
   }
 
-  function drawWeeklyEmailVolumeChart(emailVolumeData) {
-    var data = google.visualization.arrayToDataTable(emailVolumeData.data);
-
-    var options = {
-      title: 'Weekly Email Volume',
-      hAxis: {title: 'Week',  titleTextStyle: {color: '#333'}},
-      vAxis: {minValue: 0}
-    };
-
-    var chart = new google.visualization.AreaChart(document.getElementById('weekly_chart_div'));
-    chart.draw(data, options);
-  }
-
-  function drawDailyEmailVolumeChart(emailVolumeData) {
-    var data = google.visualization.arrayToDataTable(emailVolumeData.data);
-
-    var options = {
-      title: 'Daily Email Volume',
-      hAxis: {title: 'Day',  titleTextStyle: {color: '#333'}},
-      vAxis: {minValue: 0}
-    };
-
-    var chart = new google.visualization.AreaChart(document.getElementById('daily_chart_div'));
-    chart.draw(data, options);
-  }
-
-  // Load the Visualization API and the piechart package, and set a callback to run when the Google Visualization API is loaded.
-
-  google.load('visualization', '1.0',
-              {'callback': function() {drawCharts(obj.dailyEmailVolumeData, obj.weeklyEmailVolumeData, obj.monthlyEmailVolumeData); },
-              'packages':['corechart']}
-              );
+  google.load("visualization", "1.0", {
+    callback: function() {
+      drawCharts()
+    },
+    packages:["corechart"]
+  })
 %>
 
 <div class="page-header">
@@ -60,7 +31,7 @@
 </div>
 
 <div>
-  <div id="daily_chart_div" style="width: 900px; height: 500px;"></div>
-  <div id="weekly_chart_div" style="width: 900px; height: 500px;"></div>
-  <div id="monthly_chart_div" style="width: 900px; height: 500px;"></div>
+  <div id="emails_per_day_chart_div" style="width: 900px; height: 500px;"></div>
+  <div id="emails_per_week_chart_div" style="width: 900px; height: 500px;"></div>
+  <div id="emails_per_month_chart_div" style="width: 900px; height: 500px;"></div>
 </div>

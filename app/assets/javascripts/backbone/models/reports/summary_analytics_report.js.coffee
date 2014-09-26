@@ -1,4 +1,14 @@
 class TuringEmailApp.Models.SummaryAnalyticsReport extends Backbone.Model
+  validation:
+    number_of_conversations:
+      required: true
+
+    number_of_emails_received:
+      required: true
+
+    number_of_emails_sent:
+      required: true
+  
   fetch: (options) ->
     attributes = 
       number_of_conversations: 824

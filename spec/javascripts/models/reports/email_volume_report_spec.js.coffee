@@ -1,52 +1,27 @@
-describe "Email volume report model", ->
-
+describe "EmailVolumeReport", ->
   beforeEach ->
-    @email_volume_report = new TuringEmailApp.Models.EmailVolumeReport()
+    emailVolumeReportFixtures = fixture.load("reports/email_volume_report.fixture.json", true);
+    @emailVolumeReportFixture = emailVolumeReportFixtures[0]
 
-  it "should exist", ->
-    expect(TuringEmailApp.Models.EmailVolumeReport).toBeDefined()
+    @emailVolumeReport = new TuringEmailApp.Models.EmailVolumeReport()
+
+    @server = sinon.fakeServer.create()
+
+    @url = "/api/v1/email_reports/volume_report"
+    @server.respondWith "GET", @url, JSON.stringify(@emailVolumeReportFixture)
+
+  afterEach ->
+    @server.restore()
 
   it "should have the right url", ->
-    expect(@email_volume_report.url).toEqual '/api/v1/email_reports/volume_report'
+    expect(@emailVolumeReport.url).toEqual @url
 
-  describe "when instantiated using fetch with data from the server", ->
-
+  describe "#fetch", ->
     beforeEach ->
-      @fixtures = fixture.load("reports/email_volume_report.fixture.json", true);
-
-      @emailVolumeReport = @fixtures[0]
-
-      @server = sinon.fakeServer.create()
-      @server.respondWith "GET", "/api/v1/email_reports/volume_report", JSON.stringify(@emailVolumeReport)
-
-      @emailVolumeReport = @email_volume_report.parse @emailVolumeReport
-
-      return
-
-    afterEach ->
-      @server.restore()
-
-    it "should make the correct request", ->
-      @email_volume_report.fetch()
-      expect(@server.requests.length).toEqual 1
-      expect(@server.requests[0].method).toEqual "GET"
-      expect(@server.requests[0].url).toEqual "/api/v1/email_reports/volume_report"
-      return
-
-    it "should parse the attributes from the response", ->
-      @email_volume_report.fetch()
+      @emailVolumeReport.fetch()
       @server.respond()
 
-      expect(@email_volume_report.get("dailyEmailVolumeData")).toEqual @emailVolumeReport.dailyEmailVolumeData
-      expect(@email_volume_report.get("weeklyEmailVolumeData")).toEqual @emailVolumeReport.weeklyEmailVolumeData
-      expect(@email_volume_report.get("monthlyEmailVolumeData")).toEqual @emailVolumeReport.monthlyEmailVolumeData
-      return
-
-    it "should have the attributes", ->
-      @email_volume_report.fetch()
-      @server.respond()
-      
-      expect(@email_volume_report.get("dailyEmailVolumeData")).toBeDefined()
-      expect(@email_volume_report.get("weeklyEmailVolumeData")).toBeDefined()
-      expect(@email_volume_report.get("monthlyEmailVolumeData")).toBeDefined()
-      return
+    it "loads the contacts report", ->
+      validateAttributes(@emailVolumeReport.toJSON(),
+                         ["received_emails_per_month", "received_emails_per_week", "received_emails_per_day",
+                          "sent_emails_per_month", "sent_emails_per_week", "sent_emails_per_day"])

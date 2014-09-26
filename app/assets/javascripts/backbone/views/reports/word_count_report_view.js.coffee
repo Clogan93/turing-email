@@ -8,6 +8,17 @@ class TuringEmailApp.Views.Reports.WordCountReportView extends Backbone.View
     @listenTo(@model, "hide destroy", @remove)
 
   render: ->
+    googleChartData = @getGoogleChartData()
+
+    @$el.html(@template(googleChartData))
+
     TuringEmailApp.showReports()
-    @$el.html(@template(@model.toJSON()))
     return this
+
+  getGoogleChartData: ->
+    data =
+      wordCountsGChartData: [["Count", "Received", "Sent"]].concat(
+        @model.get("word_counts")
+      )
+
+    return data
