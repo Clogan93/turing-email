@@ -45,7 +45,7 @@ describe "AnalyticsView", ->
       @analyticsView.render()
       @server.respond()
     
-    it 'renders the reports', ->
+    it "renders the reports", ->
       expect(@reportsDiv).toBeVisible()
       
       reportDivIDs = ["attachments_report", "email_volume_report", "geo_report"

@@ -1,79 +1,72 @@
 describe "AttachmentsReportView", ->
-
   beforeEach ->
+    specStartTuringEmailApp()
+
     @attachmentsReport = new TuringEmailApp.Models.AttachmentsReport()
-    TuringEmailApp.user = new TuringEmailApp.Models.User()
-    TuringEmailApp.reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
+
+    @attachmentsReportDiv = $("<div />", {id: "attachments_report"}).appendTo('body')
     @attachmentsReportView = new TuringEmailApp.Views.Reports.AttachmentsReportView(
       model: @attachmentsReport
+      el: @attachmentsReportDiv
     )
 
-  describe "when render is called", ->
+    attachmentsReportFixtures = fixture.load("reports/attachments_report.fixture.json", true);
+    @attachmentsReportFixture = attachmentsReportFixtures[0]
 
+    @server = sinon.fakeServer.create()
+    @server.respondWith "GET", new TuringEmailApp.Models.AttachmentsReport().url, JSON.stringify(@attachmentsReportFixture)
+
+  afterEach ->
+    @server.restore()
+    $(@attachmentsReportDiv).remove()
+
+  it "has the right template", ->
+    expect(@attachmentsReportView.template).toEqual JST["backbone/templates/reports/attachments_report"]
+
+  describe "#render", ->
     beforeEach ->
-      @fixtures = fixture.load("reports/attachments_report.fixture.json", "user.fixture.json", true)
-
-      @validUser = @fixtures[1]["valid"]
-      @attachmentsReportFixture = @fixtures[0]
-
-      @server = sinon.fakeServer.create()
-
-      @server.respondWith "GET", "/api/v1/users/current", JSON.stringify(@validUser)
-      TuringEmailApp.user.fetch()
-      @server.respond()
-
-      @server.respondWith "GET", "/api/v1/email_reports/attachments_report", JSON.stringify(@attachmentsReportFixture)
-
       @attachmentsReport.fetch()
       @server.respond()
 
-    afterEach ->
-      @server.restore()
+    it "renders the report", ->
+      expect(@attachmentsReportDiv).toBeVisible()
 
-    it "should have the root element be a div", ->
-      expect(@attachmentsReportView.el.nodeName).toEqual "DIV"
+      divIDs = ["num_attachments_chart_div", "average_file_size_chart_div"]
 
-    it "should be defined", ->
-      expect(TuringEmailApp.Views.Reports.AttachmentsReportView).toBeDefined()
-   
-    it "should have the right model", ->
-      expect(@attachmentsReportView.model).toEqual @attachmentsReport
+      for divID in divIDs
+        div = $("#" + divID)
+        expect(div).toBeVisible()
 
-    it "loads the attachment report template", ->
-      expect(@attachmentsReportView.template).toEqual JST["backbone/templates/reports/attachments_report"]
+  describe "#getGoogleChartData", ->
+    beforeEach ->
+      @attachmentsReport.fetch()
+      @server.respond()
+      
+      @expectedGoogleChartData = JSON.parse('{"averageFileSize":200280,"numAttachmentsGChartData":[["Attachment Type","Number of Attachments"],["Document",2],["Image",14],["PDF",2]],"averageFileSizeGChartData":[["Attachment Type","Average File Size"],["Document",1068192],["Image",24711],["PDF",561352]]}')
 
-    # it "should render the number of attachments chart title", ->
-    #   console.log $("#reports")
-    #   console.log @attachmentsReportView.el
-    #   console.log @attachmentsReportView.$el.find('#num_attachments_chart_div')
-    #   console.log @attachmentsReportView.$el.find('#num_attachments_chart_div').find("div:contains('Number of Attachments')")
+    it "converts the model into Google Chart data format", ->
+      expect(@attachmentsReportView.getGoogleChartData()).toEqual(@expectedGoogleChartData)
 
-    # it "should render the attachment file size chart title", ->
+  describe "#addContentTypeStatsToRunningAverage", ->
+    # TODO write tests
+      
+  describe "#getReducedContentTypeStats", ->
+    beforeEach ->
+      @contentTypeStats = 
+        "image/jpg": {num_attachments: 1, average_file_size: 5}
+        "image/png": {num_attachments: 2, average_file_size: 10}
+        "application/pdf": {num_attachments: 3, average_file_size: 13}
+        "application-x/pdf": {num_attachments: 10, average_file_size: 7}
+        "application/octet-stream": {num_attachments: 4, average_file_size: 7}
 
-    # it "should render the attributes of all the email threads", ->
-    #   #Set up lists
-    #   fromNames = []
-    #   subjects = []
-    #   snippets = []
-    #   links = []
+      @reducedContentTypeStats = @attachmentsReportView.getReducedContentTypeStats(@contentTypeStats)
 
-    #   #Collect Attributes from the rendered DOM.
-    #   @listView.$el.find('td.mail-contact a').each ->
-    #     fromNames.push $(this).text().trim()
-    #   @listView.$el.find('td.mail-subject a').each ->
-    #     subjects.push $(this).text().trim()
-    #   # Snippets are no longer included in the list view.
-    #   # @listView.$el.find('.email_snippet').each ->
-    #   #   snippets.push $(this).text().trim()
-    #   @listView.$el.find('a').each ->
-    #     links.push $(this).attr("href")
-    #   links = _.uniq(links, false)
+    it "reduces the contentTypeStats", ->
+      expect(@reducedContentTypeStats.Image.numAttachments).toEqual(3)
+      expect(@reducedContentTypeStats.Image.averageFileSize).toEqual(25 / 3)
 
-    #   #Run expectations
-    #   for emailThread, index in @attachmentsReport.models
-    #     email = emailThread.get("emails")[0]
+      expect(@reducedContentTypeStats.PDF.numAttachments).toEqual(13)
+      expect(@reducedContentTypeStats.PDF.averageFileSize).toEqual((3*13+10*7) / 13)
 
-    #     expect(fromNames[index]).toEqual email.from_name
-    #     expect(subjects[index]).toEqual email.subject
-    #     #expect(snippets[index]).toEqual email.snippet
-    #     expect(links[index]).toEqual "#email_thread/" + emailThread.get("uid")
+      expect(@reducedContentTypeStats.Other.numAttachments).toEqual(4)
+      expect(@reducedContentTypeStats.Other.averageFileSize).toEqual(7)
