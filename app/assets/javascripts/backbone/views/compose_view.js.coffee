@@ -5,9 +5,6 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     $("#compose_button").click =>
       @resetView()
       @show()
-  
-  remove: ->
-    @$el.remove()
 
   render: ->
     @$el.html(@template())
