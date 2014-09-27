@@ -37,10 +37,9 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
     if @currentEmailFolderID?
       $('a[href="#email_folder/' + @currentEmailFolderID + '"]').unbind "click"
       
-    $('a[href="#email_folder/' + emailFolderID + '"]').click((event) ->
+    $('a[href="#email_folder/' + emailFolderID + '"]').click (event) ->
       event.preventDefault()
       TuringEmailApp.collections.emailThreads.fetch(reset: true)
-    )
     
     @currentEmailFolderID = emailFolderID
  
