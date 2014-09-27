@@ -30,7 +30,7 @@ describe "ListItemView", ->
       expect(@listItemView.el.nodeName).toEqual "TR"
       expect(@listItemView.el).toHaveCss({cursor: "pointer"})
 
+      expect(@listItemView.$el.find('a').attr("href")).toEqual "#email_draft/" + @emailThread.get("uid")
       expect(@listItemView.$el.find('td.mail-contact a').text().trim()).toEqual @emailThread.get("emails")[0].from_name
       expect(@listItemView.$el.find('td.mail-subject a').text().trim()).toEqual @emailThread.get("emails")[0].subject
-      expect(@listItemView.$el.find('a').attr("href")).toEqual "#email_draft/" + @emailThread.get("uid")
       # TODO test date

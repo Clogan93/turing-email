@@ -85,32 +85,34 @@ window.TuringEmailApp = new(Backbone.View.extend({
       emailThread = new TuringEmailApp.Models.EmailThread(emailThreadUID: emailThreadUID)
       emailThread.fetch(
         success: (model, response, options) =>
-          callback(emailThread)
+          callback?(emailThread)
       )
       
-  currentEmailThreadIs: (emailThreadUID) ->
-    callback = (emailThread) =>   
-      if @currentEmailThread isnt emailThread
-        @currentEmailThread = emailThread
-  
-        if TuringEmailApp.isSplitPaneMode()
-          $("#preview_panel").show()
-          emailThreadViewEl = "#preview_content"
-        else
-          emailThreadViewEl = "#email_table_body"
-          $("#email-folder-mail-header").hide()
+  currentEmailThreadIs: (emailThreadUID, forceReload = false) ->
+    return if not forceReload && @currentEmailThread?.get("uid") is emailThreadUID 
     
-        emailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
-          model: TuringEmailApp.currentEmailThread
-          el: $(emailThreadViewEl)
-        )
-        emailThreadView.render()
-    
-        TuringEmailApp.views.previewEmailThreadView = emailThreadView if TuringEmailApp.isSplitPaneMode()
-        
-        @trigger "change:currentEmailThread"
+    TuringEmailApp.loadEmailThread(emailThreadUID, (emailThread) =>
+      return if @currentEmailThread is emailThread
+      
+      @currentEmailThread = emailThread
 
-    TuringEmailApp.loadEmailThread(emailThreadUID, callback)
+      if TuringEmailApp.isSplitPaneMode()
+        $("#preview_panel").show()
+        emailThreadViewSelector = "#preview_content"
+      else
+        emailThreadViewSelector = "#email_table_body"
+        $("#email-folder-mail-header").hide()
+
+      emailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
+        model: TuringEmailApp.currentEmailThread
+        el: $(emailThreadViewSelector)
+      )
+      emailThreadView.render()
+
+      TuringEmailApp.views.previewEmailThreadView = emailThreadView if TuringEmailApp.isSplitPaneMode()
+
+      @trigger "change:currentEmailThread", emailThread
+    )
 
   showEmailEditorWithEmailThread:(emailThreadUID, mode="draft") ->
     callback = (emailThread) =>

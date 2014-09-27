@@ -16,5 +16,12 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
 
     @$el.css({ cursor: "pointer" });
     @$el.html(@template(@model.toJSON()))
+    
+    @$el.data({
+      isDraft: @model.get("emails")[0].draft_id?
+      emailThreadUID: @model.get("uid")
+    })
+    
+    @$el.attr("name", @model.get("uid"))
 
     return this

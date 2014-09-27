@@ -19,26 +19,90 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   addAll: ->
     @$el.empty()
     @collection.forEach(@addOne, this)
-    @moveReportToTop()
 
     @renderCheckboxes()
-
-    @addKeyboardShortcutHighlight()
-
-    @setupReadUnreadRendering()
-
-    @setupPreviewDragging()
-
-    @setupTdClicksOfLinks()
-
+    
+    @setupSplitPaneResizing()
+    @setupListItemViewClicks()
+    @setupKeyboardShortcuts()
+    
+    @moveTuringEmailReportToTop()
+    
     if @collections?.length() > 0
       TuringEmailApp.currentEmailThreadIs(@collection.models[0].get("uid")) if TuringEmailApp.isSplitPaneMode()
 
-  currentEmailThreadChanged: ->
-    @unhighlightEmailThread @currentlySelectedEmailThread
-    @highlightEmailThread TuringEmailApp.currentEmailThread
-    @currentlySelectedEmailThread = TuringEmailApp.currentEmailThread
+  renderCheckboxes: ->
+    $(".i-checks").iCheck
+      checkboxClass: "icheckbox_square-green"
+      radioClass: "iradio_square-green"
 
+    $("#bulk_action_checkbox_dropdown div.icheckbox_square-green ins").click ->
+      if $(@).parent().hasClass "checked"
+        TuringEmailApp.views.emailThreadsListView.checkAllCheckboxes()
+      else
+        TuringEmailApp.views.emailThreadsListView.uncheckAllCheckboxes()
+
+    $("#email_table_body div.icheckbox_square-green ins").click ->
+      if $(@).parent().hasClass "checked"
+        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@).parent(), true
+      else
+        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@).parent(), false
+      
+  setupSplitPaneResizing: ->
+    return
+  # if TuringEmailApp.isSplitPaneMode()
+  #   $("#resize_border").mousedown ->
+  #     TuringEmailApp.mouseStart = null
+  #     $(document).mousemove (event) ->
+  #       if !TuringEmailApp.mouseStart?
+  #         TuringEmailApp.mouseStart = event.pageY
+  #       if event.pageY - TuringEmailApp.mouseStart > 100
+  #         $("#preview_panel").height("30%")
+  #         TuringEmailApp.mouseStart = null
+  #       return
+
+  #     $(document).one "mouseup", ->
+  #       $(document).unbind "mousemove"
+
+  # this is here instead of in ListItemView as an optimization so it is only caled once. 
+  setupListItemViewClicks: ->
+    tds = @$el.find('td.check-mail, td.mail-contact, td.mail-subject, td.mail-date')
+    tds.click (event) ->
+      tr = $(@).parent()
+      isDraft = tr.data("isDraft")
+      emailThreadUID = tr.data("emailThreadUID")
+
+      if isDraft
+        TuringEmailApp.routers.emailThreadsRouter.showEmailDraft emailThreadUID
+      else
+        TuringEmailApp.views.emailThreadsListView.markRowRead tr
+        TuringEmailApp.routers.emailThreadsRouter.showEmailThread emailThreadUID
+
+  setupKeyboardShortcuts: ->
+    $("#email_table_body tr:nth-child(1)").addClass("email_thread_highlight")
+        
+  moveTuringEmailReportToTop: ->
+    trReportEmail = null
+    
+    @$el.find("td.mail-contact").each ->
+      textValue = $(@).text()
+
+      if textValue is "Turing Email"
+        trReportEmail = $(@).parent()
+
+    if trReportEmail?
+      trReportEmail.remove()
+      $("#email_table_body").prepend("<tr height='59px;' class='" +
+                                     trReportEmail.attr("class") + "'>" +
+                                     trReportEmail.html() + "</tr>")
+
+  currentEmailThreadChanged: (emailThread) ->
+    @unhighlightEmailThread(@currentlySelectedEmailThread) if @currentlySelectedEmailThread
+    @highlightEmailThread(emailThread)
+    @uncheckAllCheckboxes()
+
+    @currentlySelectedEmailThread = TuringEmailApp.currentEmailThread
+      
   checkboxCheckedValueIs: (checkbox, isChecked) ->
     if isChecked
       checkbox.iCheck("check")
@@ -56,100 +120,20 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
       TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@), false
       $(@).iCheck("uncheck")
 
-  renderCheckboxes: ->
-    $(".i-checks").iCheck
-      checkboxClass: "icheckbox_square-green"
-      radioClass: "iradio_square-green"
-
-    $("#bulk_action_checkbox_dropdown div.icheckbox_square-green ins").click ->
-      if $(@).parent().hasClass "checked"
-        TuringEmailApp.views.emailThreadsListView.checkAllCheckboxes()
-      else
-        TuringEmailApp.views.emailThreadsListView.uncheckAllCheckboxes()
-
-    $("#email_table_body div.icheckbox_square-green ins").click ->
-      if $(@).parent().hasClass "checked"
-        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@).parent(), true
-        return false
-      else
-        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@).parent(), false
-        return false
-
-  addKeyboardShortcutHighlight: ->
-    $("#email_table_body tr:nth-child(1)").addClass("email_thread_highlight")
-
-  moveReportToTop: ->
-    report_email = null
-    @$el.find("td.mail-contact a").each ->
-      text_value = $(@).text()
-      
-      if text_value is "Turing Email"
-        report_email = $(@).parent().parent()
-    
-    if report_email?
-      report_email.remove()
-      $("#email_table_body").prepend("<tr height='59px;' class='" + report_email.attr("class") + "'>" +
-                                     report_email.html() + "</tr>")
-
   highlightEmailThread: (emailThread) ->
-    aTag = @$el.find('a[href^="#email_thread/' + emailThread.get("uid") + '"]')
-    aTag.parent().parent().removeClass("read")
-    aTag.parent().parent().removeClass("unread")
-    aTag.parent().parent().addClass("currently_being_read")
+    tr = @$el.find("tr[name=" + emailThread.get("uid") + "]")
+    tr.removeClass("read")
+    tr.removeClass("unread")
+    tr.addClass("currently_being_read")
 
   unhighlightEmailThread: (emailThread) ->
     if emailThread?
-      aTag = @$el.find('a[href^="#email_thread/' + emailThread.get("uid") + '"]')
-      aTag.parent().parent().removeClass("currently_being_read")
-      aTag.parent().parent().addClass("read")
+      tr = @$el.find("tr[name=" + emailThread.get("uid") + "]")
+      tr.removeClass("currently_being_read")
+      tr.addClass("read")
 
-  setupReadUnreadRendering: ->
-    aTag = @$el.find('a[href^="#email_thread"]')
-    aTag.click ->
-      TuringEmailApp.views.emailThreadsListView.updateToMarkAsRead $(@)
-
-  updateToMarkAsRead: (aTag) ->
-    if aTag.parent().parent().hasClass("unread")
+  markRowRead: (tr) ->
+    if tr.hasClass("unread")
       TuringEmailApp.views.toolbarView.decrementUnreadCountOfCurrentFolder(TuringEmailApp.currentFolderId)
-
-    aTag.parent().parent().removeClass("unread")
-    aTag.parent().parent().addClass("read")
-
-  # this is here instead of in ListItemView as an optimization so it is only caled once. 
-  setupTdClicksOfLinks: ->
-    tds = @$el.find('td.mail-contact, td.mail-subject, td.mail-date')
-    tds.click ->
-      aTag = $(@).find('a[href^="#email_thread"]').first()
-      
-      if aTag.length > 0
-        TuringEmailApp.views.emailThreadsListView.updateToMarkAsRead aTag
-        link_components = aTag.attr("href").split("/")
-        emailThreadUID = link_components[link_components.length - 1]
-        TuringEmailApp.routers.emailThreadsRouter.showEmailThread emailThreadUID
-        
-        return false
-      else
-        aTag = $(@).find('a[href^="#email_draft"]').first()
-        
-        if aTag.length > 0
-          link_components = aTag.attr("href").split("/")
-          emailThreadUID = link_components[link_components.length - 1]
-          TuringEmailApp.routers.emailThreadsRouter.showEmailDraft emailThreadUID
-
-          return false
-
-  setupPreviewDragging: ->
-    return
-    # if TuringEmailApp.isSplitPaneMode()
-    #   $("#resize_border").mousedown ->
-    #     TuringEmailApp.mouseStart = null
-    #     $(document).mousemove (event) ->
-    #       if !TuringEmailApp.mouseStart?
-    #         TuringEmailApp.mouseStart = event.pageY
-    #       if event.pageY - TuringEmailApp.mouseStart > 100
-    #         $("#preview_panel").height("30%")
-    #         TuringEmailApp.mouseStart = null
-    #       return
-
-    #     $(document).one "mouseup", ->
-    #       $(document).unbind "mousemove"
+      tr.removeClass("unread")
+      tr.addClass("read")
