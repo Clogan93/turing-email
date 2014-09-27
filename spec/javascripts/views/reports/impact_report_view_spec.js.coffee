@@ -31,5 +31,8 @@ describe "ImpactReportView", ->
     it "renders the report", ->
       expect(@impactReportDiv).toBeVisible()
       expect(@impactReportDiv).toContainHtml("Reports <small>impact</small>")
-      
-      expect(@impactReportDiv).toContainText("Percent of sent emails replied to:")
+
+    it "renders the percent of sent emails replied to", ->
+      expect(@impactReportDiv).toContainHtml('<h4 class="h4">Percent of sent emails replied to: <small>' +
+                                             @impactReport.get("percent_sent_emails_replied_to") +
+                                             '%</small></h4>')
