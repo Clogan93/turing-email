@@ -26,6 +26,8 @@ window.specStartTuringEmailApp = ->
 
   TuringEmailApp.routers.emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
 
+  TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsSearchResultsCollection()
+
   #Routers
   TuringEmailApp.routers.reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
   TuringEmailApp.routers.analyticsRouter = new TuringEmailApp.Routers.AnalyticsRouter()

@@ -115,6 +115,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     aTag.parent().parent().removeClass("unread")
     aTag.parent().parent().addClass("read")
 
+  # this is here instead of in ListItemView as an optimization so it is only caled once. 
   setupTdClicksOfLinks: ->
     tds = @$el.find('td.mail-contact, td.mail-subject, td.mail-date')
     tds.click ->

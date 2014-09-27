@@ -4,7 +4,7 @@
 <h4 class="h4">Email Bankruptcy</h4>
 <div class="row">
   <div class="col-md-4" id="email_bankruptcy_container">
-    <button id="declare_email_bankruptcy" type="button" class="btn btn-block btn-danger">Declare Email Bankruptcy</button>
+    <button id="email_bankruptcy_button" type="button" class="btn btn-block btn-danger">Declare Email Bankruptcy</button>
   </div>
 </div>
 
@@ -12,7 +12,7 @@
 <h4 class="h4">Keyboard Shortcuts</h4>
 <div class="row">
   <div class="col-md-10">
-    <input type="checkbox" id="keyboard_shortcuts_on_off_switch" checked>
+    <input type="checkbox" id="keyboard_shortcuts_switch" checked>
   </div>
 </div>
 
@@ -20,7 +20,7 @@
 <h4 class="h4">Email Genie</h4>
 <div class="row">
   <div class="col-md-10">
-    <input type="checkbox" id="genie_on_off_switch" <%= genie_enabled == true ? "checked" : "" %>>
+    <input type="checkbox" id="genie_switch" <%= genie_enabled == true ? "checked" : "" %>>
   </div>
 </div>
 
@@ -28,7 +28,7 @@
 <h4 class="h4">Horizontal Preview Panel</h4>
 <div class="row">
   <div class="col-md-10">
-    <input type="checkbox" id="preview_on_off_switch" <%= split_pane_mode == "horizontal" ? "checked" : "" %>>
+    <input type="checkbox" id="split_pane_switch" <%= split_pane_mode == "horizontal" ? "checked" : "" %>>
   </div>
 </div>
 
