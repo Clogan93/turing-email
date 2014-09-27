@@ -1,39 +1,35 @@
-describe "Impact Report View", ->
-
+describe "ImpactReportView", ->
   beforeEach ->
+    specStartTuringEmailApp()
+
     @impactReport = new TuringEmailApp.Models.ImpactReport()
+
+    @impactReportDiv = $("<div />", {id: "impact_report"}).appendTo('body')
     @impactReportView = new TuringEmailApp.Views.Reports.ImpactReportView(
       model: @impactReport
+      el: @impactReportDiv
     )
-    TuringEmailApp.reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
 
-  describe "when render is called", ->
+    impactReportFixtures = fixture.load("reports/impact_report.fixture.json", true);
+    @impactReportFixture = impactReportFixtures[0]
 
+    @server = sinon.fakeServer.create()
+    @server.respondWith "GET", new TuringEmailApp.Models.ImpactReport().url, JSON.stringify(@impactReportFixture)
+
+  afterEach ->
+    @server.restore()
+    $(@impactReportDiv).remove()
+
+  it "has the right template", ->
+    expect(@impactReportView.template).toEqual JST["backbone/templates/reports/impact_report"]
+
+  describe "#render", ->
     beforeEach ->
-      @fixtures = fixture.load("reports/impact_report.fixture.json", true)
-
-      @impactReportFixture = @fixtures[0]
-
-      @server = sinon.fakeServer.create()
-
-      @server.respondWith "GET", "/api/v1/email_reports/impact_report", JSON.stringify(@impactReportFixture)
       @impactReport.fetch()
       @server.respond()
 
-    afterEach ->
-      @server.restore()
-
-    it "should have the root element be a div", ->
-      expect(@impactReportView.el.nodeName).toEqual "DIV"
-
-    it "should be defined", ->
-      expect(TuringEmailApp.Views.Reports.ImpactReportView).toBeDefined()
-
-    it "should have the right model", ->
-      expect(@impactReportView.model).toEqual @impactReport
-
-    it "loads the impactReport template", ->
-      expect(@impactReportView.template).toEqual JST["backbone/templates/reports/impact_report"]
-
-    it "should show the percent of sent emails replied to", ->
-      expect(@impactReportView.$el.find("h4 small").text()).toEqual (@impactReport.get("percent_sent_emails_replied_to").toString() + "%")
+    it "renders the report", ->
+      expect(@impactReportDiv).toBeVisible()
+      expect(@impactReportDiv).toContainHtml("Reports <small>impact</small>")
+      
+      expect(@impactReportDiv).toContainText("Percent of sent emails replied to:")

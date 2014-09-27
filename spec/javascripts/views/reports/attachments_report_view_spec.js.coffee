@@ -30,6 +30,7 @@ describe "AttachmentsReportView", ->
 
     it "renders the report", ->
       expect(@attachmentsReportDiv).toBeVisible()
+      expect(@attachmentsReportDiv).toContainHtml("Reports <small>attachments</small>")
 
       divIDs = ["num_attachments_chart_div", "average_file_size_chart_div"]
 

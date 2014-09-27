@@ -30,6 +30,7 @@ describe "EmailVolumeReportView", ->
 
     it "renders the report", ->
       expect(@emailVolumeReportDiv).toBeVisible()
+      expect(@emailVolumeReportDiv).toContainHtml("Reports <small>email volume</small>")
 
       divIDs = ["emails_per_day_chart_div", "emails_per_week_chart_div", "emails_per_month_chart_div"]
 

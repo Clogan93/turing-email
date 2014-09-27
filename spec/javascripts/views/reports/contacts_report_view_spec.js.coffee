@@ -30,6 +30,7 @@ describe "ContactsReportView", ->
 
     it "renders the report", ->
       expect(@contactsReportDiv).toBeVisible()
+      expect(@contactsReportDiv).toContainHtml("Reports <small>top contacts</small>")
 
       divIDs = ["top_senders", "top_recipients"]
 
