@@ -14,7 +14,6 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     else
       @$el.addClass("unread")
 
-    @$el.css({ cursor: "hand" });
     @$el.css({ cursor: "pointer" });
     @$el.html(@template(@model.toJSON()))
 
