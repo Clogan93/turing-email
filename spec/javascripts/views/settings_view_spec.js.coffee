@@ -112,7 +112,7 @@ describe "SettingsView", ->
       expect(@userSettings.get("genie_enabled")).toEqual(false)
       expect(@userSettings.get("split_pane_mode")).toEqual("horizontal")
 
-    it "displays a success alert after the save button is clicked", ->
+    it "displays a success alert after the save button is clicked and then hides it", ->
       #Change one attribute
       expect(@userSettings.get("genie_enabled")).toEqual(true)
       genieSwitch = $("#genie_switch")
@@ -124,3 +124,6 @@ describe "SettingsView", ->
       @server.respond()
 
       expect($("#mailBody")).toContainHtml('<div class="alert alert-success settingsSaveAlert" role="alert">You have successfully saved your settings!</div>')
+
+      waitsFor ->
+        $("div.alert.alert-success.settingsSaveAlert").length == 0
