@@ -92,9 +92,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
     if trReportEmail?
       trReportEmail.remove()
-      $("#email_table_body").prepend("<tr height='59px;' class='" +
-                                     trReportEmail.attr("class") + "'>" +
-                                     trReportEmail.html() + "</tr>")
+      $("#email_table_body").prepend(trReportEmail)
 
   currentEmailThreadChanged: (emailThread) ->
     @unhighlightEmailThread(@currentlySelectedEmailThread) if @currentlySelectedEmailThread

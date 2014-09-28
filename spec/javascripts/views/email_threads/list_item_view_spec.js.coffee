@@ -29,8 +29,11 @@ describe "ListItemView", ->
     it "renders the list item", ->
       expect(@listItemView.el.nodeName).toEqual "TR"
       expect(@listItemView.el).toHaveCss({cursor: "pointer"})
+      expect(@listItemView.el).toHaveAttr("name", @emailThread.uid)
+      expect(@listItemView.el).toHaveData("isDraft", true)
+      expect(@listItemView.el).toHaveData("emailThreadUID", @emailThread.uid)
 
-      expect(@listItemView.$el.find('a').attr("href")).toEqual "#email_draft/" + @emailThread.get("uid")
-      expect(@listItemView.$el.find('td.mail-contact a').text().trim()).toEqual @emailThread.get("emails")[0].from_name
-      expect(@listItemView.$el.find('td.mail-subject a').text().trim()).toEqual @emailThread.get("emails")[0].subject
+      expect(@listItemView.el).toContain("td.check-mail")
+      expect(@listItemView.$el.find('td.mail-contact').text().trim()).toEqual @emailThread.get("emails")[0].from_name
+      expect(@listItemView.$el.find('td.mail-subject').text().trim()).toEqual @emailThread.get("emails")[0].subject
       # TODO test date
