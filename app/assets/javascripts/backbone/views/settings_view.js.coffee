@@ -37,4 +37,14 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
       split_pane_mode = if $("#split_pane_switch").parent().parent().hasClass("switch-on") then "horizontal" else "off"
       
       @model.set(genie_enabled: genie_enabled, split_pane_mode: split_pane_mode)
-      @model.save(null, {patch: true})
+      @model.save(null, {
+        patch: true
+        success: (model, response) ->
+          mailBody = $("#mailBody").prepend('<div class="alert alert-success settingsSaveAlert" role="alert">You have successfully saved your settings!</div>')
+          saveAlert = mailBody.children()[0]
+
+          setTimeout (=>
+            saveAlert.remove()
+          ), 3000
+        }
+      )
