@@ -3,14 +3,14 @@ class TuringEmailApp.Collections.EmailFoldersCollection extends Backbone.Collect
   url: '/api/v1/email_folders'
 
   initialize: ->
-    @listenTo(this, "remove", @hideModel)
-    @listenTo(this, "reset", @hideModels)
+    @listenTo(this, "remove", @modelRemoved)
+    @listenTo(this, "reset", @modelsReset)
 
-  hideModel: (model) ->
-    model.trigger("hide")
+  modelRemoved: (model) ->
+    model.trigger("removedFromCollection", this)
 
-  hideModels: (models, options) ->
-    options.previousModels.forEach(@hideModel, this)
+  modelsReset: (models, options) ->
+    options.previousModels.forEach(@modelRemoved, this)
 
   getEmailFolder: (emailFolderID) ->
     emailFolders = @filter((emailFolder) ->

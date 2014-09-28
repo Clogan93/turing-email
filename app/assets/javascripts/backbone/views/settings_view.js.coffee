@@ -3,7 +3,7 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
 
   initialize: ->
     @listenTo(@model, "change", @render)
-    @listenTo(@model, "hide destroy", @remove)
+    @listenTo(@model, "removedFromCollection destroy", @remove)
 
   render: ->
     @$el.html(@template(@model.toJSON()))

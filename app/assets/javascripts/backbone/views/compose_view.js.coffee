@@ -34,7 +34,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
         success: (model, response, options) =>
           console.log "SAVED! setting draft_id to " + response.draft_id
           model.set("draft_id", response.draft_id)
-          @trigger "change:draft"
+          @trigger "change:draft", this
           
           @savingDraft = false
           
@@ -188,7 +188,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
           success: (model, response, options) =>
             console.log "SAVED! setting draft_id to " + response.draft_id
             draftToSend.set("draft_id", response.draft_id)
-            @trigger "change:draft"
+            @trigger "change:draft", this
             
             @sendEmailDelayed(draftToSend)
         })
@@ -213,7 +213,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
       if emailToSend.sendDraft?
         console.log "sendDraft!"
         emailToSend.sendDraft().done(->
-          @trigger "change:draft"
+          @trigger "change:draft", this
         )
       else
         console.log "send email!"

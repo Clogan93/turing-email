@@ -37,7 +37,7 @@ window.TuringEmailApp = new(Backbone.View.extend({
       collection: @collections.emailFolders
     )
     @views.toolbarView.render()
-    @trigger("change:toolbarView", @views.toolbarView)
+    @trigger("change:toolbarView", this, @views.toolbarView)
 
     @collections.emailFolders.fetch(
       reset: true
@@ -116,7 +116,7 @@ window.TuringEmailApp = new(Backbone.View.extend({
 
       TuringEmailApp.views.previewEmailThreadView = emailThreadView if TuringEmailApp.isSplitPaneMode()
 
-      @trigger "change:currentEmailThread", emailThread
+      @trigger "change:currentEmailThread", this, emailThread
     )
 
   showEmailEditorWithEmailThread:(emailThreadUID, mode="draft") ->

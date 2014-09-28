@@ -5,7 +5,7 @@ class TuringEmailApp.Views.Reports.ContactsReportView extends Backbone.View
 
   initialize: ->
     @listenTo(@model, "change", @render)
-    @listenTo(@model, "hide destroy", @remove)
+    @listenTo(@model, "removedFromCollection destroy", @remove)
 
   render: ->
     googleChartData = @getGoogleChartData()

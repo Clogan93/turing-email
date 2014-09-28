@@ -5,6 +5,7 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
 
   initialize: ->
     @listenTo(@collection, "add", @render)
+    @listenTo(@collection, "remove", @render)
     @listenTo(@collection, "reset", @render)
     @listenTo(@collection, "destroy", @remove)
 

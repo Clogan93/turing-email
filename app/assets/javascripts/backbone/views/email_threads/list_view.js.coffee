@@ -4,7 +4,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   initialize: ->
     @listenTo(@collection, "add", @addOne)
     @listenTo(@collection, "remove", @removeOne)
-    @listenTo(@collection, "reset", @reset)
+    @listenTo(@collection, "reset", @resetView)
     @listenTo(@collection, "destroy", @remove)
 
     @listenTo(TuringEmailApp, 'change:toolbarView', @toolbarViewChanged)
@@ -14,7 +14,6 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
   render: ->
     @removeAll()
-    
     @$el.empty()
     @listItemViews = {}
     
@@ -27,8 +26,8 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
     return this
 
-  reset: (models, options) ->
-    options?.previousModels.forEach(@removeOne, this)
+  resetView: (models, options) ->
+    @removeAll(options.previousModels) if options?.previousModels?
     
     @render()
     
@@ -54,8 +53,8 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   addAll: ->
     @collection.forEach(@addOne, this)
 
-  removeAll: ->
-    @collection.forEach(@removeOne, this)
+  removeAll: (models = @collection.models) ->
+    models.forEach(@removeOne, this)
     
   setupSplitPaneResizing: ->
     return
@@ -93,7 +92,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   ### TuringEmailApp Events ###
   #############################      
       
-  toolbarViewChanged: (toolbarView) ->
+  toolbarViewChanged: (app, toolbarView) ->
     @stopListening(@currentToolbarView) if @currentToolbarView?
     @currentToolbarView = toolbarView
     
@@ -102,7 +101,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     @listenTo(@currentToolbarView, "selectAllUnread", @selectAllUnread)
     @listenTo(@currentToolbarView, "deselectAll", @deselectAll)
     
-  currentEmailThreadChanged: (emailThread) ->
+  currentEmailThreadChanged: (app, emailThread) ->
     if @currentlySelectedEmailThread
       listItemView = @listItemViews[@currentlySelectedEmailThread.get("uid")]
       listItemView?.unhighlight()
