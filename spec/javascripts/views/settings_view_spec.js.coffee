@@ -62,21 +62,36 @@ describe "SettingsView", ->
       @userSettings.fetch()
       @server.respond()
 
-      window.confirm = ->
-        return true
+    describe "the user cancels the action", ->
+      beforeEach ->
+        window.confirm = ->
+          return false
+        
+      it "does NOT post the bankruptcy request to the server", ->
+        spyOnEvent("#email_bankruptcy_button", "click")
+        emailBankruptcyButton = @settingsDiv.find("#email_bankruptcy_button")
+        emailBankruptcyButton.click()
+        expect("click").toHaveBeenPreventedOn("#email_bankruptcy_button")
 
-    it "posts the bankruptcy request to the server", ->
-      spyOnEvent("#email_bankruptcy_button", "click")
-      emailBankruptcyButton = @settingsDiv.find("#email_bankruptcy_button")
-      emailBankruptcyButton.click()
-      expect("click").toHaveBeenPreventedOn("#email_bankruptcy_button")
-
-      expect(@settingsDiv).toContainText("You have successfully declared email bankruptcy!")
+        expect(@server.requests.length).toEqual 1
+        
+    describe "the user confirms the action", ->
+      beforeEach ->
+        window.confirm = ->
+          return true
       
-      expect(@server.requests.length).toEqual 2
-      request = @server.requests[1]
-      expect(request.method).toEqual "POST"
-      expect(request.url).toEqual "/api/v1/users/declare_email_bankruptcy"
+      it "posts the bankruptcy request to the server", ->
+        spyOnEvent("#email_bankruptcy_button", "click")
+        emailBankruptcyButton = @settingsDiv.find("#email_bankruptcy_button")
+        emailBankruptcyButton.click()
+        expect("click").toHaveBeenPreventedOn("#email_bankruptcy_button")
+  
+        expect(@settingsDiv).toContainText("You have successfully declared email bankruptcy!")
+        
+        expect(@server.requests.length).toEqual 2
+        request = @server.requests[1]
+        expect(request.method).toEqual "POST"
+        expect(request.url).toEqual "/api/v1/users/declare_email_bankruptcy"
 
   describe "save button", ->
     beforeEach ->
