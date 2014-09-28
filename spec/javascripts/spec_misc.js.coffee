@@ -61,7 +61,6 @@ window.validateEmailFolderAttributes = (emailFolderJSON) ->
                          "num_threads", "num_unread_threads"]
   validateAttributes(emailFolderJSON, expectedAttributes)
 
-
 window.validateEmailThreadAttributes = (emailThreadJSON) ->
   expectedAttributes = ["uid", "emails"]
   validateAttributes(emailThreadJSON, expectedAttributes)
