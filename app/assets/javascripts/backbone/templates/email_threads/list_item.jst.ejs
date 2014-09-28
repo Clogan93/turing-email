@@ -3,21 +3,11 @@
 </td>
 
 <td class="mail-contact">
-  <%
-  if (emails[0].from_name == null) { %>
-    <%= emails[0].from_address %><%
-  } else {
-    if (TuringEmailApp.models.user.get("email") == emails[0].from_address) {%>
-      <%= "me" %><%
-    } else {%>
-      <%= emails[0].from_name %><%
-    }
-  }
-  %>
+  <%= fromPreview %>
 </td>
 
 <td class="mail-subject">
-  <%= emails[0].subject == "" ? "(no subject)" : emails[0].subject %>
+  <%= subjectPreview %>
 </td>
 
 <td class="text-right mail-date">
