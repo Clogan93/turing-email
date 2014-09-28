@@ -3,7 +3,7 @@ describe "EmailThread", ->
     emailThreadFixtures = fixture.load("email_thread.fixture.json");
     @validEmailThreadFixture = emailThreadFixtures[0]["valid"]
     
-    @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadUID: @validEmailThreadFixture["uid"])
+    @emailThread = new TuringEmailApp.Models.EmailThread(undefined, emailThreadUID: @validEmailThreadFixture["uid"])
 
     @server = sinon.fakeServer.create()
 

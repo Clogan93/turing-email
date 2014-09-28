@@ -51,7 +51,7 @@ window.validateUserAttributes = (userJSON) ->
   validateAttributes(userJSON, expectedAttributes)
   
 window.validateUserSettingsAttributes = (userSettingsJSON) ->
-  expectedAttributes = ["genie_enabled", "split_pane_mode"]
+  expectedAttributes = ["id", "genie_enabled", "split_pane_mode"]
   validateAttributes(userSettingsJSON, expectedAttributes)
   
 window.validateEmailFolderAttributes = (emailFolderJSON) ->

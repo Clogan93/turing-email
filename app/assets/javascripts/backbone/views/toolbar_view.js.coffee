@@ -4,9 +4,21 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
   render: ->
     @$el.html(@template({'emailFolders' : @collection.toJSON()} ))
+    @setupSelectAllCheckbox()
     @setupToolbarButtons()
     return this
 
+  setupSelectAllCheckbox: ->
+    @$el.find(".i-checks").iCheck
+      checkboxClass: "icheckbox_square-green"
+      radioClass: "iradio_square-green"
+
+    @$el.find("div.icheckbox_square-green ins").click (event) =>
+      if $(event.target).parent().hasClass "checked"
+        @trigger("selectAll")
+      else
+        @trigger("deselectAll")
+    
   retrieveCheckedUIDs: ->
     checkedUIDs = []
     
@@ -69,23 +81,17 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   setupBulkActions: ->
     @$el.find("#all_bulk_action").click =>
       @$el.find("#bulk_action_checkbox_dropdown div.icheckbox_square-green").addClass("checked")
-      TuringEmailApp.views.emailThreadsListView.checkAllCheckboxes()
+      @trigger("selectAll")
 
     @$el.find("#none_bulk_action").click =>
       @$el.find("#bulk_action_checkbox_dropdown div.icheckbox_square-green").removeClass("checked")
-      TuringEmailApp.views.emailThreadsListView.uncheckAllCheckboxes()
+      @trigger("deselectAll")
 
     @$el.find("#read_bulk_action").click =>
-      $("#email_table_body tr.read div.icheckbox_square-green, #email_table_body tr.currently_being_read div.icheckbox_square-green").each ->
-        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@), true
-      $("#email_table_body tr.unread div.icheckbox_square-green").each ->
-        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@), false
+      @trigger("selectAllRead")
 
     @$el.find("#unread_bulk_action").click =>
-      $("#email_table_body tr.read div.icheckbox_square-green, #email_table_body tr.currently_being_read div.icheckbox_square-green").each ->
-        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@), false
-      $("#email_table_body tr.unread div.icheckbox_square-green").each ->
-        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@), true
+      @trigger("selectAllUnread")
 
   setupRead: ->
     @$el.find("i.fa-eye").parent().click =>
@@ -97,7 +103,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       tr_element.removeClass("unread")
       tr_element.addClass("read")
       
-      TuringEmailApp.views.emailThreadsListView.uncheckAllCheckboxes()
+      @trigger("deselectAll")
 
   setupUnread: ->
     @$el.find("i.fa-eye-slash").parent().click =>
@@ -109,7 +115,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       tr_element.removeClass("read")
       tr_element.addClass("unread")
 
-      TuringEmailApp.views.emailThreadsListView.uncheckAllCheckboxes()
+      @trigger("deselectAll")
 
   setupArchive: ->
     @$el.find("i.fa-archive").parent().click =>
@@ -134,7 +140,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       tr_element = $(".check-mail .checked").parent().parent()
       tr_element.remove()
 
-      TuringEmailApp.views.emailThreadsListView.uncheckAllCheckboxes()
+      @trigger("deselectAll")
 
   setupDelete: ->
     @$el.find("i.fa-trash-o").parent().click =>
@@ -153,7 +159,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       tr_element = $(".check-mail .checked").parent().parent()
       tr_element.remove()
 
-      TuringEmailApp.views.emailThreadsListView.uncheckAllCheckboxes()
+      @trigger("deselectAll")
 
   setupGoLeft: ->
     @$el.find("#paginate_left_link").click ->
@@ -178,7 +184,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
         data: postData
 
       #Alter UI
-      TuringEmailApp.views.emailThreadsListView.uncheckAllCheckboxes()
+      @trigger("deselectAll")
 
   setupMoveToFolder: ->
     @$el.find(".move_to_folder_link").click (event) =>
@@ -197,7 +203,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       tr_element = $(".check-mail .checked").parent().parent()
       tr_element.remove()
 
-      TuringEmailApp.views.emailThreadsListView.uncheckAllCheckboxes()
+      @trigger("deselectAll")
 
   setupSearch: ->
     $("#search_input").change ->

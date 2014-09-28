@@ -15,13 +15,67 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
       @$el.addClass("unread")
 
     @$el.css({ cursor: "pointer" });
+    
     @$el.html(@template(@model.toJSON()))
     
-    @$el.data({
-      isDraft: @model.get("emails")[0].draft_id?
-      emailThreadUID: @model.get("uid")
-    })
+    @setupClick()
     
-    @$el.attr("name", @model.get("uid"))
-
     return this
+    
+  addedToDOM: ->
+    @setupCheckbox()
+
+  setupClick: ->
+    tds = @$el.find('td.check-mail, td.mail-contact, td.mail-subject, td.mail-date')
+    tds.click (event) =>
+      @trigger("click", @)
+
+  setupCheckbox: ->
+    @$el.find(".i-checks").iCheck
+      checkboxClass: "icheckbox_square-green"
+      radioClass: "iradio_square-green"
+
+    @$el.find("div.icheckbox_square-green ins").click (event) =>
+      @toggleSelect()
+
+  toggleSelect: ->
+    diviCheck = $(event.target).parent()
+    if diviCheck.hasClass "checked" then @select() else @deselect()
+
+  select: ->
+    diviCheck = @$el.find("div.icheckbox_square-green")
+
+    diviCheck.iCheck("check")
+    @$el.addClass("checked_email_thread")
+    @trigger("selected", @)
+
+  deselect: ->
+    diviCheck = @$el.find("div.icheckbox_square-green")
+
+    diviCheck.iCheck("uncheck")
+    @$el.removeClass("checked_email_thread")
+    @trigger("deselected", @)
+
+  highlight: ->
+    @$el.removeClass("read")
+    @$el.removeClass("unread")
+    @$el.addClass("currently_being_read")
+
+    @trigger("highlight", @)
+
+  unhighlight: ->
+    @$el.removeClass("currently_being_read")
+
+    @trigger("unhighlight", @)
+    
+  markRead: ->
+    @$el.removeClass("unread")
+    @$el.addClass("read")
+
+    @trigger("markRead", @)
+
+  markUnread: ->
+    @$el.removeClass("read")
+    @$el.addClass("unread")
+
+    @trigger("markUnread", @)

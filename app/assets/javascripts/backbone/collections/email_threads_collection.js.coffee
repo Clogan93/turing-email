@@ -2,19 +2,27 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
   model: TuringEmailApp.Models.EmailThread
   url: "/api/v1/email_threads/inbox"
 
-  initialize: (attributes) ->
+  initialize: (models, options) ->
     @listenTo(this, "remove", @hideModel)
+    @listenTo(this, "reset", @hideModels)
+
+    @setupURL(options?.folderID)
+
+  setupURL: (folderID) ->
+    @url = "/api/v1/email_threads/in_folder?folder_id=" + folderID if folderID
 
     @page = getQuerystringNameValue("page")
-    @url = "/api/v1/email_threads/in_folder?folder_id=" + attributes.folderID if attributes?.folderID?
-
+    
     if @page != null
       @url += "&page=" + @page
     else
       @page = "1"
-
+      
   hideModel: (model) ->
     model.trigger("hide")
+
+  hideModels: (models, options) ->
+    options.previousModels.forEach(@hideModel, this)
 
   getEmailThread: (emailThreadUID) ->
     emailThreads = @filter((emailThread) ->

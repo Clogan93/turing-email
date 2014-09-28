@@ -4,9 +4,13 @@ class TuringEmailApp.Collections.EmailFoldersCollection extends Backbone.Collect
 
   initialize: ->
     @listenTo(this, "remove", @hideModel)
+    @listenTo(this, "reset", @hideModels)
 
   hideModel: (model) ->
     model.trigger("hide")
+
+  hideModels: (models, options) ->
+    options.previousModels.forEach(@hideModel, this)
 
   getEmailFolder: (emailFolderID) ->
     emailFolders = @filter((emailFolder) ->
