@@ -24,7 +24,7 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     @setupClick()
     
     return this
-    
+
   addedToDOM: ->
     @setupCheckbox()
 
@@ -42,7 +42,7 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
       @toggleSelect()
 
   toggleSelect: ->
-    diviCheck = $(event.target).parent()
+    diviCheck = @$el.find("div.icheckbox_square-green")
     if diviCheck.hasClass "checked" then @select() else @deselect()
 
   select: ->
