@@ -44,7 +44,7 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
           saveAlert = mailBody.children()[0]
 
           setTimeout (=>
-            saveAlert.remove()
+            $(saveAlert).remove()
           ), 3000
         }
       )
