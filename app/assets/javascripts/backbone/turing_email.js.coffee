@@ -37,6 +37,7 @@ window.TuringEmailApp = new(Backbone.View.extend({
       collection: @collections.emailFolders
     )
     @views.toolbarView.render()
+    @trigger("change:toolbarView", @views.toolbarView)
 
     @collections.emailFolders.fetch(
       reset: true
@@ -86,7 +87,7 @@ window.TuringEmailApp = new(Backbone.View.extend({
     if emailThread?
       callback(emailThread)
     else
-      emailThread = new TuringEmailApp.Models.EmailThread(emailThreadUID: emailThreadUID)
+      emailThread = new TuringEmailApp.Models.EmailThread(undefined, emailThreadUID: emailThreadUID)
       emailThread.fetch(
         success: (model, response, options) =>
           callback?(emailThread)
@@ -135,17 +136,24 @@ window.TuringEmailApp = new(Backbone.View.extend({
     TuringEmailApp.loadEmailThread(emailThreadUID, callback)
 
   currentEmailFolderIs: (emailFolderID) ->
-    TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(
-      folderID: emailFolderID
-    )
+    if not TuringEmailApp.collections.emailThreads
+      TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined,
+        folderID: emailFolderID
+      )
+    else
+      TuringEmailApp.collections.emailThreads.setupURL(emailFolderID)
 
-    TuringEmailApp.views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView({
-      el: $("#email_table_body")
-      collection: TuringEmailApp.collections.emailThreads
-    })
+    if not TuringEmailApp.views.emailThreadsListView?
+      TuringEmailApp.views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView({
+        el: $("#email_table_body")
+        collection: TuringEmailApp.collections.emailThreads
+      })
 
     TuringEmailApp.collections.emailThreads.fetch(
       reset: true
+      success: (collection, response, options) ->
+        if TuringEmailApp.isSplitPaneMode() && TuringEmailApp.collections.emailThreads.length > 0
+          TuringEmailApp.currentEmailThreadIs(TuringEmailApp.collections.emailThreads.models[0].get("uid"))
     )
 
     TuringEmailApp.views.emailFoldersTreeView.currentEmailFolderIs emailFolderID

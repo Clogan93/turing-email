@@ -34,5 +34,5 @@ describe "ImpactReportView", ->
 
     it "renders the percent of sent emails replied to", ->
       expect(@impactReportDiv).toContainHtml('<h4 class="h4">Percent of sent emails replied to: <small>' +
-                                             @impactReport.get("percent_sent_emails_replied_to") +
+                                             @impactReport.get("percent_sent_emails_replied_to") * 100 +
                                              '%</small></h4>')

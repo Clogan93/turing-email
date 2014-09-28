@@ -5,7 +5,7 @@ describe "ListItemView", ->
     emailThreadFixtures = fixture.load("email_thread.fixture.json");
     @validEmailThreadFixture = emailThreadFixtures[0]["valid"]
 
-    @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadUID: @validEmailThreadFixture["uid"])
+    @emailThread = new TuringEmailApp.Models.EmailThread(undefined, emailThreadUID: @validEmailThreadFixture["uid"])
     @listItemView = new TuringEmailApp.Views.EmailThreads.ListItemView(
       model: @emailThread
     )
@@ -29,9 +29,6 @@ describe "ListItemView", ->
     it "renders the list item", ->
       expect(@listItemView.el.nodeName).toEqual "TR"
       expect(@listItemView.el).toHaveCss({cursor: "pointer"})
-      expect(@listItemView.el).toHaveAttr("name", @emailThread.uid)
-      expect(@listItemView.el).toHaveData("isDraft", true)
-      expect(@listItemView.el).toHaveData("emailThreadUID", @emailThread.uid)
 
       expect(@listItemView.el).toContain("td.check-mail")
       expect(@listItemView.$el.find('td.mail-contact').text().trim()).toEqual @emailThread.get("emails")[0].from_name

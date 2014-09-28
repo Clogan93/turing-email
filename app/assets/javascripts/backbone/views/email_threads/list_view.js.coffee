@@ -3,51 +3,60 @@ TuringEmailApp.Views.EmailThreads ||= {}
 class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   initialize: ->
     @listenTo(@collection, "add", @addOne)
-    @listenTo(@collection, "reset", @addAll)
+    @listenTo(@collection, "remove", @removeOne)
+    @listenTo(@collection, "reset", @reset)
     @listenTo(@collection, "destroy", @remove)
 
+    @listenTo(TuringEmailApp, 'change:toolbarView', @toolbarViewChanged)
     @listenTo(TuringEmailApp, 'change:currentEmailThread', @currentEmailThreadChanged)
 
+    @toolbarViewChanged(TuringEmailApp.views.toolbarView) if TuringEmailApp.views.toolbarView?
+
   render: ->
+    @removeAll()
+    
+    @$el.empty()
+    @listItemViews = {}
+    
     @addAll()
+
+    @setupSplitPaneResizing()
+    @setupKeyboardShortcuts()
+
+    @moveTuringEmailReportToTop()
+
     return this
 
-  addOne: (thread) ->
-    listItemView = new TuringEmailApp.Views.EmailThreads.ListItemView(model: thread)
-    @$el.append(listItemView.render().el)
+  reset: (models, options) ->
+    options?.previousModels.forEach(@removeOne, this)
+    
+    @render()
+    
+  addOne: (emailThread) ->
+    @listItemViews ?= {}
 
+    listItemView = new TuringEmailApp.Views.EmailThreads.ListItemView(model: emailThread)
+    @$el.append(listItemView.render().el)
+    listItemView.addedToDOM()
+    
+    @listenTo(listItemView, "click", @listItemClicked)
+    @listItemViews[emailThread.get("uid")] = listItemView
+
+  removeOne: (emailThread) ->
+    listItemView = @listItemViews?[emailThread.get("uid")]
+    return if not listItemView
+    
+    @stopListening(listItemView)
+    listItemView.remove()
+
+    delete @listItemViews[emailThread.get("uid")]
+    
   addAll: ->
-    @$el.empty()
     @collection.forEach(@addOne, this)
 
-    @renderCheckboxes()
+  removeAll: ->
+    @collection.forEach(@removeOne, this)
     
-    @setupSplitPaneResizing()
-    @setupListItemViewClicks()
-    @setupKeyboardShortcuts()
-    
-    @moveTuringEmailReportToTop()
-    
-    if @collections?.length() > 0
-      TuringEmailApp.currentEmailThreadIs(@collection.models[0].get("uid")) if TuringEmailApp.isSplitPaneMode()
-
-  renderCheckboxes: ->
-    $(".i-checks").iCheck
-      checkboxClass: "icheckbox_square-green"
-      radioClass: "iradio_square-green"
-
-    $("#bulk_action_checkbox_dropdown div.icheckbox_square-green ins").click ->
-      if $(@).parent().hasClass "checked"
-        TuringEmailApp.views.emailThreadsListView.checkAllCheckboxes()
-      else
-        TuringEmailApp.views.emailThreadsListView.uncheckAllCheckboxes()
-
-    $("#email_table_body div.icheckbox_square-green ins").click ->
-      if $(@).parent().hasClass "checked"
-        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@).parent(), true
-      else
-        TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@).parent(), false
-      
   setupSplitPaneResizing: ->
     return
   # if TuringEmailApp.isSplitPaneMode()
@@ -63,20 +72,6 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
   #     $(document).one "mouseup", ->
   #       $(document).unbind "mousemove"
-
-  # this is here instead of in ListItemView as an optimization so it is only caled once. 
-  setupListItemViewClicks: ->
-    tds = @$el.find('td.check-mail, td.mail-contact, td.mail-subject, td.mail-date')
-    tds.click (event) ->
-      tr = $(@).parent()
-      isDraft = tr.data("isDraft")
-      emailThreadUID = tr.data("emailThreadUID")
-
-      if isDraft
-        TuringEmailApp.routers.emailThreadsRouter.showEmailDraft emailThreadUID
-      else
-        TuringEmailApp.views.emailThreadsListView.markRowRead tr
-        TuringEmailApp.routers.emailThreadsRouter.showEmailThread emailThreadUID
 
   setupKeyboardShortcuts: ->
     $("#email_table_body tr:nth-child(1)").addClass("email_thread_highlight")
@@ -94,44 +89,70 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
       trReportEmail.remove()
       $("#email_table_body").prepend(trReportEmail)
 
+  #############################
+  ### TuringEmailApp Events ###
+  #############################      
+      
+  toolbarViewChanged: (toolbarView) ->
+    @stopListening(@currentToolbarView) if @currentToolbarView?
+    @currentToolbarView = toolbarView
+    
+    @listenTo(@currentToolbarView, "selectAll", @selectAll)
+    @listenTo(@currentToolbarView, "selectAllRead", @selectAllRead)
+    @listenTo(@currentToolbarView, "selectAllUnread", @selectAllUnread)
+    @listenTo(@currentToolbarView, "deselectAll", @deselectAll)
+    
   currentEmailThreadChanged: (emailThread) ->
-    @unhighlightEmailThread(@currentlySelectedEmailThread) if @currentlySelectedEmailThread
-    @highlightEmailThread(emailThread)
-    @uncheckAllCheckboxes()
+    if @currentlySelectedEmailThread
+      listItemView = @listItemViews[@currentlySelectedEmailThread.get("uid")]
+      listItemView?.unhighlight()
+      listItemView?.markRead()
+
+    listItemView = @listItemViews[emailThread.get("uid")]
+    listItemView?.highlight()
+    @deselectAll()
 
     @currentlySelectedEmailThread = TuringEmailApp.currentEmailThread
+
+  ######################
+  ### Toolbar Events ###
+  ######################
+  
+  selectAll: ->
+    listItemView.select() for listItemView in _.values(@listItemViews)
       
-  checkboxCheckedValueIs: (checkbox, isChecked) ->
-    if isChecked
-      checkbox.iCheck("check")
-      checkbox.parent().parent().addClass("checked_email_thread")
+  selectAllRead: ->
+    @collection.forEach(
+      (emailThread) ->
+        seen = emailThread.get("emails")[0].seen
+        listItemView = @listItemViews[emailThread.get("uid")]
+        if seen then listItemView.select() else listItemView.deselect()
+      , this)
+
+  selectAllUnread: ->
+    @collection.forEach(
+      (emailThread) ->
+        seen = emailThread.get("emails")[0].seen
+        listItemView = @listItemViews[emailThread.get("uid")]
+        if !seen then listItemView.select() else listItemView.deselect()
+    , this)
+      
+  deselectAll: ->
+    listItemView.deselect() for listItemView in _.values(@listItemViews)
+
+  ###########################
+  ### ListItemView Events ###
+  ###########################
+  
+  listItemClicked: (listItemView) ->
+    isDraft = listItemView.model.get("emails")[0].draft_id?
+    emailThreadUID = listItemView.model.get("uid")
+
+    if isDraft
+      TuringEmailApp.routers.emailThreadsRouter.showEmailDraft emailThreadUID
     else
-      checkbox.iCheck("uncheck")
-      checkbox.parent().parent().removeClass("checked_email_thread")
-
-  checkAllCheckboxes: ->
-    $("#email_table_body div.icheckbox_square-green").each ->
-      TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@), true
-
-  uncheckAllCheckboxes: ->
-    $("#email_table_body div.icheckbox_square-green").each ->
-      TuringEmailApp.views.emailThreadsListView.checkboxCheckedValueIs $(@), false
-      $(@).iCheck("uncheck")
-
-  highlightEmailThread: (emailThread) ->
-    tr = @$el.find("tr[name=" + emailThread.get("uid") + "]")
-    tr.removeClass("read")
-    tr.removeClass("unread")
-    tr.addClass("currently_being_read")
-
-  unhighlightEmailThread: (emailThread) ->
-    if emailThread?
-      tr = @$el.find("tr[name=" + emailThread.get("uid") + "]")
-      tr.removeClass("currently_being_read")
-      tr.addClass("read")
-
-  markRowRead: (tr) ->
-    if tr.hasClass("unread")
+      listItemView.markRead
       TuringEmailApp.views.toolbarView.decrementUnreadCountOfCurrentFolder(TuringEmailApp.currentFolderId)
-      tr.removeClass("unread")
-      tr.addClass("read")
+
+      TuringEmailApp.routers.emailThreadsRouter.showEmailThread emailThreadUID
+      

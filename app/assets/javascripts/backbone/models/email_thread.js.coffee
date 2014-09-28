@@ -6,10 +6,8 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     emails:
       required: true
 
-  initialize: (attributes) ->
-    if attributes?.emailThreadUID
-      @url = "/api/v1/email_threads/show/" + attributes.emailThreadUID
-      @unset("emailThreadUID")
+  initialize: (attributes, options) ->
+    @url = "/api/v1/email_threads/show/" + options.emailThreadUID if options?.emailThreadUID
 
   seenIs: (seenValue=true)->
     postData = {}
