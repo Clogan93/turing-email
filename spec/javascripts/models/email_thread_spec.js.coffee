@@ -1,6 +1,7 @@
 describe "EmailThread", ->
   beforeEach ->
-    emailThreadFixtures = fixture.load("email_thread.fixture.json");
+    emailThreadFixtures = fixture.load("email_thread.fixture.json")
+    @userFixtures = fixture.load("user.fixture.json", true)
     @validEmailThreadFixture = emailThreadFixtures[0]["valid"]
     
     @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadUID: @validEmailThreadFixture["uid"])
@@ -38,9 +39,6 @@ describe "EmailThread", ->
       @emailUIDs = (email["uid"] for email in @validEmailThreadFixture["emails"])
       @emailUIDs.sort()
 
-    afterEach ->
-      @server.restore()
-
     describe "seenValue=true", ->
       beforeEach ->
         @emailThread.seenIs(true)
@@ -72,3 +70,47 @@ describe "EmailThread", ->
         postData = $.unserialize(request.requestBody)
         expect(postData["seen"]).toEqual("false")
         expect(postData["email_uids"].sort()).toEqual(@emailUIDs)
+
+  describe "attribute functions", ->
+
+    beforeEach ->
+      specStartTuringEmailApp()
+      
+      @validUserFixture = @userFixtures[0]["valid"]
+
+      @server.respondWith "GET", TuringEmailApp.models.user.url, JSON.stringify(@validUserFixture)
+
+      @emailThread.fetch()
+      @server.respond()
+
+      TuringEmailApp.models.user.fetch()
+      @server.respond()
+
+    describe "#fromPreview", ->
+
+      it "returns the correct response under default conditions", ->
+        expect(@emailThread.fromPreview()).toEqual("David Gobaud")
+
+      it "returns the correct response when the most recent email sent from the user", ->
+        @emailThread.get("emails")[0]["from_address"] = TuringEmailApp.models.user.get("email")
+        @emailThread.get("emails")[1]["from_name"] = "Joe Blogs"
+        expect(@emailThread.fromPreview()).toEqual("Joe Blogs, me")
+
+      it "returns the correct response when the most recent email sent from the user and there is only one email", ->
+        @emailThread.get("emails")[0]["from_address"] = TuringEmailApp.models.user.get("email")
+        @emailThread.get("emails").pop()
+        expect(@emailThread.fromPreview()).toEqual("me")
+
+    describe "#subjectPreview", ->
+
+      it "returns the correct response under default conditions", ->
+        expect(@emailThread.subjectPreview()).toEqual("Re: [turing-email] clicking thread message to expand it on first load doesnt work (#62)")
+
+      it "returns the correct response when the most recent email sent from the user", ->
+        @emailThread.get("emails")[0]["from_address"] = TuringEmailApp.models.user.get("email")
+        expect(@emailThread.subjectPreview()).toEqual("[turing-email] clicking thread message to expand it on first load doesnt work (#62)")
+
+      it "returns the correct response when the most recent email sent from the user and there is only one email", ->
+        @emailThread.get("emails")[0]["from_address"] = TuringEmailApp.models.user.get("email")
+        @emailThread.get("emails").pop()
+        expect(@emailThread.subjectPreview()).toEqual("Re: [turing-email] clicking thread message to expand it on first load doesnt work (#62)")
