@@ -311,11 +311,13 @@ body
 #page-wrapper
 {
   margin: 0 0 0 0;
+  padding-right: 0px;
 }
 
 .table-mail .mail-date
 {
   font-size: 12px;
+  min-width: 75px;
 }
 
 a#refresh_link
@@ -390,11 +392,11 @@ a#refresh_link
 
 #preview_panel
 {
-  width: 79.85%;
+  width: 81.5%;
   height: 50%;
   position: fixed !important;
   bottom: 0px;
-  left: 18.25%;
+  left: 18.5%;
   z-index: 1000;
   overflow-y: scroll;
   display: none;
@@ -471,4 +473,25 @@ a#refresh_link
   {
     font-weight: bold;
   }
+}
+
+#mailBody
+{
+  padding-right: 0px;
+}
+
+.search_nav_bar
+{
+  margin-right: 0px;
+}
+
+#lowerEmailPane
+{
+  margin-right: -10px;
+}
+
+.settingsSaveAlert
+{
+  position: fixed;
+  left: 30%;
 }

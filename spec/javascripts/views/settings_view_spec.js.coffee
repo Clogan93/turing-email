@@ -27,9 +27,6 @@ describe "SettingsView", ->
     beforeEach ->
       @userSettings.fetch()
       @server.respond()
-      
-      window.confirm = ->
-        return true
 
     it "renders the settings view", ->
       expect(@settingsDiv.find("div[class=page-header]")).toContainHtml('<h1 class="h1">Settings</h1>')
@@ -41,18 +38,6 @@ describe "SettingsView", ->
     it "renders the Email Bankruptcy button", ->
       expect(@settingsDiv).toContainHtml('<h4 class="h4">Email Bankruptcy</h4>')
       expect(@settingsDiv).toContainHtml('<button id="email_bankruptcy_button" type="button" class="btn btn-block btn-danger">Declare Email Bankruptcy</button>')
-
-      spyOnEvent("#email_bankruptcy_button", "click")
-      emailBankruptcyButton = @settingsDiv.find("#email_bankruptcy_button")
-      emailBankruptcyButton.click()
-      expect("click").toHaveBeenPreventedOn("#email_bankruptcy_button")
-
-      expect(@settingsDiv).toContainText("You have successfully declared email bankruptcy!")
-      
-      expect(@server.requests.length).toEqual 2
-      request = @server.requests[1]
-      expect(request.method).toEqual "POST"
-      expect(request.url).toEqual "/api/v1/users/declare_email_bankruptcy"
 
     it "renders the keyboard shortcuts switch", ->
       keyboardShortcutsSwitch = $("#keyboard_shortcuts_switch")
@@ -72,6 +57,35 @@ describe "SettingsView", ->
     it "renders the Save button", ->
       expect(@settingsDiv).toContainHtml('<button type="button" class="btn btn-success" id="user_settings_save_button">Save</button>')
 
+  describe "email bankruptcy button", ->
+    beforeEach ->
+      @userSettings.fetch()
+      @server.respond()
+
+      window.confirm = ->
+        return true
+
+    it "posts the bankruptcy request to the server", ->
+      spyOnEvent("#email_bankruptcy_button", "click")
+      emailBankruptcyButton = @settingsDiv.find("#email_bankruptcy_button")
+      emailBankruptcyButton.click()
+      expect("click").toHaveBeenPreventedOn("#email_bankruptcy_button")
+
+      expect(@settingsDiv).toContainText("You have successfully declared email bankruptcy!")
+      
+      expect(@server.requests.length).toEqual 2
+      request = @server.requests[1]
+      expect(request.method).toEqual "POST"
+      expect(request.url).toEqual "/api/v1/users/declare_email_bankruptcy"
+
+  describe "save button", ->
+    beforeEach ->
+      @userSettings.fetch()
+      @server.respond()
+
+      @mailBodyDiv = $("<div />", {id: "mailBody"}).appendTo('body')
+
+    it "saves the model to the server", ->
       spyOnEvent("#user_settings_save_button", "click")
       saveButton = @settingsDiv.find("#user_settings_save_button")
       saveButton.click()
@@ -79,7 +93,7 @@ describe "SettingsView", ->
 
       expect(@server.requests.length).toEqual 2
       request = @server.requests[1]
-      expect(request.method).toEqual "POST"
+      expect(request.method).toEqual "PATCH"
       expect(request.url).toEqual "/api/v1/user_configurations"
 
     it "updates the user settings model with the correct values", ->
@@ -97,3 +111,19 @@ describe "SettingsView", ->
   
       expect(@userSettings.get("genie_enabled")).toEqual(false)
       expect(@userSettings.get("split_pane_mode")).toEqual("horizontal")
+
+    it "displays a success alert after the save button is clicked and then hides it", ->
+      #Change one attribute
+      expect(@userSettings.get("genie_enabled")).toEqual(true)
+      genieSwitch = $("#genie_switch")
+      genieSwitch.click()
+      saveButton = @settingsDiv.find("#user_settings_save_button")
+      saveButton.click()
+
+      @server.respondWith "PATCH", @userSettings.url, JSON.stringify(@userSettings)
+      @server.respond()
+
+      expect($("#mailBody")).toContainHtml('<div class="alert alert-success settingsSaveAlert" role="alert">You have successfully saved your settings!</div>')
+
+      waitsFor ->
+        $("div.alert.alert-success.settingsSaveAlert").length == 0
