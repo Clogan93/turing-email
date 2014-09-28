@@ -15,9 +15,12 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
       @$el.addClass("unread")
 
     @$el.css({ cursor: "pointer" });
-    
-    @$el.html(@template(@model.toJSON()))
-    
+
+    modelJSON = @model.toJSON()
+    modelJSON["fromPreview"] = @model.fromPreview()
+    modelJSON["subjectPreview"] = @model.subjectPreview()
+    @$el.html(@template(modelJSON))
+
     @setupClick()
     
     return this
