@@ -1,11 +1,9 @@
-window.backbone = class
-  @spy: (object, event) ->
-    return new spy(object, event)
+window.backbone =
+  spy: (object, event) ->
+    spy = sinon.spy()
+    object.on(event, spy)
     
-  class spy
-    constructor: (@object, @event) ->
-      @spy = sinon.spy()
-      object.on(@event, @spy)
-
-    restore: ->
-      @object.off(@event, @spy)
+    spy.restore = ->
+      object.off(@event, spy)
+    
+    return spy

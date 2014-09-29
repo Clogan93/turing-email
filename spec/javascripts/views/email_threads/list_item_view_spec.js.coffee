@@ -61,10 +61,10 @@ describe "ListItemView", ->
       expect(@listItemView.$el.find('td.mail-subject')).toHandle("click")
       expect(@listItemView.$el.find('td.mail-date')).toHandle("click")
 
-      @backboneSpy = backbone.spy(@listItemView, "click")
+      spy = backbone.spy(@listItemView, "click")
       @tdCheckMail.click()
-      expect(@backboneSpy.spy).toHaveBeenCalled()
-      @backboneSpy.restore()
+      expect(spy).toHaveBeenCalled()
+      spy.restore()
 
   describe "#setupCheckbox", ->
     beforeEach ->
@@ -82,7 +82,7 @@ describe "ListItemView", ->
 
     it "calls toggleSelect when a checkbox is clicked", ->
       @listItemView.setupCheckbox()
-      @spy = sinon.spy(@listItemView, "toggleSelect")
+      @spy = sinon.spy(@listItemView, "updateSelectionStyles")
       @listItemView.$el.find("div.icheckbox_square-green ins").click()
       expect(@spy).toHaveBeenCalled()
 
@@ -103,6 +103,7 @@ describe "ListItemView", ->
     beforeEach ->
       @emailThread.fetch()
       @server.respond()
+      @listItemView.addedToDOM()
 
     it "adds the checked_email_thread class", ->
       @listItemView.$el.removeClass("checked_email_thread")
@@ -114,6 +115,7 @@ describe "ListItemView", ->
     beforeEach ->
       @emailThread.fetch()
       @server.respond()
+      @listItemView.addedToDOM()
 
     it "removes the checked_email_thread class", ->
       @listItemView.$el.addClass("checked_email_thread")
