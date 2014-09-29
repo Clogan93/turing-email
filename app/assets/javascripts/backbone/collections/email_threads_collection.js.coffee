@@ -11,12 +11,9 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
   setupURL: (folderID) ->
     @url = "/api/v1/email_threads/in_folder?folder_id=" + folderID if folderID
 
-    @page = getQuerystringNameValue("page")
-    
-    if @page != null
-      @url += "&page=" + @page
-    else
-      @page = "1"
+    page = getQuerystringNameValue("page")
+    @page = if page? then parseIn(page) else 1
+    @url += "&page=" + @page
       
   modelRemoved: (model) ->
     model.trigger("removedFromCollection", this)
@@ -38,20 +35,18 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
 
   previousPage: ->
     pageNumber = parseInt(@page)
-    if pageNumber > 1
-      @page = (pageNumber - 1).toString()
+    if @page > 1
+      @page--
       @url = "/api/v1/email_threads/in_folder?folder_id=" + TuringEmailApp.currentFolderId + "&page=" + @page
       @fetch(
         success: (collection, response, options) =>
-          TuringEmailApp.views.emailThreadsListView.renderCheckboxes()
           TuringEmailApp.views.toolbarView.renderEmailsDisplayedCounter TuringEmailApp.currentFolderId
       )
 
   nextPage: ->
-    @page = (parseInt(@page) + 1).toString()
+    @page++
     @url = "/api/v1/email_threads/in_folder?folder_id=" + TuringEmailApp.currentFolderId + "&page=" + @page
     @fetch(
       success: (collection, response, options) =>
-        TuringEmailApp.views.emailThreadsListView.renderCheckboxes()
         TuringEmailApp.views.toolbarView.renderEmailsDisplayedCounter TuringEmailApp.currentFolderId
     )

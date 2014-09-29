@@ -219,7 +219,4 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
   setupRefresh: ->
     @$el.find("#refresh_button").click ->
-      TuringEmailApp.collections.emailThreads.fetch(
-        success: (collection, response, options) =>
-          TuringEmailApp.views.emailThreadsListView.renderCheckboxes()
-      )
+      TuringEmailApp.collections.emailThreads.fetch()

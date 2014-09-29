@@ -5,7 +5,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
 
   initialize: ->
     @listenTo(@model, "change", @render)
-    @listenTo(@model, "removedFromCollection destroy", @remove)
+    @listenTo(@model, "destroy", @remove)
 
   render: ->
     @$el.html(@template(@model.toJSON()))
