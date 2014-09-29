@@ -20,37 +20,16 @@ window.TuringEmailApp = new(Backbone.View.extend({
     @collections = {}
     @routers = {}
 
-    # toolbar
     @setupToolbar()
-    
-    # user and user settings
-    @models.user = new TuringEmailApp.Models.User()
-    @models.user.fetch()
-
-    @models.userSettings = new TuringEmailApp.Models.UserSettings()
-    @models.userSettings.fetch()
+    @setupUser()
 
     # email folders
     @setupEmailFolders()
     @loadEmailFolders()
 
-    # compose view
-    @views.composeView = new TuringEmailApp.Views.ComposeView(
-      el: $("#modals")
-    )
-    @listenTo(@views.composeView, "change:draft", @draftChanged)
-    @views.composeView.render()
-
-    # email threads
+    @setupComposeView()
     @setupEmailThreads()
-
-    # routers
-    @routers.emailFoldersRouter = new TuringEmailApp.Routers.EmailFoldersRouter()
-    @routers.emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
-    @routers.analyticsRouter = new TuringEmailApp.Routers.AnalyticsRouter()
-    @routers.reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
-    @routers.settingsRouter = new TuringEmailApp.Routers.SettingsRouter()
-    @routers.searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()
+    @setupRouters()
 
     windowLocationHash = window.location.hash.toString()
     if windowLocationHash.indexOf("#email_folder/") == -1
@@ -62,11 +41,7 @@ window.TuringEmailApp = new(Backbone.View.extend({
 
   startEmailSync: ->
     window.setInterval (->
-      $.ajax({
-        url: 'api/v1/email_accounts/sync.json'
-        type: 'POST'
-        dataType : 'json'
-      }).done((data, status) =>
+      $.post("api/v1/email_accounts/sync").done((data, status) =>
         if data.synced_emails
           TuringEmailApp.emailThreads.fetch()
       )
@@ -81,6 +56,13 @@ window.TuringEmailApp = new(Backbone.View.extend({
     @views.toolbarView.render()
     @trigger("change:toolbarView", this, @views.toolbarView)
   
+  setupUser: ->
+    @models.user = new TuringEmailApp.Models.User()
+    @models.user.fetch()
+
+    @models.userSettings = new TuringEmailApp.Models.UserSettings()
+    @models.userSettings.fetch()
+    
   setupEmailFolders: ->
     @collections.emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection()
     @views.emailFoldersTreeView = new TuringEmailApp.Views.EmailFolders.TreeView(
@@ -88,6 +70,13 @@ window.TuringEmailApp = new(Backbone.View.extend({
       el: $("#email_folders")
       collection: @collections.emailFolders
     )
+    
+  setupComposeView: ->
+    @views.composeView = new TuringEmailApp.Views.ComposeView(
+      el: $("#modals")
+    )
+    @listenTo(@views.composeView, "change:draft", @draftChanged)
+    @views.composeView.render()
     
   setupEmailThreads: ->
     @collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
@@ -97,6 +86,14 @@ window.TuringEmailApp = new(Backbone.View.extend({
       collection: TuringEmailApp.collections.emailThreads
     })
 
+  setupRouters: ->
+    @routers.emailFoldersRouter = new TuringEmailApp.Routers.EmailFoldersRouter()
+    @routers.emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
+    @routers.analyticsRouter = new TuringEmailApp.Routers.AnalyticsRouter()
+    @routers.reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
+    @routers.settingsRouter = new TuringEmailApp.Routers.SettingsRouter()
+    @routers.searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()
+    
   isSplitPaneMode: ->
     splitPaneMode = TuringEmailApp.models.userSettings.get("split_pane_mode")
     return splitPaneMode is "horizontal" || splitPaneMode is "vertical"
@@ -141,7 +138,10 @@ window.TuringEmailApp = new(Backbone.View.extend({
     @listenTo(emailThreadView, "archiveClicked", @archiveClicked)
     @listenTo(emailThreadView, "trashClicked", @trashClicked)
 
-    @stopListening(@currentEmailThreadView) if @currentEmailThreadView?
+    if @currentEmailThreadView?
+      @stopListening(@currentEmailThreadView)
+      @currentEmailThreadView.stopListening()
+      
     @currentEmailThreadView = emailThreadView
     
   loadEmailThread: (emailThreadUID, callback) ->
@@ -200,6 +200,10 @@ window.TuringEmailApp = new(Backbone.View.extend({
       TuringEmailApp.views.composeView.show()
 
     TuringEmailApp.loadEmailThread(emailThreadUID, callback)
+
+  ##############################
+  ### ComposeView events ###
+  ##############################
     
   draftChanged: ->
     @collections.emailThreads.fetch(reset: true) if TuringEmailApp.currentFolderID is "DRAFT"
