@@ -6,31 +6,37 @@ window.specStartTuringEmailApp = ->
   TuringEmailApp.collections = {}
   TuringEmailApp.routers = {}
 
+  TuringEmailApp.views.toolbarView = new TuringEmailApp.Views.ToolbarView(
+    app: TuringEmailApp
+    el: $("#email-folder-mail-header")
+  )
+
   TuringEmailApp.models.user = new TuringEmailApp.Models.User()
   TuringEmailApp.models.userSettings = new TuringEmailApp.Models.UserSettings()
-
+  
   TuringEmailApp.collections.emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection()
-  TuringEmailApp.routers.emailFoldersRouter = new TuringEmailApp.Routers.EmailFoldersRouter()
   TuringEmailApp.views.emailFoldersTreeView = new TuringEmailApp.Views.EmailFolders.TreeView(
+    app: TuringEmailApp
     el: $("#email_folders")
-    collection: TuringEmailApp.collections.emailFolders
-  )
-  TuringEmailApp.views.toolbarView = new TuringEmailApp.Views.ToolbarView(
-    el: $("#email-folder-mail-header")
     collection: TuringEmailApp.collections.emailFolders
   )
 
   TuringEmailApp.views.composeView = new TuringEmailApp.Views.ComposeView(
     el: $("#modals")
   )
+  TuringEmailApp.listenTo(TuringEmailApp.views.composeView, "change:draft", TuringEmailApp.draftChanged)
 
+  TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
+  TuringEmailApp.views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView(
+    app: TuringEmailApp
+    el: $("#email_table_body")
+    collection: TuringEmailApp.collections.emailThreads
+  )
+
+  TuringEmailApp.routers.emailFoldersRouter = new TuringEmailApp.Routers.EmailFoldersRouter()
   TuringEmailApp.routers.emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
-
-  TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsSearchResultsCollection()
-
-  #Routers
-  TuringEmailApp.routers.reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
   TuringEmailApp.routers.analyticsRouter = new TuringEmailApp.Routers.AnalyticsRouter()
+  TuringEmailApp.routers.reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
   TuringEmailApp.routers.settingsRouter = new TuringEmailApp.Routers.SettingsRouter()
   TuringEmailApp.routers.searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()
 

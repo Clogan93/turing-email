@@ -3,6 +3,7 @@ TuringEmailApp.Views.EmailFolders ||= {}
 class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
   template: JST["backbone/templates/email_folders/tree"]
 
+  # TODO write test
   initialize: (options) ->
     @listenTo(@collection, "add", @render)
     @listenTo(@collection, "remove", @render)
@@ -40,6 +41,7 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
   ### TuringEmailApp Events ###
   #############################
   
+  # TODO write test
   currentEmailFolderChanged: (app, emailFolderID) ->
     if @currentEmailFolderID?
       $('a[href="#email_folder/' + @currentEmailFolderID + '"]').unbind "click"

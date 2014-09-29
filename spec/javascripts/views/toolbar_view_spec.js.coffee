@@ -5,6 +5,7 @@ describe "ToolbarView", ->
       folderID: "INBOX"
     )
     @toolbarView = new TuringEmailApp.Views.ToolbarView(
+      app: TuringEmailApp
       collection: @emailFolders
     )
 

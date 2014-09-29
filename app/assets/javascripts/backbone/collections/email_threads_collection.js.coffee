@@ -6,14 +6,15 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
     @listenTo(this, "remove", @modelRemoved)
     @listenTo(this, "reset", @modelsReset)
 
-    @setupURL(options?.folderID)
+    @setupURL(options?.folderID, options?.page)
 
-  setupURL: (folderID) ->
+  # TODO write tests
+  setupURL: (folderID, page) ->
     @url = "/api/v1/email_threads/in_folder?folder_id=" + folderID if folderID
-
-    page = getQuerystringNameValue("page")
-    @page = if page? then parseIn(page) else 1
-    @url += "&page=" + @page
+    
+    if page
+      @page = parseInt(page)
+      @url += "&page=" + @page
       
   modelRemoved: (model) ->
     model.trigger("removedFromCollection", this)
