@@ -24,7 +24,7 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     @setupClick()
     
     return this
-    
+
   addedToDOM: ->
     @setupCheckbox()
 
