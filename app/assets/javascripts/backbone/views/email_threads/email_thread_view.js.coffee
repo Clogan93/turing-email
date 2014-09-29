@@ -4,34 +4,36 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
   template: JST["backbone/templates/email_threads/email_thread"]
 
   initialize: ->
-    @listenTo(@model, "change", @render)
-    @listenTo(@model, "removedFromCollection destroy", @remove)
+    if @model
+      @listenTo(@model, "change", @render)
+      @listenTo(@model, "destroy", @remove)
 
   render: ->
-    @$el.html(@template(@model.toJSON()))
-
-    @model.seenIs(true)
-
-    @renderGenieReport()
-    @renderHtmlPartsOfEmails()
-
-    @setupEmailExpandAndCollapse()
-    @setupBackButton()
-    @setupReplyButtons()
-    @setupForwardButton()
-
-    @setupArchive()
-    @setupDelete()
+    if @model
+      @$el.html(@template(@model.toJSON()))
+  
+      @model.seenIs(true)
+  
+      @renderGenieReport()
+      @renderHTMLEmails()
+  
+      @setupEmailExpandAndCollapse()
+      @setupButtons()
+    else
+      @$el.empty()
     
     return this
 
+  # TODO refactor
   renderGenieReport: ->
     for email, index in @model.get("emails")
       if email.subject is "Turing Email - Your daily Genie Report!"
         @insertHtmlIntoIframe email, index
+        iframe = @$el.find("#email_iframe" + index.toString())
 
-        @$el.find("#email_iframe" + index.toString()).contents().find("body").find('a[href^="#email_thread"]').click (event) ->
+        iframe.contents().find("body").find('a[href^="#email_thread"]').click (event) ->
           event.preventDefault()
+          
           $('#composeModal').modal()
           subject = "Re: " + $(@).text()
           $('#composeModal #subject_input').val(subject)
@@ -45,21 +47,23 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
             $('#composeModal #compose_email_body').val("\n\n\n\n" + TuringEmailApp.views.composeView.retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes(email_from_email_thread))
             $('#compose_form #email_in_reply_to_uid_input').val(email_from_email_thread.uid)
 
-        @$el.find("#email_iframe" + index.toString()).contents().find("body").find('a[href^="#from_address"]').click (event) ->
+        iframe.contents().find("body").find('a[href^="#from_address"]').click (event) ->
           event.preventDefault()
+          
           $("#email_filter_from").val($(@).attr("href").split("=")[1])
           $(window).scrollTop($('.navbar-header').position().top)
           $('.dropdown a').trigger('click.bs.dropdown')
           return false
 
-        @$el.find("#email_iframe" + index.toString()).contents().find("body").find('a[href^="#list_id"]').click (event) ->
+        iframe.contents().find("body").find('a[href^="#list_id"]').click (event) ->
           event.preventDefault()
+          
           $("#email_filter_list").val($(@).attr("href").split("=")[1])
           $(window).scrollTop($('.navbar-header').position().top)
           $('.dropdown a').trigger('click.bs.dropdown')
           return false
 
-  renderHtmlPartsOfEmails: ->
+  renderHTMLEmails: ->
     for email, index in @model.get("emails")
       if email.html_part?
         @insertHtmlIntoIframe email, index
@@ -73,87 +77,30 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
         $(this).addClass "collapsed_email"
         $(this).find(".email_body").hide()
 
-  setupBackButton: ->
+  setupButtons: ->
     if !TuringEmailApp.isSplitPaneMode()
-      $("#email_back_button").click ->
-        TuringEmailApp.routers.emailFoldersRouter.showFolder(TuringEmailApp.currentFolderId)
+      @$el.find("#email_back_button").click =>
+        @trigger("goBackClicked", this)
 
-  setupReplyButtons: ->
-    $(".email_reply_button").click =>
-      TuringEmailApp.showEmailEditorWithEmailThread(TuringEmailApp.currentEmailThread.get("uid"), "reply")
+    @$el.find(".email_reply_button").click =>
+      @trigger("replyClicked", this)
 
-  setupForwardButton: ->
-    $(".email_forward_button").click ->
-      TuringEmailApp.showEmailEditorWithEmailThread(TuringEmailApp.currentEmailThread.get("uid"), "forward")
+    @$el.find(".email_forward_button").click =>
+      @trigger("forwardClicked", this)
 
-  setupArchive: ->
     @$el.find("i.fa-archive").parent().click =>
-      postData = {}
-      emailThreadUIds = []
-      emailThreadUIds.push(TuringEmailApp.currentEmailThread.get("uid"))
-      postData.email_thread_uids = emailThreadUIds
-      postData.email_folder_id = TuringEmailApp.currentFolderId
+      @trigger("archiveClicked", this)
 
-      url = "/api/v1/email_threads/remove_from_folder.json"
-      $.ajax
-        type: "POST"
-        url: url
-        data: postData
-        success: (data) ->
-          return
-        error: (data) ->
-          TuringEmailApp.tattletale.log(JSON.stringify(data))
-          TuringEmailApp.tattletale.send()
-
-      for emailThreadUID in emailThreadUIds
-        emailThread = TuringEmailApp.collections.emailThreads.getEmailThread emailThreadUID
-        TuringEmailApp.collections.emailThreads.remove emailThread
-
-      if TuringEmailApp.models.userSettings.get("split_pane_mode") is "horizontal"
-        @renderNoConversationsSelected()
-      else
-        window.location = "/mail"
-
-  setupDelete: ->
     @$el.find("i.fa-trash-o").parent().click =>
-      postData = {}
-      emailThreadUIds = []
-      emailThreadUIds.push(TuringEmailApp.currentEmailThread.get("uid"))
-      postData.email_thread_uids = emailThreadUIds
-
-      url = "/api/v1/email_threads/trash.json"
-      $.ajax
-        type: "POST"
-        url: url
-        data: postData
-        success: (data) ->
-          return
-        error: (data) ->
-          TuringEmailApp.tattletale.log(JSON.stringify(data))
-          TuringEmailApp.tattletale.send()
-
-      for emailThreadUID in emailThreadUIds
-        emailThread = TuringEmailApp.collections.emailThreads.getEmailThread emailThreadUID
-        TuringEmailApp.collections.emailThreads.remove emailThread
-
-      if TuringEmailApp.models.userSettings.get("split_pane_mode") is "horizontal"
-        @renderNoConversationsSelected()
-      else
-        window.location = "/mail"
+      @trigger("trashClicked", this)
 
   insertHtmlIntoIframe: (email, index) ->
-    @$el.find("#email_iframe" + index.toString()).contents().find("body").append(email.html_part)
-    body_height_sum = 0
+    iframe = @$el.find("#email_iframe" + index.toString())
     
-    @$el.find("#email_iframe" + index.toString()).contents().find("body").children().each ->
-      body_height = $(@).height()
-      body_height_sum += body_height
-    
+    iframe.contents().find("body").append(email.html_part)
+    body_height_sum = iframe.contents().find("body").height()
+   
     body_height_adjusted = body_height_sum + 25
     body_height_adjusted_string = body_height_adjusted.toString() + "px"
-    
-    @$el.find("#email_iframe" + index.toString()).css("height", body_height_adjusted_string)
 
-  renderNoConversationsSelected: ->
-    TuringEmailApp.models.userSettings.get("split_pane_mode") is "horizontal"
-    $("#preview_panel").append("<div id='preview_content'><div id='no_conversations_selected' align=center>No conversations selected</div></div>")
+    iframe.css("height", body_height_adjusted_string)

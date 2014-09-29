@@ -43,10 +43,13 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     @$el.find("div.icheckbox_square-green ins").click (event) =>
       @updateSelectionStyles()
 
-      if @diviCheck.hasClass "checked"
+      if @isChecked()
         @trigger("selected", this)
       else
         @trigger("deselected", this)
+
+  isChecked: ->
+    return @diviCheck.hasClass "checked"
 
   updateSelectionStyles: ->
     if @diviCheck.hasClass "checked"
@@ -70,8 +73,8 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     @trigger("deselected", this)
 
   highlight: ->
-    @$el.removeClass("read")
-    @$el.removeClass("unread")
+    #@$el.removeClass("read")
+    #@$el.removeClass("unread")
     @$el.addClass("currently_being_read")
 
     @trigger("highlight", this)

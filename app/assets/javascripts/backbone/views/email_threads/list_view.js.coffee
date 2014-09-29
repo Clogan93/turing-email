@@ -1,16 +1,13 @@
 TuringEmailApp.Views.EmailThreads ||= {}
 
 class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
-  initialize: ->
+  initialize: (options) ->
     @listenTo(@collection, "add", @addOne)
     @listenTo(@collection, "remove", @removeOne)
     @listenTo(@collection, "reset", @resetView)
     @listenTo(@collection, "destroy", @remove)
 
-    @listenTo(TuringEmailApp, 'change:toolbarView', @toolbarViewChanged)
-    @listenTo(TuringEmailApp, 'change:currentEmailThread', @currentEmailThreadChanged)
-
-    @toolbarViewChanged(TuringEmailApp, TuringEmailApp.views.toolbarView) if TuringEmailApp.views.toolbarView?
+    @listenTo(options.app, "change:currentEmailThread", @currentEmailThreadChanged)
 
   render: ->
     @removeAll()
@@ -39,6 +36,19 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     listItemView.addedToDOM()
     
     @listenTo(listItemView, "click", @listItemClicked)
+
+    # TODO write tests
+    @listenTo(listItemView, "selected", (listItemView) =>
+      @trigger("listItemSelected", this, listItemView.model)
+      @listItemViews[TuringEmailApp.currentEmailThread?.get("uid")]?.unhighlight()
+    )
+
+    # TODO write tests
+    @listenTo(listItemView, "deselected", (listItemView) =>
+      @trigger("listItemDeselected", this, listItemView.model)
+      @listItemViews[TuringEmailApp.currentEmailThread?.get("uid")]?.highlight() if @getSelectedEmailThreads().length is 0
+    )
+    
     @listItemViews[emailThread.get("uid")] = listItemView
 
   removeOne: (emailThread) ->
@@ -92,15 +102,6 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   ### TuringEmailApp Events ###
   #############################      
       
-  toolbarViewChanged: (app, toolbarView) ->
-    @stopListening(@currentToolbarView) if @currentToolbarView?
-    @currentToolbarView = toolbarView
-
-    @listenTo(@currentToolbarView, "selectAll", @selectAll)
-    @listenTo(@currentToolbarView, "selectAllRead", @selectAllRead)
-    @listenTo(@currentToolbarView, "selectAllUnread", @selectAllUnread)
-    @listenTo(@currentToolbarView, "deselectAll", @deselectAll)
-
   currentEmailThreadChanged: (app, emailThread) ->
     if @currentlySelectedEmailThread
       listItemView = @listItemViews[@currentlySelectedEmailThread.get("uid")]
@@ -113,20 +114,33 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
     @currentlySelectedEmailThread = TuringEmailApp.currentEmailThread
 
-  ######################
-  ### Toolbar Events ###
-  ######################
+  ###############
+  ### Getters ###
+  ###############
+
+  # TODO write tests
+  getSelectedEmailThreads: ->
+    selectedListItemViews = []
+    
+    for listItemView in _.values(@listItemViews)
+      selectedListItemViews.push(listItemView.model) if listItemView.isChecked()
+      
+    return selectedListItemViews
   
+  ###############
+  ### Actions ###
+  ###############
+      
   selectAll: ->
     listItemView.select() for listItemView in _.values(@listItemViews)
-      
+
   selectAllRead: ->
     @collection.forEach(
       (emailThread) ->
         seen = emailThread.get("emails")[0].seen
         listItemView = @listItemViews[emailThread.get("uid")]
         if seen then listItemView.select() else listItemView.deselect()
-      , this)
+    , this)
 
   selectAllUnread: ->
     @collection.forEach(
@@ -135,9 +149,37 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
         listItemView = @listItemViews[emailThread.get("uid")]
         if !seen then listItemView.select() else listItemView.deselect()
     , this)
-      
+
   deselectAll: ->
     listItemView.deselect() for listItemView in _.values(@listItemViews)
+
+  # TODO write tests
+  markSelectedRead: ->
+    for listItemView in _.values(@listItemViews)
+      listItemView.markRead() if listItemView.isChecked()
+
+  # TODO write tests
+  markSelectedUnread: ->
+    for listItemView in _.values(@listItemViews)
+      listItemView.markUnread() if listItemView.isChecked()
+
+  #############################
+  ### TuringEmailApp Events ###
+  #############################
+    
+  currentEmailThreadChanged: (app, emailThread) ->
+    if @currentEmailThread
+      listItemView = @listItemViews[@currentEmailThread.get("uid")]
+      listItemView?.unhighlight()
+      listItemView?.markRead()
+
+    if emailThread?
+      listItemView = @listItemViews[emailThread.get("uid")]
+      listItemView?.highlight()
+
+    @deselectAll()
+
+    @currentEmailThread = TuringEmailApp.currentEmailThread
 
   ###########################
   ### ListItemView Events ###

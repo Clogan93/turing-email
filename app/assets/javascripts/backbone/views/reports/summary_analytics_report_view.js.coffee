@@ -5,7 +5,7 @@ class TuringEmailApp.Views.Reports.SummaryAnalyticsReportView extends Backbone.V
 
   initialize: ->
     @listenTo(@model, "change", @render)
-    @listenTo(@model, "removedFromCollection destroy", @remove)
+    @listenTo(@model, "destroy", @remove)
 
   render: ->
     TuringEmailApp.showReports()

@@ -20,25 +20,105 @@ window.TuringEmailApp = new(Backbone.View.extend({
     @collections = {}
     @routers = {}
 
+    @setupToolbar()
+    @setupUser()
+
+    # email folders
+    @setupEmailFolders()
+    @loadEmailFolders()
+
+    @setupComposeView()
+    @setupEmailThreads()
+    @setupRouters()
+
+    windowLocationHash = window.location.hash.toString()
+    if windowLocationHash.indexOf("#email_folder/") == -1
+      @routers.emailFoldersRouter.showFolder("INBOX")
+
+    #@startEmailSync()
+
+    Backbone.history.start()
+
+  startEmailSync: ->
+    window.setInterval (->
+      $.post("api/v1/email_accounts/sync").done((data, status) =>
+        if data.synced_emails
+          TuringEmailApp.emailThreads.fetch()
+      )
+    ), 60000
+    
+  setupToolbar: ->
+    @views.toolbarView = new TuringEmailApp.Views.ToolbarView(
+      app: this
+      el: $("#email-folder-mail-header")
+    )
+    
+    @views.toolbarView.render()
+
+    @listenTo(@views.toolbarView, "selectAll", => @views.emailThreadsListView.selectAll())
+    @listenTo(@views.toolbarView, "selectAllRead", => @views.emailThreadsListView.selectAllRead())
+    @listenTo(@views.toolbarView, "selectAllUnread", => @views.emailThreadsListView.selectAllUnread())
+    @listenTo(@views.toolbarView, "deselectAll", => @views.emailThreadsListView.deselectAll())
+
+    @listenTo(@views.toolbarView, "readClicked", @readClicked)
+    @listenTo(@views.toolbarView, "unreadClicked", @unreadClicked)
+    @listenTo(@views.toolbarView, "archiveClicked", @archiveClicked)
+    @listenTo(@views.toolbarView, "trashClicked", @trashClicked)
+    
+    @trigger("change:toolbarView", this, @views.toolbarView)
+  
+  setupUser: ->
     @models.user = new TuringEmailApp.Models.User()
     @models.user.fetch()
 
     @models.userSettings = new TuringEmailApp.Models.UserSettings()
     @models.userSettings.fetch()
-
+    
+  setupEmailFolders: ->
     @collections.emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection()
-    @routers.emailFoldersRouter = new TuringEmailApp.Routers.EmailFoldersRouter()
     @views.emailFoldersTreeView = new TuringEmailApp.Views.EmailFolders.TreeView(
+      app: this
       el: $("#email_folders")
       collection: @collections.emailFolders
     )
-    @views.toolbarView = new TuringEmailApp.Views.ToolbarView(
-      el: $("#email-folder-mail-header")
-      collection: @collections.emailFolders
+    
+  setupComposeView: ->
+    @views.composeView = new TuringEmailApp.Views.ComposeView(
+      el: $("#modals")
     )
-    @views.toolbarView.render()
-    @trigger("change:toolbarView", this, @views.toolbarView)
+    @listenTo(@views.composeView, "change:draft", @draftChanged)
+    @views.composeView.render()
+    
+  setupEmailThreads: ->
+    @collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
+    @views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView({
+      app: this
+      el: $("#email_table_body")
+      collection: TuringEmailApp.collections.emailThreads
+    })
 
+    @listenTo(@views.emailThreadsListView, "listItemSelected", (listView, emailThread) =>
+      @currentEmailThreadView.$el.hide()
+    )
+
+    @listenTo(@views.emailThreadsListView, "listItemDeselected", (listView, emailThread) =>
+      if @views.emailThreadsListView.getSelectedEmailThreads().length is 0
+        @currentEmailThreadView.$el.show()
+    )
+
+  setupRouters: ->
+    @routers.emailFoldersRouter = new TuringEmailApp.Routers.EmailFoldersRouter()
+    @routers.emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
+    @routers.analyticsRouter = new TuringEmailApp.Routers.AnalyticsRouter()
+    @routers.reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
+    @routers.settingsRouter = new TuringEmailApp.Routers.SettingsRouter()
+    @routers.searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()
+    
+  isSplitPaneMode: ->
+    splitPaneMode = TuringEmailApp.models.userSettings.get("split_pane_mode")
+    return splitPaneMode is "horizontal" || splitPaneMode is "vertical"
+    
+  loadEmailFolders: ->
     @collections.emailFolders.fetch(
       reset: true
 
@@ -48,40 +128,44 @@ window.TuringEmailApp = new(Backbone.View.extend({
         numUnreadThreadsInInbox = inboxFolder.get("num_unread_threads")
         if numUnreadThreadsInInbox is 0
           $(".inbox_count_badge").hide()
-        else  
+        else
           $(".inbox_count_badge").html(numUnreadThreadsInInbox) if inboxFolder?
 
         @views.toolbarView.renderLabelTitleAndUnreadCount "INBOX"
         @views.toolbarView.renderEmailsDisplayedCounter "INBOX"
+        @trigger("change:emailFolders", this)
     )
+    
+  showEmailThread: (emailThread) ->
+    @currentEmailThread = emailThread
 
-    @views.composeView = new TuringEmailApp.Views.ComposeView(
-      el: $("#modals")
+    if TuringEmailApp.isSplitPaneMode()
+      $("#preview_panel").show()
+      emailThreadViewSelector = "#preview_content"
+    else
+      emailThreadViewSelector = "#email_table_body"
+      $("#email-folder-mail-header").hide()
+
+    emailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
+      model: @currentEmailThread
+      el: $(emailThreadViewSelector)
     )
-    @listenTo(@views.composeView, "change:draft", @draftChanged)
-    @views.composeView.render()
+    emailThreadView.render()
+    emailThreadView.$el.show()
 
-    @routers.emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
+    @listenTo(emailThreadView, "goBackClicked", @goBackClicked)
+    @listenTo(emailThreadView, "replyClicked", @replyClicked)
+    @listenTo(emailThreadView, "forwardClicked", @forwardClicked)
+    @listenTo(emailThreadView, "archiveClicked", @archiveClicked)
+    @listenTo(emailThreadView, "trashClicked", @trashClicked)
 
-    windowLocationHash = window.location.hash.toString()
-    if windowLocationHash.indexOf("#email_folder/") == -1
-      @routers.emailFoldersRouter.showFolder("INBOX")
-
-    #Routers
-    @routers.reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
-    @routers.analyticsRouter = new TuringEmailApp.Routers.AnalyticsRouter()
-    @routers.settingsRouter = new TuringEmailApp.Routers.SettingsRouter()
-    @routers.searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()    
-
-    #@startEmailSync()
-
-    Backbone.history.start()
-
-  isSplitPaneMode: ->
-    splitPaneMode = TuringEmailApp.models.userSettings.get("split_pane_mode")
-    return splitPaneMode is "horizontal" || splitPaneMode is "vertical"
-  
-  loadEmailThread:(emailThreadUID, callback) ->
+    if @currentEmailThreadView?
+      @stopListening(@currentEmailThreadView)
+      @currentEmailThreadView.stopListening()
+      
+    @currentEmailThreadView = emailThreadView
+    
+  loadEmailThread: (emailThreadUID, callback) ->
     emailThread = TuringEmailApp.collections.emailThreads?.getEmailThread(emailThreadUID)
 
     if emailThread?
@@ -94,60 +178,23 @@ window.TuringEmailApp = new(Backbone.View.extend({
       )
       
   currentEmailThreadIs: (emailThreadUID, forceReload = false) ->
-    return if not forceReload && @currentEmailThread?.get("uid") is emailThreadUID 
-    
-    TuringEmailApp.loadEmailThread(emailThreadUID, (emailThread) =>
-      return if @currentEmailThread is emailThread
-      
-      @currentEmailThread = emailThread
+    return if not forceReload && @currentEmailThread?.get("uid") is emailThreadUID
 
-      if TuringEmailApp.isSplitPaneMode()
-        $("#preview_panel").show()
-        emailThreadViewSelector = "#preview_content"
-      else
-        emailThreadViewSelector = "#email_table_body"
-        $("#email-folder-mail-header").hide()
-
-      emailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
-        model: TuringEmailApp.currentEmailThread
-        el: $(emailThreadViewSelector)
-      )
-      emailThreadView.render()
-
-      TuringEmailApp.views.previewEmailThreadView = emailThreadView if TuringEmailApp.isSplitPaneMode()
-
-      @trigger "change:currentEmailThread", this, emailThread
-    )
-
-  showEmailEditorWithEmailThread:(emailThreadUID, mode="draft") ->
-    callback = (emailThread) =>
-      TuringEmailApp.currentEmailThreadIs emailThread.get("uid")
-
-      switch mode
-        when "forward"
-          TuringEmailApp.views.composeView.loadEmailAsForward(emailThread.get("emails")[0])
-        when "reply"
-          TuringEmailApp.views.composeView.loadEmailAsReply(emailThread.get("emails")[0])
-        else
-          TuringEmailApp.views.composeView.loadEmailDraft emailThread.get("emails")[0]
-      
-      TuringEmailApp.views.composeView.show()
-
-    TuringEmailApp.loadEmailThread(emailThreadUID, callback)
-
-  currentEmailFolderIs: (emailFolderID) ->
-    if not TuringEmailApp.collections.emailThreads
-      TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined,
-        folderID: emailFolderID
+    if emailThreadUID      
+      TuringEmailApp.loadEmailThread(emailThreadUID, (emailThread) =>
+        return if @currentEmailThread is emailThread
+        
+        @showEmailThread(emailThread)
+        @views.toolbarView.deselectAllCheckbox()
+        @trigger "change:currentEmailThread", this, emailThread
       )
     else
-      TuringEmailApp.collections.emailThreads.setupURL(emailFolderID)
+      @showEmailThread()
+      @views.toolbarView.deselectAllCheckbox()
+      @trigger "change:currentEmailThread", this, null
 
-    if not TuringEmailApp.views.emailThreadsListView?
-      TuringEmailApp.views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView({
-        el: $("#email_table_body")
-        collection: TuringEmailApp.collections.emailThreads
-      })
+  currentEmailFolderIs: (emailFolderID) ->
+    TuringEmailApp.collections.emailThreads.setupURL(emailFolderID)
 
     TuringEmailApp.collections.emailThreads.fetch(
       reset: true
@@ -156,31 +203,98 @@ window.TuringEmailApp = new(Backbone.View.extend({
           TuringEmailApp.currentEmailThreadIs(TuringEmailApp.collections.emailThreads.models[0].get("uid"))
     )
 
-    TuringEmailApp.views.emailFoldersTreeView.currentEmailFolderIs emailFolderID
-    TuringEmailApp.currentFolderId = emailFolderID
-    TuringEmailApp.views.toolbarView.renderLabelTitleAndUnreadCount emailFolderID
-    TuringEmailApp.views.toolbarView.renderEmailsDisplayedCounter emailFolderID
+    TuringEmailApp.currentFolderID = emailFolderID
+    @trigger "change:currentEmailFolder", this, emailFolderID
+
     TuringEmailApp.showEmails()
+
+  showEmailEditorWithEmailThread: (emailThreadUID, mode="draft") ->
+    TuringEmailApp.loadEmailThread(emailThreadUID, (emailThread) =>
+      TuringEmailApp.currentEmailThreadIs emailThread.get("uid")
+  
+      switch mode
+        when "forward"
+          TuringEmailApp.views.composeView.loadEmailAsForward(emailThread.get("emails")[0])
+        when "reply"
+          TuringEmailApp.views.composeView.loadEmailAsReply(emailThread.get("emails")[0])
+        else
+          TuringEmailApp.views.composeView.loadEmailDraft emailThread.get("emails")[0]
+  
+      TuringEmailApp.views.composeView.show()
+  )
+
+  ##############################
+  ### ComposeView events ###
+  ##############################
     
   draftChanged: ->
-    @collections.emailThreads.fetch(reset: true) if TuringEmailApp.currentFolderId is "DRAFT"
+    @collections.emailThreads.fetch(reset: true) if TuringEmailApp.currentFolderID is "DRAFT"
 
-  startEmailSync: ->
-    window.setInterval (->
-      $.ajax({
-        url: 'api/v1/email_accounts/sync.json'
-        type: 'POST'
-        dataType : 'json'
-        }).done((data, status) =>
-          if data.synced_emails
-            TuringEmailApp.emailThreads.fetch()
-        ).fail (data, status) ->
-          TuringEmailApp.tattletale.log(JSON.stringify(status))
-          TuringEmailApp.tattletale.log(JSON.stringify(data))
-          TuringEmailApp.tattletale.send()
-    #/ call your function here
-    ), 60000
+  ##############################
+  ### ToolbarView events     ###
+  ##############################
+    
+  readClicked: ->
+    selectedEmailThreads = @views.emailThreadsListView.getSelectedEmailThreads()
+    selectedEmailThreadUIDs = (emailThread.get("uid") for emailThread in selectedEmailThreads)
+    @collections.emailThreads.seenIs selectedEmailThreadUIDs, true
 
+    @views.emailThreadsListView.markSelectedRead()
+    @views.emailThreadsListView.deselectAll()
+    @views.toolbarView.deselectAllCheckbox()
+    
+  unreadClicked: ->
+    selectedEmailThreads = @views.emailThreadsListView.getSelectedEmailThreads()
+    selectedEmailThreadUIDs = (emailThread.get("uid") for emailThread in selectedEmailThreads)
+    @collections.emailThreads.seenIs selectedEmailThreadUIDs, false
+
+    @views.emailThreadsListView.markSelectedUnread()
+    @views.emailThreadsListView.deselectAll()
+    @views.toolbarView.deselectAllCheckbox()
+  
+  ##############################
+  ### EmailThreadView events ###
+  ##############################
+
+  goBackClicked: ->
+    @routers.emailFoldersRouter.showFolder(TuringEmailApp.currentFolderID)
+
+  replyClicked: ->
+    @showEmailEditorWithEmailThread(@currentEmailThread.get("uid"), "reply")
+
+  forwardClicked: ->
+    @showEmailEditorWithEmailThread(TuringEmailApp.currentEmailThread.get("uid"), "forward")
+    
+  archiveClicked: ->
+    selectedEmailThreads = @views.emailThreadsListView.getSelectedEmailThreads()
+    
+    if selectedEmailThreads.length == 0
+      @currentEmailThread.removeFromFolder(@currentFolderID)
+      @collections.emailThreads.remove @currentEmailThread
+    else
+      selectedEmailThreadUIDs = (emailThread.get("uid") for emailThread in selectedEmailThreads)
+      TuringEmailApp.Models.EmailThread.removeFromFolder(selectedEmailThreadUIDs, @currentFolderID)
+      @collections.emailThreads.remove selectedEmailThreads
+
+    if @isSplitPaneMode() then @currentEmailThreadIs(null) else goBackClicked()
+    
+  trashClicked: ->
+    selectedEmailThreads = @views.emailThreadsListView.getSelectedEmailThreads()
+
+    if selectedEmailThreads.length == 0
+      @currentEmailThread.trash()
+      @collections.emailThreads.remove @currentEmailThread
+    else
+      selectedEmailThreadUIDs = (emailThread.get("uid") for emailThread in selectedEmailThreads)
+      TuringEmailApp.Models.EmailThread.trash(selectedEmailThreadUIDs)
+      @collections.emailThreads.remove selectedEmailThreads
+
+    if @isSplitPaneMode() then @currentEmailThreadIs(null) else goBackClicked()
+      
+  ######################
+  ### view functions ###
+  ######################
+    
   showEmails: ->
     @hideAll()
     
