@@ -218,3 +218,19 @@ describe "ListView", ->
         expect(listenToSpy).toHaveBeenCalledWith(@listView.currentToolbarView, "selectAllRead", @listView.selectAllRead)
         expect(listenToSpy).toHaveBeenCalledWith(@listView.currentToolbarView, "selectAllUnread", @listView.selectAllUnread)
         expect(listenToSpy).toHaveBeenCalledWith(@listView.currentToolbarView, "deselectAll", @listView.deselectAll)
+
+    describe "#listItemClicked", ->
+
+      it "marks non-draft emails as read when the email is not a draft", ->
+        listItemView = _.values(@listView.listItemViews)[0]
+
+        listItemView.model.get("emails")[0].draft_id = null
+
+        spy = sinon.spy(listItemView, "markRead")
+        @listView.listItemClicked listItemView
+
+        expect(spy).toHaveBeenCalled()
+
+        # TODO .
+
+    #describe "#moveTuringEmailReportToTop", ->

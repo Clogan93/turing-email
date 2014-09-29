@@ -150,7 +150,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     if isDraft
       TuringEmailApp.routers.emailThreadsRouter.showEmailDraft emailThreadUID
     else
-      listItemView.markRead
+      listItemView.markRead()
       TuringEmailApp.views.toolbarView.decrementUnreadCountOfCurrentFolder(TuringEmailApp.currentFolderId)
 
       TuringEmailApp.routers.emailThreadsRouter.showEmailThread emailThreadUID
