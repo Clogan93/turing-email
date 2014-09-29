@@ -9,7 +9,7 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
     @listenTo(@collection, "reset", @render)
     @listenTo(@collection, "destroy", @remove)
 
-    @listenTo(options.app, 'change:currentEmailFolder', @currentEmailFolderChanged)
+    @listenTo(options.app, "change:currentEmailFolder", @currentEmailFolderChanged)
 
   render: ->
     @generateTree()

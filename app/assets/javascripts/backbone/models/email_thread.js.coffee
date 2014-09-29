@@ -1,4 +1,21 @@
 class TuringEmailApp.Models.EmailThread extends Backbone.Model
+  # TODO write tests
+  @removeFromFolder: (emailThreadUIDs, emailFolderID) ->
+    postData =
+      email_thread_uids:  emailThreadUIDs
+      email_folder_id: emailFolderID
+
+    # TODO error handling
+    $.post "/api/v1/email_threads/remove_from_folder", postData
+
+  # TODO write tests
+  @trash: (emailThreadUIDs) ->
+    postData =
+      email_thread_uids:  emailThreadUIDs
+
+    # TODO error handling
+    $.post "/api/v1/email_threads/trash", postData
+
   validation:
     uid:
       required: true
@@ -26,20 +43,13 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
       data: postData
       dataType : "json"
 
+  # TODO write tests
   removeFromFolder: (emailFolderID) ->
-    postData =
-      email_thread_uids:  [@get("uid")]
-      email_folder_id: emailFolderID
-
-    # TODO error handling
-    $.post "/api/v1/email_threads/remove_from_folder", postData
-    
+    TuringEmailApp.Models.EmailThread.removeFromFolder([@get("uid")], emailFolderID)
+  
+  # TODO write tests
   trash: ->
-    postData =
-      email_thread_uids:  [@get("uid")]
-
-    # TODO error handling
-    $.post "/api/v1/email_threads/trash", postData
+    TuringEmailApp.Models.EmailThread.trash([@get("uid")])
     
   fromPreview: ->
     emails = @get("emails")

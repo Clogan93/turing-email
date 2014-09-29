@@ -49,7 +49,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
   hide: ->
     $("#composeModal").modal "hide"
 
-  showEmailSentAlert:(emailSentJSON) ->
+  showEmailSentAlert: (emailSentJSON) ->
     console.log "ComposeView showEmailSentAlert"
     
     $("#inbox_title_header").append('<div id="email_sent_success_alert" class="alert alert-info col-md-4" role="alert">
@@ -148,7 +148,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     @currentEmailDraft = new TuringEmailApp.Models.EmailDraft() if not @currentEmailDraft?
     @updateEmail(@currentEmailDraft)
 
-  updateEmail:(email) ->
+  updateEmail: (email) ->
     console.log "ComposeView updateEmail!"
     email.set("email_in_reply_to_uid", @emailInReplyToUID)
 
@@ -159,7 +159,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     email.set("subject", $("#compose_form").find("#subject_input").val())
     email.set("email_body", $("#compose_form").find("#compose_email_body").val())
 
-  sendEmail:(draftToSend=null) ->
+  sendEmail: (draftToSend=null) ->
     console.log "ComposeView sendEmail!"
     
     if @currentEmailDraft? || draftToSend?
@@ -202,7 +202,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
 
       @sendEmailDelayed(emailToSend)
   
-  sendEmailDelayed:(emailToSend) ->
+  sendEmailDelayed: (emailToSend) ->
     console.log "ComposeView sendEmailDelayed! - Setting up Undo button"
     @showEmailSentAlert(emailToSend.toJSON())
     
@@ -222,7 +222,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
         )
     ), 5000
 
-  sendEmailDelayedError:(emailToSendJSON) ->
+  sendEmailDelayedError: (emailToSendJSON) ->
     console.log "sendEmailDelayedError!!!"
 
     @loadEmail(emailToSendJSON)

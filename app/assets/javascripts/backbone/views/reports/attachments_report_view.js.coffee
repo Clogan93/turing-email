@@ -34,7 +34,7 @@ class TuringEmailApp.Views.Reports.AttachmentsReportView extends Backbone.View
       
     return data
 
-  addContentTypeStatsToRunningAverage:(stats, runningAverages, runningAverageKey) ->
+  addContentTypeStatsToRunningAverage: (stats, runningAverages, runningAverageKey) ->
     runningAverages[runningAverageKey] ?= {}
     runningAverage = runningAverages[runningAverageKey]
     
