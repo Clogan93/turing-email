@@ -37,16 +37,16 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
     pageNumber = parseInt(@page)
     if @page > 1
       @page--
-      @url = "/api/v1/email_threads/in_folder?folder_id=" + TuringEmailApp.currentFolderId + "&page=" + @page
+      @url = "/api/v1/email_threads/in_folder?folder_id=" + TuringEmailApp.currentFolderID + "&page=" + @page
       @fetch(
         success: (collection, response, options) =>
-          TuringEmailApp.views.toolbarView.renderEmailsDisplayedCounter TuringEmailApp.currentFolderId
+          TuringEmailApp.views.toolbarView.renderEmailsDisplayedCounter TuringEmailApp.currentFolderID
       )
 
   nextPage: ->
     @page++
-    @url = "/api/v1/email_threads/in_folder?folder_id=" + TuringEmailApp.currentFolderId + "&page=" + @page
+    @url = "/api/v1/email_threads/in_folder?folder_id=" + TuringEmailApp.currentFolderID + "&page=" + @page
     @fetch(
       success: (collection, response, options) =>
-        TuringEmailApp.views.toolbarView.renderEmailsDisplayedCounter TuringEmailApp.currentFolderId
+        TuringEmailApp.views.toolbarView.renderEmailsDisplayedCounter TuringEmailApp.currentFolderID
     )

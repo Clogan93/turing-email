@@ -2,8 +2,13 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   template: JST["backbone/templates/toolbar_view"]
   tagName: "div"
 
+  initialize: (options) ->
+    @listenTo(options.app, 'change:currentEmailFolder', @currentEmailFolderChanged)
+    @listenTo(options.app, 'change:emailFolders', @emailFoldersChanged)
+  
   render: ->
-    @$el.html(@template({'emailFolders' : @collection.toJSON()} ))
+    emailFolders = TuringEmailApp.collections.emailFolders?.toJSON() ? []
+    @$el.html(@template({'emailFolders' : emailFolders}))
     @setupSelectAllCheckbox()
     @setupToolbarButtons()
     return this
@@ -18,7 +23,18 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
         @trigger("selectAll")
       else
         @trigger("deselectAll")
-    
+
+  #############################
+  ### TuringEmailApp Events ###
+  #############################
+
+  currentEmailFolderChanged: (app, emailFolderID) ->
+    @renderLabelTitleAndUnreadCount emailFolderID
+    @renderEmailsDisplayedCounter emailFolderID
+
+  emailFoldersChanged: (app) ->
+    @render()
+        
   retrieveCheckedUIDs: ->
     checkedUIDs = []
     

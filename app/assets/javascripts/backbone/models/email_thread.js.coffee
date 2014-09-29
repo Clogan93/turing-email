@@ -26,6 +26,21 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
       data: postData
       dataType : "json"
 
+  removeFromFolder: (emailFolderID) ->
+    postData =
+      email_thread_uids:  [@get("uid")]
+      email_folder_id: emailFolderID
+
+    # TODO error handling
+    $.post "/api/v1/email_threads/remove_from_folder", postData
+    
+  trash: ->
+    postData =
+      email_thread_uids:  [@get("uid")]
+
+    # TODO error handling
+    $.post "/api/v1/email_threads/trash", postData
+    
   fromPreview: ->
     emails = @get("emails")
     mostRecentEmail = emails[0]

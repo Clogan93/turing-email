@@ -1,16 +1,16 @@
 TuringEmailApp.Views.EmailThreads ||= {}
 
 class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
-  initialize: ->
+  initialize: (options) ->
     @listenTo(@collection, "add", @addOne)
     @listenTo(@collection, "remove", @removeOne)
     @listenTo(@collection, "reset", @resetView)
     @listenTo(@collection, "destroy", @remove)
 
-    @listenTo(TuringEmailApp, 'change:toolbarView', @toolbarViewChanged)
-    @listenTo(TuringEmailApp, 'change:currentEmailThread', @currentEmailThreadChanged)
+    @listenTo(options.app, 'change:toolbarView', @toolbarViewChanged)
+    @listenTo(options.app, 'change:currentEmailThread', @currentEmailThreadChanged)
 
-    @toolbarViewChanged(TuringEmailApp, TuringEmailApp.views.toolbarView) if TuringEmailApp.views.toolbarView?
+    @toolbarViewChanged(options.app, TuringEmailApp.views.toolbarView) if TuringEmailApp.views.toolbarView?
 
   render: ->
     @removeAll()
@@ -90,7 +90,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
   #############################
   ### TuringEmailApp Events ###
-  #############################      
+  #############################
       
   toolbarViewChanged: (app, toolbarView) ->
     @stopListening(@currentToolbarView) if @currentToolbarView?
@@ -102,16 +102,18 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     @listenTo(@currentToolbarView, "deselectAll", @deselectAll)
     
   currentEmailThreadChanged: (app, emailThread) ->
-    if @currentlySelectedEmailThread
-      listItemView = @listItemViews[@currentlySelectedEmailThread.get("uid")]
+    if @currentEmailThread
+      listItemView = @listItemViews[@currentEmailThread.get("uid")]
       listItemView?.unhighlight()
       listItemView?.markRead()
 
-    listItemView = @listItemViews[emailThread.get("uid")]
-    listItemView?.highlight()
+    if emailThread?
+      listItemView = @listItemViews[emailThread.get("uid")]
+      listItemView?.highlight()
+
     @deselectAll()
 
-    @currentlySelectedEmailThread = TuringEmailApp.currentEmailThread
+    @currentEmailThread = TuringEmailApp.currentEmailThread
 
   ######################
   ### Toolbar Events ###
@@ -151,7 +153,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
       TuringEmailApp.routers.emailThreadsRouter.showEmailDraft emailThreadUID
     else
       listItemView.markRead
-      TuringEmailApp.views.toolbarView.decrementUnreadCountOfCurrentFolder(TuringEmailApp.currentFolderId)
+      TuringEmailApp.views.toolbarView.decrementUnreadCountOfCurrentFolder(TuringEmailApp.currentFolderID)
 
       TuringEmailApp.routers.emailThreadsRouter.showEmailThread emailThreadUID
       
