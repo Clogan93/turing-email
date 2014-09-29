@@ -99,3 +99,23 @@ describe "ListView", ->
 
       for listItemView in initiallyDisplayedListItemViews
         expect(listItemView.el).not.toBeInDOM()
+
+  describe "#addAll", ->
+    beforeEach ->
+      @emailThreads.fetch(reset: true)
+      @server.respond()
+
+    it "adds all the list item views to the list view", ->
+      @listView.removeAll()
+      
+      expect(_.values(@listView.listItemViews).length is 0).toBeTruthy()
+
+      for listItemView in _.values(@listView.listItemViews)
+        expect(listItemView.el).not.toBeInDOM()
+
+      @listView.addAll()
+
+      expect(_.values(@listView.listItemViews).length is @emailThreads.length).toBeTruthy()
+
+      for listItemView in _.values(@listView.listItemViews)
+        expect(listItemView.el).toBeInDOM()

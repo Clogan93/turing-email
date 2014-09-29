@@ -49,7 +49,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     listItemView.remove()
 
     delete @listItemViews[emailThread.get("uid")]
-    
+
   addAll: ->
     @collection.forEach(@addOne, this)
 
