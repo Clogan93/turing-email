@@ -107,15 +107,27 @@ describe "ListView", ->
 
     it "adds all the list item views to the list view", ->
       @listView.removeAll()
-      
+
       expect(_.values(@listView.listItemViews).length is 0).toBeTruthy()
 
-      for listItemView in _.values(@listView.listItemViews)
-        expect(listItemView.el).not.toBeInDOM()
-
+      @spy = sinon.spy(@listView, "addOne")
       @listView.addAll()
-
+      
       expect(_.values(@listView.listItemViews).length is @emailThreads.length).toBeTruthy()
 
+      for emailThread in @listView.collection.models
+        expect(@spy).toHaveBeenCalledWith(emailThread)
+
+  describe "#selectAll", ->
+    beforeEach ->
+      @emailThreads.fetch(reset: true)
+      @server.respond()
+
+    it "calls select on each listItemView", ->
+      spies = []
       for listItemView in _.values(@listView.listItemViews)
-        expect(listItemView.el).toBeInDOM()
+        @spy = sinon.spy(listItemView, "select")
+        spies.push(@spy)
+      @listView.selectAll()
+      for spy in spies
+        expect(spy).toHaveBeenCalled()
