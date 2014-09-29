@@ -50,13 +50,18 @@ describe "ListItemView", ->
       @emailThread.fetch()
       @server.respond()
 
+      @tdCheckMail = @listItemView.$el.find('td.check-mail')
+
     it "bind click handlers to tds", ->
-      expect(@listItemView.$el.find('td.check-mail')).toHandle("click")
+      expect(@tdCheckMail).toHandle("click")
       expect(@listItemView.$el.find('td.mail-contact')).toHandle("click")
       expect(@listItemView.$el.find('td.mail-subject')).toHandle("click")
       expect(@listItemView.$el.find('td.mail-date')).toHandle("click")
 
-      # TODO make a backbone spy to test the backbone event is triggered upon click.
+      @backboneSpy = backbone.spy(@listItemView, "click")
+      @tdCheckMail.click()
+      expect(@backboneSpy.spy).toHaveBeenCalled()
+      @backboneSpy.restore()
 
   describe "#setupCheckbox", ->
     beforeEach ->

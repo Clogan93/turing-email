@@ -1,9 +1,11 @@
-class backbone
+window.backbone = class
+  @spy: (object, event) ->
+    return new spy(object, event)
+    
   class spy
     constructor: (@object, @event) ->
-      @callCount = 0
+      @spy = sinon.spy()
+      object.on(@event, @spy)
 
-      @object.listenTo(@event, @callback, this)
-    
-    callback: ->
-      @callCount++
+    restore: ->
+      @object.off(@event, @spy)

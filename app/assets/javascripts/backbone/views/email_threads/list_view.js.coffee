@@ -10,7 +10,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     @listenTo(TuringEmailApp, 'change:toolbarView', @toolbarViewChanged)
     @listenTo(TuringEmailApp, 'change:currentEmailThread', @currentEmailThreadChanged)
 
-    @toolbarViewChanged(TuringEmailApp.views.toolbarView) if TuringEmailApp.views.toolbarView?
+    @toolbarViewChanged(TuringEmailApp, TuringEmailApp.views.toolbarView) if TuringEmailApp.views.toolbarView?
 
   render: ->
     @removeAll()
