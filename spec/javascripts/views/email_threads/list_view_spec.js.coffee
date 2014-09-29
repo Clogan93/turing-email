@@ -6,6 +6,7 @@ describe "ListView", ->
 
     @listViewDiv = $("<div />", {id: "email_table_body"}).appendTo('body')
     @listView = new TuringEmailApp.Views.EmailThreads.ListView(
+      app: TuringEmailApp
       el: @listViewDiv
       collection: @emailThreads
     )

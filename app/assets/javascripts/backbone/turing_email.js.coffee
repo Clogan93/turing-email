@@ -8,7 +8,7 @@
 #= require_tree ./views
 #= require_tree ./routers
   
-window.TuringEmailApp = new(Backbone.View.extend({
+window.TuringEmailApp = new(Backbone.View.extend(
   Models: {}
   Views: {}
   Collections: {}
@@ -90,12 +90,14 @@ window.TuringEmailApp = new(Backbone.View.extend({
     @views.composeView.render()
     
   setupEmailThreads: ->
-    @collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
-    @views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView({
+    @collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(
+      page: getQuerystringNameValue("page")
+    )
+    @views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView(
       app: this
       el: $("#email_table_body")
       collection: TuringEmailApp.collections.emailThreads
-    })
+    )
 
     @listenTo(@views.emailThreadsListView, "listItemSelected", (listView, emailThread) =>
       @currentEmailThreadView.$el.hide()
@@ -193,8 +195,9 @@ window.TuringEmailApp = new(Backbone.View.extend({
       @views.toolbarView.deselectAllCheckbox()
       @trigger "change:currentEmailThread", this, null
 
-  currentEmailFolderIs: (emailFolderID) ->
-    TuringEmailApp.collections.emailThreads.setupURL(emailFolderID)
+  # TODO write tests (page param)
+  currentEmailFolderIs: (emailFolderID, page) ->
+    TuringEmailApp.collections.emailThreads.setupURL(emailFolderID, page)
 
     TuringEmailApp.collections.emailThreads.fetch(
       reset: true
@@ -335,7 +338,7 @@ window.TuringEmailApp = new(Backbone.View.extend({
     @hideReports()
     @hideSettings()
 
-}))({el: document.body})
+))(el: document.body)
 
 TuringEmailApp.tattletale = new Tattletale('/api/v1/log.json')
 

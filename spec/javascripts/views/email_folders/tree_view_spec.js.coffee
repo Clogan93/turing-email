@@ -6,6 +6,7 @@ describe "TreeView", ->
 
     @treeDiv = $("<div />", {id: "email_folders"}).appendTo('body')
     @treeView = new TuringEmailApp.Views.EmailFolders.TreeView(
+      app: TuringEmailApp
       el: @treeDiv
       collection: @emailFolders
     )
