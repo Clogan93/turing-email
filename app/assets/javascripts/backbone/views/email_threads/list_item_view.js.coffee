@@ -19,6 +19,7 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     modelJSON = @model.toJSON()
     modelJSON["fromPreview"] = @model.fromPreview()
     modelJSON["subjectPreview"] = @model.subjectPreview()
+    modelJSON["datePreview"] = @model.datePreview()
     @$el.html(@template(modelJSON))
 
     @setupClick()
@@ -56,7 +57,7 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
       @$el.addClass("checked_email_thread")
     else
       @$el.removeClass("checked_email_thread")
-      
+
   toggleSelect: ->
     if @diviCheck.hasClass "checked" then @deselect() else @select()
     
@@ -73,8 +74,6 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     @trigger("deselected", this)
 
   highlight: ->
-    #@$el.removeClass("read")
-    #@$el.removeClass("unread")
     @$el.addClass("currently_being_read")
 
     @trigger("highlight", this)

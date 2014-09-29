@@ -11,21 +11,5 @@
 </td>
 
 <td class="text-right mail-date">
-<%
-  //This is a check in case the date field is null.
-  if(emails[0].date) {
-    var emailDate = new Date(emails[0].date);
-    var emailDatePlus18H = new Date(emails[0].date);
-
-    emailDatePlus18H.setHours(emailDate.getHours() + 18);
-
-    if (emailDatePlus18H > Date.now()) {%>
-      <%= emailDate.toLocaleTimeString(navigator.language, {hour: "2-digit", minute: "2-digit"}) %><%
-    } else {
-      var formattedDateStringComponents = emailDate.toDateString().split(" ");
-      var formattedDateString = formattedDateStringComponents[1] + " " + formattedDateStringComponents[2];%>
-      <%= formattedDateString %><%
-    }
-  }
-%>
+  <%= datePreview %>
 </td>

@@ -83,3 +83,10 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
         return if email.subject isnt "" then email.subject else "(no subject)"
 
     return if mostRecentEmail.subject isnt "" then mostRecentEmail.subject else "(no subject)"
+
+  datePreview: ->
+    emails = @get("emails")
+    return "" if emails.length is 0
+    
+    dateString = emails[0]["date"]
+    return TuringEmailApp.Models.Email.localDateString(dateString)
