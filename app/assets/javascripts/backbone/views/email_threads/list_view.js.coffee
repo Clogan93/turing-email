@@ -95,12 +95,12 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   toolbarViewChanged: (app, toolbarView) ->
     @stopListening(@currentToolbarView) if @currentToolbarView?
     @currentToolbarView = toolbarView
-    
+
     @listenTo(@currentToolbarView, "selectAll", @selectAll)
     @listenTo(@currentToolbarView, "selectAllRead", @selectAllRead)
     @listenTo(@currentToolbarView, "selectAllUnread", @selectAllUnread)
     @listenTo(@currentToolbarView, "deselectAll", @deselectAll)
-    
+
   currentEmailThreadChanged: (app, emailThread) ->
     if @currentlySelectedEmailThread
       listItemView = @listItemViews[@currentlySelectedEmailThread.get("uid")]

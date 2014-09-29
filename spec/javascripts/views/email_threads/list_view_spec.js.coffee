@@ -154,3 +154,67 @@ describe "ListView", ->
         @listView.deselectAll()
         for spy in spies
           expect(spy).toHaveBeenCalled()
+
+    describe "#currentEmailThreadChanged", ->
+
+      beforeEach ->
+        @emailThread = @listView.collection.models[0]
+
+      it "calls deselectAll", ->
+        @spy = sinon.spy(@listView, "deselectAll")
+        @listView.currentEmailThreadChanged(TuringEmailApp, @emailThread)
+        expect(@spy).toHaveBeenCalled()
+
+      it "calls highlight on the new email thread", ->
+        listItemView = @listView.listItemViews[@emailThread.get("uid")]
+        @spy = sinon.spy(listItemView, "highlight")
+        @listView.currentEmailThreadChanged(TuringEmailApp, @emailThread)
+        expect(@spy).toHaveBeenCalled()
+
+      it "updates the currentlySelectedEmailThread attribute", ->
+        TuringEmailApp.currentEmailThread = @emailThread
+        @listView.currentEmailThreadChanged(TuringEmailApp, @emailThread)
+        expect(@listView.currentlySelectedEmailThread).toEqual @emailThread
+
+      it "calls unhighlight and markRead on the previous emailThread", ->
+        #Set an email thread
+        TuringEmailApp.currentEmailThread = @emailThread
+        @listView.currentEmailThreadChanged(TuringEmailApp, @emailThread)
+        
+        #Update the email thread
+        nextCurrentEmailThread = @listView.collection.models[1]
+
+        listItemView = @listView.listItemViews[@emailThread.get("uid")]
+        unhighlightSpy = sinon.spy(listItemView, "unhighlight")
+        markReadSpy = sinon.spy(listItemView, "markRead")
+        @listView.currentEmailThreadChanged(TuringEmailApp, nextCurrentEmailThread)
+        expect(unhighlightSpy).toHaveBeenCalled()
+        expect(markReadSpy).toHaveBeenCalled()
+
+    describe "#toolbarViewChanged", ->
+
+      beforeEach ->
+        @newToolbarView = new TuringEmailApp.Views.ToolbarView(
+          el: $("#email-folder-mail-header")
+          collection: TuringEmailApp.collections.emailFolders
+        )
+
+      it "updates the currentToolbarView attribute", ->
+        currentToolbarView = @listView.currentToolbarView
+
+        @listView.toolbarViewChanged(TuringEmailApp, @newToolbarView)
+
+        expect(@listView.currentToolbarView).not.toEqual currentToolbarView
+        expect(@listView.currentToolbarView).toEqual @newToolbarView
+
+      it "starts listening to the @currentToolbarView", ->
+        listenToSpy = sinon.spy(@listView, "listenTo")
+
+        @listView.toolbarViewChanged(TuringEmailApp, @newToolbarView)
+
+        expect(listenToSpy).toHaveBeenCalled()
+
+        expect(listenToSpy).toHaveBeenCalledWith(@listView.currentToolbarView, "selectAll", @listView.selectAll)
+        expect(listenToSpy).toHaveBeenCalledWith(@listView.currentToolbarView, "selectAllRead", @listView.selectAllRead)
+        expect(listenToSpy).toHaveBeenCalledWith(@listView.currentToolbarView, "selectAllUnread", @listView.selectAllUnread)
+        expect(listenToSpy).toHaveBeenCalledWith(@listView.currentToolbarView, "deselectAll", @listView.deselectAll)
