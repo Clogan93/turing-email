@@ -34,7 +34,7 @@ describe "ListView", ->
 
     it "calls render", ->
       @spy = sinon.spy(@listView, "render")
-      @listView.reset()
+      @listView.resetView()
       expect(@spy).toHaveBeenCalled()
 
   describe "#setupKeyboardShortcuts", ->
@@ -79,3 +79,23 @@ describe "ListView", ->
       emailThreadView = @listView.listItemViews[emailThreadView.model.get("uid")]
       expect(emailThreadView in _.values(@listView.listItemViews)).toBeTruthy()
       expect(emailThreadView.el).toBeInDOM()
+
+  describe "#removeAll", ->
+    beforeEach ->
+      @emailThreads.fetch(reset: true)
+      @server.respond()
+
+    it "removes all the list item views from the list view", ->
+      initiallyDisplayedListItemViews = _.values(@listView.listItemViews)
+
+      for listItemView in initiallyDisplayedListItemViews
+        expect(listItemView.el).toBeInDOM()
+
+      expect(initiallyDisplayedListItemViews.length is @emailThreads.length).toBeTruthy()
+      
+      @listView.removeAll()
+
+      expect(_.values(@listView.listItemViews).length is 0).toBeTruthy()
+
+      for listItemView in initiallyDisplayedListItemViews
+        expect(listItemView.el).not.toBeInDOM()
