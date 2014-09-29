@@ -5,7 +5,7 @@ class TuringEmailApp.Views.Reports.GeoReportView extends Backbone.View
 
   initialize: ->
     @listenTo(@model, "change", @render)
-    @listenTo(@model, "removedFromCollection destroy", @remove)
+    @listenTo(@model, "destroy", @remove)
 
   render: ->
     googleChartData = @getGoogleChartData()
