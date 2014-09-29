@@ -1,4 +1,4 @@
-window.backbone =
+sinon.backbone =
   spy: (object, event) ->
     spy = sinon.spy()
     object.on(event, spy)

@@ -61,7 +61,7 @@ describe "ListItemView", ->
       expect(@listItemView.$el.find('td.mail-subject')).toHandle("click")
       expect(@listItemView.$el.find('td.mail-date')).toHandle("click")
 
-      spy = backbone.spy(@listItemView, "click")
+      spy = sinon.backbone.spy(@listItemView, "click")
       @tdCheckMail.click()
       expect(spy).toHaveBeenCalled()
       spy.restore()
