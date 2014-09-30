@@ -363,5 +363,4 @@ describe "ListView", ->
         listItemView = _.values(@listView.listItemViews)[0]
         @listView.listItemClicked(listItemView)
         
-        expect(spy).toHaveBeenCalled()
-        expect(spy).toHaveBeenCalledWith(listItemView.model)
+        expect(spy).toHaveBeenCalledWith(@listView, listItemView.model)
