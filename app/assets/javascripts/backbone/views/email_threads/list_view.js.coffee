@@ -98,22 +98,6 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
       trReportEmail.remove()
       $("#email_table_body").prepend(trReportEmail)
 
-  #############################
-  ### TuringEmailApp Events ###
-  #############################      
-      
-  currentEmailThreadChanged: (app, emailThread) ->
-    if @currentlySelectedEmailThread
-      listItemView = @listItemViews[@currentlySelectedEmailThread.get("uid")]
-      listItemView?.unhighlight()
-      listItemView?.markRead()
-
-    listItemView = @listItemViews[emailThread.get("uid")]
-    listItemView?.highlight()
-    @deselectAll()
-
-    @currentlySelectedEmailThread = TuringEmailApp.currentEmailThread
-
   ###############
   ### Getters ###
   ###############

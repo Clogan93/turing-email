@@ -2,7 +2,7 @@ describe "ListView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, folderID: "INBOX")
+    @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
 
     @listViewDiv = $("<div />", {id: "email_table_body"}).appendTo('body')
     @listView = new TuringEmailApp.Views.EmailThreads.ListView(
@@ -13,9 +13,16 @@ describe "ListView", ->
 
     emailThreadsFixtures = fixture.load("email_threads.fixture.json");
     @validEmailThreadsFixture = emailThreadsFixtures[0]["valid"]
+    emailThreadFixtures = fixture.load("email_thread.fixture.json")
+    @validEmailThreadFixture = emailThreadFixtures[0]["valid"]
 
+    @emailThread = new TuringEmailApp.Models.EmailThread(undefined, emailThreadUID: @validEmailThreadFixture["uid"])
+    
     @server = sinon.fakeServer.create()
     @server.respondWith "GET", @emailThreads.url, JSON.stringify(@validEmailThreadsFixture)
+
+    @url = "/api/v1/email_threads/show/" + @validEmailThreadFixture["uid"]
+    @server.respondWith "GET", @url, JSON.stringify(@validEmailThreadFixture)
 
   afterEach ->
     @server.restore()
@@ -29,14 +36,46 @@ describe "ListView", ->
     afterEach ->
       @listView.removeAll()
 
+    describe "#initialize", ->
+
+      beforeEach ->
+        @emailThread.fetch()
+        @server.respond()
+
+        # TODO write tests for reset, destroy and change:currentEmailThread
+
+      it "adds a listener for add that calls @addOne", ->
+        @listView.collection.add @emailThread
+        expect(@listView.listItemViews[@emailThread.get("uid")]).toBeTruthy()
+
+      it "adds a listener for remove that calls @removeOne", ->
+        @listView.collection.add @emailThread
+        expect(@listView.listItemViews[@emailThread.get("uid")]).toBeTruthy()
+        @listView.collection.remove @emailThread
+        expect(@listView.listItemViews[@emailThread.get("uid")]).toBeFalsy()
+
     describe "#render", ->
       it "renders the email threads", ->
         expect(@listViewDiv.find("tr").length).toEqual(@emailThreads.models.length)
 
-    describe "#reset", ->
+    describe "#resetView", ->
       it "calls render", ->
         @spy = sinon.spy(@listView, "render")
         @listView.resetView()
+        expect(@spy).toHaveBeenCalled()
+
+      it "calls removeAll if options.previousModels is passed in", ->
+        @emailThread.fetch()
+        @server.respond()
+
+        @spy = sinon.spy(@listView, "removeAll")
+
+        @listView.collection.add @emailThread
+        options = {}
+        options.previousModels = @listView.collection.models
+
+        @listView.resetView @listView.collection.models, options.previousModels
+
         expect(@spy).toHaveBeenCalled()
 
     describe "#setupKeyboardShortcuts", ->
@@ -172,10 +211,10 @@ describe "ListView", ->
         @listView.currentEmailThreadChanged(TuringEmailApp, @emailThread)
         expect(@spy).toHaveBeenCalled()
 
-      it "updates the currentlySelectedEmailThread attribute", ->
+      it "updates the currentEmailThread attribute", ->
         TuringEmailApp.currentEmailThread = @emailThread
         @listView.currentEmailThreadChanged(TuringEmailApp, @emailThread)
-        expect(@listView.currentlySelectedEmailThread).toEqual @emailThread
+        expect(@listView.currentEmailThread).toEqual @emailThread
 
       it "calls unhighlight and markRead on the previous emailThread", ->
         #Set an email thread
@@ -192,34 +231,6 @@ describe "ListView", ->
         expect(unhighlightSpy).toHaveBeenCalled()
         expect(markReadSpy).toHaveBeenCalled()
 
-    describe "#toolbarViewChanged", ->
-
-      beforeEach ->
-        @newToolbarView = new TuringEmailApp.Views.ToolbarView(
-          el: $("#email-folder-mail-header")
-          collection: TuringEmailApp.collections.emailFolders
-        )
-
-      it "updates the currentToolbarView attribute", ->
-        currentToolbarView = @listView.currentToolbarView
-
-        @listView.toolbarViewChanged(TuringEmailApp, @newToolbarView)
-
-        expect(@listView.currentToolbarView).not.toEqual currentToolbarView
-        expect(@listView.currentToolbarView).toEqual @newToolbarView
-
-      it "starts listening to the @currentToolbarView", ->
-        listenToSpy = sinon.spy(@listView, "listenTo")
-
-        @listView.toolbarViewChanged(TuringEmailApp, @newToolbarView)
-
-        expect(listenToSpy).toHaveBeenCalled()
-
-        expect(listenToSpy).toHaveBeenCalledWith(@listView.currentToolbarView, "selectAll", @listView.selectAll)
-        expect(listenToSpy).toHaveBeenCalledWith(@listView.currentToolbarView, "selectAllRead", @listView.selectAllRead)
-        expect(listenToSpy).toHaveBeenCalledWith(@listView.currentToolbarView, "selectAllUnread", @listView.selectAllUnread)
-        expect(listenToSpy).toHaveBeenCalledWith(@listView.currentToolbarView, "deselectAll", @listView.deselectAll)
-
     describe "#listItemClicked", ->
 
       it "marks non-draft emails as read when the email is not a draft", ->
@@ -232,6 +243,61 @@ describe "ListView", ->
 
         expect(spy).toHaveBeenCalled()
 
-        # TODO .
+    describe "#markSelectedRead", ->
 
-    #describe "#moveTuringEmailReportToTop", ->
+      beforeEach ->
+        _.values(@listView.listItemViews)[0].select()
+
+        @shouldBeCalledSpies = []
+        @shouldNotBeCalledSpies = []
+
+        for listItemView in _.values(@listView.listItemViews)
+          spy = sinon.spy(listItemView, "markRead")
+          if listItemView.isChecked()
+            @shouldBeCalledSpies.push(spy)
+          else
+            @shouldNotBeCalledSpies.push(spy)
+
+      it "should have the correct test data", ->
+        expect(@shouldBeCalledSpies.length > 0).toBeTruthy()
+        expect(@shouldNotBeCalledSpies.length > 0).toBeTruthy()
+
+      it "should call markRead() on all selected listItemViews", ->
+
+        @listView.markSelectedRead()
+
+        for spy in @shouldBeCalledSpies
+          expect(spy).toHaveBeenCalled()
+
+        for spy in @shouldNotBeCalledSpies
+          expect(spy).not.toHaveBeenCalled()
+
+    describe "#markSelectedUnread", ->
+
+      beforeEach ->
+        _.values(@listView.listItemViews)[0].select()
+
+        @shouldBeCalledSpies = []
+        @shouldNotBeCalledSpies = []
+
+        for listItemView in _.values(@listView.listItemViews)
+          spy = sinon.spy(listItemView, "markUnread")
+          if listItemView.isChecked()
+            @shouldBeCalledSpies.push(spy)
+          else
+            @shouldNotBeCalledSpies.push(spy)
+
+      it "should have the correct test data", ->
+        expect(@shouldBeCalledSpies.length > 0).toBeTruthy()
+        expect(@shouldNotBeCalledSpies.length > 0).toBeTruthy()
+
+      it "should call markUnread() on all selected listItemViews", ->
+        @listView.markSelectedUnread()
+
+        for spy in @shouldBeCalledSpies
+          expect(spy).toHaveBeenCalled()
+        console.log @shouldBeCalledSpies.length
+
+        for spy in @shouldNotBeCalledSpies
+          expect(spy).not.toHaveBeenCalled()
+        console.log @shouldNotBeCalledSpies.length
