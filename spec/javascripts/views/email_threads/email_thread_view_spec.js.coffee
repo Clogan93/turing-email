@@ -97,3 +97,16 @@ describe "EmailThreadView", ->
             @emailThreadView.$el.find("#email_back_button").click()
             expect(spy).toHaveBeenCalled()
             spy.restore()
+
+    describe "#setupEmailExpandAndCollapse", ->
+
+      it "should have .email handle clicks", ->
+        expect(@emailThreadView.$el.find('.email')).toHandle("click")
+
+      describe "when a .email is clicked", ->
+        
+        it "should call show on the email body", ->
+          aDotEmailElement = @emailThreadView.$el.find('.email').first()
+          spy = sinon.spy(aDotEmailElement.find(".email_body"), "show")
+          aDotEmailElement.click()
+          expect(spy).toHaveBeenCalled()
