@@ -205,18 +205,20 @@ describe "ListView", ->
         @listView.currentEmailThreadChanged(TuringEmailApp, @emailThread)
         expect(@spy).toHaveBeenCalled()
 
-      it "calls highlight on the new email thread", ->
+      it "calls highlight and markRead on the new email thread", ->
         listItemView = @listView.listItemViews[@emailThread.get("uid")]
-        @spy = sinon.spy(listItemView, "highlight")
+        highlightSpy = sinon.spy(listItemView, "highlight")
+        markReadSpy = sinon.spy(listItemView, "markRead")
         @listView.currentEmailThreadChanged(TuringEmailApp, @emailThread)
-        expect(@spy).toHaveBeenCalled()
+        expect(highlightSpy).toHaveBeenCalled()
+        expect(markReadSpy).toHaveBeenCalled()
 
       it "updates the currentEmailThread attribute", ->
         TuringEmailApp.currentEmailThread = @emailThread
         @listView.currentEmailThreadChanged(TuringEmailApp, @emailThread)
         expect(@listView.currentEmailThread).toEqual @emailThread
 
-      it "calls unhighlight and markRead on the previous emailThread", ->
+      it "calls unhighlight on the previous emailThread", ->
         #Set an email thread
         TuringEmailApp.currentEmailThread = @emailThread
         @listView.currentEmailThreadChanged(TuringEmailApp, @emailThread)
@@ -226,10 +228,8 @@ describe "ListView", ->
 
         listItemView = @listView.listItemViews[@emailThread.get("uid")]
         unhighlightSpy = sinon.spy(listItemView, "unhighlight")
-        markReadSpy = sinon.spy(listItemView, "markRead")
         @listView.currentEmailThreadChanged(TuringEmailApp, nextCurrentEmailThread)
         expect(unhighlightSpy).toHaveBeenCalled()
-        expect(markReadSpy).toHaveBeenCalled()
 
     describe "#listItemClicked", ->
 
@@ -319,8 +319,6 @@ describe "ListView", ->
 
         for spy in @shouldBeCalledSpies
           expect(spy).toHaveBeenCalled()
-        console.log @shouldBeCalledSpies.length
 
         for spy in @shouldNotBeCalledSpies
           expect(spy).not.toHaveBeenCalled()
-        console.log @shouldNotBeCalledSpies.length
