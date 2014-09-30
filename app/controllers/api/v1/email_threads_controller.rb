@@ -80,7 +80,7 @@ class Api::V1::EmailThreadsController < ApiController
   def move_to_folder
     emails = Email.where(:id => @email_ids)
     emails.each do |email|
-      @email_account.move_email_to_folder(email, folder_name: params[:email_folder_name])
+      @email_account.move_email_to_folder(email, folder_id: params[:email_folder_id], folder_name: params[:email_folder_name])
     end
     
     render :json => {}
@@ -99,7 +99,7 @@ class Api::V1::EmailThreadsController < ApiController
   def apply_gmail_label
     emails = Email.where(:id => @email_ids)
     emails.each do |email|
-      @email_account.apply_label_to_email(email, label_name: params[:gmail_label_name])
+      @email_account.apply_label_to_email(email, label_id: params[:gmail_label_id], label_name: params[:gmail_label_name])
     end
 
     render :json => {}
