@@ -32,6 +32,16 @@ describe "ToolbarView", ->
       expect(TuringEmailApp.views.toolbarView.$el.find(".move_to_folder_link")).toHandle("click")
       expect(TuringEmailApp.views.toolbarView.$el.find("#refresh_button")).toHandle("click")
 
+    it "sets up bulk action buttons", ->
+      spy = sinon.spy(TuringEmailApp.views.toolbarView, "setupBulkActionButtons")
+      TuringEmailApp.views.toolbarView.setupButtons()
+      expect(spy).toHaveBeenCalled()
+
+    it "sets up the search button", ->
+      spy = sinon.spy(TuringEmailApp.views.toolbarView, "setupSearchButton")
+      TuringEmailApp.views.toolbarView.setupButtons()
+      expect(spy).toHaveBeenCalled()
+
     describe "when i.fa-eye is clicked", ->
       it "triggers readClicked", ->
         spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "readClicked")
@@ -95,40 +105,60 @@ describe "ToolbarView", ->
         expect(spy).toHaveBeenCalled()
         spy.restore()
 
-  describe "#currentEmailFolderChanged", ->
-    beforeEach ->
-      @newEmailFolderID = TuringEmailApp.collections.emailFolders.models[0].get("uid")
+  describe "#setupBulkActionButtons", ->
+    
+    it "should handle clicks", ->
+      expect(TuringEmailApp.views.toolbarView.$el.find("#all_bulk_action")).toHandle("click")
+      expect(TuringEmailApp.views.toolbarView.$el.find("#none_bulk_action")).toHandle("click")
+      expect(TuringEmailApp.views.toolbarView.$el.find("#read_bulk_action")).toHandle("click")
+      expect(TuringEmailApp.views.toolbarView.$el.find("#unread_bulk_action")).toHandle("click")
 
-    it "calls updateTitle with emailFolderID", ->
-      updateTitleSpy = sinon.spy(TuringEmailApp.views.toolbarView, "updateTitle")
-      TuringEmailApp.views.toolbarView.currentEmailFolderChanged(TuringEmailApp, @newEmailFolderID)
-      expect(updateTitleSpy).toHaveBeenCalled()
-      updateTitleSpy.restore()
+    describe "when all_bulk_action is clicked", ->
+      it "triggers selectAll", ->
+        spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "selectAll")
+        TuringEmailApp.views.toolbarView.$el.find("#all_bulk_action").click()
+        expect(spy).toHaveBeenCalled()
+        spy.restore()
 
-    it "calls updatePaginationText with emailFolderID", ->
-      updatePaginationTextSpy = sinon.spy(TuringEmailApp.views.toolbarView, "updatePaginationText")
-      TuringEmailApp.views.toolbarView.currentEmailFolderChanged(TuringEmailApp, @newEmailFolderID)
-      expect(updatePaginationTextSpy).toHaveBeenCalled()
-      updatePaginationTextSpy.restore()
+      it "checks the all checkbox", ->
+        TuringEmailApp.views.toolbarView.$el.find("#all_bulk_action").click()
+        expect(TuringEmailApp.views.toolbarView.selectAllIsChecked()).toBeTruthy()
 
-  describe "#emailFoldersChanged", ->
+    describe "when none_bulk_action is clicked", ->
+      it "triggers deselectAll", ->
+        spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "deselectAll")
+        TuringEmailApp.views.toolbarView.$el.find("#none_bulk_action").click()
+        expect(spy).toHaveBeenCalled()
+        spy.restore()
 
-    it "calls render", ->
-      spy = sinon.spy(TuringEmailApp.views.toolbarView, "render")
-      TuringEmailApp.views.toolbarView.emailFoldersChanged()
-      expect(spy).toHaveBeenCalled()
-      spy.restore()
+      it "unchecks the all checkbox", ->
+        TuringEmailApp.views.toolbarView.$el.find("#none_bulk_action").click()
+        expect(TuringEmailApp.views.toolbarView.selectAllIsChecked()).toBeFalsy()
+
+    describe "when read_bulk_action is clicked", ->
+      it "triggers selectAllRead", ->
+        spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "selectAllRead")
+        TuringEmailApp.views.toolbarView.$el.find("#read_bulk_action").click()
+        expect(spy).toHaveBeenCalled()
+        spy.restore()
+
+    describe "when unread_bulk_action is clicked", ->
+      it "triggers selectAllUnread", ->
+        spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "selectAllUnread")
+        TuringEmailApp.views.toolbarView.$el.find("#unread_bulk_action").click()
+        expect(spy).toHaveBeenCalled()
+        spy.restore()
 
   describe "#selectAllIsChecked", ->
     
-    describe "when divSelectAllICheck is checked", ->
+    describe "when the all checkbox is checked", ->
       beforeEach ->
         TuringEmailApp.views.toolbarView.divSelectAllICheck.iCheck("check")
 
       it "returns true", ->
         expect(TuringEmailApp.views.toolbarView.selectAllIsChecked()).toBeTruthy()
 
-    describe "when divSelectAllICheck is not checked", ->
+    describe "when the all checkbox is not checked", ->
       beforeEach ->
         TuringEmailApp.views.toolbarView.divSelectAllICheck.iCheck("uncheck")
 
@@ -137,9 +167,33 @@ describe "ToolbarView", ->
 
   describe "#deselectAllCheckbox", ->
     
-    it "calls iCheck on divSelectAllICheck with uncheck", ->
+    it "unchecks the all checkbox", ->
       spy = sinon.spy(TuringEmailApp.views.toolbarView.divSelectAllICheck, "iCheck")
       TuringEmailApp.views.toolbarView.deselectAllCheckbox()
       expect(spy).toHaveBeenCalled()
       expect(spy).toHaveBeenCalledWith("uncheck")
+      spy.restore()
+
+  describe "#currentEmailFolderChanged", ->
+    beforeEach ->
+      @newEmailFolderID = TuringEmailApp.collections.emailFolders.models[0].get("uid")
+
+    it "updates the title", ->
+      updateTitleSpy = sinon.spy(TuringEmailApp.views.toolbarView, "updateTitle")
+      TuringEmailApp.views.toolbarView.currentEmailFolderChanged(TuringEmailApp, @newEmailFolderID)
+      expect(updateTitleSpy).toHaveBeenCalled()
+      updateTitleSpy.restore()
+
+    it "updates the pagination text", ->
+      updatePaginationTextSpy = sinon.spy(TuringEmailApp.views.toolbarView, "updatePaginationText")
+      TuringEmailApp.views.toolbarView.currentEmailFolderChanged(TuringEmailApp, @newEmailFolderID)
+      expect(updatePaginationTextSpy).toHaveBeenCalled()
+      updatePaginationTextSpy.restore()
+
+  describe "#emailFoldersChanged", ->
+
+    it "renders", ->
+      spy = sinon.spy(TuringEmailApp.views.toolbarView, "render")
+      TuringEmailApp.views.toolbarView.emailFoldersChanged()
+      expect(spy).toHaveBeenCalled()
       spy.restore()
