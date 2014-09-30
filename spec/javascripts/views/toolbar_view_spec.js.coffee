@@ -1,76 +1,104 @@
 describe "ToolbarView", ->
-
   beforeEach ->
-    @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(
-      folderID: "INBOX"
-    )
-    @toolbarView = new TuringEmailApp.Views.ToolbarView(
-      app: TuringEmailApp
-      collection: @emailFolders
-    )
+    specStartTuringEmailApp()
+
+    emailFoldersFixtures = fixture.load("email_folders.fixture.json")
+    @validEmailFoldersFixture = emailFoldersFixtures[0]["valid"]
+
+    @server = sinon.fakeServer.create()
+    @server.respondWith "GET", TuringEmailApp.collections.emailFolders.url, JSON.stringify(@validEmailFoldersFixture)
+    
+    TuringEmailApp.collections.emailFolders.fetch()
+    @server.respond()
+
+    TuringEmailApp.views.toolbarView.render()
 
   it "should be defined", ->
     expect(TuringEmailApp.Views.ToolbarView).toBeDefined()
 
   it "loads the list item template", ->
-    expect(@toolbarView.template).toEqual JST["backbone/templates/toolbar_view"]
+    expect(TuringEmailApp.views.toolbarView.template).toEqual JST["backbone/templates/toolbar_view"]
 
-  describe "when render is called", ->
+  describe "#setupButtons", ->
+    
+    it "should handle clicks", ->
+      expect(TuringEmailApp.views.toolbarView.$el.find("i.fa-eye").parent()).toHandle("click")
+      expect(TuringEmailApp.views.toolbarView.$el.find("i.fa-eye-slash").parent()).toHandle("click")
+      expect(TuringEmailApp.views.toolbarView.$el.find("i.fa-archive").parent()).toHandle("click")
+      expect(TuringEmailApp.views.toolbarView.$el.find("i.fa-trash-o").parent()).toHandle("click")
+      expect(TuringEmailApp.views.toolbarView.$el.find("#paginate_left_link")).toHandle("click")
+      expect(TuringEmailApp.views.toolbarView.$el.find("#paginate_right_link")).toHandle("click")
+      expect(TuringEmailApp.views.toolbarView.$el.find(".label_as_link")).toHandle("click")
+      expect(TuringEmailApp.views.toolbarView.$el.find(".move_to_folder_link")).toHandle("click")
+      expect(TuringEmailApp.views.toolbarView.$el.find("#refresh_button")).toHandle("click")
 
-    beforeEach ->
-      @fixtures = fixture.load("email_folders.fixture.json", true)
+    describe "when i.fa-eye is clicked", ->
+      it "triggers readClicked", ->
+        spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "readClicked")
+        TuringEmailApp.views.toolbarView.$el.find("i.fa-eye").parent().click()
+        expect(spy).toHaveBeenCalled()
+        spy.restore()
 
-      @validEmailFoldersFixture = @fixtures[0]["valid"]
+    describe "when i.fa-eye-slash is clicked", ->
+      it "triggers unreadClicked", ->
+        spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "unreadClicked")
+        TuringEmailApp.views.toolbarView.$el.find("i.fa-eye-slash").parent().click()
+        expect(spy).toHaveBeenCalled()
+        spy.restore()
 
-      @server = sinon.fakeServer.create()
-      @server.respondWith "GET", "/api/v1/email_folders", JSON.stringify(@validEmailFoldersFixture)
+    describe "when i.fa-archive is clicked", ->
+      it "triggers archiveClicked", ->
+        spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "archiveClicked")
+        TuringEmailApp.views.toolbarView.$el.find("i.fa-archive").parent().click()
+        expect(spy).toHaveBeenCalled()
+        spy.restore()
 
-      @emailFolders.fetch()
-      @server.respond()
+    describe "when i.fa-trash-o is clicked", ->
+      it "triggers trashClicked", ->
+        spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "trashClicked")
+        TuringEmailApp.views.toolbarView.$el.find("i.fa-trash-o").parent().click()
+        expect(spy).toHaveBeenCalled()
+        spy.restore()
 
-      return
+    describe "when #paginate_left_link is clicked", ->
+      it "triggers leftArrowClicked", ->
+        spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "leftArrowClicked")
+        TuringEmailApp.views.toolbarView.$el.find("#paginate_left_link").click()
+        expect(spy).toHaveBeenCalled()
+        spy.restore()
 
-    afterEach ->
-      @server.restore()
+    describe "when #paginate_right_link is clicked", ->
+      it "triggers rightArrowClicked", ->
+        spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "rightArrowClicked")
+        TuringEmailApp.views.toolbarView.$el.find("#paginate_right_link").click()
+        expect(spy).toHaveBeenCalled()
+        spy.restore()
 
-    it "has setupGoLeft bind the click event to the paginate left link", ->
-      @toolbarView.render()
-      element = @toolbarView.$el.find("#paginate_left_link")[0]
-      events = $._data(element, "events")
-      expect(events.hasOwnProperty('click')).toBe true
+    describe "when .label_as_link is clicked", ->
+      it "triggers labelAsClicked", ->
+        spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "labelAsClicked")
+        TuringEmailApp.views.toolbarView.$el.find(".label_as_link").click()
+        expect(spy).toHaveBeenCalled()
+        spy.restore()
 
-    it "has setupGoRight bind the click event to paginate right link", ->
-      @toolbarView.render()
-      element = @toolbarView.$el.find("#paginate_right_link")[0]
-      events = $._data(element, "events")
-      expect(events.hasOwnProperty('click')).toBe true
+    describe "when .move_to_folder_link is clicked", ->
+      it "triggers moveToFolderClicked", ->
+        spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "moveToFolderClicked")
+        TuringEmailApp.views.toolbarView.$el.find(".move_to_folder_link").click()
+        expect(spy).toHaveBeenCalled()
+        spy.restore()
 
-    it "has setupMoveToFolder bind the click event to move_to_folder_link links", ->
-      @toolbarView.render()
-      element = @toolbarView.$el.find(".move_to_folder_link")[0]
-      events = $._data(element, "events")
-      expect(events.hasOwnProperty('click')).toBe true
+    describe "when #refresh_button is clicked", ->
+      it "triggers refreshClicked", ->
+        spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "refreshClicked")
+        TuringEmailApp.views.toolbarView.$el.find("#refresh_button").click()
+        expect(spy).toHaveBeenCalled()
+        spy.restore()
 
-    it "has setupLabelAsLinks bind the click event to .label_as_link links", ->
-      @toolbarView.render()
-      element = @toolbarView.$el.find(".label_as_link")[0]
-      events = $._data(element, "events")
-      expect(events.hasOwnProperty('click')).toBe true
+  describe "#emailFoldersChanged", ->
 
-    it "has setupArchive bind the click event to the archive button", ->
-      @toolbarView.render()
-      element = @toolbarView.$el.find("i.fa-archive").parent()[0]
-      events = $._data(element, "events")
-      expect(events.hasOwnProperty('click')).toBe true
-
-    it "has setupDelete bind the click event to the trash button", ->
-      @toolbarView.render()
-      element = @toolbarView.$el.find("i.fa-trash-o").parent()[0]
-      events = $._data(element, "events")
-      expect(events.hasOwnProperty('click')).toBe true
-
-    it "has setupRead bind the click event to the slash button", ->
-      @toolbarView.render()
-      element = @toolbarView.$el.find("i.fa-eye-slash").parent()[0]
-      events = $._data(element, "events")
-      expect(events.hasOwnProperty('click')).toBe true
+    it "calls render", ->
+      spy = sinon.spy(TuringEmailApp.views.toolbarView, "render")
+      TuringEmailApp.views.toolbarView.emailFoldersChanged()
+      expect(spy).toHaveBeenCalled()
+      spy.restore()

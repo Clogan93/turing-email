@@ -8,7 +8,6 @@ window.specStartTuringEmailApp = ->
 
   TuringEmailApp.views.toolbarView = new TuringEmailApp.Views.ToolbarView(
     app: TuringEmailApp
-    el: $("#email-folder-mail-header")
   )
 
   TuringEmailApp.models.user = new TuringEmailApp.Models.User()
