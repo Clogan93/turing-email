@@ -92,6 +92,16 @@ describe "ListView", ->
         expect(emailThreadView in _.values(@listView.listItemViews)).toBeTruthy()
         expect(emailThreadView.el).toBeInDOM()
 
+      it "adds an email thread to the view even when listItemViews is null", ->
+        currentlyDisplayedListItemViews = _.values(@listView.listItemViews)
+        emailThreadView = currentlyDisplayedListItemViews[0]
+        @listView.listItemViews = null
+        @listView.removeAll()
+        @listView.addOne(emailThreadView.model)
+        emailThreadView = @listView.listItemViews[emailThreadView.model.get("uid")]
+        expect(emailThreadView in _.values(@listView.listItemViews)).toBeTruthy()
+        expect(emailThreadView.el).toBeInDOM()
+
     describe "#removeOne", ->
       it "removes an email thread to the view", ->
         currentlyDisplayedListItemViews = _.values(@listView.listItemViews)
