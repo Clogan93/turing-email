@@ -89,10 +89,6 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
         event.preventDefault();
         @trigger("searchClicked", this, $(event.target).val())
 
-    $("#top-search-form").submit (event) =>
-      event.preventDefault();
-      @trigger("searchClicked", this, $(event.target).find("input").val())
-
   #################
   ### Functions ###
   #################
