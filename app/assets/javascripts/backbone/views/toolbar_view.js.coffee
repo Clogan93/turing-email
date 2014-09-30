@@ -81,17 +81,13 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       @trigger("selectAllUnread", this)
 
   setupSearchButton: ->
-    $("#search_input").change ->
+    @$el.find("#search_input").change ->
       $("a#search_button_link").attr("href", "#search/" + $(@).val())
 
-    $("#search_input").keypress (event) =>
+    @$el.find("#search_input").keypress (event) =>
       if event.which is 13
         event.preventDefault();
         @trigger("searchClicked", this, $(event.target).val())
-
-    $("#top-search-form").submit (event) =>
-      event.preventDefault();
-      @trigger("searchClicked", this, $(event.target).find("input").val())
 
   #################
   ### Functions ###
