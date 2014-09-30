@@ -16,6 +16,28 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     # TODO error handling
     $.post "/api/v1/email_threads/trash", postData
 
+  # TODO write tests
+  @applyGmailLabel: (emailThreadUIDs, labelID, labelName) ->
+    postData =
+      email_thread_uids: emailThreadUIDs
+
+    postData.gmail_label_id = labelID if labelID?
+    postData.gmail_label_name = labelName if labelname?
+
+    # TODO error handling
+    $.post "/api/v1/email_threads/apply_gmail_label", postData
+
+  # TODO write tests
+  @moveToFolder: (emailThreadUIDs, folderID, folderName) ->
+    postData =
+      email_thread_uids: emailThreadUIDs
+
+    postData.email_folder_id = folderID if folderID?
+    postData.email_folder_name = folderName if folderName?
+
+    # TODO error handling
+    $.post "/api/v1/email_threads/move_to_folder", postData
+    
   validation:
     uid:
       required: true
@@ -37,11 +59,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     postData.seen = seenValue
 
     url = "/api/v1/emails/set_seen"
-    $.ajax
-      type: "POST"
-      url: url
-      data: postData
-      dataType : "json"
+    $.post url, postData
 
   # TODO write tests
   removeFromFolder: (emailFolderID) ->
@@ -50,6 +68,14 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
   # TODO write tests
   trash: ->
     TuringEmailApp.Models.EmailThread.trash([@get("uid")])
+
+  # TODO write tests
+  applyGmailLabel: (labelID, labelName) ->
+    TuringEmailApp.Models.EmailThread.applyGmailLabel([@get("uid")], labelID, labelName)
+
+  # TODO write tests
+  moveToFolder: (folderID, folderName) ->
+    TuringEmailApp.Models.EmailThread.moveToFolder([@get("uid")], folderID, folderName)
     
   fromPreview: ->
     emails = @get("emails")

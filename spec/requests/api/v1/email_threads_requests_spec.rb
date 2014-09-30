@@ -146,6 +146,7 @@ describe Api::V1::EmailThreadsController, :type => :request do
 
     before { create_email_thread_emails(email_threads, email_folder: gmail_label) }
 
+    # TODO test move by id
     context 'when the user is signed in' do
       before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
       
@@ -203,6 +204,7 @@ describe Api::V1::EmailThreadsController, :type => :request do
 
     before { create_email_thread_emails(email_threads, email_folder: gmail_label) }
 
+    # TODO test move by id
     context 'when the user is signed in' do
       before { post '/api/v1/sessions', :email => gmail_account.user.email, :password => gmail_account.user.password }
 

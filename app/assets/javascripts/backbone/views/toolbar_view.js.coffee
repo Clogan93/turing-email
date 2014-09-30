@@ -43,10 +43,18 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @$el.find("i.fa-trash-o").parent().click =>
       @trigger("trashClicked", this)
 
-    @setupGoLeftButton()
-    @setupGoRightButton()
-    @setupLabelAsLinksButton()
-    @setupMoveToFolderButton()
+    @$el.find("#paginate_left_link").click =>
+      @trigger("leftArrowClicked", this)
+
+    @$el.find("#paginate_right_link").click =>
+      @trigger("rightArrowClicked", this)
+
+    @$el.find(".label_as_link").click (event) =>
+      @trigger("labelAsClicked", this, $(event.target).attr("name"))
+
+    @$el.find(".move_to_folder_link").click (event) =>
+      @trigger("moveToFolderClicked", this, $(event.target).attr("name"))
+      
     @setupSearchButton()
     @setupRefreshButton()
 
@@ -64,47 +72,6 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
     @$el.find("#unread_bulk_action").click =>
       @trigger("selectAllUnread", this)
-
-  setupGoLeftButton: ->
-    @$el.find("#paginate_left_link").click ->
-      TuringEmailApp.collections.emailThreads.previousPage()
-
-  setupGoRightButton: ->
-    @$el.find("#paginate_right_link").click ->
-      if TuringEmailApp.collections.emailThreads.length is 50
-        TuringEmailApp.collections.emailThreads.nextPage()
-
-  setupLabelAsLinksButton: ->
-    @$el.find(".label_as_link").click (event) =>
-      checkedUIDs = @retrieveCheckedUIDs()
-      postData = {}
-      postData.email_thread_uids = checkedUIDs
-      postData.gmail_label_name = $(event.target).text()
-
-      url = "/api/v1/email_threads/apply_gmail_label.json"
-      $.ajax
-        type: "POST"
-        url: url
-        data: postData
-
-      #Alter UI
-      @trigger("deselectAll")
-
-  setupMoveToFolderButton: ->
-    @$el.find(".move_to_folder_link").click (event) =>
-      checkedUIDs = @retrieveCheckedUIDs()
-      postData = {}
-      postData.email_thread_uids = checkedUIDs
-      postData.email_folder_name = $(event.target).text()
-
-      url = "/api/v1/email_threads/move_to_folder.json"
-      $.post url, postData
-
-      #Alter UI
-      tr_element = $(".check-mail .checked").parent().parent()
-      tr_element.remove()
-
-      @trigger("deselectAll")
 
   setupSearchButton: ->
     $("#search_input").change ->
