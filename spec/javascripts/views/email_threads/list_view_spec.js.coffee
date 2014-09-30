@@ -357,35 +357,10 @@ describe "ListView", ->
 
     describe "#listItemClicked", ->
 
-      it "marks non-draft emails as read when the email is not a draft", ->
+      it "triggers the change:selection event", ->
+        spy = sinon.backbone.spy(@listView, "change:selection")
+        
         listItemView = _.values(@listView.listItemViews)[0]
-
-        listItemView.model.get("emails")[0].draft_id = null
-
-        spy = sinon.spy(listItemView, "markRead")
-
-        @listView.listItemClicked listItemView
-
-        expect(spy).toHaveBeenCalled()
-
-      it "should call decrementUnreadCountOfCurrentFolder and showEmailThread when the email is not a draft", ->
-        listItemView = _.values(@listView.listItemViews)[0]
-
-        listItemView.model.get("emails")[0].draft_id = null
-
-        showEmailThreadSpy = sinon.spy(TuringEmailApp.routers.emailThreadsRouter, "showEmailThread")
-        decrementUnreadCountOfCurrentFolderSpy = sinon.spy(TuringEmailApp.views.toolbarView, "decrementUnreadCountOfCurrentFolder")
-
-        @listView.listItemClicked listItemView
-
-        expect(showEmailThreadSpy).toHaveBeenCalled()
-        expect(decrementUnreadCountOfCurrentFolderSpy).toHaveBeenCalled()
-
-      it "should call showEmailDraft when the email is a draft", ->
-        listItemView = _.values(@listView.listItemViews)[0]
-
-        spy = sinon.spy(TuringEmailApp.routers.emailThreadsRouter, "showEmailDraft")
-
-        @listView.listItemClicked listItemView
-
+        @listView.listItemClicked(listItemView)
+        
         expect(spy).toHaveBeenCalled()
