@@ -41,6 +41,8 @@ describe "EmailThread", ->
 
     describe "seenValue=true", ->
       beforeEach ->
+        email.seen = false for email in @emailThread.get("emails")
+        
         @emailThread.seenIs(true)
         @server.respond()
 
@@ -55,8 +57,13 @@ describe "EmailThread", ->
         expect(postData["seen"]).toEqual("true")
         expect(postData["email_uids"].sort()).toEqual(@emailUIDs)
 
+        for email in @emailThread.get("emails")
+          expect(email.seen).toBeTruthy()
+
     describe "seenValue=false", ->
       beforeEach ->
+        email.seen = true for email in @emailThread.get("emails")
+        
         @emailThread.seenIs(false)
         @server.respond()
 
@@ -70,6 +77,9 @@ describe "EmailThread", ->
         postData = $.unserialize(request.requestBody)
         expect(postData["seen"]).toEqual("false")
         expect(postData["email_uids"].sort()).toEqual(@emailUIDs)
+
+        for email in @emailThread.get("emails")
+          expect(email.seen).toBeFalsy()
 
   describe "attribute functions", ->
 

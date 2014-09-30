@@ -53,6 +53,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     emailUIDs = []
 
     for email in @get("emails")
+      email.seen = seenValue
       emailUIDs.push email.uid
     
     postData.email_uids = emailUIDs
@@ -60,6 +61,8 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
 
     url = "/api/v1/emails/set_seen"
     $.post url, postData
+    
+    @trigger("change:seen", this, seenValue)
 
   # TODO write tests
   removeFromFolder: (emailFolderID) ->

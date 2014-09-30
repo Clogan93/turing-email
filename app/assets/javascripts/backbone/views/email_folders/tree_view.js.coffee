@@ -5,12 +5,13 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
 
   # TODO write test
   initialize: (options) ->
+    @listenTo(options.app, "change:currentEmailFolder", @currentEmailFolderChanged)
+    @listenTo(options.app, "change:emailFolderUnreadCount", @emailFolderUnreadCountChanged)
+    
     @listenTo(@collection, "add", @render)
     @listenTo(@collection, "remove", @render)
     @listenTo(@collection, "reset", @render)
     @listenTo(@collection, "destroy", @remove)
-
-    @listenTo(options.app, "change:currentEmailFolder", @currentEmailFolderChanged)
 
   render: ->
     @generateTree()
@@ -40,15 +41,21 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
   #############################
   ### TuringEmailApp Events ###
   #############################
-  
+
   # TODO write test
   currentEmailFolderChanged: (app, emailFolderID) ->
     if @currentEmailFolderID?
       $('a[href="#email_folder/' + @currentEmailFolderID + '"]').unbind "click"
-      
+
     $('a[href="#email_folder/' + emailFolderID + '"]').click (event) ->
       event.preventDefault()
-      TuringEmailApp.collections.emailThreads.fetch(reset: true)
-    
+      @routers.emailFoldersRouter.navigate("#email_folder/" + emailFolderID, trigger: true)
+
     @currentEmailFolderID = emailFolderID
- 
+  
+  # TODO write test
+  emailFolderUnreadCountChanged: (app, emailFolder) ->
+    if emailFolder.get("label_id") is "INBOX"
+      $(".inbox_count_badge").html(emailFolder.get("num_unread_threads"))
+    else
+      @$el.find(".label_count_badge").html(emailFolder.get("num_unread_threads"))

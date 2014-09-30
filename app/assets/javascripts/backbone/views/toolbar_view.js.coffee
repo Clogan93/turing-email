@@ -1,4 +1,6 @@
 class TuringEmailApp.Views.ToolbarView extends Backbone.View
+  @MAX_RETRY_ATTEMPTS: 5
+
   template: JST["backbone/templates/toolbar_view"]
   tagName: "div"
 
@@ -17,6 +19,10 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     
     return this
 
+  #######################
+  ### Setup Functions ###
+  #######################
+    
   setupSelectAllCheckbox: ->
     @$el.find(".i-checks").iCheck
       checkboxClass: "icheckbox_square-green"
@@ -59,19 +65,6 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @$el.find("#refresh_button").click ->
       @trigger("refreshClicked", this)
 
-  setupSearchButton: ->
-    $("#search_input").change ->
-      $("a#search_button_link").attr("href", "#search/" + $(@).val())
-    
-    $("#search_input").keypress (event) =>
-      if event.which is 13
-        event.preventDefault();
-        @trigger("searchClicked", this, $(event.target).val())
-
-    $("#top-search-form").submit (event) =>
-      event.preventDefault();
-      @trigger("searchClicked", this, $(event.target).find("input").val())
-
   setupBulkActionButtons: ->
     @$el.find("#all_bulk_action").click =>
       @divSelectAllICheck.iCheck("check")
@@ -86,17 +79,23 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
     @$el.find("#unread_bulk_action").click =>
       @trigger("selectAllUnread", this)
-        
-  #############################
-  ### TuringEmailApp Events ###
-  #############################
 
-  currentEmailFolderChanged: (app, emailFolderID) ->
-    @renderLabelTitleAndUnreadCount emailFolderID
-    @renderEmailsDisplayedCounter emailFolderID
+  setupSearchButton: ->
+    $("#search_input").change ->
+      $("a#search_button_link").attr("href", "#search/" + $(@).val())
+    
+    $("#search_input").keypress (event) =>
+      if event.which is 13
+        event.preventDefault();
+        @trigger("searchClicked", this, $(event.target).val())
 
-  emailFoldersChanged: (app) ->
-    @render()
+    $("#top-search-form").submit (event) =>
+      event.preventDefault();
+      @trigger("searchClicked", this, $(event.target).find("input").val())
+
+  #################
+  ### Functions ###
+  #################
 
   selectAllIsChecked: ->
     return @divSelectAllICheck.hasClass "checked"
@@ -104,36 +103,52 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   deselectAllCheckbox: ->
     @divSelectAllICheck.iCheck("uncheck")
 
-  decrementUnreadCountOfCurrentFolder: (folderID) ->
+  updateTitle: (folderID, attempt=1) ->
     currentFolder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
-
+    
     if currentFolder?
-      currentFolder.set("num_unread_threads", currentFolder.get("num_unread_threads") - 1)
-      
-      if folderID is "INBOX"
-        $(".inbox_count_badge").html(currentFolder.get("num_unread_threads"))
-      else
-        @$el.find(".label_count_badge").html(currentFolder.get("num_unread_threads"))
-
-  renderLabelTitleAndUnreadCount: (folderID) ->
-    currentFolder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
-    if currentFolder?
-      console.log currentFolder.get("name")
       @$el.find(".label_name").html(currentFolder.get("name"))
-      if currentFolder.get("label_id") is "DRAFT"
+      if currentFolder.get("label_id") is "DRAFT" or currentFolder.get("label_id") is "SENT"
         @$el.find(".label_count_badge").html(currentFolder.get("num_threads"))
       else
         @$el.find(".label_count_badge").html(currentFolder.get("num_unread_threads"))
+    else if attempt < TuringEmailApp.Views.ToolbarView.MAX_RETRY_ATTEMPTS
+      setTimeout(
+        =>
+          @updateTitle(folderID, attempt + 1)
+        500
+      )
 
-  renderEmailsDisplayedCounter: (folderID) ->
+  updatePaginationText: (folderID, attempt=1) ->
     currentFolder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
+    
     if currentFolder?
-      num_threads = currentFolder.get("num_threads")
-      @$el.find("#total_emails_number").html(num_threads)
-      number_of_pages = parseInt(TuringEmailApp.collections.emailThreads.page)
-      start_number = (number_of_pages - 1) * 50 + 1
-      @$el.find("#start_number").html(start_number)
-      end_number = number_of_pages * 50
-      if end_number > parseInt(num_threads)
-        end_number = num_threads
-      @$el.find("#end_number").html(end_number)
+      numThreads = currentFolder.get("num_threads")
+      @$el.find("#total_emails_number").html(numThreads)
+      
+      currentPage = parseInt(TuringEmailApp.collections.emailThreads.page)
+      
+      firstThreadNumber = (currentPage - 1) * 50 + 1
+      @$el.find("#start_number").html(firstThreadNumber)
+      
+      lastThreadNumber = currentPage * 50
+      if lastThreadNumber > parseInt(numThreads)
+        lastThreadNumber = numThreads
+      @$el.find("#end_number").html(lastThreadNumber)
+    else if attempt < TuringEmailApp.Views.ToolbarView.MAX_RETRY_ATTEMPTS
+      setTimeout(
+        =>
+          @updatePaginationText(folderID, attempt + 1)
+        500
+      )
+
+  #############################
+  ### TuringEmailApp Events ###
+  #############################
+
+  currentEmailFolderChanged: (app, emailFolderID) ->
+    @updateTitle emailFolderID
+    @updatePaginationText emailFolderID
+
+  emailFoldersChanged: (app) ->
+    @render()

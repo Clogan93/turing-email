@@ -8,4 +8,3 @@ class TuringEmailApp.Routers.EmailThreadsRouter extends Backbone.Router
 
   showEmailDraft: (emailThreadUID) ->
     TuringEmailApp.showEmailEditorWithEmailThread(emailThreadUID)
-

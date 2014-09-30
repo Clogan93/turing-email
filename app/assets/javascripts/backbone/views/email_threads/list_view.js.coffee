@@ -38,14 +38,14 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     @listenTo(listItemView, "click", @listItemClicked)
 
     # TODO write tests
-    @listenTo(listItemView, "selected", (listItemView) =>
-      @trigger("listItemSelected", this, listItemView.model)
+    @listenTo(listItemView, "checked", (listItemView) =>
+      @trigger("listItemChecked", this, listItemView.model)
       @listItemViews[TuringEmailApp.currentEmailThread?.get("uid")]?.unhighlight()
     )
 
     # TODO write tests
-    @listenTo(listItemView, "deselected", (listItemView) =>
-      @trigger("listItemDeselected", this, listItemView.model)
+    @listenTo(listItemView, "unchecked", (listItemView) =>
+      @trigger("listItemUnchecked", this, listItemView.model)
       @listItemViews[TuringEmailApp.currentEmailThread?.get("uid")]?.highlight() if @getSelectedEmailThreads().length is 0
     )
     
@@ -177,14 +177,4 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   ###########################
   
   listItemClicked: (listItemView) ->
-    isDraft = listItemView.model.get("emails")[0].draft_id?
-    emailThreadUID = listItemView.model.get("uid")
-
-    if isDraft
-      TuringEmailApp.routers.emailThreadsRouter.showEmailDraft emailThreadUID
-    else
-      listItemView.markRead()
-      TuringEmailApp.views.toolbarView.decrementUnreadCountOfCurrentFolder(TuringEmailApp.currentFolderId)
-
-      TuringEmailApp.routers.emailThreadsRouter.showEmailThread emailThreadUID
-      
+    @trigger("change:selection", this, listItemView.model)
