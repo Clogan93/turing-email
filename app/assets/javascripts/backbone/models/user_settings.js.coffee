@@ -1,4 +1,6 @@
 class TuringEmailApp.Models.UserSettings extends Backbone.Model
+  @EmailThreadsPerPage: 50
+
   url: "/api/v1/user_configurations"
 
   validation:

@@ -64,6 +64,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @listenTo(@views.toolbarView, "unreadClicked", @unreadClicked)
     @listenTo(@views.toolbarView, "archiveClicked", @archiveClicked)
     @listenTo(@views.toolbarView, "trashClicked", @trashClicked)
+    @listenTo(@views.toolbarView, "leftArrowClicked", @leftArrowClicked)
+    @listenTo(@views.toolbarView, "rightArrowClicked", @rightArrowClicked)
+    @listenTo(@views.toolbarView, "labelAsClicked", @labelAsClicked)
+    @listenTo(@views.toolbarView, "moveToFolderClicked", @moveToFolderClicked)
     
     @trigger("change:toolbarView", this, @views.toolbarView)
   
@@ -226,34 +230,63 @@ window.TuringEmailApp = new(Backbone.View.extend(
       TuringEmailApp.views.composeView.show()
   )
 
-  ##############################
+  ##########################
   ### ComposeView events ###
-  ##############################
+  ##########################
     
   draftChanged: ->
     @collections.emailThreads.fetch(reset: true) if TuringEmailApp.currentFolderID is "DRAFT"
 
-  ##############################
-  ### ToolbarView events     ###
-  ##############################
+  ##########################
+  ### ToolbarView events ###
+  ##########################
     
   readClicked: ->
-    selectedEmailThreads = @views.emailThreadsListView.getSelectedEmailThreads()
-    selectedEmailThreadUIDs = (emailThread.get("uid") for emailThread in selectedEmailThreads)
-    @collections.emailThreads.seenIs selectedEmailThreadUIDs, true
-
-    @views.emailThreadsListView.markSelectedRead()
-    @views.emailThreadsListView.deselectAll()
-    @views.toolbarView.deselectAllCheckbox()
+    @applyActionToSelectedThreads(
+      =>
+        @currentEmailThread.seenIs(true)
+        @views.emailThreadsListView.markEmailThreadRead(@currentEmailThread)
+      (selectedEmailThreads, selectedEmailThreadUIDs) =>
+        @collections.emailThreads.seenIs selectedEmailThreadUIDs, true
+        @views.emailThreadsListView.markSelectedRead()
+      false, false
+    )
     
   unreadClicked: ->
-    selectedEmailThreads = @views.emailThreadsListView.getSelectedEmailThreads()
-    selectedEmailThreadUIDs = (emailThread.get("uid") for emailThread in selectedEmailThreads)
-    @collections.emailThreads.seenIs selectedEmailThreadUIDs, false
+    @applyActionToSelectedThreads(
+      =>
+        @currentEmailThread.seenIs(false)
+        @views.emailThreadsListView.markEmailThreadUnread(@currentEmailThread)
+      (selectedEmailThreads, selectedEmailThreadUIDs) =>
+        @collections.emailThreads.seenIs selectedEmailThreadUIDs, false
+        @views.emailThreadsListView.markSelectedUnread()
+      false, false
+    )
 
-    @views.emailThreadsListView.markSelectedUnread()
-    @views.emailThreadsListView.deselectAll()
-    @views.toolbarView.deselectAllCheckbox()
+  leftArrowClicked: ->
+    @collections.emailThreads.previousPage()
+
+  rightArrowClicked: ->
+    if @collections.emailThreads.length is TuringEmailApp.Models.UserSettings.EmailThreadsPerPage
+      @collections.emailThreads.nextPage()
+
+  labelAsClicked: (toolbar, labelID) ->
+    @applyActionToSelectedThreads(
+      =>
+        @currentEmailThread.applyGmailLabel(labelID)
+      (selectedEmailThreads, selectedEmailThreadUIDs) =>
+        TuringEmailApp.Models.EmailThread.applyGmailLabel(selectedEmailThreadUIDs, labelID)
+      false, false
+    )
+
+  moveToFolderClicked: (toolbar, folderID) ->
+    @applyActionToSelectedThreads(
+      =>
+        @currentEmailThread.moveToFolder(folderID)
+      (selectedEmailThreads, selectedEmailThreadUIDs) =>
+        TuringEmailApp.Models.EmailThread.moveToFolder(selectedEmailThreadUIDs, folderID)
+      false, false
+    )
   
   ##############################
   ### EmailThreadView events ###
@@ -269,31 +302,36 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @showEmailEditorWithEmailThread(TuringEmailApp.currentEmailThread.get("uid"), "forward")
     
   archiveClicked: ->
-    selectedEmailThreads = @views.emailThreadsListView.getSelectedEmailThreads()
-    
-    if selectedEmailThreads.length == 0
-      @currentEmailThread.removeFromFolder(@currentFolderID)
-      @collections.emailThreads.remove @currentEmailThread
-    else
-      selectedEmailThreadUIDs = (emailThread.get("uid") for emailThread in selectedEmailThreads)
-      TuringEmailApp.Models.EmailThread.removeFromFolder(selectedEmailThreadUIDs, @currentFolderID)
-      @collections.emailThreads.remove selectedEmailThreads
-
-    if @isSplitPaneMode() then @currentEmailThreadIs(null) else goBackClicked()
+    @applyActionToSelectedThreads(
+      =>
+        @currentEmailThread.removeFromFolder(@currentFolderID)
+      (selectedEmailThreads, selectedEmailThreadUIDs) =>
+        TuringEmailApp.Models.EmailThread.removeFromFolder(selectedEmailThreadUIDs, @currentFolderID)
+      true, true
+    )
     
   trashClicked: ->
+    @applyActionToSelectedThreads(
+      =>
+        @currentEmailThread.trash()
+      (selectedEmailThreads, selectedEmailThreadUIDs) =>
+        TuringEmailApp.Models.EmailThread.trash(selectedEmailThreadUIDs)
+      true, true
+    )
+    
+  applyActionToSelectedThreads: (singleAction, multiAction, remove=false, clearSelection=false) ->
     selectedEmailThreads = @views.emailThreadsListView.getSelectedEmailThreads()
 
     if selectedEmailThreads.length == 0
-      @currentEmailThread.trash()
-      @collections.emailThreads.remove @currentEmailThread
+      singleAction()
+      @collections.emailThreads.remove @currentEmailThread if remove
     else
       selectedEmailThreadUIDs = (emailThread.get("uid") for emailThread in selectedEmailThreads)
-      TuringEmailApp.Models.EmailThread.trash(selectedEmailThreadUIDs)
-      @collections.emailThreads.remove selectedEmailThreads
+      multiAction(selectedEmailThreads, selectedEmailThreadUIDs)
+      @collections.emailThreads.remove selectedEmailThreads if remove
 
-    if @isSplitPaneMode() then @currentEmailThreadIs(null) else goBackClicked()
-      
+    (if @isSplitPaneMode() then @currentEmailThreadIs(null) else goBackClicked()) if clearSelection
+    
   ######################
   ### view functions ###
   ######################

@@ -45,10 +45,16 @@
       Label As:
       <span class="caret"></span>
     </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="labelAsDropdownMenu">
-      <% for(var i = 0; i < emailFolders.length; i++) { %>
-        <li role="presentation"><a role="menuitem" tabindex="-1" class="label_as_link" id="<%= emailFolders[i]["label_id"] %>" href="#"><%= emailFolders[i]["name"] %></a></li>
-      <% } %>
+    <ul class="dropdown-menu" role="menu" aria-labelledby="labelAsDropdownMenu"><%
+      for(var i = 0; i < emailFolders.length; i++) {
+        var labelAsLinkID = _.uniqueId("labelAsLink")%>  
+        <li role="presentation">
+          <a role="menuitem" tabindex="-1" class="label_as_link" href="#"
+             id="<%= labelAsLinkID %>" name="<%= emailFolders[i]["label_id"] %>">
+            <%= emailFolders[i]["name"] %>
+          </a>
+        </li><%
+      } %>
     </ul>
   </div>
 
@@ -57,10 +63,16 @@
       Move To Folder:
       <span class="caret"></span>
     </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="moveToFolderDropdownMenu">
-      <% for(var i = 0; i < emailFolders.length; i++) { %>
-        <li role="presentation"><a role="menuitem" tabindex="-1" class="move_to_folder_link" id="<%= emailFolders[i]["label_id"] %>" href="#"><%= emailFolders[i]["name"] %></a></li>
-      <% } %>
+    <ul class="dropdown-menu" role="menu" aria-labelledby="moveToFolderDropdownMenu"><%
+      for(var i = 0; i < emailFolders.length; i++) {
+        var moveToFolderLinkID = _.uniqueId("moveToFolderLink")%>
+        <li role="presentation">
+          <a role="menuitem" tabindex="-1" class="move_to_folder_link" href="#"
+             id="<%= moveToFolderLinkID %>" name="<%= emailFolders[i]["label_id"] %>">
+            <%= emailFolders[i]["name"] %>
+          </a>
+        </li><%
+      } %>
     </ul>
   </div>
 

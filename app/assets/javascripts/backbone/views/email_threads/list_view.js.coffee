@@ -138,6 +138,13 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     listItemView.deselect() for listItemView in _.values(@listItemViews)
 
   # TODO write tests
+  markEmailThreadRead: (emailThread) ->
+    @listItemViews[emailThread.get("uid")]?.markRead()
+    
+  markEmailThreadUnread: (emailThread) ->
+    @listItemViews[emailThread.get("uid")]?.markUnread()
+      
+  # TODO write tests
   markSelectedRead: ->
     for listItemView in _.values(@listItemViews)
       listItemView.markRead() if listItemView.isChecked()
@@ -155,11 +162,11 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     if @currentEmailThread
       listItemView = @listItemViews[@currentEmailThread.get("uid")]
       listItemView?.unhighlight()
-      listItemView?.markRead()
 
     if emailThread?
       listItemView = @listItemViews[emailThread.get("uid")]
       listItemView?.highlight()
+      listItemView?.markRead()
 
     @deselectAll()
 

@@ -15,6 +15,8 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
     if page
       @page = parseInt(page)
       @url += "&page=" + @page
+    else
+      @page = 1
       
   modelRemoved: (model) ->
     model.trigger("removedFromCollection", this)
@@ -29,6 +31,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
 
     return if emailThreads.length > 0 then emailThreads[0] else null
 
+  # TODO optimize to single seenIs API call - pluck the email UIDs from all threads then send.
   seenIs: (emailThreadUIDs, seenValue=true) ->
     for emailThreadUID in emailThreadUIDs
       emailThread = @getEmailThread emailThreadUID
