@@ -118,3 +118,28 @@ describe "ToolbarView", ->
       TuringEmailApp.views.toolbarView.emailFoldersChanged()
       expect(spy).toHaveBeenCalled()
       spy.restore()
+
+  describe "#selectAllIsChecked", ->
+    
+    describe "when divSelectAllICheck is checked", ->
+      beforeEach ->
+        TuringEmailApp.views.toolbarView.divSelectAllICheck.iCheck("check")
+
+      it "returns true", ->
+        expect(TuringEmailApp.views.toolbarView.selectAllIsChecked()).toBeTruthy()
+
+    describe "when divSelectAllICheck is not checked", ->
+      beforeEach ->
+        TuringEmailApp.views.toolbarView.divSelectAllICheck.iCheck("uncheck")
+
+      it "returns false", ->
+        expect(TuringEmailApp.views.toolbarView.selectAllIsChecked()).toBeFalsy()
+
+  describe "#deselectAllCheckbox", ->
+    
+    it "calls iCheck on divSelectAllICheck with uncheck", ->
+      spy = sinon.spy(TuringEmailApp.views.toolbarView.divSelectAllICheck, "iCheck")
+      TuringEmailApp.views.toolbarView.deselectAllCheckbox()
+      expect(spy).toHaveBeenCalled()
+      expect(spy).toHaveBeenCalledWith("uncheck")
+      spy.restore()
