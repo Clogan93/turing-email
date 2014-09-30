@@ -95,6 +95,22 @@ describe "ToolbarView", ->
         expect(spy).toHaveBeenCalled()
         spy.restore()
 
+  describe "#currentEmailFolderChanged", ->
+    beforeEach ->
+      @newEmailFolderID = TuringEmailApp.collections.emailFolders.models[0].get("uid")
+
+    it "calls updateTitle with emailFolderID", ->
+      updateTitleSpy = sinon.spy(TuringEmailApp.views.toolbarView, "updateTitle")
+      TuringEmailApp.views.toolbarView.currentEmailFolderChanged(TuringEmailApp, @newEmailFolderID)
+      expect(updateTitleSpy).toHaveBeenCalled()
+      updateTitleSpy.restore()
+
+    it "calls updatePaginationText with emailFolderID", ->
+      updatePaginationTextSpy = sinon.spy(TuringEmailApp.views.toolbarView, "updatePaginationText")
+      TuringEmailApp.views.toolbarView.currentEmailFolderChanged(TuringEmailApp, @newEmailFolderID)
+      expect(updatePaginationTextSpy).toHaveBeenCalled()
+      updatePaginationTextSpy.restore()
+
   describe "#emailFoldersChanged", ->
 
     it "calls render", ->
