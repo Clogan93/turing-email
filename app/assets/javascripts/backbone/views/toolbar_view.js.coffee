@@ -30,6 +30,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
   setupButtons: ->
     @setupBulkActionButtons()
+    @setupSearchButton()
 
     @$el.find("i.fa-eye").parent().click =>
       @trigger("readClicked", this)
@@ -54,9 +55,21 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
     @$el.find(".move_to_folder_link").click (event) =>
       @trigger("moveToFolderClicked", this, $(event.target).attr("name"))
-      
-    @setupSearchButton()
-    @setupRefreshButton()
+
+    @$el.find("#refresh_button").click ->
+      @trigger("refreshClicked", this)
+
+  setupSearchButton: ->
+    $("#search_input").change ->
+      $("a#search_button_link").attr("href", "#search/" + $(@).val())
+    $("#search_input").keypress (e) ->
+      if e.which is 13
+        TuringEmailApp.routers.searchResultsRouter.showSearchResultsRouter $(@).val()
+      return
+
+    $("#top-search-form").submit ->
+      TuringEmailApp.routers.searchResultsRouter.showSearchResultsRouter $(@).find("input").val()
+      return false
 
   setupBulkActionButtons: ->
     @$el.find("#all_bulk_action").click =>
@@ -72,22 +85,6 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
     @$el.find("#unread_bulk_action").click =>
       @trigger("selectAllUnread", this)
-
-  setupSearchButton: ->
-    $("#search_input").change ->
-      $("a#search_button_link").attr("href", "#search/" + $(@).val())
-    $("#search_input").keypress (e) ->
-      if e.which is 13
-        TuringEmailApp.routers.searchResultsRouter.showSearchResultsRouter $(@).val()
-      return
-
-    $("#top-search-form").submit ->
-      TuringEmailApp.routers.searchResultsRouter.showSearchResultsRouter $(@).find("input").val()
-      return false
-
-  setupRefreshButton: ->
-    @$el.find("#refresh_button").click ->
-      TuringEmailApp.collections.emailThreads.fetch()
         
   #############################
   ### TuringEmailApp Events ###

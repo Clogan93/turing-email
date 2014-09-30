@@ -43,7 +43,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     window.setInterval (->
       $.post("api/v1/email_accounts/sync").done((data, status) =>
         if data.synced_emails
-          TuringEmailApp.emailThreads.fetch()
+          TuringEmailApp.emailThreads.fetch(reset: true)
       )
     ), 60000
     
@@ -68,6 +68,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @listenTo(@views.toolbarView, "rightArrowClicked", @rightArrowClicked)
     @listenTo(@views.toolbarView, "labelAsClicked", @labelAsClicked)
     @listenTo(@views.toolbarView, "moveToFolderClicked", @moveToFolderClicked)
+    @listenTo(@views.toolbarView, "refreshClicked", @refreshClicked)
     
     @trigger("change:toolbarView", this, @views.toolbarView)
   
@@ -287,7 +288,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
         TuringEmailApp.Models.EmailThread.moveToFolder(selectedEmailThreadUIDs, folderID)
       false, false
     )
-  
+
+  refreshClicked: ->
+    @collections.emailThreads.fetch(reset: true)
+    
   ##############################
   ### EmailThreadView events ###
   ##############################

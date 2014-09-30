@@ -25,4 +25,5 @@
 //= require backbone/turing_email
 //= require backbone-validation
 //
+//= require_tree ../../../vendor/assets/javascripts/
 //= require_tree .

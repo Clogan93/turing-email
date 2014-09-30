@@ -25,3 +25,6 @@
 
 # Ignore swagger documentation
 /public/api-docs
+
+# Ignore Istanbul generated coverage statistics
+/coverage
