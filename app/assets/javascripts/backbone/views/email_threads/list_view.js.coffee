@@ -102,7 +102,6 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   ### Getters ###
   ###############
 
-  # TODO write tests
   getSelectedEmailThreads: ->
     selectedEmailThreads = []
 
@@ -137,7 +136,6 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   deselectAll: ->
     listItemView.deselect() for listItemView in _.values(@listItemViews)
 
-  # TODO write tests
   markEmailThreadRead: (emailThread) ->
     @listItemViews[emailThread.get("uid")]?.markRead()
     
@@ -185,4 +183,3 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
       TuringEmailApp.views.toolbarView.decrementUnreadCountOfCurrentFolder(TuringEmailApp.currentFolderId)
 
       TuringEmailApp.routers.emailThreadsRouter.showEmailThread emailThreadUID
-      

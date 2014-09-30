@@ -78,23 +78,6 @@ describe "ListView", ->
 
         expect(@spy).toHaveBeenCalled()
 
-    describe "#setupKeyboardShortcuts", ->
-      it "adds the email_thread_highlight class", ->
-        element = @listView.$el.find("tr:nth-child(1)")
-        element.removeClass("email_thread_highlight")
-        expect(element).not.toHaveClass("email_thread_highlight")
-        @listView.setupKeyboardShortcuts()
-        expect(element).toHaveClass("email_thread_highlight")
-
-    describe "#removeOne", ->
-      it "removes an email thread to the view", ->
-        currentlyDisplayedListItemViews = _.values(@listView.listItemViews)
-        emailThreadView = currentlyDisplayedListItemViews[0]
-
-        @listView.removeOne(emailThreadView.model)
-        expect(emailThreadView.el).not.toBeInDOM()
-        expect(emailThreadView in _.values(@listView.listItemViews)).toBeFalsy()
-
     describe "#addOne", ->
       it "adds an email thread to the view", ->
         currentlyDisplayedListItemViews = _.values(@listView.listItemViews)
@@ -108,6 +91,29 @@ describe "ListView", ->
         emailThreadView = @listView.listItemViews[emailThreadView.model.get("uid")]
         expect(emailThreadView in _.values(@listView.listItemViews)).toBeTruthy()
         expect(emailThreadView.el).toBeInDOM()
+
+    describe "#removeOne", ->
+      it "removes an email thread to the view", ->
+        currentlyDisplayedListItemViews = _.values(@listView.listItemViews)
+        emailThreadView = currentlyDisplayedListItemViews[0]
+
+        @listView.removeOne(emailThreadView.model)
+        expect(emailThreadView.el).not.toBeInDOM()
+        expect(emailThreadView in _.values(@listView.listItemViews)).toBeFalsy()
+
+    describe "#addAll", ->
+      it "adds all the list item views to the list view", ->
+        @listView.removeAll()
+
+        expect(_.values(@listView.listItemViews).length is 0).toBeTruthy()
+
+        @spy = sinon.spy(@listView, "addOne")
+        @listView.addAll()
+        
+        expect(_.values(@listView.listItemViews).length is @emailThreads.length).toBeTruthy()
+
+        for emailThread in @listView.collection.models
+          expect(@spy).toHaveBeenCalledWith(emailThread)
 
     describe "#removeAll", ->
       it "removes all the list item views from the list view", ->
@@ -125,19 +131,52 @@ describe "ListView", ->
         for listItemView in initiallyDisplayedListItemViews
           expect(listItemView.el).not.toBeInDOM()
 
-    describe "#addAll", ->
-      it "adds all the list item views to the list view", ->
-        @listView.removeAll()
+    describe "#setupKeyboardShortcuts", ->
+      it "adds the email_thread_highlight class", ->
+        element = @listView.$el.find("tr:nth-child(1)")
+        element.removeClass("email_thread_highlight")
+        expect(element).not.toHaveClass("email_thread_highlight")
+        @listView.setupKeyboardShortcuts()
+        expect(element).toHaveClass("email_thread_highlight")
 
-        expect(_.values(@listView.listItemViews).length is 0).toBeTruthy()
+    describe "#moveTuringEmailReportToTop", ->
 
-        @spy = sinon.spy(@listView, "addOne")
-        @listView.addAll()
-        
-        expect(_.values(@listView.listItemViews).length is @emailThreads.length).toBeTruthy()
+      describe "if there is a report email", ->
 
-        for emailThread in @listView.collection.models
-          expect(@spy).toHaveBeenCalledWith(emailThread)
+        beforeEach ->
+          @turingEmailThread = _.values(@listView.listItemViews)[0].model
+
+          @listView.collection.remove @turingEmailThread
+          @turingEmailThread.get("emails")[0].from_name = "Turing Email"
+          @listView.collection.add @turingEmailThread
+
+        it "should move the email to the top", ->
+          expect($("#email_table_body").children()[0]).not.toContainText("Turing Email")
+
+          @listView.moveTuringEmailReportToTop()
+
+          expect($("#email_table_body").children()[0]).toContainText("Turing Email")
+
+      describe "if there is not a report email", ->
+
+        it "should leave the emails in the same order", ->
+          emailTableBodyBefore = $("#email_table_body")
+          @listView.moveTuringEmailReportToTop()
+          emailTableBodyAfter = $("#email_table_body")
+
+          expect(emailTableBodyBefore).toEqual emailTableBodyAfter
+
+    describe "#getSelectedEmailThreads", ->
+
+      beforeEach ->
+        _.values(@listView.listItemViews)[0].select()
+
+      it "should return an array with the selected email threads", ->
+        selectedEmailThreads = @listView.getSelectedEmailThreads()
+
+        for listItemView in _.values(@listView.listItemViews)
+          if listItemView.isChecked()
+            expect(selectedEmailThreads).toContain listItemView.model
 
     describe "#selectAll", ->
       it "calls select on each listItemView", ->
@@ -194,6 +233,81 @@ describe "ListView", ->
         @listView.deselectAll()
         for spy in spies
           expect(spy).toHaveBeenCalled()
+
+    describe "#markEmailThreadRead", ->
+
+      beforeEach ->
+        @firstEmailThread = _.values(@listView.listItemViews)[0].model
+
+      it "should mark the passed in email thread as read", ->
+        @listView.markEmailThreadRead @firstEmailThread
+        expect(@listView.listItemViews[@firstEmailThread.get("uid")].$el).toHaveClass("read")
+
+    describe "#markEmailThreadUnread", ->
+
+      beforeEach ->
+        @firstEmailThread = _.values(@listView.listItemViews)[0].model
+
+      it "should mark the passed in email thread as unread", ->
+        @listView.markEmailThreadUnread @firstEmailThread
+        expect(@listView.listItemViews[@firstEmailThread.get("uid")].$el).toHaveClass("unread")
+
+    describe "#markSelectedRead", ->
+
+      beforeEach ->
+        _.values(@listView.listItemViews)[0].select()
+
+        @shouldBeCalledSpies = []
+        @shouldNotBeCalledSpies = []
+
+        for listItemView in _.values(@listView.listItemViews)
+          spy = sinon.spy(listItemView, "markRead")
+          if listItemView.isChecked()
+            @shouldBeCalledSpies.push(spy)
+          else
+            @shouldNotBeCalledSpies.push(spy)
+
+      it "should have the correct test data", ->
+        expect(@shouldBeCalledSpies.length > 0).toBeTruthy()
+        expect(@shouldNotBeCalledSpies.length > 0).toBeTruthy()
+
+      it "should call markRead() on all selected listItemViews", ->
+
+        @listView.markSelectedRead()
+
+        for spy in @shouldBeCalledSpies
+          expect(spy).toHaveBeenCalled()
+
+        for spy in @shouldNotBeCalledSpies
+          expect(spy).not.toHaveBeenCalled()
+
+    describe "#markSelectedUnread", ->
+
+      beforeEach ->
+        _.values(@listView.listItemViews)[0].select()
+
+        @shouldBeCalledSpies = []
+        @shouldNotBeCalledSpies = []
+
+        for listItemView in _.values(@listView.listItemViews)
+          spy = sinon.spy(listItemView, "markUnread")
+          if listItemView.isChecked()
+            @shouldBeCalledSpies.push(spy)
+          else
+            @shouldNotBeCalledSpies.push(spy)
+
+      it "should have the correct test data", ->
+        expect(@shouldBeCalledSpies.length > 0).toBeTruthy()
+        expect(@shouldNotBeCalledSpies.length > 0).toBeTruthy()
+
+      it "should call markUnread() on all selected listItemViews", ->
+        @listView.markSelectedUnread()
+
+        for spy in @shouldBeCalledSpies
+          expect(spy).toHaveBeenCalled()
+
+        for spy in @shouldNotBeCalledSpies
+          expect(spy).not.toHaveBeenCalled()
 
     describe "#currentEmailThreadChanged", ->
 
@@ -265,99 +379,3 @@ describe "ListView", ->
         @listView.listItemClicked listItemView
 
         expect(spy).toHaveBeenCalled()
-
-    describe "#markSelectedRead", ->
-
-      beforeEach ->
-        _.values(@listView.listItemViews)[0].select()
-
-        @shouldBeCalledSpies = []
-        @shouldNotBeCalledSpies = []
-
-        for listItemView in _.values(@listView.listItemViews)
-          spy = sinon.spy(listItemView, "markRead")
-          if listItemView.isChecked()
-            @shouldBeCalledSpies.push(spy)
-          else
-            @shouldNotBeCalledSpies.push(spy)
-
-      it "should have the correct test data", ->
-        expect(@shouldBeCalledSpies.length > 0).toBeTruthy()
-        expect(@shouldNotBeCalledSpies.length > 0).toBeTruthy()
-
-      it "should call markRead() on all selected listItemViews", ->
-
-        @listView.markSelectedRead()
-
-        for spy in @shouldBeCalledSpies
-          expect(spy).toHaveBeenCalled()
-
-        for spy in @shouldNotBeCalledSpies
-          expect(spy).not.toHaveBeenCalled()
-
-    describe "#markSelectedUnread", ->
-
-      beforeEach ->
-        _.values(@listView.listItemViews)[0].select()
-
-        @shouldBeCalledSpies = []
-        @shouldNotBeCalledSpies = []
-
-        for listItemView in _.values(@listView.listItemViews)
-          spy = sinon.spy(listItemView, "markUnread")
-          if listItemView.isChecked()
-            @shouldBeCalledSpies.push(spy)
-          else
-            @shouldNotBeCalledSpies.push(spy)
-
-      it "should have the correct test data", ->
-        expect(@shouldBeCalledSpies.length > 0).toBeTruthy()
-        expect(@shouldNotBeCalledSpies.length > 0).toBeTruthy()
-
-      it "should call markUnread() on all selected listItemViews", ->
-        @listView.markSelectedUnread()
-
-        for spy in @shouldBeCalledSpies
-          expect(spy).toHaveBeenCalled()
-
-        for spy in @shouldNotBeCalledSpies
-          expect(spy).not.toHaveBeenCalled()
-
-    describe "#getSelectedEmailThreads", ->
-
-      beforeEach ->
-        _.values(@listView.listItemViews)[0].select()
-
-      it "should return an array with the selected email threads", ->
-        selectedEmailThreads = @listView.getSelectedEmailThreads()
-
-        for listItemView in _.values(@listView.listItemViews)
-          if listItemView.isChecked()
-            expect(selectedEmailThreads).toContain listItemView.model
-
-    describe "#moveTuringEmailReportToTop", ->
-
-      describe "if there is a report email", ->
-
-        beforeEach ->
-          @turingEmailThread = _.values(@listView.listItemViews)[0].model
-
-          @listView.collection.remove @turingEmailThread
-          @turingEmailThread.get("emails")[0].from_name = "Turing Email"
-          @listView.collection.add @turingEmailThread
-
-        it "should move the email to the top", ->
-          expect($("#email_table_body").children()[0]).not.toContainText("Turing Email")
-
-          @listView.moveTuringEmailReportToTop()
-
-          expect($("#email_table_body").children()[0]).toContainText("Turing Email")
-
-      describe "if there is not a report email", ->
-
-        it "should leave the emails in the same order", ->
-          emailTableBodyBefore = $("#email_table_body")
-          @listView.moveTuringEmailReportToTop()
-          emailTableBodyAfter = $("#email_table_body")
-
-          expect(emailTableBodyBefore).toEqual emailTableBodyAfter
