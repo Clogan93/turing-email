@@ -11,8 +11,6 @@ describe "ListItemView", ->
     )
 
     @server = sinon.fakeServer.create()
-
-    @server = sinon.fakeServer.create()
     @server.respondWith "GET", @emailThread.url, JSON.stringify(@validEmailThreadFixture)
 
   afterEach ->

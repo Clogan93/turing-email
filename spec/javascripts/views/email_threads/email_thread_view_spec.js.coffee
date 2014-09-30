@@ -1,63 +1,99 @@
 describe "EmailThreadView", ->
-
   beforeEach ->
-    TuringEmailApp.user = new TuringEmailApp.Models.User()
-    @emailThread = new TuringEmailApp.Models.EmailThread()
-    @emailThread.url = "/api/v1/email_threads"
+    specStartTuringEmailApp()
+
+    emailThreadFixtures = fixture.load("email_thread.fixture.json")
+    @validEmailThreadFixture = emailThreadFixtures[0]["valid"]
+    
+    @emailThread = new TuringEmailApp.Models.EmailThread(undefined, emailThreadUID: @validEmailThreadFixture["uid"])
     @emailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
       model: @emailThread
     )
 
-  it "should be defined", ->
-    expect(TuringEmailApp.Views.EmailThreads.EmailThreadView).toBeDefined()
- 
-  it "should have the right model", ->
-    expect(@emailThreadView.model).toEqual @emailThread
+    @server = sinon.fakeServer.create()
 
-  it "loads the list item template", ->
+    @server.respondWith "GET", @emailThread.url, JSON.stringify(@validEmailThreadFixture)
+
+  afterEach ->
+    @server.restore()
+
+  it "has the right template", ->
     expect(@emailThreadView.template).toEqual JST["backbone/templates/email_threads/email_thread"]
 
-  describe "when render is called", ->
-
+  describe "after fetch", ->
     beforeEach ->
-      @fixtures = fixture.load("email_thread.fixture.json", "user.fixture.json", true)
-
-      @validUser = @fixtures[1]["valid"]
-      @validEmailThreadFixture = @fixtures[0]["valid"]
-
-      @server = sinon.fakeServer.create()
-
-      @server.respondWith "GET", "/api/v1/users/current", JSON.stringify(@validUser)
-      TuringEmailApp.user.fetch()
-      @server.respond()
-
-      @server.respondWith "GET", "/api/v1/email_threads", JSON.stringify(@validEmailThreadFixture)
       @emailThread.fetch()
       @server.respond()
 
-      return
+    describe "#render", ->
 
-    afterEach ->
-      @server.restore()
+      it "should have the root element be a div", ->
+        expect(@emailThreadView.el.nodeName).toEqual "DIV"
 
-    it "should have the root element be a div", ->
-      expect(@emailThreadView.el.nodeName).toEqual "DIV"
+      it "should render the attributes of all the email threads", ->
+        #Set up lists
+        fromNames = []
+        textParts = []
 
-    it "should render the subject attribute", ->
-      expect(@emailThreadView.$el.find('#email_subject').text().trim()).toEqual @emailThread.get("emails")[0].subject
+        #Collect Attributes from the rendered DOM.
+        @emailThreadView.$el.find('.email_information .col-md-3').each ->
+          fromNames.push $(this).text().trim()
+        @emailThreadView.$el.find('.email_body .col-md-11').each ->
+          textParts.push $(this).text().trim()
 
-    it "should render the attributes of all the email threads", ->
-      #Set up lists
-      fromNames = []
-      textParts = []
+        #Run expectations
+        for email, index in @emailThread.get("emails")
+          expect(fromNames[index]).toEqual email.from_name
+          expect(textParts[index]).toEqual email.text_part
 
-      #Collect Attributes from the rendered DOM.
-      @emailThreadView.$el.find('.email_information .col-md-3').each ->
-        fromNames.push $(this).text().trim()
-      @emailThreadView.$el.find('.email_body .col-md-11').each ->
-        textParts.push $(this).text().trim()
+      # it "should render the subject attribute", ->
+      #   expect(@emailThreadView.$el.find('#email_subject').text().trim()).toEqual @emailThread.get("emails")[0].subject
 
-      #Run expectations
-      for email, index in @emailThread.get("emails")
-        expect(fromNames[index]).toEqual email.from_name
-        expect(textParts[index]).toEqual email.text_part
+    describe "#setupButtons", ->
+      
+      it "should handle clicks", ->
+        expect(@emailThreadView.$el.find('#email_back_button')).toHandle("click")
+        expect(@emailThreadView.$el.find(".email_reply_button")).toHandle("click")
+        expect(@emailThreadView.$el.find(".email_forward_button")).toHandle("click")
+        expect(@emailThreadView.$el.find("i.fa-archive").parent()).toHandle("click")
+        expect(@emailThreadView.$el.find("i.fa-trash-o").parent()).toHandle("click")
+
+      describe "when email_reply_button is clicked", ->
+        it "triggers replyClicked", ->
+          spy = sinon.backbone.spy(@emailThreadView, "replyClicked")
+          @emailThreadView.$el.find(".email_reply_button").click()
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+
+      describe "when email_forward_button is clicked", ->
+        it "triggers forwardClicked", ->
+          spy = sinon.backbone.spy(@emailThreadView, "forwardClicked")
+          @emailThreadView.$el.find(".email_forward_button").click()
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+
+      describe "when the archive button is clicked", ->
+        it "triggers archiveClicked", ->
+          spy = sinon.backbone.spy(@emailThreadView, "archiveClicked")
+          @emailThreadView.$el.find("i.fa-archive").parent().click()
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+
+      describe "when trash button is clicked", ->
+        it "triggers trashClicked", ->
+          spy = sinon.backbone.spy(@emailThreadView, "trashClicked")
+          @emailThreadView.$el.find("i.fa-trash-o").parent().click()
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+
+      describe "when isSplitPaneMode() is off", ->
+
+        it "should have email_back_button handle clicks", ->
+          expect(@emailThreadView.$el.find('#email_back_button')).toHandle("click")
+
+        describe "when email_back_button is clicked", ->
+          it "triggers goBackClicked", ->
+            spy = sinon.backbone.spy(@emailThreadView, "goBackClicked")
+            @emailThreadView.$el.find("#email_back_button").click()
+            expect(spy).toHaveBeenCalled()
+            spy.restore()
