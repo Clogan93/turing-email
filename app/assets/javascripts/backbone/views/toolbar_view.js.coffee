@@ -7,7 +7,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   initialize: (options) ->
     @listenTo(options.app, "change:currentEmailFolder", @currentEmailFolderChanged)
     @listenTo(options.app, "change:emailFolders", @emailFoldersChanged)
-  
+
   render: ->
     emailFolders = TuringEmailApp.collections.emailFolders?.toJSON() ? []
     @$el.html(@template({'emailFolders' : emailFolders}))
@@ -83,7 +83,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   setupSearchButton: ->
     $("#search_input").change ->
       $("a#search_button_link").attr("href", "#search/" + $(@).val())
-    
+
     $("#search_input").keypress (event) =>
       if event.which is 13
         event.preventDefault();

@@ -149,6 +149,17 @@ describe "ToolbarView", ->
         expect(spy).toHaveBeenCalled()
         spy.restore()
 
+  # describe "#setupSearchButton", ->
+    
+  #   it "should set up the search input handle change events", ->
+  #     expect($("#search_input")).toHandle("change")
+
+  #   it "should set up the search input handle keypress events", ->
+  #     expect($("#search_input")).toHandle("keypress")
+
+  #   it "should set up the top search form to handle submit events", ->
+  #     expect($("#top-search-form")).toHandle("submit")
+
   describe "#selectAllIsChecked", ->
     
     describe "when the all checkbox is checked", ->
