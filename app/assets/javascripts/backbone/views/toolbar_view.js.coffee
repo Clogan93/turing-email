@@ -62,7 +62,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @$el.find(".move_to_folder_link").click (event) =>
       @trigger("moveToFolderClicked", this, $(event.target).attr("name"))
 
-    @$el.find("#refresh_button").click ->
+    @$el.find("#refresh_button").click =>
       @trigger("refreshClicked", this)
 
   setupBulkActionButtons: ->

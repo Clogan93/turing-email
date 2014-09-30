@@ -49,7 +49,7 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
 
     $('a[href="#email_folder/' + emailFolderID + '"]').click (event) ->
       event.preventDefault()
-      @routers.emailFoldersRouter.navigate("#email_folder/" + emailFolderID, trigger: true)
+      TuringEmailApp.routers.emailFoldersRouter.navigate("#email_folder/" + emailFolderID, trigger: true)
 
     @currentEmailFolderID = emailFolderID
   
