@@ -74,7 +74,8 @@ Teaspoon.configure do |config|
 
     # Assets to be ignored when generating coverage reports. Accepts an array of filenames or regular expressions. The
     # default excludes assets from vendor, gems and support libraries.<br/><br/>
-    #suite.no_coverage = [%r{/lib/ruby/gems/}, %r{/vendor/assets/}, %r{/support/}, %r{/(.+)_helper.}]
+    suite.no_coverage = [%r{/lib/ruby/gems/}, %r{/vendor/assets/}, %r{/support/}, %r{/(.+)_helper.},
+                         %r{.*bootstrap-sass-3.2.0.2/}]
 
     # Hooks allow you to use `Teaspoon.hook("fixtures")` before, after, or during your spec run. This will make a
     # synchronous Ajax request to the server that will call all of the blocks you've defined for that hook name.
@@ -164,12 +165,12 @@ Teaspoon.configure do |config|
     # Which coverage reports Instanbul should generate. Correlates directly to what Istanbul supports.
     #
     # Available: text-summary, text, html, lcov, lcovonly, cobertura, teamcity
-    #coverage.reports = ["text-summary", "html"]
+    coverage.reports = ["text-summary", "html"]
 
     # The path that the coverage should be written to - when there's an artifact to write to disk.
     # Note: Relative to `config.root`.
-    #coverage.output_dir = "coverage"
-
+    coverage.output_path = "coverage"
+    
     # Various thresholds requirements can be defined, and those thresholds will be checked at the end of a run. If any
     # aren't met the run will fail with a message. Thresholds can be defined as a percentage (0-100), or nil.
     #coverage.statements = nil

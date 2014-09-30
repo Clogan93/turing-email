@@ -13,6 +13,7 @@
  *= require_self
  *= require reset
  *= require style
+ *= require_tree ../../../vendor/assets/stylesheets/
  *= require_tree .
  */
 
