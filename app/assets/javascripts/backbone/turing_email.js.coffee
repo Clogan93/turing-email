@@ -69,6 +69,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @listenTo(@views.toolbarView, "labelAsClicked", @labelAsClicked)
     @listenTo(@views.toolbarView, "moveToFolderClicked", @moveToFolderClicked)
     @listenTo(@views.toolbarView, "refreshClicked", @refreshClicked)
+    @listenTo(@views.toolbarView, "searchClicked", @searchClicked)
     
     @trigger("change:toolbarView", this, @views.toolbarView)
   
@@ -271,7 +272,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     if @collections.emailThreads.length is TuringEmailApp.Models.UserSettings.EmailThreadsPerPage
       @collections.emailThreads.nextPage()
 
-  labelAsClicked: (toolbar, labelID) ->
+  labelAsClicked: (toolbarView, labelID) ->
     @applyActionToSelectedThreads(
       =>
         @currentEmailThread.applyGmailLabel(labelID)
@@ -280,7 +281,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
       false, false
     )
 
-  moveToFolderClicked: (toolbar, folderID) ->
+  moveToFolderClicked: (toolbarView, folderID) ->
     @applyActionToSelectedThreads(
       =>
         @currentEmailThread.moveToFolder(folderID)
@@ -291,6 +292,9 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
   refreshClicked: ->
     @collections.emailThreads.fetch(reset: true)
+
+  searchClicked: (toolbarView, query) ->
+    @routers.searchResultsRouter.navigate("#search/" + query, {trigger: true})
     
   ##############################
   ### EmailThreadView events ###

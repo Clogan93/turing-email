@@ -62,14 +62,15 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   setupSearchButton: ->
     $("#search_input").change ->
       $("a#search_button_link").attr("href", "#search/" + $(@).val())
-    $("#search_input").keypress (e) ->
-      if e.which is 13
-        TuringEmailApp.routers.searchResultsRouter.showSearchResultsRouter $(@).val()
-      return
+    
+    $("#search_input").keypress (event) =>
+      if event.which is 13
+        event.preventDefault();
+        @trigger("searchClicked", this, $(event.target).val())
 
-    $("#top-search-form").submit ->
-      TuringEmailApp.routers.searchResultsRouter.showSearchResultsRouter $(@).find("input").val()
-      return false
+    $("#top-search-form").submit (event) =>
+      event.preventDefault();
+      @trigger("searchClicked", this, $(event.target).find("input").val())
 
   setupBulkActionButtons: ->
     @$el.find("#all_bulk_action").click =>
@@ -102,18 +103,6 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     
   deselectAllCheckbox: ->
     @divSelectAllICheck.iCheck("uncheck")
-    
-  retrieveCheckedUIDs: ->
-    checkedUIDs = []
-    
-    links_of_checked_emails = $(".check-mail .checked").parent().parent().find('a[href^="#email_thread"]')
-    links_of_checked_emails.each ->
-      link_components = $(@).attr("href").split("/")
-      uid = link_components[link_components.length - 1]
-      checkedUIDs.push uid
-    
-    checkedUIDs = _.uniq(checkedUIDs)
-    return checkedUIDs
 
   decrementUnreadCountOfCurrentFolder: (folderID) ->
     currentFolder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
