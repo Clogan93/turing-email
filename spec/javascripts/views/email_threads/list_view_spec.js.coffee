@@ -322,3 +322,15 @@ describe "ListView", ->
 
         for spy in @shouldNotBeCalledSpies
           expect(spy).not.toHaveBeenCalled()
+
+    describe "#getSelectedEmailThreads", ->
+
+      beforeEach ->
+        _.values(@listView.listItemViews)[0].select()
+
+      it "should return an array with the selected email threads", ->
+        selectedEmailThreads = @listView.getSelectedEmailThreads()
+
+        for listItemView in _.values(@listView.listItemViews)
+          if listItemView.isChecked()
+            expect(selectedEmailThreads).toContain listItemView.model

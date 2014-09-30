@@ -104,13 +104,13 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
   # TODO write tests
   getSelectedEmailThreads: ->
-    selectedListItemViews = []
-    
+    selectedEmailThreads = []
+
     for listItemView in _.values(@listItemViews)
-      selectedListItemViews.push(listItemView.model) if listItemView.isChecked()
-      
-    return selectedListItemViews
-  
+      selectedEmailThreads.push(listItemView.model) if listItemView.isChecked()
+
+    return selectedEmailThreads
+
   ###############
   ### Actions ###
   ###############
@@ -143,13 +143,11 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     
   markEmailThreadUnread: (emailThread) ->
     @listItemViews[emailThread.get("uid")]?.markUnread()
-      
-  # TODO write tests
+
   markSelectedRead: ->
     for listItemView in _.values(@listItemViews)
       listItemView.markRead() if listItemView.isChecked()
 
-  # TODO write tests
   markSelectedUnread: ->
     for listItemView in _.values(@listItemViews)
       listItemView.markUnread() if listItemView.isChecked()
