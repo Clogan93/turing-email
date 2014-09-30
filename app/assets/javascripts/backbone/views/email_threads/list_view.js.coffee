@@ -89,7 +89,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     trReportEmail = null
     
     @$el.find("td.mail-contact").each ->
-      textValue = $(@).text()
+      textValue = $(@).text().trim()
 
       if textValue is "Turing Email"
         trReportEmail = $(@).parent()
