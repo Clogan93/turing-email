@@ -45,9 +45,9 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
       @updateSelectionStyles()
 
       if @isChecked()
-        @trigger("selected", this)
+        @trigger("checked", this)
       else
-        @trigger("deselected", this)
+        @trigger("unchecked", this)
 
   isChecked: ->
     return @diviCheck.hasClass "checked"
@@ -65,13 +65,13 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     @diviCheck.iCheck("check")
     @updateSelectionStyles()
     
-    @trigger("selected", this)
+    @trigger("checked", this)
 
   deselect: ->
     @diviCheck.iCheck("uncheck")
     @updateSelectionStyles()
     
-    @trigger("deselected", this)
+    @trigger("unchecked", this)
 
   highlight: ->
     @$el.addClass("currently_being_read")

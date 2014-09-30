@@ -31,28 +31,20 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
 
     return if emailThreads.length > 0 then emailThreads[0] else null
 
-  # TODO optimize to single seenIs API call - pluck the email UIDs from all threads then send.
-  seenIs: (emailThreadUIDs, seenValue=true) ->
-    for emailThreadUID in emailThreadUIDs
-      emailThread = @getEmailThread emailThreadUID
-      emailThread.seenIs(seenValue)
-
   # TODO write tests
-  previousPage: ->
+  previousPage: (success) ->
     pageNumber = parseInt(@page)
     if @page > 1
       @page--
       @url = "/api/v1/email_threads/in_folder?folder_id=" + TuringEmailApp.currentFolderID + "&page=" + @page
       @fetch(
-        success: (collection, response, options) =>
-          TuringEmailApp.views.toolbarView.renderEmailsDisplayedCounter TuringEmailApp.currentFolderID
+        success: success
       )
 
   # TODO write tests
-  nextPage: ->
+  nextPage: (success) ->
     @page++
     @url = "/api/v1/email_threads/in_folder?folder_id=" + TuringEmailApp.currentFolderID + "&page=" + @page
     @fetch(
-      success: (collection, response, options) =>
-        TuringEmailApp.views.toolbarView.renderEmailsDisplayedCounter TuringEmailApp.currentFolderID
+      success: success
     )

@@ -82,8 +82,8 @@ describe "ListItemView", ->
           beforeEach ->
             @listItemView.select()
 
-          it "triggers deselected", ->
-            spy = sinon.backbone.spy(@listItemView, "deselected")
+          it "triggers unchecked", ->
+            spy = sinon.backbone.spy(@listItemView, "unchecked")
             @listItemView.$el.find("div.icheckbox_square-green ins").click()
             expect(spy).toHaveBeenCalled()
             spy.restore()
@@ -93,7 +93,7 @@ describe "ListItemView", ->
             @listItemView.deselect()
 
           it "triggers selected", ->
-            spy = sinon.backbone.spy(@listItemView, "selected")
+            spy = sinon.backbone.spy(@listItemView, "checked")
             @listItemView.$el.find("div.icheckbox_square-green ins").click()
             expect(spy).toHaveBeenCalled()
             spy.restore()
@@ -121,7 +121,7 @@ describe "ListItemView", ->
         it "adds the selected styles", ->
           expect(@listItemView.$el).toHaveClass("checked_email_thread")
 
-      describe "when deselected", ->
+      describe "when unchecked", ->
         beforeEach ->
           @listItemView.deselect()
           @listItemView.updateSelectionStyles()
@@ -142,7 +142,7 @@ describe "ListItemView", ->
           @listItemView.toggleSelect()
           expect(spy).toHaveBeenCalled()
 
-      describe "when deselected", ->
+      describe "when unchecked", ->
         beforeEach ->
           @listItemView.deselect()
 
@@ -162,7 +162,7 @@ describe "ListItemView", ->
         expect(@listItemView.$el).toHaveClass("checked_email_thread")
 
       it "triggers selected", ->
-        spy = sinon.backbone.spy(@listItemView, "selected")
+        spy = sinon.backbone.spy(@listItemView, "checked")
         @listItemView.select()
         expect(spy).toHaveBeenCalled()
         spy.restore()
@@ -177,8 +177,8 @@ describe "ListItemView", ->
         @listItemView.deselect()
         expect(@listItemView.$el).not.toHaveClass("checked_email_thread")
 
-      it "triggers deselected", ->
-        spy = sinon.backbone.spy(@listItemView, "deselected")
+      it "triggers unchecked", ->
+        spy = sinon.backbone.spy(@listItemView, "unchecked")
         @listItemView.deselect()
         expect(spy).toHaveBeenCalled()
         spy.restore()

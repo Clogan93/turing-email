@@ -38,9 +38,6 @@ describe "EmailThreadsCollection", ->
         retrievedEmailThread = @emailThreadsCollection.getEmailThread emailThread.get("uid")
         expect(emailThread).toEqual retrievedEmailThread
 
-  describe "#seenIs", ->
-    # TODO write tests
-
   describe "#previousPage", ->
     # TODO write tests
   
