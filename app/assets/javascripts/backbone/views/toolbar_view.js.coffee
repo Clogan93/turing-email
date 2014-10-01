@@ -22,7 +22,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   #######################
   ### Setup Functions ###
   #######################
-    
+
   setupSelectAllCheckbox: ->
     @$el.find(".i-checks").iCheck
       checkboxClass: "icheckbox_square-green"

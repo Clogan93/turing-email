@@ -44,6 +44,40 @@ describe "ToolbarView", ->
     it "sets the select all checkbox element", ->
       expect(TuringEmailApp.views.toolbarView.divSelectAllICheck).toEqual TuringEmailApp.views.toolbarView.$el.find("div.icheckbox_square-green")
 
+  describe "#setupSelectAllCheckbox", ->
+
+    it "should call iCheck on the checkboxes", ->
+      TuringEmailApp.views.toolbarView.setupSelectAllCheckbox()
+      iChecks = TuringEmailApp.views.toolbarView.$el.find("div.icheckbox_square-green")
+      expect(iChecks).toHaveClass("icheckbox_square-green")
+      expect(iChecks).toContain("input.i-checks")
+      expect(iChecks).toContain("ins.iCheck-helper")
+
+    it "should make the check all checkbox handle clicks", ->
+      expect(TuringEmailApp.views.toolbarView.$el.find("div.icheckbox_square-green ins")).toHandle("click")
+
+    describe "when the all checkbox element is clicked", ->
+
+      describe "when the select all checkbox element is checked", ->
+        beforeEach ->
+          TuringEmailApp.views.toolbarView.divSelectAllICheck.iCheck("uncheck")
+
+        it "should trigger select all", ->
+          spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "selectAll")
+          TuringEmailApp.views.toolbarView.$el.find("div.icheckbox_square-green ins").click()
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+
+      describe "when the select all checkbox element is not checked", ->
+        beforeEach ->
+          TuringEmailApp.views.toolbarView.divSelectAllICheck.iCheck("check")
+
+        it "should trigger deselect all", ->
+          spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "deselectAll")
+          TuringEmailApp.views.toolbarView.$el.find("div.icheckbox_square-green ins").click()
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+
   describe "#setupButtons", ->
 
     it "should handle clicks", ->
