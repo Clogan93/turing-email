@@ -320,6 +320,20 @@ describe "ToolbarView", ->
         htmlNumber = parseInt(TuringEmailApp.views.toolbarView.$el.find("#end_number").text())
         expect(htmlNumber).toEqual lastThreadNumber
 
+      describe "when on the final page", ->
+        beforeEach ->
+          TuringEmailApp.collections.emailThreads.page = 4
+          TuringEmailApp.views.toolbarView.updatePaginationText @newEmailFolderID
+
+        it "correctly sets the end_number when on the final page", ->
+          lastThreadNumber = TuringEmailApp.collections.emailThreads.page * 50
+          numThreads = @currentFolder.get("num_threads")
+          if lastThreadNumber > parseInt(numThreads)
+            lastThreadNumber = numThreads
+
+          htmlNumber = parseInt(TuringEmailApp.views.toolbarView.$el.find("#end_number").text())
+          expect(htmlNumber).toEqual lastThreadNumber
+
     describe "#currentEmailFolderChanged", ->
       beforeEach ->
         @newEmailFolderID = TuringEmailApp.collections.emailFolders.models[0].get("uid")
