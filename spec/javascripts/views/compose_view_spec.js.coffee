@@ -142,7 +142,7 @@ describe "ComposeView", ->
 
     describe "#loadEmailAsReply", ->
       beforeEach ->
-        @seededChance = new Chance(1);
+        @seededChance = new Chance(1)
 
       it "resets the view", ->
         spy = sinon.spy(TuringEmailApp.views.composeView, "resetView")
@@ -187,7 +187,7 @@ describe "ComposeView", ->
 
     describe "#loadEmailAsForward", ->
       beforeEach ->
-        @seededChance = new Chance(1);
+        @seededChance = new Chance(1)
 
       it "resets the view", ->
         spy = sinon.spy(TuringEmailApp.views.composeView, "resetView")
@@ -207,6 +207,92 @@ describe "ComposeView", ->
         TuringEmailApp.views.composeView.loadEmailAsForward emailJSON
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith(emailJSON)
+
+    describe "#loadEmailHeaders", ->
+      beforeEach ->
+        @seededChance = new Chance(1)
+
+      it "updates the to input", ->
+        emailJSON = {}
+        emailJSON["tos"] = @seededChance.email()
+        TuringEmailApp.views.composeView.loadEmailHeaders emailJSON
+        expect(TuringEmailApp.views.composeView.$el.find("#compose_form #to_input").val()).toEqual emailJSON.tos
+
+      it "updates the cc input", ->
+        emailJSON = {}
+        emailJSON["ccs"] = @seededChance.email()
+        TuringEmailApp.views.composeView.loadEmailHeaders emailJSON
+        expect(TuringEmailApp.views.composeView.$el.find("#compose_form #cc_input").val()).toEqual emailJSON.ccs
+
+      it "updates the bcc input", ->
+        emailJSON = {}
+        emailJSON["bccs"] = @seededChance.email()
+        TuringEmailApp.views.composeView.loadEmailHeaders emailJSON
+        expect(TuringEmailApp.views.composeView.$el.find("#compose_form #bcc_input").val()).toEqual emailJSON.bccs
+
+      it "updates the subject input", ->
+        emailJSON = {}
+        emailJSON["subject"] = @seededChance.string({length: 20})
+        TuringEmailApp.views.composeView.loadEmailHeaders emailJSON
+        subjectWithPrefixFromEmail = TuringEmailApp.views.composeView.subjectWithPrefixFromEmail(emailJSON)
+        expect(TuringEmailApp.views.composeView.$el.find("#compose_form #subject_input").val()).toEqual subjectWithPrefixFromEmail
+
+    describe "#loadEmailBody", ->
+      beforeEach ->
+        @seededChance = new Chance(1)
+
+      it "adds blank space if the insertReplyHeader is true", ->
+        # TODO fix this test.
+        # emailJSON = {}
+        # emailJSON["text_part"] = @seededChance.string({length: 250})
+        # TuringEmailApp.views.composeView.loadEmailBody emailJSON, true
+        # expect(TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").val()).toContain("\r\n\r\n\r\n\r\n")
+
+      it "adds the text part to the body when it is defined", ->
+        emailJSON = {}
+        emailJSON["text_part"] = @seededChance.string({length: 250})
+        TuringEmailApp.views.composeView.loadEmailBody emailJSON
+        expect(TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").val()).toContain(emailJSON.text_part)
+
+      it "adds the text part to the body when both the text part and body text are defined", ->
+        emailJSON = {}
+        emailJSON["text_part"] = @seededChance.string({length: 250})
+        emailJSON["body_text"] = @seededChance.string({length: 250})
+        TuringEmailApp.views.composeView.loadEmailBody emailJSON
+        expect(TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").val()).toContain(emailJSON.text_part)
+
+      it "adds the body text to the body when the text part is not defined and the body text is defined", ->
+        emailJSON = {}
+        emailJSON["body_text"] = @seededChance.string({length: 250})
+        TuringEmailApp.views.composeView.loadEmailBody emailJSON
+        expect(TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").val()).toContain(emailJSON.body_text)
+
+    describe "#subjectWithPrefixFromEmail", ->
+      beforeEach ->
+        @seededChance = new Chance(1)
+
+      it "returns the subject prefix if the email subject is not defined", ->
+        emailJSON = {}
+        subjectPrefix = "prefix"
+        expect(TuringEmailApp.views.composeView.subjectWithPrefixFromEmail emailJSON, subjectPrefix).toEqual subjectPrefix
+
+      it "strips Fwd: from the subject before prepending the subject prefix", ->
+        emailJSON = {}
+        subjectWithoutPrefix = @seededChance.string({length: 15})
+        emailJSON["subject"] = "Fwd: " + subjectWithoutPrefix
+        expect(TuringEmailApp.views.composeView.subjectWithPrefixFromEmail emailJSON).toEqual subjectWithoutPrefix
+
+      it "strips Re: from the subject before prepending the subject prefix", ->
+        emailJSON = {}
+        subjectWithoutPrefix = @seededChance.string({length: 15})
+        emailJSON["subject"] = "Re: " + subjectWithoutPrefix
+        expect(TuringEmailApp.views.composeView.subjectWithPrefixFromEmail emailJSON).toEqual subjectWithoutPrefix
+
+      it "prepends the subject prefix", ->
+        emailJSON = {}
+        subjectPrefix = "prefix"
+        emailJSON["subject"] = @seededChance.string({length: 15})
+        expect(TuringEmailApp.views.composeView.subjectWithPrefixFromEmail emailJSON, subjectPrefix).toEqual subjectPrefix + emailJSON["subject"]
 
     describe "#sendEmailDelayedError", ->
 
