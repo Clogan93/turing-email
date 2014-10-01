@@ -186,11 +186,20 @@ describe "ComposeView", ->
         expect(TuringEmailApp.views.composeView.emailInReplyToUID).toEqual emailJSON.uid
 
     describe "#loadEmailAsForward", ->
+      beforeEach ->
+        @seededChance = new Chance(1);
 
       it "resets the view", ->
         spy = sinon.spy(TuringEmailApp.views.composeView, "resetView")
         TuringEmailApp.views.composeView.loadEmailAsForward JSON.stringify({})
         expect(spy).toHaveBeenCalled()
+
+      it "updates the subject input", ->
+        emailJSON = {}
+        emailJSON["subject"] = @seededChance.string({length: 20})
+        TuringEmailApp.views.composeView.loadEmailAsForward emailJSON
+        subjectWithPrefixFromEmail = TuringEmailApp.views.composeView.subjectWithPrefixFromEmail(emailJSON, "Fwd: ")
+        expect(TuringEmailApp.views.composeView.$el.find("#compose_form #subject_input").val()).toEqual subjectWithPrefixFromEmail
 
       it "loads the email body", ->
         spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailBody")
