@@ -70,6 +70,15 @@
     "name": "Mint",
     "num_threads": 52,
     "num_unread_threads": 52
+  },
+  {
+    "label_id": "DRAFT",
+    "label_list_visibility": "labelShow",
+    "label_type": "user",
+    "message_list_visibility": "show",
+    "name": "Draft",
+    "num_threads": 57,
+    "num_unread_threads": 100
   }],
   
   "additional": {
