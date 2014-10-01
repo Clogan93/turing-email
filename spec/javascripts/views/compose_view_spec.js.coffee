@@ -294,6 +294,23 @@ describe "ComposeView", ->
         emailJSON["subject"] = @seededChance.string({length: 15})
         expect(TuringEmailApp.views.composeView.subjectWithPrefixFromEmail emailJSON, subjectPrefix).toEqual subjectPrefix + emailJSON["subject"]
 
+    describe "#updateDraft", ->
+
+      it "updates the email with the current email draft", ->
+        TuringEmailApp.views.composeView.currentEmailDraft = new TuringEmailApp.Models.EmailDraft()
+        spy = sinon.spy(TuringEmailApp.views.composeView, "updateEmail")
+        emailJSON = {}
+        TuringEmailApp.views.composeView.updateDraft()
+        expect(spy).toHaveBeenCalled()
+        expect(spy).toHaveBeenCalledWith(TuringEmailApp.views.composeView.currentEmailDraft)
+
+      it "creates a new email draft when the current email draft is not defined", ->
+        TuringEmailApp.views.composeView.currentEmailDraft = null
+        TuringEmailApp.views.composeView.updateDraft()
+        anEmailDraft = new TuringEmailApp.Models.EmailDraft()
+        TuringEmailApp.views.composeView.updateEmail(anEmailDraft)
+        expect(TuringEmailApp.views.composeView.currentEmailDraft.attributes).toEqual anEmailDraft.attributes
+
     describe "#sendEmailDelayedError", ->
 
       it "loads the email", ->

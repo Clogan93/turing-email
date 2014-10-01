@@ -151,12 +151,12 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     console.log "ComposeView updateEmail!"
     email.set("email_in_reply_to_uid", @emailInReplyToUID)
 
-    email.set("tos", $("#compose_form").find("#to_input").val().split(","))
-    email.set("ccs", $("#compose_form").find("#cc_input").val().split(","))
-    email.set("bccs",  $("#compose_form").find("#bcc_input").val().split(","))
+    email.set("tos", @$el.find("#compose_form").find("#to_input").val().split(","))
+    email.set("ccs", @$el.find("#compose_form").find("#cc_input").val().split(","))
+    email.set("bccs",  @$el.find("#compose_form").find("#bcc_input").val().split(","))
 
-    email.set("subject", $("#compose_form").find("#subject_input").val())
-    email.set("email_body", $("#compose_form").find("#compose_email_body").val())
+    email.set("subject", @$el.find("#compose_form").find("#subject_input").val())
+    email.set("email_body", @$el.find("#compose_form").find("#compose_email_body").val())
 
   sendEmail: (draftToSend=null) ->
     console.log "ComposeView sendEmail!"
