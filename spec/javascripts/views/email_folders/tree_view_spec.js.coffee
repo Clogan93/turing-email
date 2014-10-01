@@ -44,33 +44,30 @@ describe "TreeView", ->
   describe "#generateTree", ->
     # TODO write tests
   
-  describe "#currentEmailFolderIs", ->
+  describe "#select", ->
     beforeEach ->
       @emailFolders.fetch()
       @server.respond()
 
-      @firstLabelID = "Label_119"
-      @secondLabelID = "Label_43"
+      @firstFolder = @emailFolders.models[0]
+      @secondFolder = @emailFolders.models[3]
+      @firstLabelID = @firstFolder.get("label_id")
+      @secondLabelID = @secondFolder.get("label_id")
 
-      @firstLabelDiv = @treeDiv.find("#" + @firstLabelID)
-      @secondLabelDiv = @treeDiv.find("#" + @secondLabelID)
-
-      @spyEmailThreads = sinon.spy(TuringEmailApp.collections.emailThreads, "fetch")
-      spyOnEvent("#" + @secondLabelID, "click")
+      @firstLabelDiv = @treeDiv.find('a[href="#email_folder/' + @firstLabelID + '"]')
+      @secondLabelDiv = @treeDiv.find('a[href="#email_folder/' + @secondLabelID + '"]')
 
     it "changes the currently selected folder", ->
-      expect(@treeView.currentEmailFolderID).toBeUndefined()
+      expect(@treeView.selectedItem()).toBeUndefined()
       
-      @treeView.currentEmailFolderIs(@firstLabelID)
-      expect(@treeView.currentEmailFolderID).toEqual(@firstLabelID)
+      @treeView.select(@firstFolder)
+      expect(@treeView.selectedItem()).toEqual(@firstFolder)
       expect(@firstLabelDiv).toHandle("click")
   
-      @treeView.currentEmailFolderIs(@secondLabelID)
-      expect(@treeView.currentEmailFolderID).toEqual(@secondLabelID)
+      @treeView.select(@secondFolder)
+      expect(@treeView.selectedItem()).toEqual(@secondFolder)
       expect(@secondLabelDiv).toHandle("click")
       expect(@firstLabelDiv).not.toHandle("click")
 
       @secondLabelDiv.click()
       expect("click").toHaveBeenPreventedOn("#" + @secondLabelID)
-      
-      expect(@spyEmailThreads).toHaveBeenCalledWith(reset: true)

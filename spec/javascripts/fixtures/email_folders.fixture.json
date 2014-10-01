@@ -74,7 +74,7 @@
   {
     "label_id": "DRAFT",
     "label_list_visibility": "labelShow",
-    "label_type": "user",
+    "label_type": "system",
     "message_list_visibility": "show",
     "name": "Draft",
     "num_threads": 101,
