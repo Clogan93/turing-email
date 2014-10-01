@@ -47,11 +47,9 @@ describe "ToolbarView", ->
         expect(TuringEmailApp.views.toolbarView.divSelectAllICheck).toEqual TuringEmailApp.views.toolbarView.$el.find("div.icheckbox_square-green")
 
       it "doesn't crash when there is an empty folders collection", ->
-        tmp = TuringEmailApp.collections.emailFolders
         TuringEmailApp.collections.emailFolders = null
         expect(TuringEmailApp.views.toolbarView.render()).toEqual TuringEmailApp.views.toolbarView
-        TuringEmailApp.collections.emailFolders = tmp
-
+        
     describe "#setupSelectAllCheckbox", ->
 
       it "sets up the all checkbox", ->
