@@ -18,7 +18,7 @@ describe "ThreadsReportView", ->
 
   afterEach ->
     @server.restore()
-    $(@threadsReportDiv).remove()
+    @threadsReportDiv.remove()
 
   it "has the right template", ->
     expect(@threadsReportView.template).toEqual JST["backbone/templates/reports/threads_report"]

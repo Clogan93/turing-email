@@ -36,15 +36,11 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
     pageNumber = parseInt(@page)
     if @page > 1
       @page--
-      @url = "/api/v1/email_threads/in_folder?folder_id=" + TuringEmailApp.currentFolderID + "&page=" + @page
-      @fetch(
-        success: success
-      )
+      @setupURL(TuringEmailApp.selectedEmailFolder().get("label_id"), @page)
+      @fetch(success: success)
 
   # TODO write tests
   nextPage: (success) ->
     @page++
-    @url = "/api/v1/email_threads/in_folder?folder_id=" + TuringEmailApp.currentFolderID + "&page=" + @page
-    @fetch(
-      success: success
-    )
+    @setupURL(TuringEmailApp.selectedEmailFolder().get("label_id"), @page)
+    @fetch(success: success)

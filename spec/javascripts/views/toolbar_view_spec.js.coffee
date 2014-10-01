@@ -114,62 +114,62 @@ describe "ToolbarView", ->
       expect(TuringEmailApp.views.toolbarView.$el.find("#unread_bulk_action")).toHandle("click")
 
     describe "when all_bulk_action is clicked", ->
-      it "triggers selectAll", ->
-        spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "selectAll")
+      it "triggers checkAll", ->
+        spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "checkAll")
         TuringEmailApp.views.toolbarView.$el.find("#all_bulk_action").click()
         expect(spy).toHaveBeenCalled()
         spy.restore()
 
       it "checks the all checkbox", ->
         TuringEmailApp.views.toolbarView.$el.find("#all_bulk_action").click()
-        expect(TuringEmailApp.views.toolbarView.selectAllIsChecked()).toBeTruthy()
+        expect(TuringEmailApp.views.toolbarView.allCheckboxIsChecked()).toBeTruthy()
 
     describe "when none_bulk_action is clicked", ->
-      it "triggers deselectAll", ->
-        spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "deselectAll")
+      it "triggers uncheckAll", ->
+        spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "uncheckAll")
         TuringEmailApp.views.toolbarView.$el.find("#none_bulk_action").click()
         expect(spy).toHaveBeenCalled()
         spy.restore()
 
       it "unchecks the all checkbox", ->
         TuringEmailApp.views.toolbarView.$el.find("#none_bulk_action").click()
-        expect(TuringEmailApp.views.toolbarView.selectAllIsChecked()).toBeFalsy()
+        expect(TuringEmailApp.views.toolbarView.allCheckboxIsChecked()).toBeFalsy()
 
     describe "when read_bulk_action is clicked", ->
-      it "triggers selectAllRead", ->
-        spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "selectAllRead")
+      it "triggers checkAllRead", ->
+        spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "checkAllRead")
         TuringEmailApp.views.toolbarView.$el.find("#read_bulk_action").click()
         expect(spy).toHaveBeenCalled()
         spy.restore()
 
     describe "when unread_bulk_action is clicked", ->
-      it "triggers selectAllUnread", ->
-        spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "selectAllUnread")
+      it "triggers checkAllUnread", ->
+        spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "checkAllUnread")
         TuringEmailApp.views.toolbarView.$el.find("#unread_bulk_action").click()
         expect(spy).toHaveBeenCalled()
         spy.restore()
 
-  describe "#selectAllIsChecked", ->
+  describe "#allCheckboxIsChecked", ->
     
     describe "when the all checkbox is checked", ->
       beforeEach ->
-        TuringEmailApp.views.toolbarView.divSelectAllICheck.iCheck("check")
+        TuringEmailApp.views.toolbarView.divAllCheckbox.iCheck("check")
 
       it "returns true", ->
-        expect(TuringEmailApp.views.toolbarView.selectAllIsChecked()).toBeTruthy()
+        expect(TuringEmailApp.views.toolbarView.allCheckboxIsChecked()).toBeTruthy()
 
     describe "when the all checkbox is not checked", ->
       beforeEach ->
-        TuringEmailApp.views.toolbarView.divSelectAllICheck.iCheck("uncheck")
+        TuringEmailApp.views.toolbarView.divAllCheckbox.iCheck("uncheck")
 
       it "returns false", ->
-        expect(TuringEmailApp.views.toolbarView.selectAllIsChecked()).toBeFalsy()
+        expect(TuringEmailApp.views.toolbarView.allCheckboxIsChecked()).toBeFalsy()
 
-  describe "#deselectAllCheckbox", ->
+  describe "#uncheckAllCheckbox", ->
     
     it "unchecks the all checkbox", ->
-      spy = sinon.spy(TuringEmailApp.views.toolbarView.divSelectAllICheck, "iCheck")
-      TuringEmailApp.views.toolbarView.deselectAllCheckbox()
+      spy = sinon.spy(TuringEmailApp.views.toolbarView.divAllCheckbox, "iCheck")
+      TuringEmailApp.views.toolbarView.uncheckAllCheckbox()
       expect(spy).toHaveBeenCalled()
       expect(spy).toHaveBeenCalledWith("uncheck")
       spy.restore()

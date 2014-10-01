@@ -12,8 +12,8 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     emailFolders = TuringEmailApp.collections.emailFolders?.toJSON() ? []
     @$el.html(@template({'emailFolders' : emailFolders}))
     
-    @setupSelectAllCheckbox()
-    @divSelectAllICheck = @$el.find("div.icheckbox_square-green")
+    @setupAllCheckbox()
+    @divAllCheckbox = @$el.find("div.icheckbox_square-green")
     
     @setupButtons()
     
@@ -23,16 +23,16 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   ### Setup Functions ###
   #######################
     
-  setupSelectAllCheckbox: ->
+  setupAllCheckbox: ->
     @$el.find(".i-checks").iCheck
       checkboxClass: "icheckbox_square-green"
       radioClass: "iradio_square-green"
 
     @$el.find("div.icheckbox_square-green ins").click (event) =>
-      if @selectAllIsChecked()
-        @trigger("selectAll", this)
+      if @allCheckboxIsChecked()
+        @trigger("checkAll", this)
       else
-        @trigger("deselectAll", this)
+        @trigger("uncheckAll", this)
 
   setupButtons: ->
     @setupBulkActionButtons()
@@ -67,18 +67,18 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
   setupBulkActionButtons: ->
     @$el.find("#all_bulk_action").click =>
-      @divSelectAllICheck.iCheck("check")
-      @trigger("selectAll", this)
+      @divAllCheckbox.iCheck("check")
+      @trigger("checkAll", this)
 
     @$el.find("#none_bulk_action").click =>
-      @divSelectAllICheck.iCheck("uncheck")
-      @trigger("deselectAll", this)
+      @divAllCheckbox.iCheck("uncheck")
+      @trigger("uncheckAll", this)
 
     @$el.find("#read_bulk_action").click =>
-      @trigger("selectAllRead", this)
+      @trigger("checkAllRead", this)
 
     @$el.find("#unread_bulk_action").click =>
-      @trigger("selectAllUnread", this)
+      @trigger("checkAllUnread", this)
 
   setupSearchButton: ->
     @$el.find("#search_input").change ->
@@ -93,21 +93,25 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   ### Functions ###
   #################
 
-  selectAllIsChecked: ->
-    return @divSelectAllICheck.hasClass "checked"
+  allCheckboxIsChecked: ->
+    return @divAllCheckbox.hasClass "checked"
     
-  deselectAllCheckbox: ->
-    @divSelectAllICheck.iCheck("uncheck")
+  uncheckAllCheckbox: ->
+    @divAllCheckbox.iCheck("uncheck")
 
   updateTitle: (folderID, attempt=1) ->
     currentFolder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
     
     if currentFolder?
-      @$el.find(".label_name").html(currentFolder.get("name"))
+      folderName = currentFolder.get("name")
+      
       if currentFolder.get("label_id") is "DRAFT" or currentFolder.get("label_id") is "SENT"
-        @$el.find(".label_count_badge").html(currentFolder.get("num_threads"))
+        badgeCount = currentFolder.get("num_threads")
       else
-        @$el.find(".label_count_badge").html(currentFolder.get("num_unread_threads"))
+        badgeCount = currentFolder.get("num_unread_threads")
+
+      @$el.find("#title").html('<span class="label_name">' + folderName +
+                               '</span> (<span class="label_count_badge">' + badgeCount + '</span>)')
     else if attempt < TuringEmailApp.Views.ToolbarView.MAX_RETRY_ATTEMPTS
       setTimeout(
         =>
@@ -142,7 +146,9 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   ### TuringEmailApp Events ###
   #############################
 
-  currentEmailFolderChanged: (app, emailFolderID) ->
+  currentEmailFolderChanged: (app, emailFolder) ->
+    emailFolderID = emailFolder.get("label_id")
+    
     @updateTitle emailFolderID
     @updatePaginationText emailFolderID
 

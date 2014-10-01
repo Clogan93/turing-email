@@ -26,6 +26,7 @@ describe "ListView", ->
 
   afterEach ->
     @server.restore()
+    @listViewDiv.remove()
 
   describe "after fetch", ->
 
@@ -42,7 +43,7 @@ describe "ListView", ->
         @emailThread.fetch()
         @server.respond()
 
-        # TODO write tests for reset, destroy and change:currentEmailThread
+        # TODO write tests for reset, destroy and change:selectedEmailThread
 
       it "adds a listener for add that calls @addOne", ->
         @listView.collection.add @emailThread
@@ -59,7 +60,7 @@ describe "ListView", ->
         expect(@listViewDiv.find("tr").length).toEqual(@emailThreads.models.length)
 
     describe "#resetView", ->
-      it "calls render", ->
+      it "render", ->
         @spy = sinon.spy(@listView, "render")
         @listView.resetView()
         expect(@spy).toHaveBeenCalled()
@@ -176,71 +177,79 @@ describe "ListView", ->
 
           expect(emailTableBodyBefore).toEqual emailTableBodyAfter
 
-    describe "#getSelectedEmailThreads", ->
+    describe "#getCheckedListItemViews", ->
 
       beforeEach ->
-        _.values(@listView.listItemViews)[0].select()
+        _.values(@listView.listItemViews)[0].check()
 
-      it "should return an array with the selected email threads", ->
-        selectedEmailThreads = @listView.getSelectedEmailThreads()
+      it "returns the checked list items", ->
+        checkedListItemViews = @listView.getCheckedListItemViews()
 
+        numListItemsChecked = 0
         for listItemView in _.values(@listView.listItemViews)
           if listItemView.isChecked()
-            expect(selectedEmailThreads).toContain listItemView.model
+            numListItemsChecked += 1
+            expect(checkedListItemViews).toContain listItemView
+            
+        expect(checkedListItemViews.length).toEqual(numListItemsChecked)
 
-    describe "#selectAll", ->
-      it "calls select on each listItemView", ->
+    describe "#checkAll", ->
+      it "checks all list items", ->
         spies = []
         for listItemView in _.values(@listView.listItemViews)
-          @spy = sinon.spy(listItemView, "select")
+          @spy = sinon.spy(listItemView, "check")
           spies.push(@spy)
-        @listView.selectAll()
+        
+        @listView.checkAll()
+        
         for spy in spies
           expect(spy).toHaveBeenCalled()
 
-    describe "#selectAllRead", ->
-      it "calls select on each read listItemView and deselect on each unread listItemView", ->
+    describe "#checkAllRead", ->
+      it "checks read list items and unchecks unread list items", ->
         select_spies = []
         deselect_spies = []
 
         for listItemView in _.values(@listView.listItemViews)
           if listItemView.model.get("emails")[0].seen
-            @spy = sinon.spy(listItemView, "select")
+            @spy = sinon.spy(listItemView, "check")
             select_spies.push(@spy)
           else
-            @spy = sinon.spy(listItemView, "deselect")
+            @spy = sinon.spy(listItemView, "uncheck")
             deselect_spies.push(@spy)
 
-        @listView.selectAllRead()
+        @listView.checkAllRead()
 
         expect(spy).toHaveBeenCalled() for spy in select_spies
         expect(spy).toHaveBeenCalled() for spy in deselect_spies
 
-    describe "#selectAllUnread", ->
-      it "calls select on each unread listItemView and deselect on each read listItemView", ->
+    describe "#checkAllUnread", ->
+      it "checks unread list items and checks unread list items", ->
         select_spies = []
         deselect_spies = []
 
         for listItemView in _.values(@listView.listItemViews)
           if listItemView.model.get("emails")[0].seen
-            @spy = sinon.spy(listItemView, "deselect")
+            @spy = sinon.spy(listItemView, "uncheck")
             deselect_spies.push(@spy)
           else
-            @spy = sinon.spy(listItemView, "select")
+            @spy = sinon.spy(listItemView, "check")
             select_spies.push(@spy)
 
-        @listView.selectAllUnread()
+        @listView.checkAllUnread()
 
         expect(spy).toHaveBeenCalled() for spy in select_spies
         expect(spy).toHaveBeenCalled() for spy in deselect_spies
 
-    describe "#deselectAll", ->
-      it "calls deselect on each listItemView", ->
+    describe "#uncheckAll", ->
+      it "unchecks all list items", ->
         spies = []
         for listItemView in _.values(@listView.listItemViews)
-          @spy = sinon.spy(listItemView, "deselect")
+          @spy = sinon.spy(listItemView, "uncheck")
           spies.push(@spy)
-        @listView.deselectAll()
+          
+        @listView.uncheckAll()
+        
         for spy in spies
           expect(spy).toHaveBeenCalled()
 
@@ -262,10 +271,10 @@ describe "ListView", ->
         @listView.markEmailThreadUnread @firstEmailThread
         expect(@listView.listItemViews[@firstEmailThread.get("uid")].$el).toHaveClass("unread")
 
-    describe "#markSelectedRead", ->
+    describe "#markCheckedRead", ->
 
       beforeEach ->
-        _.values(@listView.listItemViews)[0].select()
+        _.values(@listView.listItemViews)[0].check()
 
         @shouldBeCalledSpies = []
         @shouldNotBeCalledSpies = []
@@ -283,7 +292,7 @@ describe "ListView", ->
 
       it "should call markRead() on all selected listItemViews", ->
 
-        @listView.markSelectedRead()
+        @listView.markCheckedRead()
 
         for spy in @shouldBeCalledSpies
           expect(spy).toHaveBeenCalled()
@@ -291,10 +300,10 @@ describe "ListView", ->
         for spy in @shouldNotBeCalledSpies
           expect(spy).not.toHaveBeenCalled()
 
-    describe "#markSelectedUnread", ->
+    describe "#markCheckedUnread", ->
 
       beforeEach ->
-        _.values(@listView.listItemViews)[0].select()
+        _.values(@listView.listItemViews)[0].check()
 
         @shouldBeCalledSpies = []
         @shouldNotBeCalledSpies = []
@@ -311,7 +320,7 @@ describe "ListView", ->
         expect(@shouldNotBeCalledSpies.length > 0).toBeTruthy()
 
       it "should call markUnread() on all selected listItemViews", ->
-        @listView.markSelectedUnread()
+        @listView.markCheckedUnread()
 
         for spy in @shouldBeCalledSpies
           expect(spy).toHaveBeenCalled()
@@ -324,17 +333,17 @@ describe "ListView", ->
       beforeEach ->
         @emailThread = @listView.collection.models[0]
 
-      it "calls deselectAll", ->
-        @spy = sinon.spy(@listView, "deselectAll")
+      it "unchecks all the list items", ->
+        @spy = sinon.spy(@listView, "uncheckAll")
         @listView.currentEmailThreadChanged(TuringEmailApp, @emailThread)
         expect(@spy).toHaveBeenCalled()
 
-      it "calls highlight and markRead on the new email thread", ->
+      it "selects the new email thread and marks it read", ->
         listItemView = @listView.listItemViews[@emailThread.get("uid")]
-        highlightSpy = sinon.spy(listItemView, "highlight")
+        selectSpy = sinon.spy(listItemView, "select")
         markReadSpy = sinon.spy(listItemView, "markRead")
         @listView.currentEmailThreadChanged(TuringEmailApp, @emailThread)
-        expect(highlightSpy).toHaveBeenCalled()
+        expect(selectSpy).toHaveBeenCalled()
         expect(markReadSpy).toHaveBeenCalled()
 
       it "updates the currentEmailThread attribute", ->
@@ -342,7 +351,7 @@ describe "ListView", ->
         @listView.currentEmailThreadChanged(TuringEmailApp, @emailThread)
         expect(@listView.currentEmailThread).toEqual @emailThread
 
-      it "calls unhighlight on the previous emailThread", ->
+      it "deselects the previous emailThread", ->
         #Set an email thread
         TuringEmailApp.currentEmailThread = @emailThread
         @listView.currentEmailThreadChanged(TuringEmailApp, @emailThread)
@@ -351,9 +360,9 @@ describe "ListView", ->
         nextCurrentEmailThread = @listView.collection.models[1]
 
         listItemView = @listView.listItemViews[@emailThread.get("uid")]
-        unhighlightSpy = sinon.spy(listItemView, "unhighlight")
+        deselectSpy = sinon.spy(listItemView, "deselect")
         @listView.currentEmailThreadChanged(TuringEmailApp, nextCurrentEmailThread)
-        expect(unhighlightSpy).toHaveBeenCalled()
+        expect(deselectSpy).toHaveBeenCalled()
 
     describe "#listItemClicked", ->
 
