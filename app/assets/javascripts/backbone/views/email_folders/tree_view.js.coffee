@@ -15,7 +15,11 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
   render: ->
     @generateTree()
 
-    @$el.html(@template(nodeName: "", node: @tree))
+    systemBadges =
+      inbox: @collection.getEmailFolder("INBOX")?.badgeString()
+      draft: @collection.getEmailFolder("DRAFT")?.badgeString()
+    
+    @$el.html(@template(nodeName: "", node: @tree, systemBadges: systemBadges))
 
     @$el.find(".bullet_span").click ->
       $(this).parent().children("ul").children("li").toggle()
@@ -37,8 +41,11 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
   generateTree: ->
     @tree = {emailFolder: null, children: {}}
 
-    for emailFolder in @collection.toJSON()
-      nameParts = emailFolder.name.split("/")
+    for emailFolder in @collection.models
+      emailFolderJSON = emailFolder.toJSON()
+      emailFolderJSON.badgeString = emailFolder.badgeString()
+      
+      nameParts = emailFolderJSON.name.split("/")
       node = @tree
 
       for part in nameParts
@@ -47,7 +54,7 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
 
         node = node.children[part]
 
-      node.emailFolder = emailFolder
+      node.emailFolder = emailFolderJSON
 
   ###############
   ### Getters ###
@@ -63,12 +70,12 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
   # TODO write test
   select: (emailFolder, options) ->
     if @selectedItem()?
-      $('a[href="#email_folder/' + @selectedItem().get("label_id") + '"]').unbind "click"
+      @$el.find('a[href="#email_folder/' + @selectedItem().get("label_id") + '"]').unbind "click"
       @trigger("emailFolderDeselected", this, @selectedItem())
 
     emailFolderID = emailFolder.get("label_id")
-    
-    $('a[href="#email_folder/' + emailFolderID + '"]').click (event) ->
+
+    @$el.find('a[href="#email_folder/' + emailFolderID + '"]').click (event) ->
       event.preventDefault()
       
       newURL = "#email_folder/" + emailFolderID
@@ -87,7 +94,9 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
   
   # TODO write test
   emailFolderUnreadCountChanged: (app, emailFolder) ->
-    if emailFolder.get("label_id") is "INBOX"
-      @$el.find(".inbox_count_badge").html(emailFolder.get("num_unread_threads"))
+    emailFolderID = emailFolder.get("label_id")
+    
+    if emailFolderID is "INBOX"
+      @$el.find('.inbox_count_badge').html(emailFolder.badgeString())
     else
-      @$el.find(".label_count_badge").html(emailFolder.get("num_unread_threads"))
+      @$el.find('a[href="#email_folder/' + emailFolderID + '"]>.badge').html(emailFolder.badgeString())

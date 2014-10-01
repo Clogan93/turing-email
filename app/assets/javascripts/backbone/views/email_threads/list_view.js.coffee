@@ -138,10 +138,10 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     listItemView.uncheck() for listItemView in _.values(@listItemViews)
 
   markEmailThreadRead: (emailThread) ->
-    @listItemViews[emailThread.get("uid")]?.markRead()
+    @listItemViews?[emailThread.get("uid")]?.markRead()
     
   markEmailThreadUnread: (emailThread) ->
-    @listItemViews[emailThread.get("uid")]?.markUnread()
+    @listItemViews?[emailThread.get("uid")]?.markUnread()
 
   markCheckedRead: ->
     for listItemView in _.values(@listItemViews)

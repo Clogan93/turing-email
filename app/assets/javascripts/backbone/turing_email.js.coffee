@@ -313,7 +313,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
         @selectedEmailThread().moveToFolder(folderID)
       (checkedListItemViews, selectedEmailThreadUIDs) =>
         TuringEmailApp.Models.EmailThread.moveToFolder(selectedEmailThreadUIDs, folderID)
-      false, false
+      true, true
     )
 
   refreshClicked: ->
@@ -391,6 +391,8 @@ window.TuringEmailApp = new(Backbone.View.extend(
     )
     emailThreadView.render()
     emailThreadView.$el.show()
+
+    @views.emailThreadsListView.markEmailThreadRead(emailThread) if emailThread
 
     @listenTo(emailThreadView, "goBackClicked", @goBackClicked)
     @listenTo(emailThreadView, "replyClicked", @replyClicked)

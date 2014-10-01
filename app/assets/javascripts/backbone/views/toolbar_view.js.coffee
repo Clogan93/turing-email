@@ -7,6 +7,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   initialize: (options) ->
     @listenTo(options.app, "change:currentEmailFolder", @currentEmailFolderChanged)
     @listenTo(options.app, "change:emailFolders", @emailFoldersChanged)
+    @listenTo(options.app, "change:emailFolderUnreadCount", @emailFolderUnreadCountChanged)
   
   render: ->
     emailFolders = TuringEmailApp.collections.emailFolders?.toJSON() ? []
@@ -104,14 +105,10 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     
     if currentFolder?
       folderName = currentFolder.get("name")
-      
-      if currentFolder.get("label_id") is "DRAFT" or currentFolder.get("label_id") is "SENT"
-        badgeCount = currentFolder.get("num_threads")
-      else
-        badgeCount = currentFolder.get("num_unread_threads")
+      badgeString = currentFolder.badgeString()
 
       @$el.find("#title").html('<span class="label_name">' + folderName +
-                               '</span> (<span class="label_count_badge">' + badgeCount + '</span>)')
+                               '</span> (<span class="label_count_badge">' + badgeString + '</span>)')
     else if attempt < TuringEmailApp.Views.ToolbarView.MAX_RETRY_ATTEMPTS
       setTimeout(
         =>
@@ -154,3 +151,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
   emailFoldersChanged: (app) ->
     @render()
+
+  # TODO write test
+  emailFolderUnreadCountChanged: (app, emailFolder) ->
+    @$el.find(".label_count_badge").html(emailFolder.badgeString())

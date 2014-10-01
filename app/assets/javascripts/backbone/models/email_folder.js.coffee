@@ -20,3 +20,14 @@ class TuringEmailApp.Models.EmailFolder extends Backbone.Model
   
     num_unread_threads:
       required: true
+
+  badgeString: ->
+    badgeCount = 0
+    if @get("label_id") is "SENT" or  @get("label_id") is "TRASH"
+      return ""
+    else if @get("label_id") is "DRAFT"
+      badgeCount = @get("num_threads")
+    else
+      badgeCount = @get("num_unread_threads")
+      
+    return if badgeCount == 0 then "" else "" + badgeCount
