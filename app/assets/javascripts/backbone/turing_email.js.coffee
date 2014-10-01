@@ -154,9 +154,9 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @routers.searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()
 
   ###############
-  ### Setters ###
+  ### Getters ###
   ###############
-  
+
   selectedEmailThread: ->
     return @views.emailThreadsListView.selectedItem()
     

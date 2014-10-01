@@ -63,7 +63,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
   resetView: ->
     console.log("ComposeView RESET!!")
     
-    $("#compose_form #email_sent_error_alert").remove()
+    @$el.find("#compose_form #email_sent_error_alert").remove()
     @removeEmailSentAlert()
 
     @currentEmailDraft = null
@@ -101,8 +101,8 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     console.log("ComposeView loadEmailAsReply!!")
     @resetView()
 
-    $("#compose_form #to_input").val(if emailJSON.reply_to_address? then emailJSON.reply_to_address else emailJSON.from_address)
-    $("#compose_form #subject_input").val(@subjectWithPrefixFromEmail(emailJSON, "Re: "))
+    @$el.find("#compose_form #to_input").val(if emailJSON.reply_to_address? then emailJSON.reply_to_address else emailJSON.from_address)
+    @$el.find("#compose_form #subject_input").val(@subjectWithPrefixFromEmail(emailJSON, "Re: "))
     @loadEmailBody(emailJSON, true)
 
     @emailInReplyToUID = emailJSON.uid
@@ -111,16 +111,16 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     console.log("ComposeView loadEmailAsForward!!")
     @resetView()
 
-    $("#compose_form #subject_input").val(@subjectWithPrefixFromEmail(emailJSON, "Fwd: "))
+    @$el.find("#compose_form #subject_input").val(@subjectWithPrefixFromEmail(emailJSON, "Fwd: "))
     @loadEmailBody(emailJSON, true)
 
   loadEmailHeaders: (emailJSON) ->
     console.log("ComposeView loadEmailHeaders!!")
-    $("#compose_form #to_input").val(emailJSON.tos)
-    $("#compose_form #cc_input").val(emailJSON.ccs)
-    $("#compose_form #bcc_input").val(emailJSON.bccs)
+    @$el.find("#compose_form #to_input").val(emailJSON.tos)
+    @$el.find("#compose_form #cc_input").val(emailJSON.ccs)
+    @$el.find("#compose_form #bcc_input").val(emailJSON.bccs)
 
-    $("#compose_form #subject_input").val(@subjectWithPrefixFromEmail(emailJSON))
+    @$el.find("#compose_form #subject_input").val(@subjectWithPrefixFromEmail(emailJSON))
     
   loadEmailBody: (emailJSON, insertReplyHeader=false) ->
     console.log("ComposeView loadEmailBody!!")
@@ -132,7 +132,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     else
       body += emailJSON.body_text if emailJSON.body_text
 
-    $("#compose_form #compose_email_body").val(body)
+    @$el.find("#compose_form #compose_email_body").val(body)
 
   subjectWithPrefixFromEmail: (emailJSON, subjectPrefix="") ->
     console.log("ComposeView subjectWithPrefixFromEmail")
@@ -227,5 +227,5 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     @loadEmail(emailToSendJSON)
     @show()
 
-    $("#compose_form").prepend('<div id="email_sent_error_alert" class="alert alert-danger" role="alert">
+    @$el.find("#compose_form").prepend('<div id="email_sent_error_alert" class="alert alert-danger" role="alert">
                                 There was an error in sending your email!</div>')

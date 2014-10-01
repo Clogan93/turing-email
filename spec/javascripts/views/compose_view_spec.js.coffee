@@ -63,6 +63,18 @@ describe "ComposeView", ->
 
       it "resets the view", ->
         spy = sinon.spy(TuringEmailApp.views.composeView, "resetView")
+        TuringEmailApp.views.composeView.loadEmpty()
+        expect(spy).toHaveBeenCalled()
+
+      it "show the compose modal", ->
+        spy = sinon.spy(TuringEmailApp.views.composeView, "show")
+        TuringEmailApp.views.composeView.loadEmpty()
+        expect(spy).toHaveBeenCalled()
+
+    describe "#loadEmail", ->
+
+      it "resets the view", ->
+        spy = sinon.spy(TuringEmailApp.views.composeView, "resetView")
         TuringEmailApp.views.composeView.loadEmail JSON.stringify({})
         expect(spy).toHaveBeenCalled()
 
