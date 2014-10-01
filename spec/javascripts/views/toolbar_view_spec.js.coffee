@@ -1,7 +1,7 @@
 describe "ToolbarView", ->
-  beforeEach ->
-    specStartTuringEmailApp()
+  specStartTuringEmailApp()
 
+  beforeEach ->
     emailFoldersFixtures = fixture.load("email_folders.fixture.json")
     @validEmailFoldersFixture = emailFoldersFixtures[0]["valid"]
 
@@ -13,14 +13,39 @@ describe "ToolbarView", ->
 
     TuringEmailApp.views.toolbarView.render()
 
-  it "should be defined", ->
-    expect(TuringEmailApp.Views.ToolbarView).toBeDefined()
-
-  it "loads the list item template", ->
+  it "has the right template", ->
     expect(TuringEmailApp.views.toolbarView.template).toEqual JST["backbone/templates/toolbar_view"]
 
+  describe "#initialize", ->
+
+    it "adds a listener for change:currentEmailFolder that calls currentEmailFolderChanged", ->
+      # TODO figure out how to test this, and then write tests for it.
+      return
+
+    it "adds a listener for change:emailFolders that calls emailFoldersChanged", ->
+      # TODO figure out how to test this, and then write tests for it.
+      return
+
+  describe "#render", ->
+
+    it "renders as a DIV", ->
+      expect(TuringEmailApp.views.toolbarView.el.nodeName).toEqual "DIV"
+
+    it "sets up the all checkbox", ->
+      spy = sinon.spy(TuringEmailApp.views.toolbarView, "setupSelectAllCheckbox")
+      TuringEmailApp.views.toolbarView.render()
+      expect(spy).toHaveBeenCalled()
+
+    it "sets up the buttons", ->
+      spy = sinon.spy(TuringEmailApp.views.toolbarView, "setupButtons")
+      TuringEmailApp.views.toolbarView.render()
+      expect(spy).toHaveBeenCalled()
+
+    it "sets the select all checkbox element", ->
+      expect(TuringEmailApp.views.toolbarView.divSelectAllICheck).toEqual TuringEmailApp.views.toolbarView.$el.find("div.icheckbox_square-green")
+
   describe "#setupButtons", ->
-    
+
     it "should handle clicks", ->
       expect(TuringEmailApp.views.toolbarView.$el.find("i.fa-eye").parent()).toHandle("click")
       expect(TuringEmailApp.views.toolbarView.$el.find("i.fa-eye-slash").parent()).toHandle("click")
@@ -149,16 +174,44 @@ describe "ToolbarView", ->
         expect(spy).toHaveBeenCalled()
         spy.restore()
 
-  # describe "#setupSearchButton", ->
+  describe "#setupSearchButton", ->
     
-  #   it "should set up the search input handle change events", ->
-  #     expect($("#search_input")).toHandle("change")
+    it "should set up the search input handle change events", ->
+      expect(TuringEmailApp.views.toolbarView.$el.find("#search_input")).toHandle("change")
 
-  #   it "should set up the search input handle keypress events", ->
-  #     expect($("#search_input")).toHandle("keypress")
+    it "should set up the search input handle keypress events", ->
+      expect(TuringEmailApp.views.toolbarView.$el.find("#search_input")).toHandle("keypress")
 
-  #   it "should set up the top search form to handle submit events", ->
-  #     expect($("#top-search-form")).toHandle("submit")
+    describe "when the search input changes", ->
+
+      it "update the href attribute of the search button link", ->
+        TuringEmailApp.views.toolbarView.$el.find("#search_input").val("hello")
+        TuringEmailApp.views.toolbarView.$el.find("#search_input").change()
+        expect(TuringEmailApp.views.toolbarView.$el.find("a#search_button_link").attr("href")).toEqual "#search/hello"
+
+    describe "when the keypress event fires", ->
+
+      describe "when the keypress event is the enter key", ->
+
+        it "triggers searchClicked", ->
+          spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "searchClicked")
+          e = $.Event("keypress")
+          e.which = 13
+          TuringEmailApp.views.toolbarView.$el.find("#search_input").trigger(e);
+          expect(spy).toHaveBeenCalled()
+          expect(spy).toHaveBeenCalledWith(TuringEmailApp.views.toolbarView)
+          #TODO write a test checking for the second argument
+          spy.restore()
+
+      describe "when the keypress event is not the enter key", ->
+
+        it "does not call the searchClicked", ->
+          spy = sinon.backbone.spy(TuringEmailApp.views.toolbarView, "searchClicked")
+          e = $.Event("keypress")
+          e.which = 10
+          TuringEmailApp.views.toolbarView.$el.find("#search_input").trigger(e);
+          expect(spy).not.toHaveBeenCalled()
+          spy.restore()
 
   describe "#selectAllIsChecked", ->
     

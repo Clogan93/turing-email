@@ -11,7 +11,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   render: ->
     emailFolders = TuringEmailApp.collections.emailFolders?.toJSON() ? []
     @$el.html(@template({'emailFolders' : emailFolders}))
-    
+
     @setupSelectAllCheckbox()
     @divSelectAllICheck = @$el.find("div.icheckbox_square-green")
     
@@ -82,7 +82,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
   setupSearchButton: ->
     @$el.find("#search_input").change ->
-      $("a#search_button_link").attr("href", "#search/" + $(@).val())
+      TuringEmailApp.views.toolbarView.$el.find("a#search_button_link").attr("href", "#search/" + $(@).val())
 
     @$el.find("#search_input").keypress (event) =>
       if event.which is 13
