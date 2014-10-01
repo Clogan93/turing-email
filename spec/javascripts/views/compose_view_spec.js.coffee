@@ -74,7 +74,7 @@ describe "ComposeView", ->
         expect(TuringEmailApp.views.composeView.currentEmailDraft).toEqual null
         expect(TuringEmailApp.views.composeView.emailInReplyToUID).toEqual null
 
-    describe "#loadEmail", ->
+    describe "#loadEmpty", ->
 
       it "resets the view", ->
         spy = sinon.spy(TuringEmailApp.views.composeView, "resetView")
@@ -95,15 +95,107 @@ describe "ComposeView", ->
 
       it "loads the email headers", ->
         spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailHeaders")
-        emailJSON = JSON.stringify({})
+        emailJSON = {}
         TuringEmailApp.views.composeView.loadEmail emailJSON
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith(emailJSON)
 
       it "loads the email body", ->
         spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailBody")
-        emailJSON = JSON.stringify({})
+        emailJSON = {}
         TuringEmailApp.views.composeView.loadEmail emailJSON
+        expect(spy).toHaveBeenCalled()
+        expect(spy).toHaveBeenCalledWith(emailJSON)
+
+    describe "#loadEmailDraft", ->
+
+      it "resets the view", ->
+        spy = sinon.spy(TuringEmailApp.views.composeView, "resetView")
+        TuringEmailApp.views.composeView.loadEmailDraft JSON.stringify({})
+        expect(spy).toHaveBeenCalled()
+
+      it "loads the email headers", ->
+        spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailHeaders")
+        emailJSON = {}
+        TuringEmailApp.views.composeView.loadEmailDraft emailJSON
+        expect(spy).toHaveBeenCalled()
+        expect(spy).toHaveBeenCalledWith(emailJSON)
+
+      it "loads the email body", ->
+        spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailBody")
+        emailJSON = {}
+        TuringEmailApp.views.composeView.loadEmailDraft emailJSON
+        expect(spy).toHaveBeenCalled()
+        expect(spy).toHaveBeenCalledWith(emailJSON)
+
+      it "creates a new current draft object with the passed in data", ->
+        emailJSON = {}
+        newEmailDraft = new TuringEmailApp.Models.EmailDraft(emailJSON)
+        TuringEmailApp.views.composeView.loadEmailDraft emailJSON
+        expect(TuringEmailApp.views.composeView.currentEmailDraft.attributes).toEqual newEmailDraft.attributes
+
+      it "updates the email in reply to UID", ->
+        emailJSON = {}
+        randomID = Math.random() * 1000
+        TuringEmailApp.views.composeView.loadEmailDraft emailJSON, randomID
+        expect(TuringEmailApp.views.composeView.emailInReplyToUID).toEqual randomID
+
+    describe "#loadEmailAsReply", ->
+      beforeEach ->
+        @seededChance = new Chance(1);
+
+      it "resets the view", ->
+        spy = sinon.spy(TuringEmailApp.views.composeView, "resetView")
+        TuringEmailApp.views.composeView.loadEmailAsReply JSON.stringify({})
+        expect(spy).toHaveBeenCalled()
+
+      it "loads the email body", ->
+        spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailBody")
+        emailJSON = {}
+        TuringEmailApp.views.composeView.loadEmailAsReply emailJSON
+        expect(spy).toHaveBeenCalled()
+        expect(spy).toHaveBeenCalledWith(emailJSON)
+
+      describe "when there is a reply to address", ->
+
+        it "updates the to input with the reply to address", ->
+          emailJSON = {}
+          emailJSON["reply_to_address"] = @seededChance.email()
+          TuringEmailApp.views.composeView.loadEmailAsReply emailJSON
+          expect(TuringEmailApp.views.composeView.$el.find("#compose_form #to_input").val()).toEqual emailJSON.reply_to_address
+
+      describe "when there is not a reply to address", ->
+
+        it "updates the to input with the from address", ->
+          emailJSON = {}
+          emailJSON["from_address"] = @seededChance.email()
+          TuringEmailApp.views.composeView.loadEmailAsReply emailJSON
+          expect(TuringEmailApp.views.composeView.$el.find("#compose_form #to_input").val()).toEqual emailJSON.from_address
+
+      it "updates the subject input", ->
+        emailJSON = {}
+        emailJSON["subject"] = @seededChance.string({length: 20})
+        TuringEmailApp.views.composeView.loadEmailAsReply emailJSON
+        subjectWithPrefixFromEmail = TuringEmailApp.views.composeView.subjectWithPrefixFromEmail(emailJSON, "Re: ")
+        expect(TuringEmailApp.views.composeView.$el.find("#compose_form #subject_input").val()).toEqual subjectWithPrefixFromEmail
+
+      it "updates the email in reply to UID", ->
+        emailJSON = {}
+        emailJSON.uid = chance.integer({min: 1, max: 10000});
+        TuringEmailApp.views.composeView.loadEmailAsReply emailJSON
+        expect(TuringEmailApp.views.composeView.emailInReplyToUID).toEqual emailJSON.uid
+
+    describe "#loadEmailAsForward", ->
+
+      it "resets the view", ->
+        spy = sinon.spy(TuringEmailApp.views.composeView, "resetView")
+        TuringEmailApp.views.composeView.loadEmailAsForward JSON.stringify({})
+        expect(spy).toHaveBeenCalled()
+
+      it "loads the email body", ->
+        spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailBody")
+        emailJSON = {}
+        TuringEmailApp.views.composeView.loadEmailAsForward emailJSON
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith(emailJSON)
 
@@ -111,7 +203,7 @@ describe "ComposeView", ->
 
       it "loads the email", ->
         spy = sinon.spy(TuringEmailApp.views.composeView, "show")
-        emailJSON = JSON.stringify({})
+        emailJSON = {}
         TuringEmailApp.views.composeView.sendEmailDelayedError emailJSON
         expect(spy).toHaveBeenCalled()
 

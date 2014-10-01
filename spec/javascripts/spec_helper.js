@@ -35,5 +35,6 @@
 //= require support/jasmine-jquery-1.7.0
 //
 //= require ./unserialize.jquery.latest.js
+//= require ./chance.js
 //= require ./backbone_spy
 //= require ./spec_misc
