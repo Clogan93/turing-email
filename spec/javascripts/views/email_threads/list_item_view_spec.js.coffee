@@ -170,9 +170,9 @@ describe "ListItemView", ->
     describe "#uncheck", ->
       beforeEach ->
         @listItemView.addedToDOM()
+        @listItemView.check()
 
       it "unchecks the list items", ->
-        @listItemView.$el.addClass("checked_email_thread")
         expect(@listItemView.$el).toHaveClass("checked_email_thread")
         @listItemView.uncheck()
         expect(@listItemView.$el).not.toHaveClass("checked_email_thread")
@@ -197,6 +197,9 @@ describe "ListItemView", ->
         spy.restore()
 
     describe "#deselect", ->
+      beforeEach ->
+        @listItemView.select()
+
       it "removes the currently_being_read class", ->
         @listItemView.$el.addClass("currently_being_read")
         expect(@listItemView.$el).toHaveClass("currently_being_read")
