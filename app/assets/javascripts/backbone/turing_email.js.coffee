@@ -21,6 +21,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @routers = {}
     
     @setupSearchBar()
+    @setupComposeButton()
 
     @setupToolbar()
     @setupUser()
@@ -58,6 +59,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
       event.preventDefault();
       @searchClicked($(event.target).find("input").val())
 
+  setupComposeButton: ->
+    $("#compose_button").click =>
+      @views.composeView.loadEmpty()
+      
   setupToolbar: ->
     @views.toolbarView = new TuringEmailApp.Views.ToolbarView(
       app: this

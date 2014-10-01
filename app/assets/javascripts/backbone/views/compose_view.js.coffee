@@ -1,12 +1,6 @@
 class TuringEmailApp.Views.ComposeView extends Backbone.View
   template: JST["backbone/templates/compose"]
 
-  initialize: ->
-    # TODO move this elsewhere, and write tests for the function after it is moved.
-    $("#compose_button").click =>
-      @resetView()
-      @show()
-
   render: ->
     @$el.html(@template())
     @setupComposeView()
@@ -81,6 +75,10 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
 
     @$el.find("#compose_form #subject_input").val("")
     @$el.find("#compose_form #compose_email_body").val("")
+
+  loadEmpty: ->
+    @resetView()
+    @show()
 
   loadEmail: (emailJSON) ->
     console.log("ComposeView loadEmail!!")
