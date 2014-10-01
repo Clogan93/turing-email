@@ -1,13 +1,34 @@
 describe "ComposeView", ->
-
   beforeEach ->
-    @composeView = new TuringEmailApp.Views.ComposeView()
+    specStartTuringEmailApp()
 
-  it "should be defined", ->
-    expect(TuringEmailApp.Views.ComposeView).toBeDefined()
+  it "has the right template", ->
+    expect(TuringEmailApp.views.composeView.template).toEqual JST["backbone/templates/compose"]
 
-  it "loads the list item template", ->
-    expect(@composeView.template).toEqual JST["backbone/templates/compose"]
+  describe "#render", ->
+    
+    it "calls setupComposeView", ->
+      spy = sinon.spy(TuringEmailApp.views.composeView, "setupComposeView")
+      TuringEmailApp.views.composeView.render()
+      expect(spy).toHaveBeenCalled()
+
+  describe "#show", ->
+
+    it "shows the compose modal", ->
+      spy = sinon.spy($("#composeModal"), "modal")
+      TuringEmailApp.views.composeView.show()
+      expect(spy).toHaveBeenCalled()
+
+  describe "#hide", ->
+
+    it "hides the compose modal", ->
+      spy = sinon.spy($("#composeModal"), "modal")
+      TuringEmailApp.views.composeView.hide()
+      expect(spy).toHaveBeenCalled()
+
+  # describe "#updateEmail", ->
+  #   beforeEach ->
+  #     testEmail = new Email()
 
   it "clears the compose view input fields upon calling resetView", ->
     @composeView.render()
