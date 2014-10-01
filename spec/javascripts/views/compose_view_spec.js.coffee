@@ -24,11 +24,11 @@ describe "ComposeView", ->
       it "binds the click event to save button", ->
         expect(TuringEmailApp.views.composeView.$el.find("#compose_form #save_button")).toHandle("click")
 
-    # describe "#show", ->
+    describe "#show", ->
 
-    #   it "shows the compose modal", ->
-    #     TuringEmailApp.views.composeView.show()
-    #     expect(TuringEmailApp.views.composeView.$el.find("#composeModal").hasClass("in")).toBeTruthy()
+      it "shows the compose modal", ->
+        TuringEmailApp.views.composeView.show()
+        expect($("body")).toContain(".modal-backdrop.fade.in")
 
     describe "#hide", ->
 
@@ -58,6 +58,21 @@ describe "ComposeView", ->
         expect(TuringEmailApp.views.composeView.$el.find("#compose_form #bcc_input").val()).toEqual ""
         expect(TuringEmailApp.views.composeView.$el.find("#compose_form #subject_input").val()).toEqual ""
         expect(TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").val()).toEqual ""
+
+      it "removes the email sent error alert", ->
+        TuringEmailApp.views.composeView.resetView()
+
+        expect(TuringEmailApp.views.composeView.$el).not.toContainHtml('<div id="email_sent_error_alert" class="alert alert-danger" role="alert">There was an error in sending your email!</div>')
+
+        spy = sinon.spy(TuringEmailApp.views.composeView, "removeEmailSentAlert")
+        TuringEmailApp.views.composeView.loadEmpty()
+        expect(spy).toHaveBeenCalled()
+
+      it "clears the current email draft and the email in reply to uid variables", ->
+        TuringEmailApp.views.composeView.resetView()
+
+        expect(TuringEmailApp.views.composeView.currentEmailDraft).toEqual null
+        expect(TuringEmailApp.views.composeView.emailInReplyToUID).toEqual null
 
     describe "#loadEmail", ->
 
@@ -109,5 +124,3 @@ describe "ComposeView", ->
         TuringEmailApp.views.composeView.sendEmailDelayedError JSON.stringify({})
         expect(TuringEmailApp.views.composeView.$el).toContainHtml('<div id="email_sent_error_alert" class="alert alert-danger" role="alert">
                                 There was an error in sending your email!</div>')
-
-
