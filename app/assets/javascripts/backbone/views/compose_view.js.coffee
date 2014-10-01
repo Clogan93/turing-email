@@ -2,6 +2,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
   template: JST["backbone/templates/compose"]
 
   initialize: ->
+    # TODO move this elsewhere, and write tests for the function after it is moved.
     $("#compose_button").click =>
       @resetView()
       @show()
@@ -44,10 +45,10 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
       })
 
   show: ->
-    $("#composeModal").modal "show"
+    @$el.find("#composeModal").modal "show"
     
   hide: ->
-    $("#composeModal").modal "hide"
+    @$el.find("#composeModal").modal "hide"
 
   showEmailSentAlert: (emailSentJSON) ->
     console.log "ComposeView showEmailSentAlert"
@@ -87,7 +88,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
 
     @loadEmailHeaders(emailJSON)
     @loadEmailBody(emailJSON)
-    
+
   loadEmailDraft: (emailDraftJSON, emailInReplyToUID=null) ->
     console.log("ComposeView loadEmailDraft!!")
     @resetView()

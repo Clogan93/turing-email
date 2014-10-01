@@ -21,7 +21,6 @@ window.specStartTuringEmailApp = ->
   )
 
   TuringEmailApp.views.composeView = new TuringEmailApp.Views.ComposeView(
-    el: $("#modals")
   )
   TuringEmailApp.listenTo(TuringEmailApp.views.composeView, "change:draft", TuringEmailApp.draftChanged)
 
