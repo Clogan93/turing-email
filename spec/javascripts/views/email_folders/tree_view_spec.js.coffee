@@ -19,7 +19,7 @@ describe "TreeView", ->
 
   afterEach ->
     @server.restore()
-    $(@treeDiv).remove()
+    @treeDiv.remove()
 
   it "has the right template", ->
     expect(@treeView.template).toEqual JST["backbone/templates/email_folders/tree"]

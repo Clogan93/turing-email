@@ -18,7 +18,7 @@ describe "GeoReportView", ->
 
   afterEach ->
     @server.restore()
-    $(@geoReportDiv).remove()
+    @geoReportDiv.remove()
 
   it "has the right template", ->
     expect(@geoReportView.template).toEqual JST["backbone/templates/reports/geo_report"]

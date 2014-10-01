@@ -18,7 +18,7 @@ describe "SettingsView", ->
 
   afterEach ->
     @server.restore()
-    $(@settingsDiv).remove()
+    @settingsDiv.remove()
 
   it "has the right template", ->
     expect(@settingsView.template).toEqual JST["backbone/templates/settings"]
@@ -99,6 +99,9 @@ describe "SettingsView", ->
       @server.respond()
 
       @mailBodyDiv = $("<div />", {id: "mailBody"}).appendTo('body')
+      
+    afterEach ->
+      @mailBodyDiv.remove()
 
     it "saves the model to the server", ->
       spyOnEvent("#user_settings_save_button", "click")

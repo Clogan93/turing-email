@@ -35,7 +35,7 @@ describe "AnalyticsView", ->
 
   afterEach ->
     @server.restore()
-    $(@reportsDiv).remove()
+    @reportsDiv.remove()
     
   it "has the right template", ->
     expect(@analyticsView.template).toEqual JST["backbone/templates/analytics"]

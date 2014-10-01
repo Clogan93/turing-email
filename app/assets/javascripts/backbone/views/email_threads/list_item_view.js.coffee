@@ -9,11 +9,6 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     @listenTo(@model, "removedFromCollection destroy", @remove)
 
   render: ->
-    if @model.get("emails")[0].seen
-      @$el.addClass("read")
-    else
-      @$el.addClass("unread")
-
     @$el.css({ cursor: "pointer" });
 
     modelJSON = @model.toJSON()
@@ -22,17 +17,26 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     modelJSON["datePreview"] = @model.datePreview()
     @$el.html(@template(modelJSON))
 
+    if @model.get("emails")[0].seen
+      @markRead(silent: true)
+    else
+      @markUnread(silent: true)
+
     @setupClick()
     
     return this
 
-  addedToDOM: ->
-    @setupCheckbox()
-
+  #######################
+  ### Setup Functions ###
+  #######################
+    
   setupClick: ->
     tds = @$el.find('td.check-mail, td.mail-contact, td.mail-subject, td.mail-date')
     tds.click (event) =>
       @trigger("click", this)
+
+  addedToDOM: ->
+    @setupCheckbox()
 
   setupCheckbox: ->
     @$el.find(".i-checks").iCheck
@@ -42,55 +46,74 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     @diviCheck = @$el.find("div.icheckbox_square-green")
     
     @$el.find("div.icheckbox_square-green ins").click (event) =>
-      @updateSelectionStyles()
+      @updateCheckStyles()
 
       if @isChecked()
         @trigger("checked", this)
       else
         @trigger("unchecked", this)
 
+  ###############
+  ### Getters ###
+  ###############
+
+  isSelected: ->
+    return @$el.hasClass "currently_being_read"
+
   isChecked: ->
     return @diviCheck.hasClass "checked"
 
-  updateSelectionStyles: ->
+  ###############
+  ### Actions ###
+  ###############
+
+  select: (options) ->
+    return if @isSelected()
+    
+    @$el.addClass("currently_being_read")
+
+    @trigger("selected", this) if (not options?.silent?) || options.silent is false
+
+  deselect: (options) ->
+    return if not @isSelected()
+    
+    @$el.removeClass("currently_being_read")
+
+    @trigger("deselected", this) if (not options?.silent?) || options.silent is false
+
+  updateCheckStyles: ->
     if @diviCheck.hasClass "checked"
       @$el.addClass("checked_email_thread")
     else
       @$el.removeClass("checked_email_thread")
 
-  toggleSelect: ->
-    if @diviCheck.hasClass "checked" then @deselect() else @select()
+  toggleCheck: ->
+    if @diviCheck.hasClass "checked" then @uncheck() else @check()
     
-  select: ->
+  check: (options) ->
+    return if @isChecked()
+    
     @diviCheck.iCheck("check")
-    @updateSelectionStyles()
+    @updateCheckStyles()
     
-    @trigger("checked", this)
+    @trigger("checked", this) if (not options?.silent?) || options.silent is false
 
-  deselect: ->
+  uncheck: (options) ->
+    return if not @isChecked()
+    
     @diviCheck.iCheck("uncheck")
-    @updateSelectionStyles()
+    @updateCheckStyles()
     
-    @trigger("unchecked", this)
-
-  highlight: ->
-    @$el.addClass("currently_being_read")
-
-    @trigger("highlight", this)
-
-  unhighlight: ->
-    @$el.removeClass("currently_being_read")
-
-    @trigger("unhighlight", this)
+    @trigger("unchecked", this) if (not options?.silent?) || options.silent is false
     
-  markRead: ->
+  markRead: (options) ->
     @$el.removeClass("unread")
     @$el.addClass("read")
 
-    @trigger("markRead", this)
+    @trigger("markRead", this) if (not options?.silent?) || options.silent is false
 
-  markUnread: ->
+  markUnread: (options) ->
     @$el.removeClass("read")
     @$el.addClass("unread")
 
-    @trigger("markUnread", this)
+    @trigger("markUnread", this) if (not options?.silent?) || options.silent is false

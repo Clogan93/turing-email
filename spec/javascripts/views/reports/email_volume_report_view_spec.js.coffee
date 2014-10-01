@@ -18,7 +18,7 @@ describe "EmailVolumeReportView", ->
 
   afterEach ->
     @server.restore()
-    $(@emailVolumeReportDiv).remove()
+    @emailVolumeReportDiv.remove()
 
   it "has the right template", ->
     expect(@emailVolumeReportView.template).toEqual JST["backbone/templates/reports/email_volume_report"]

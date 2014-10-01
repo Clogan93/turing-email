@@ -18,7 +18,7 @@ describe "ImpactReportView", ->
 
   afterEach ->
     @server.restore()
-    $(@impactReportDiv).remove()
+    @impactReportDiv.remove()
 
   it "has the right template", ->
     expect(@impactReportView.template).toEqual JST["backbone/templates/reports/impact_report"]
