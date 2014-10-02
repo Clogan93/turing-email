@@ -136,7 +136,8 @@ describe "ComposeView", ->
 
       it "updates the email in reply to UID", ->
         emailJSON = {}
-        randomID = Math.random() * 1000
+        @seededChance = new Chance(1)
+        randomID = @seededChance.integer({min: 1, max: 10000})
         TuringEmailApp.views.composeView.loadEmailDraft emailJSON, randomID
         expect(TuringEmailApp.views.composeView.emailInReplyToUID).toEqual randomID
 
@@ -181,7 +182,7 @@ describe "ComposeView", ->
 
       it "updates the email in reply to UID", ->
         emailJSON = {}
-        emailJSON.uid = chance.integer({min: 1, max: 10000});
+        emailJSON.uid = chance.integer({min: 1, max: 10000})
         TuringEmailApp.views.composeView.loadEmailAsReply emailJSON
         expect(TuringEmailApp.views.composeView.emailInReplyToUID).toEqual emailJSON.uid
 
@@ -310,6 +311,39 @@ describe "ComposeView", ->
         anEmailDraft = new TuringEmailApp.Models.EmailDraft()
         TuringEmailApp.views.composeView.updateEmail(anEmailDraft)
         expect(TuringEmailApp.views.composeView.currentEmailDraft.attributes).toEqual anEmailDraft.attributes
+
+    describe "#updateEmail", ->
+      beforeEach ->
+        @seededChance = new Chance(1)
+        @email = new TuringEmailApp.Models.EmailDraft()
+
+        TuringEmailApp.views.composeView.$el.find("#compose_form #to_input").val(@seededChance.email())
+        TuringEmailApp.views.composeView.$el.find("#compose_form #cc_input").val(@seededChance.email())
+        TuringEmailApp.views.composeView.$el.find("#compose_form #bcc_input").val(@seededChance.email())
+        TuringEmailApp.views.composeView.$el.find("#compose_form #subject_input").val(@seededChance.string({length: 25}))
+        TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").val(@seededChance.string({length: 250}))
+
+        TuringEmailApp.views.composeView.emailInReplyToUID = chance.integer({min: 1, max: 10000})
+
+        TuringEmailApp.views.composeView.updateEmail @email
+
+      it "updates the email model with the email in reply to UID from the compose view", ->
+        expect(@email.get("email_in_reply_to_uid")).toEqual TuringEmailApp.views.composeView.emailInReplyToUID
+
+      it "updates the email model with the to input value from the compose form", ->
+        expect(@email.get("tos")[0]).toEqual TuringEmailApp.views.composeView.$el.find("#compose_form #to_input").val()
+
+      it "updates the email model with the cc input value from the compose form", ->
+        expect(@email.get("ccs")[0]).toEqual TuringEmailApp.views.composeView.$el.find("#compose_form #cc_input").val()
+
+      it "updates the email model with the bcc input value from the compose form", ->
+        expect(@email.get("bccs")[0]).toEqual TuringEmailApp.views.composeView.$el.find("#compose_form #bcc_input").val()
+
+      it "updates the email model with the subject input value from the compose form", ->
+        expect(@email.get("subject")).toEqual TuringEmailApp.views.composeView.$el.find("#compose_form #subject_input").val()
+
+      it "updates the email model with the email body input value from the compose form", ->
+        expect(@email.get("email_body")).toEqual TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").val()
 
     describe "#sendEmailDelayedError", ->
 
