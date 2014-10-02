@@ -21,7 +21,6 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
     
     @$el.html(@template(nodeName: "", node: @tree, systemBadges: systemBadges))
 
-    @setupInboxCount()
     @setupNodes()
 
     select(@selectedItem(), silent: true) if @selectedItem()?
@@ -49,18 +48,7 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
   #############
   ### Setup ###
   #############
-      
-  setupInboxCount: ->
-    # Set the inbox count to the number of emails in the inbox.
-    inboxFolder = @collection.getEmailFolder("INBOX")
-
-    numUnreadThreadsInInbox = inboxFolder.get("num_unread_threads")
-
-    if numUnreadThreadsInInbox is 0
-      @$el.find(".inbox_count_badge").hide()
-    else
-      @$el.find(".inbox_count_badge").html(numUnreadThreadsInInbox) if inboxFolder?
-  
+    
   setupNodes: ->
     @$el.find(".bullet_span").click (event) =>
       $(event.target).parent().children("ul").children("li").toggle()
@@ -93,6 +81,14 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
     @selectedEmailFolder = emailFolder
     
     @trigger("emailFolderSelected", this, emailFolder) if (not options?.silent?) || options.silent is false
+    
+  updateBadgeCount: (emailFolder) ->
+    emailFolderID = emailFolder.get("label_id")
+
+    if emailFolderID is "INBOX"
+      @$el.find('.inbox_count_badge').html(emailFolder.badgeString())
+    else
+      @$el.find('a[href="' + emailFolderID + '"]>.badge').html(emailFolder.badgeString())
       
   #############################
   ### TuringEmailApp Events ###
@@ -100,9 +96,4 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
   
   # TODO write test
   emailFolderUnreadCountChanged: (app, emailFolder) ->
-    emailFolderID = emailFolder.get("label_id")
-    
-    if emailFolderID is "INBOX"
-      @$el.find('.inbox_count_badge').html(emailFolder.badgeString())
-    else
-      @$el.find('a[href="' + emailFolderID + '"]>.badge').html(emailFolder.badgeString())
+    @updateBadgeCount(emailFolder)

@@ -30,3 +30,4 @@ describe "KeyboardShortcutHandler", ->
     return
 
   return
+ 
