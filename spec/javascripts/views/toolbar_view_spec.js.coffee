@@ -286,17 +286,10 @@ describe "ToolbarView", ->
       it "updates the label name", ->
         expect(TuringEmailApp.views.toolbarView.$el.find(".label_name").text()).toEqual @currentFolder.get("name")
 
-      describe "when the updated folder is DRAFT or SENT", ->
-
-        it "updates the label count badge to be the number of threads", ->
-          TuringEmailApp.views.toolbarView.updateTitle "DRAFT"
-          @currentFolder = TuringEmailApp.collections.emailFolders.getEmailFolder "DRAFT"
-          expect(parseInt(TuringEmailApp.views.toolbarView.$el.find(".label_count_badge").text())).toEqual @currentFolder.get("num_threads")
-
-      describe "when the updated folder is not DRAFT or SENT", ->
-
+      describe "updatesthe badge text", ->
         it "updates the label count badge to be the number of unread threads", ->
-          expect(parseInt(TuringEmailApp.views.toolbarView.$el.find(".label_count_badge").text())).toEqual @currentFolder.get("num_unread_threads")
+          badgeText = TuringEmailApp.views.toolbarView.$el.find(".label_count_badge").text()
+          expect(badgeText).toEqual("(" + @currentFolder.get("num_unread_threads") + ")")
 
     describe "#updatePaginationText", ->
       beforeEach ->
