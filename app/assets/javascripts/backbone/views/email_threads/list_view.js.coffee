@@ -75,24 +75,35 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
   select: (emailThread, options) ->
     listItemView = @listItemViews?[emailThread.get("uid")]
+    
+    @selectedListItemView?.deselect(options)
+    @uncheckAll()
+    @selectedListItemView = listItemView
+    
     listItemView?.select(options)
     
   deselect: () ->
     @selectedListItemView?.deselect()
+    @selectedListItemView = null
 
   checkAll: ->
     listItemView.check() for listItemView in _.values(@listItemViews)
 
+    @selectedListItemView?.deselect()
 
   checkAllRead: ->
     for listItemView in _.values(@listItemViews)
       seen = listItemView.model.get("emails")[0].seen
       if seen then listItemView.check() else listItemView.uncheck()
 
+    @selectedListItemView?.deselect()
+
   checkAllUnread: ->
     for listItemView in _.values(@listItemViews)
       seen = listItemView.model.get("emails")[0].seen
       if !seen then listItemView.check() else listItemView.uncheck()
+
+    @selectedListItemView?.deselect()
 
   uncheckAll: ->
     listItemView.uncheck() for listItemView in _.values(@listItemViews)
@@ -122,30 +133,20 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
     # TODO write tests
     @listenTo(listItemView, "selected", (listItemView) =>
-      @selectedListItemView?.deselect()
-      @uncheckAll()
-
-      @selectedListItemView = listItemView
       @trigger("listItemSelected", this, listItemView)
     )
 
     # TODO write tests
     @listenTo(listItemView, "deselected", (listItemView) =>
-      @selectedListItemView = null
-
       @trigger("listItemDeselected", this, listItemView)
     )
 
     # TODO write tests
     @listenTo(listItemView, "checked", (listItemView) =>
       @trigger("listItemChecked", this, listItemView)
-
-      @selectedListItemView?.deselect()
     )
 
     # TODO write tests
     @listenTo(listItemView, "unchecked", (listItemView) =>
       @trigger("listItemUnchecked", this, listItemView)
-
-      @selectedListItemView?.select()
     )

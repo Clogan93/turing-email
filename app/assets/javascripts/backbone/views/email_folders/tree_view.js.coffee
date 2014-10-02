@@ -105,4 +105,4 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
     if emailFolderID is "INBOX"
       @$el.find('.inbox_count_badge').html(emailFolder.badgeString())
     else
-      @$el.find('a[href="#email_folder/' + emailFolderID + '"]>.badge').html(emailFolder.badgeString())
+      @$el.find('a[href="' + emailFolderID + '"]>.badge').html(emailFolder.badgeString())

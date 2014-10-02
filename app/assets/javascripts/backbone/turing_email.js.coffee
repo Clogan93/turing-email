@@ -207,10 +207,9 @@ window.TuringEmailApp = new(Backbone.View.extend(
       @loadEmailThread(emailThreadUID, (emailThread) =>
         return if @currentEmailThreadView?.model is emailThread
 
-        # do the show show first so then if the select below triggers this again it will exit above
+        @views.emailThreadsListView.select(emailThread, silent: true)
         @showEmailThread(emailThread)
         
-        @views.emailThreadsListView.select(emailThread)
         @views.toolbarView.uncheckAllCheckbox()
         
         @trigger "change:selectedEmailThread", this, emailThread
