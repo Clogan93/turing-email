@@ -416,7 +416,14 @@ describe "ComposeView", ->
 
           it "sends the email after a timeout", ->
             # TODO figure out how to test the sendEmail function after a timeout.
-            
+              @spy = sinon.spy(TuringEmailApp.views.composeView, "sendEmail")
+              TuringEmailApp.views.composeView.sendEmail()
+
+              waitsFor ->
+                return @spy.callCount == 2
+
+              TuringEmailApp.views.composeView.savingDraft = false
+
         describe "when not saving the draft", ->
           beforeEach ->
             TuringEmailApp.views.composeView.savingDraft = false
@@ -466,6 +473,44 @@ describe "ComposeView", ->
         TuringEmailApp.views.composeView.sendEmailDelayed @email
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith(@email.toJSON())
+
+      it "removes the email sent alert", ->
+        @spy = sinon.spy(TuringEmailApp.views.composeView, "removeEmailSentAlert")
+        TuringEmailApp.views.composeView.sendEmailDelayed @email
+
+        waitsFor ->
+          return @spy.callCount == 1
+
+      describe "when send draft is defined", ->
+
+        it "should send the draft", ->
+          @spy = sinon.spy(@email, "sendDraft")
+          TuringEmailApp.views.composeView.sendEmailDelayed @email
+
+          waitsFor ->
+            return @spy.callCount == 1
+
+      describe "when send draft is not defined", ->
+        beforeEach ->
+          @server = sinon.fakeServer.create()
+          @email.sendDraft = null
+
+        it "should send the email", ->
+          @spy = sinon.spy(@email, "sendEmail")
+          TuringEmailApp.views.composeView.sendEmailDelayed @email
+
+          waitsFor ->
+            return @spy.callCount == 1
+
+        it "should should send the email after a delay if the initial sending doesn't work", ->
+          # TODO figure out how to test the fail handler.
+          # @spy = sinon.spy(TuringEmailApp.views.composeView, "sendEmailDelayedError")
+          # @server.respondWith "POST", "/api/v1/email_accounts/send_email", JSON.stringify({})
+          # @server.respond()
+          # TuringEmailApp.views.composeView.sendEmailDelayed @email
+
+          # waitsFor ->
+          #   return @spy.callCount == 1
 
     describe "#sendEmailDelayedError", ->
 
