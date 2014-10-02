@@ -1,6 +1,6 @@
 describe "User", ->
   beforeEach ->
-    userFixtures = fixture.load("user.fixture.json", true);
+    userFixtures = fixture.load("user.fixture.json");
     @validUserFixture = userFixtures[0]["valid"]
 
     @user = new TuringEmailApp.Models.User()
