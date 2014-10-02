@@ -2,8 +2,8 @@ describe "TuringEmailApp", ->
   beforeEach ->
     @server = sinon.fakeServer.create()
 
-    afterEach ->
-      @server.restore()
+  afterEach ->
+    @server.restore()
 
   it "has the app objects defined", ->
     expect(TuringEmailApp.Models).toBeDefined()
