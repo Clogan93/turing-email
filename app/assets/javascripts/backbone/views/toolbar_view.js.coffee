@@ -101,19 +101,24 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   uncheckAllCheckbox: ->
     @divAllCheckbox.iCheck("uncheck")
 
-  updateTitle: (folderID, attempt=1) ->
-    currentFolder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
+  updateTitle: (emailFolderID, attempt=1) ->
+    emailFolder = TuringEmailApp.collections.emailFolders.getEmailFolder(emailFolderID)
     
-    if currentFolder?
-      folderName = currentFolder.get("name")
-      badgeString = currentFolder.badgeString()
+    if emailFolder?
+      folderName = emailFolder.get("name")
+      badgeString = emailFolder.badgeString()
+
+      if badgeString is "" || badgeString is "0"
+        badgeString = ""
+      else
+        badgeString = "(" + badgeString + ")"
 
       @$el.find("#title").html('<span class="label_name">' + folderName +
-                               '</span> (<span class="label_count_badge">' + badgeString + '</span>)')
+                               '</span> <span class="label_count_badge">' + badgeString + '</span>')
     else if attempt < TuringEmailApp.Views.ToolbarView.MAX_RETRY_ATTEMPTS
       setTimeout(
         =>
-          @updateTitle(folderID, attempt + 1)
+          @updateTitle(emailFolderID, attempt + 1)
         500
       )
 
@@ -155,4 +160,4 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
   # TODO write test
   emailFolderUnreadCountChanged: (app, emailFolder) ->
-    @$el.find(".label_count_badge").html(emailFolder.badgeString())
+    @updateTitle(emailFolder.get("label_id"))

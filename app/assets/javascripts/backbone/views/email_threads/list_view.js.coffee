@@ -14,18 +14,14 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     
     @addAll()
 
-    @setupSplitPaneResizing()
-    @setupKeyboardShortcuts()
-
-    @moveTuringEmailReportToTop()
-
     @select(@selectedItem(), silent: true) if @selectedItem()?
 
     return this
 
   resetView: (models, options) ->
     @removeAll(options.previousModels) if options?.previousModels?
-    
+    @selectedListItemView = null
+
     @render()
 
   ############################
@@ -58,29 +54,6 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   removeAll: (models = @collection.models) ->
     models.forEach(@removeOne, this)
 
-  #######################
-  ### Setup Functions ###
-  #######################
-
-  setupSplitPaneResizing: ->
-    return
-  # if TuringEmailApp.isSplitPaneMode()
-  #   $("#resize_border").mousedown ->
-  #     TuringEmailApp.mouseStart = null
-  #     $(document).mousemove (event) ->
-  #       if !TuringEmailApp.mouseStart?
-  #         TuringEmailApp.mouseStart = event.pageY
-  #       if event.pageY - TuringEmailApp.mouseStart > 100
-  #         $("#preview_panel").height("30%")
-  #         TuringEmailApp.mouseStart = null
-  #       return
-
-  #     $(document).one "mouseup", ->
-  #       $(document).unbind "mousemove"
-
-  setupKeyboardShortcuts: ->
-    $("#email_table_body tr:nth-child(1)").addClass("email_thread_highlight")
-
   ###############
   ### Getters ###
   ###############
@@ -99,19 +72,6 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   ###############
   ### Actions ###
   ###############
-
-  moveTuringEmailReportToTop: ->
-    trReportEmail = null
-
-    @$el.find("td.mail-contact").each ->
-      textValue = $(@).text().trim()
-
-      if textValue is "Turing Email"
-        trReportEmail = $(@).parent()
-
-    if trReportEmail?
-      trReportEmail.remove()
-      $("#email_table_body").prepend(trReportEmail)
 
   select: (emailThread, options) ->
     listItemView = @listItemViews?[emailThread.get("uid")]

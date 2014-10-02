@@ -21,18 +21,8 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
     
     @$el.html(@template(nodeName: "", node: @tree, systemBadges: systemBadges))
 
-    @$el.find(".bullet_span").click ->
-      $(this).parent().children("ul").children("li").toggle()
-
-    # Set the inbox count to the number of emails in the inbox.
-    inboxFolder = @collection.getEmailFolder("INBOX")
-
-    numUnreadThreadsInInbox = inboxFolder.get("num_unread_threads")
-
-    if numUnreadThreadsInInbox is 0
-      @$el.find(".inbox_count_badge").hide()
-    else
-      @$el.find(".inbox_count_badge").html(numUnreadThreadsInInbox) if inboxFolder?
+    @setupInboxCount()
+    @setupNodes()
 
     select(@selectedItem(), silent: true) if @selectedItem()?
       
@@ -56,6 +46,32 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
 
       node.emailFolder = emailFolderJSON
 
+  #############
+  ### Setup ###
+  #############
+      
+  setupInboxCount: ->
+    # Set the inbox count to the number of emails in the inbox.
+    inboxFolder = @collection.getEmailFolder("INBOX")
+
+    numUnreadThreadsInInbox = inboxFolder.get("num_unread_threads")
+
+    if numUnreadThreadsInInbox is 0
+      @$el.find(".inbox_count_badge").hide()
+    else
+      @$el.find(".inbox_count_badge").html(numUnreadThreadsInInbox) if inboxFolder?
+  
+  setupNodes: ->
+    @$el.find(".bullet_span").click (event) =>
+      $(event.target).parent().children("ul").children("li").toggle()
+      
+    @$el.find('a').click (event) =>
+      event.preventDefault()
+
+      emailFolderID = $(event.currentTarget).attr("href")
+      emailFolder = @collection.getEmailFolder(emailFolderID)
+      @select(emailFolder, force: true)
+
   ###############
   ### Getters ###
   ###############
@@ -69,20 +85,10 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
 
   # TODO write test
   select: (emailFolder, options) ->
+    return if @selectedItem() is emailFolder && options?.force != true
+
     if @selectedItem()?
-      @$el.find('a[href="#email_folder/' + @selectedItem().get("label_id") + '"]').unbind "click"
       @trigger("emailFolderDeselected", this, @selectedItem())
-
-    emailFolderID = emailFolder.get("label_id")
-
-    @$el.find('a[href="#email_folder/' + emailFolderID + '"]').click (event) ->
-      event.preventDefault()
-      
-      newURL = "#email_folder/" + emailFolderID
-      if window.location.hash == newURL
-        TuringEmailApp.routers.emailFoldersRouter.showFolder(emailFolderID)
-      else
-        TuringEmailApp.routers.emailFoldersRouter.navigate(newURL, trigger: true)
 
     @selectedEmailFolder = emailFolder
     

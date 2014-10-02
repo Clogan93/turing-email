@@ -53,6 +53,28 @@ window.TuringEmailApp = new(Backbone.View.extend(
   #######################
   ### Setup Functions ###
   #######################
+
+  # TODO implement
+  setupSplitPaneResizing: ->
+    return
+    # if TuringEmailApp.isSplitPaneMode()
+    #   $("#resize_border").mousedown ->
+    #     TuringEmailApp.mouseStart = null
+    #     $(document).mousemove (event) ->
+    #       if !TuringEmailApp.mouseStart?
+    #         TuringEmailApp.mouseStart = event.pageY
+    #       if event.pageY - TuringEmailApp.mouseStart > 100
+    #         $("#preview_panel").height("30%")
+    #         TuringEmailApp.mouseStart = null
+    #       return
+    
+    #     $(document).one "mouseup", ->
+    #       $(document).unbind "mousemove"
+
+  # TODO implement
+  setupKeyboardShortcuts: ->
+    return
+    #$("#email_table_body tr:nth-child(1)").addClass("email_thread_highlight")
     
   setupSearchBar: ->
     $("#top-search-form").submit (event) =>
@@ -102,6 +124,16 @@ window.TuringEmailApp = new(Backbone.View.extend(
       app: this
       el: $("#email_folders")
       collection: @collections.emailFolders
+    )
+    
+    @listenTo(@views.emailFoldersTreeView, "emailFolderSelected", (treeView, emailFolder) =>
+      emailFolderID = emailFolder.get("label_id")
+      
+      emailFolderURL = "#email_folder/" + emailFolderID
+      if window.location.hash is emailFolderURL
+        @routers.emailFoldersRouter.showFolder(emailFolderID)
+      else
+        @routers.emailFoldersRouter.navigate("#email_folder/" + emailFolderID, trigger: true)
     )
     
   setupComposeView: ->
@@ -154,7 +186,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @routers.searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()
 
   ###############
-  ### Setters ###
+  ### Getters ###
   ###############
   
   selectedEmailThread: ->
@@ -170,9 +202,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   ### Setters ###
   ###############
 
-  currentEmailThreadIs: (emailThreadUID=".", forceReload=false) ->
-    return if not forceReload && @currentEmailThreadView?.model?.get("uid") is emailThreadUID
-
+  currentEmailThreadIs: (emailThreadUID=".") ->
     if emailThreadUID != "."
       @loadEmailThread(emailThreadUID, (emailThread) =>
         return if @currentEmailThreadView?.model is emailThread
@@ -193,17 +223,20 @@ window.TuringEmailApp = new(Backbone.View.extend(
       
       @trigger "change:selectedEmailThread", this, null
 
-# TODO write tests (page param)
+  # TODO write tests (page param)
   currentEmailFolderIs: (emailFolderID, page) ->
     @collections.emailThreads.setupURL(emailFolderID, page)
 
     @reloadEmailThreads(
       success: (collection, response, options) =>
-        if @isSplitPaneMode() && @collections.emailThreads.length > 0
+        @moveTuringEmailReportToTop(@views.emailThreadsListView)
+        
+        if @isSplitPaneMode() && @collections.emailThreads.length > 0 &&
+           not @collections.emailThreads.models[0].get("emails")[0].draft_id?
           @currentEmailThreadIs(@collections.emailThreads.models[0].get("uid"))
 
         emailFolder = @collections.emailFolders.getEmailFolder(emailFolderID)
-        @views.emailFoldersTreeView.select(emailFolder)
+        @views.emailFoldersTreeView.select(emailFolder, silent: true)
         @trigger "change:currentEmailFolder", this, emailFolder
   
         @showEmails()
@@ -354,9 +387,9 @@ window.TuringEmailApp = new(Backbone.View.extend(
       true, true
     )
 
-  ##########################
-  ### ComposeView #vents ###
-  ##########################
+  ###########################
+  ### ComposeView #Events ###
+  ###########################
     
   draftChanged: ->
     @reloadEmailThreads() if @selectedEmailFolderID() is "DRAFT"
@@ -425,6 +458,21 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
       @views.composeView.show()
     )
+
+  moveTuringEmailReportToTop: (emailThreadsListView) ->
+    for listView in _.values(emailThreadsListView.listItemViews)
+      emailThread = listView.model
+      
+      if emailThread.get("emails")[0].subject is "Turing Email - Your daily Genie Report!"
+        emailThreadsListView.collection.remove(emailThread)
+        emailThreadsListView.collection.unshift(emailThread)
+
+        listView = emailThreadsListView.listItemViews[emailThread.get("uid")]
+        trReportEmail = listView.$el
+        trReportEmail.remove()
+        emailThreadsListView.$el.prepend(trReportEmail)
+
+        return
     
   showEmails: ->
     @hideAll()
