@@ -14,18 +14,14 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     
     @addAll()
 
-    @setupSplitPaneResizing()
-    @setupKeyboardShortcuts()
-
-    @moveTuringEmailReportToTop()
-
     @select(@selectedItem(), silent: true) if @selectedItem()?
 
     return this
 
   resetView: (models, options) ->
     @removeAll(options.previousModels) if options?.previousModels?
-    
+    @selectedListItemView = null
+
     @render()
 
   ############################
@@ -58,29 +54,6 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   removeAll: (models = @collection.models) ->
     models.forEach(@removeOne, this)
 
-  #######################
-  ### Setup Functions ###
-  #######################
-
-  setupSplitPaneResizing: ->
-    return
-  # if TuringEmailApp.isSplitPaneMode()
-  #   $("#resize_border").mousedown ->
-  #     TuringEmailApp.mouseStart = null
-  #     $(document).mousemove (event) ->
-  #       if !TuringEmailApp.mouseStart?
-  #         TuringEmailApp.mouseStart = event.pageY
-  #       if event.pageY - TuringEmailApp.mouseStart > 100
-  #         $("#preview_panel").height("30%")
-  #         TuringEmailApp.mouseStart = null
-  #       return
-
-  #     $(document).one "mouseup", ->
-  #       $(document).unbind "mousemove"
-
-  setupKeyboardShortcuts: ->
-    $("#email_table_body tr:nth-child(1)").addClass("email_thread_highlight")
-
   ###############
   ### Getters ###
   ###############
@@ -100,39 +73,37 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   ### Actions ###
   ###############
 
-  moveTuringEmailReportToTop: ->
-    trReportEmail = null
-
-    @$el.find("td.mail-contact").each ->
-      textValue = $(@).text().trim()
-
-      if textValue is "Turing Email"
-        trReportEmail = $(@).parent()
-
-    if trReportEmail?
-      trReportEmail.remove()
-      $("#email_table_body").prepend(trReportEmail)
-
   select: (emailThread, options) ->
     listItemView = @listItemViews?[emailThread.get("uid")]
+    
+    @selectedListItemView?.deselect(options)
+    @uncheckAll()
+    @selectedListItemView = listItemView
+    
     listItemView?.select(options)
     
   deselect: () ->
     @selectedListItemView?.deselect()
+    @selectedListItemView = null
 
   checkAll: ->
     listItemView.check() for listItemView in _.values(@listItemViews)
 
+    @selectedListItemView?.deselect()
 
   checkAllRead: ->
     for listItemView in _.values(@listItemViews)
       seen = listItemView.model.get("emails")[0].seen
       if seen then listItemView.check() else listItemView.uncheck()
 
+    @selectedListItemView?.deselect()
+
   checkAllUnread: ->
     for listItemView in _.values(@listItemViews)
       seen = listItemView.model.get("emails")[0].seen
       if !seen then listItemView.check() else listItemView.uncheck()
+
+    @selectedListItemView?.deselect()
 
   uncheckAll: ->
     listItemView.uncheck() for listItemView in _.values(@listItemViews)
@@ -162,30 +133,20 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
     # TODO write tests
     @listenTo(listItemView, "selected", (listItemView) =>
-      @selectedListItemView?.deselect()
-      @uncheckAll()
-
-      @selectedListItemView = listItemView
       @trigger("listItemSelected", this, listItemView)
     )
 
     # TODO write tests
     @listenTo(listItemView, "deselected", (listItemView) =>
-      @selectedListItemView = null
-
       @trigger("listItemDeselected", this, listItemView)
     )
 
     # TODO write tests
     @listenTo(listItemView, "checked", (listItemView) =>
       @trigger("listItemChecked", this, listItemView)
-
-      @selectedListItemView?.deselect()
     )
 
     # TODO write tests
     @listenTo(listItemView, "unchecked", (listItemView) =>
       @trigger("listItemUnchecked", this, listItemView)
-
-      @selectedListItemView?.select()
     )

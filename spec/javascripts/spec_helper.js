@@ -34,7 +34,7 @@
 //= require jasmine-sinon
 //= require support/jasmine-jquery-1.7.0
 //
-//= require ./unserialize.jquery.latest.js
-//= require ./chance.js
+//= require ./vendors/chance.js
+//= require ./vendors/unserialize.jquery.latest.js
 //= require ./backbone_spy
 //= require ./spec_misc
