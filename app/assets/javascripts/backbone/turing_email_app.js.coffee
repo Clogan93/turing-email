@@ -138,6 +138,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     
   setupComposeView: ->
     @views.composeView = new TuringEmailApp.Views.ComposeView(
+      app: this
       el: $("#modals")
     )
     @listenTo(@views.composeView, "change:draft", @draftChanged)
@@ -241,9 +242,26 @@ window.TuringEmailApp = new(Backbone.View.extend(
         @showEmails()
     )
 
-  #################
-  ### Functions ###
-  #################
+  #######################
+  ### Alert Functions ###
+  #######################
+  
+  showAlert: (text, classType) ->
+    @removeAlert(@currentAlert.data("token")) if @currentAlert?
+    $("body").prepend('<div class="text-center alert ' + classType + '" role="alert" style="z-index: 2000; margin-bottom: 0px;">' + text + '</div>')
+    @currentAlert = $($("body").children()[0])
+    @currentAlert.data("token", _.uniqueId())
+    
+    return @currentAlert.data("token")
+    
+  removeAlert: (token) ->
+    return if not @currentAlert? || @currentAlert.data("token") != token
+    @currentAlert.remove()
+    @currentAlert = null
+
+  ##############################
+  ### Email Folder Functions ###
+  ##############################
     
   loadEmailFolders: ->
     @collections.emailFolders.fetch(
@@ -252,6 +270,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
       success: (collection, response, options) =>
         @trigger("change:emailFolders", this, collection)
     )
+
+  ##############################
+  ### Email Thread Functions ###
+  ##############################
     
   loadEmailThread: (emailThreadUID, callback) ->
     emailThread = @collections.emailThreads?.getEmailThread(emailThreadUID)
