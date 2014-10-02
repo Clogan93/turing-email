@@ -38,6 +38,14 @@ describe "ComposeView", ->
           TuringEmailApp.views.composeView.$el.find("#compose_form #save_button").click()
           expect(spy).toHaveBeenCalled()
 
+        describe "when the composeView is already saving the draft", ->
+
+          it "if does not update the draft", ->
+            TuringEmailApp.views.composeView.savingDraft = true
+            spy = sinon.spy(TuringEmailApp.views.composeView, "updateDraft")
+            TuringEmailApp.views.composeView.$el.find("#compose_form #save_button").click()
+            expect(spy).not.toHaveBeenCalled()
+
         describe "when the server responds successfully", ->
           beforeEach ->
             @server.respondWith "POST", "/api/v1/email_accounts/drafts", JSON.stringify({})
