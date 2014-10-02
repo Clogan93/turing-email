@@ -20,23 +20,23 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
       if @savingDraft
         console.log "SKIPPING SAVE - already saving!!"
         return
-        
+
       @savingDraft = true
 
       @updateDraft()
 
-      @currentEmailDraft.save(null, {
+      @currentEmailDraft.save(null,
         success: (model, response, options) =>
           console.log "SAVED! setting draft_id to " + response.draft_id
           model.set("draft_id", response.draft_id)
           @trigger "change:draft", this
-          
+
           @savingDraft = false
           
         error: (model, response, options) =>
           console.log "SAVE FAILED!!!"
           @savingDraft = false
-      })
+      )
 
   show: ->
     @$el.find("#composeModal").modal "show"

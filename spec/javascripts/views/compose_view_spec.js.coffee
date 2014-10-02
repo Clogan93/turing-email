@@ -30,13 +30,38 @@ describe "ComposeView", ->
         expect(TuringEmailApp.views.composeView.$el.find("#compose_form #save_button")).toHandle("click")
 
       describe "when the save button is clicked", ->
+        beforeEach ->
+          @server = sinon.fakeServer.create()
 
         it "updates the draft", ->
           spy = sinon.spy(TuringEmailApp.views.composeView, "updateDraft")
           TuringEmailApp.views.composeView.$el.find("#compose_form #save_button").click()
           expect(spy).toHaveBeenCalled()
 
-        # TODO Figure out how to test the @currentEmailDraft.save function
+        describe "when the server responds successfully", ->
+          beforeEach ->
+            @server.respondWith "POST", "/api/v1/email_accounts/send_draft", JSON.stringify({})
+
+          it "triggers change:draft", ->
+            spy = sinon.backbone.spy(TuringEmailApp.views.composeView, "change:draft")
+            TuringEmailApp.views.composeView.$el.find("#compose_form #save_button").click()
+            @server.respond()
+            expect(spy).toHaveBeenCalled()
+            spy.restore()
+
+          it "stops saving the draft", ->
+            TuringEmailApp.views.composeView.$el.find("#compose_form #save_button").click()
+            @server.respond()
+            expect(TuringEmailApp.views.composeView.savingDraft).toEqual(false)
+
+        describe "when the server responds unsuccessfully", ->
+          beforeEach ->
+            @server.respondWith "POST", "/api/v1/email_accounts/send_draft", JSON.stringify({})
+
+          it "stops saving the draft", ->
+            TuringEmailApp.views.composeView.$el.find("#compose_form #save_button").click()
+            @server.respond([404, {}, ""])
+            expect(TuringEmailApp.views.composeView.savingDraft).toEqual(false)
 
     describe "#show", ->
 
