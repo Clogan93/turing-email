@@ -40,7 +40,7 @@ describe "ComposeView", ->
 
         describe "when the server responds successfully", ->
           beforeEach ->
-            @server.respondWith "POST", "/api/v1/email_accounts/send_draft", JSON.stringify({})
+            @server.respondWith "POST", "/api/v1/email_accounts/drafts", JSON.stringify({})
 
           it "triggers change:draft", ->
             spy = sinon.backbone.spy(TuringEmailApp.views.composeView, "change:draft")
@@ -55,8 +55,6 @@ describe "ComposeView", ->
             expect(TuringEmailApp.views.composeView.savingDraft).toEqual(false)
 
         describe "when the server responds unsuccessfully", ->
-          beforeEach ->
-            @server.respondWith "POST", "/api/v1/email_accounts/send_draft", JSON.stringify({})
 
           it "stops saving the draft", ->
             TuringEmailApp.views.composeView.$el.find("#compose_form #save_button").click()
