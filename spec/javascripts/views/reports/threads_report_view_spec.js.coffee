@@ -4,7 +4,7 @@ describe "ThreadsReportView", ->
 
     @threadsReport = new TuringEmailApp.Models.ThreadsReport()
 
-    @threadsReportDiv = $("<div />", {id: "threads_report"}).appendTo('body')
+    @threadsReportDiv = $("<div />", {id: "threads_report"}).appendTo("body")
     @threadsReportView = new TuringEmailApp.Views.Reports.ThreadsReportView(
       model: @threadsReport
       el: @threadsReportDiv

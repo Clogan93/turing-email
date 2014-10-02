@@ -4,7 +4,7 @@ describe "EmailVolumeReportView", ->
 
     @emailVolumeReport = new TuringEmailApp.Models.EmailVolumeReport()
 
-    @emailVolumeReportDiv = $("<div />", {id: "email_volume_report"}).appendTo('body')
+    @emailVolumeReportDiv = $("<div />", {id: "email_volume_report"}).appendTo("body")
     @emailVolumeReportView = new TuringEmailApp.Views.Reports.EmailVolumeReportView(
       model: @emailVolumeReport
       el: @emailVolumeReportDiv

@@ -4,7 +4,7 @@ describe "GeoReportView", ->
 
     @geoReport = new TuringEmailApp.Models.GeoReport()
 
-    @geoReportDiv = $("<div />", {id: "geo_report"}).appendTo('body')
+    @geoReportDiv = $("<div />", {id: "geo_report"}).appendTo("body")
     @geoReportView = new TuringEmailApp.Views.Reports.GeoReportView(
       model: @geoReport
       el: @geoReportDiv

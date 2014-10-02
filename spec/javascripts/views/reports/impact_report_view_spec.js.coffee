@@ -4,7 +4,7 @@ describe "ImpactReportView", ->
 
     @impactReport = new TuringEmailApp.Models.ImpactReport()
 
-    @impactReportDiv = $("<div />", {id: "impact_report"}).appendTo('body')
+    @impactReportDiv = $("<div />", {id: "impact_report"}).appendTo("body")
     @impactReportView = new TuringEmailApp.Views.Reports.ImpactReportView(
       model: @impactReport
       el: @impactReportDiv
