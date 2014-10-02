@@ -81,9 +81,69 @@ describe "ComposeView", ->
         TuringEmailApp.views.composeView.hide()
         expect(TuringEmailApp.views.composeView.$el.find("#composeModal").hasClass("in")).toBeFalsy()
 
+    describe "#showEmailSentAlert", ->
+      
+      describe "when the current alert token is defined", ->
+        beforeEach ->
+          TuringEmailApp.views.composeView.currentAlertToken = true
+
+        it "should remove the alert", ->
+          spy = sinon.spy(TuringEmailApp.views.composeView, "removeEmailSentAlert")
+          TuringEmailApp.views.composeView.showEmailSentAlert()
+          expect(spy).toHaveBeenCalled()
+
+      it "should show the alert", ->
+        spy = sinon.spy(TuringEmailApp, "showAlert")
+        TuringEmailApp.views.composeView.showEmailSentAlert()
+        expect(spy).toHaveBeenCalled()
+
+      it "should set the current alert token", ->
+        TuringEmailApp.views.composeView.currentAlertToken = null
+        TuringEmailApp.views.composeView.showEmailSentAlert()
+        expect(TuringEmailApp.views.composeView.currentAlertToken).toBeDefined()
+
+      it "binds the click event to undo email send button", ->
+        expect($("#undo_email_send")).toHandle("click")
+
+      describe "when the undo email send button is clicked", ->
+        beforeEach ->
+          TuringEmailApp.views.composeView.currentAlertToken = null
+          emailJSON = {}
+          TuringEmailApp.views.composeView.showEmailSentAlert(emailJSON)
+
+        it "should remove the alert", ->
+          spy = sinon.spy(TuringEmailApp.views.composeView, "removeEmailSentAlert")
+          $("#undo_email_send").click()
+          expect(spy).toHaveBeenCalled()
+
+        it "should load the email", ->
+          spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmail")
+          $("#undo_email_send").click()
+          expect(spy).toHaveBeenCalled()
+
+        it "show the compose modal", ->
+          spy = sinon.spy(TuringEmailApp.views.composeView, "show")
+          $("#undo_email_send").click()
+          expect(spy).toHaveBeenCalled()
+
+    describe "#removeEmailSentAlert", ->
+      
+      describe "when the current alert token is defined", ->
+        beforeEach ->
+          TuringEmailApp.views.composeView.currentAlertToken = true
+
+        it "should remove the alert", ->
+          spy = sinon.spy(TuringEmailApp, "removeAlert")
+          TuringEmailApp.views.composeView.removeEmailSentAlert()
+          expect(spy).toHaveBeenCalled()
+
+        it "should set the current alert token to be null", ->
+          TuringEmailApp.views.composeView.removeEmailSentAlert()
+          expect(TuringEmailApp.views.composeView.currentAlertToken is true).toBeTruthy()
+
     describe "#resetView", ->
 
-      it "clears the compose view input fields", ->
+      it "should clear the compose view input fields", ->
         TuringEmailApp.views.composeView.$el.find("#compose_form #to_input").val("This is the to input.")
         TuringEmailApp.views.composeView.$el.find("#compose_form #cc_input").val("This is the cc input.")
         TuringEmailApp.views.composeView.$el.find("#compose_form #bcc_input").val("This is the bcc input.")
