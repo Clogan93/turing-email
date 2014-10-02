@@ -150,6 +150,8 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   #############################
 
   currentEmailFolderChanged: (app, emailFolder) ->
+    return if not emailFolder?
+
     emailFolderID = emailFolder.get("label_id")
     
     @updateTitle emailFolderID

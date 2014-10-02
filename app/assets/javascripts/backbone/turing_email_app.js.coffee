@@ -145,9 +145,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @views.composeView.render()
     
   setupEmailThreads: ->
-    @collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(
-      page: getQuerystringNameValue("page")
-    )
+    @collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
     @views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView(
       app: this
       el: $("#email_table_body")
@@ -347,15 +345,16 @@ window.TuringEmailApp = new(Backbone.View.extend(
     )
 
   leftArrowClicked: ->
-    @collections.emailThreads.previousPage((collection, response, options) =>
-      @views.toolbarView.updatePaginationText @selectedEmailFolderID()
-    )
+    if @collections.emailThreads.page > 1
+      @routers.emailFoldersRouter.navigate("#email_folder/" + @selectedEmailFolderID() + "/" +
+                                           (@collections.emailThreads.page - 1),
+                                           trigger: true)
 
   rightArrowClicked: ->
     if @collections.emailThreads.length is TuringEmailApp.Models.UserSettings.EmailThreadsPerPage
-      @collections.emailThreads.nextPage((collection, response, options) =>
-        @views.toolbarView.updatePaginationText @selectedEmailFolderID()
-      )
+      @routers.emailFoldersRouter.navigate("#email_folder/" + @selectedEmailFolderID() + "/" +
+                                           (@collections.emailThreads.page + 1),
+                                           trigger: true)
 
   labelAsClicked: (labelID) ->
     @applyActionToSelectedThreads(

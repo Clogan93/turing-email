@@ -1,6 +1,6 @@
 class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collection
   model: TuringEmailApp.Models.EmailThread
-  url: "/api/v1/email_threads/inbox"
+  url: "/api/v1/email_threads/in_folder?folder_id=INBOX"
 
   initialize: (models, options) ->
     @listenTo(this, "remove", @modelRemoved)
@@ -30,17 +30,3 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
     )
 
     return if emailThreads.length > 0 then emailThreads[0] else null
-
-  # TODO write tests
-  previousPage: (success) ->
-    pageNumber = parseInt(@page)
-    if @page > 1
-      @page--
-      @setupURL(TuringEmailApp.selectedEmailFolder().get("label_id"), @page)
-      @fetch(success: success)
-
-  # TODO write tests
-  nextPage: (success) ->
-    @page++
-    @setupURL(TuringEmailApp.selectedEmailFolder().get("label_id"), @page)
-    @fetch(success: success)
