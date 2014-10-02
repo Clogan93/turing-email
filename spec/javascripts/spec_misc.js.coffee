@@ -21,6 +21,7 @@ window.specStartTuringEmailApp = ->
   )
 
   TuringEmailApp.views.composeView = new TuringEmailApp.Views.ComposeView(
+    app: TuringEmailApp
   )
   TuringEmailApp.listenTo(TuringEmailApp.views.composeView, "change:draft", TuringEmailApp.draftChanged)
 

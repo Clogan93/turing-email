@@ -1,6 +1,9 @@
 class TuringEmailApp.Views.ComposeView extends Backbone.View
   template: JST["backbone/templates/compose"]
 
+  initialize: (options) ->
+    @app = options.app
+  
   render: ->
     @$el.html(@template())
     @setupComposeView()
@@ -47,18 +50,22 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
   showEmailSentAlert: (emailSentJSON) ->
     console.log "ComposeView showEmailSentAlert"
     
-    $("#inbox_title_header").append('<div id="email_sent_success_alert" class="alert alert-info col-md-4" role="alert">
-                                       Your message has been sent. <span id="undo_email_send">Undo</span>
-                                     </div>')
+    @removeEmailSentAlert() if @currentAlertToken?
+    
+    @currentAlertToken = @app.showAlert('Your message has been sent. <span id="undo_email_send">Undo</span>', "alert-info")
     $("#undo_email_send").click =>
       clearTimeout(TuringEmailApp.sendEmailTimeout)
+      
+      @removeEmailSentAlert()
       @loadEmail(emailSentJSON)
       @show()
   
   removeEmailSentAlert: ->
     console.log "ComposeView REMOVE emailSentAlert"
-    
-    $("#email_sent_success_alert").remove()
+
+    if @currentAlertToken?
+      @app.removeAlert(@currentAlertToken)
+      @currentAlerttoken = null
     
   resetView: ->
     console.log("ComposeView RESET!!")
