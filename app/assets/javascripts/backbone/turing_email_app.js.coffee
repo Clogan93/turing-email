@@ -34,7 +34,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @setupEmailThreads()
     @setupRouters()
 
-    Backbone.history.start()
+    Backbone.history.start() if not Backbone.History.started
     
     windowLocationHash = window.location.hash.toString()
     if windowLocationHash is ""
@@ -43,12 +43,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     #@startEmailSync()
 
   startEmailSync: ->
-    window.setInterval (->
-      $.post("api/v1/email_accounts/sync").done((data, status) =>
-        if data.synced_emails
-          @reloadEmailThreads()
-      )
-    ), 60000
+    window.setInterval @syncEmail, 60000
 
   #######################
   ### Setup Functions ###
@@ -239,15 +234,26 @@ window.TuringEmailApp = new(Backbone.View.extend(
   
         @showEmails()
     )
+    
+  ######################
+  ### Sync Functions ###
+  ######################
 
+  syncEmail: ->
+    $.post("api/v1/email_accounts/sync").done((data, status) =>
+      if data.synced_emails
+        @reloadEmailThreads()
+    )
+    
   #######################
   ### Alert Functions ###
   #######################
   
   showAlert: (text, classType) ->
     @removeAlert(@currentAlert.data("token")) if @currentAlert?
-    $("body").prepend('<div class="text-center alert ' + classType + '" role="alert" style="z-index: 2000; margin-bottom: 0px;">' + text + '</div>')
-    @currentAlert = $($("body").children()[0])
+    
+    html = '<div class="text-center alert ' + classType + '" role="alert" style="z-index: 2000; margin-bottom: 0px;">' + text + '</div>'
+    @currentAlert $(html).prependTo("body")
     @currentAlert.data("token", _.uniqueId())
     
     return @currentAlert.data("token")

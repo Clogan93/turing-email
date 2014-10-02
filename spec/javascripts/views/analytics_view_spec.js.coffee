@@ -2,7 +2,7 @@ describe "AnalyticsView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    @reportsDiv = $("<div />", {id: "reports"}).appendTo('body')
+    @reportsDiv = $("<div />", {id: "reports"}).appendTo("body")
     @analyticsView = new TuringEmailApp.Views.AnalyticsView(
       el: $("#reports")
     )

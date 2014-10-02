@@ -4,7 +4,7 @@ describe "SettingsView", ->
 
     @userSettings = new TuringEmailApp.Models.UserSettings()
 
-    @settingsDiv = $("<div />", {id: "settings"}).appendTo('body')
+    @settingsDiv = $("<div />", {id: "settings"}).appendTo("body")
     @settingsView = new TuringEmailApp.Views.SettingsView(
       el: @settingsDiv
       model: @userSettings
@@ -98,7 +98,7 @@ describe "SettingsView", ->
       @userSettings.fetch()
       @server.respond()
 
-      @mailBodyDiv = $("<div />", {id: "mailBody"}).appendTo('body')
+      @mailBodyDiv = $("<div />", {id: "mailBody"}).appendTo("body")
       
     afterEach ->
       @mailBodyDiv.remove()

@@ -4,7 +4,7 @@ describe "AttachmentsReportView", ->
 
     @attachmentsReport = new TuringEmailApp.Models.AttachmentsReport()
 
-    @attachmentsReportDiv = $("<div />", {id: "attachments_report"}).appendTo('body')
+    @attachmentsReportDiv = $("<div />", {id: "attachments_report"}).appendTo("body")
     @attachmentsReportView = new TuringEmailApp.Views.Reports.AttachmentsReportView(
       model: @attachmentsReport
       el: @attachmentsReportDiv

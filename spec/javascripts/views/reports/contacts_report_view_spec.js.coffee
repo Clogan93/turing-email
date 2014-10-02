@@ -4,7 +4,7 @@ describe "ContactsReportView", ->
 
     @contactsReport = new TuringEmailApp.Models.ContactsReport()
 
-    @contactsReportDiv = $("<div />", {id: "contacts_report"}).appendTo('body')
+    @contactsReportDiv = $("<div />", {id: "contacts_report"}).appendTo("body")
     @contactsReportView = new TuringEmailApp.Views.Reports.ContactsReportView(
       model: @contactsReport
       el: @contactsReportDiv
