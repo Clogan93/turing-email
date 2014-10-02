@@ -395,8 +395,6 @@ describe "ComposeView", ->
         beforeEach ->
           TuringEmailApp.views.composeView.currentEmailDraft = new TuringEmailApp.Models.EmailDraft()
 
-          # TODO figure out how to test the sendEmail function after a timeout.
-
         it "updates the draft", ->
           spy = sinon.spy(TuringEmailApp.views.composeView, "updateDraft")
           TuringEmailApp.views.composeView.$el.find("#compose_form #save_button").click()
@@ -411,6 +409,29 @@ describe "ComposeView", ->
           spy = sinon.spy(TuringEmailApp.views.composeView, "hide")
           TuringEmailApp.views.composeView.sendEmail()
           expect(spy).toHaveBeenCalled()
+
+        describe "when saving the draft", ->
+          beforeEach ->
+            TuringEmailApp.views.composeView.savingDraft = true
+
+          it "sends the email after a timeout", ->
+            # TODO figure out how to test the sendEmail function after a timeout.
+            
+        describe "when not saving the draft", ->
+          beforeEach ->
+            TuringEmailApp.views.composeView.savingDraft = false
+            @server = sinon.fakeServer.create()
+
+          describe "when the server responds successfully", ->
+            beforeEach ->
+              @server.respondWith "POST", "/api/v1/email_accounts/drafts", JSON.stringify({})
+
+            it "triggers change:draft", ->
+              spy = sinon.backbone.spy(TuringEmailApp.views.composeView, "change:draft")
+              TuringEmailApp.views.composeView.sendEmail()
+              @server.respond()
+              expect(spy).toHaveBeenCalled()
+              spy.restore()
 
       describe "when the current email draft is not defined", ->
         beforeEach ->
