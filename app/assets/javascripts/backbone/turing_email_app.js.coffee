@@ -253,7 +253,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @removeAlert(@currentAlert.data("token")) if @currentAlert?
     
     html = '<div class="text-center alert ' + classType + '" role="alert" style="z-index: 2000; margin-bottom: 0px;">' + text + '</div>'
-    @currentAlert $(html).prependTo("body")
+    @currentAlert = $(html).prependTo("body")
     @currentAlert.data("token", _.uniqueId())
     
     return @currentAlert.data("token")
