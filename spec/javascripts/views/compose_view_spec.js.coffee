@@ -21,8 +21,22 @@ describe "ComposeView", ->
       it "binds the submit event to #compose_form", ->
         expect(TuringEmailApp.views.composeView.$el.find("#compose_form")).toHandle("submit")
 
+      it "sends an email when the #compose_form is submitted", ->
+        spy = sinon.spy(TuringEmailApp.views.composeView, "sendEmail")
+        TuringEmailApp.views.composeView.$el.find("#compose_form").submit()
+        expect(spy).toHaveBeenCalled()
+
       it "binds the click event to save button", ->
         expect(TuringEmailApp.views.composeView.$el.find("#compose_form #save_button")).toHandle("click")
+
+      describe "when the save button is clicked", ->
+
+        it "updates the draft", ->
+          spy = sinon.spy(TuringEmailApp.views.composeView, "updateDraft")
+          TuringEmailApp.views.composeView.$el.find("#compose_form #save_button").click()
+          expect(spy).toHaveBeenCalled()
+
+        # TODO Figure out how to test the @currentEmailDraft.save function
 
     describe "#show", ->
 
@@ -300,7 +314,6 @@ describe "ComposeView", ->
       it "updates the email with the current email draft", ->
         TuringEmailApp.views.composeView.currentEmailDraft = new TuringEmailApp.Models.EmailDraft()
         spy = sinon.spy(TuringEmailApp.views.composeView, "updateEmail")
-        emailJSON = {}
         TuringEmailApp.views.composeView.updateDraft()
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith(TuringEmailApp.views.composeView.currentEmailDraft)
@@ -344,6 +357,63 @@ describe "ComposeView", ->
 
       it "updates the email model with the email body input value from the compose form", ->
         expect(@email.get("email_body")).toEqual TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").val()
+
+    describe "sendEmail", ->
+
+      describe "when the current email draft is defined", ->
+        beforeEach ->
+          TuringEmailApp.views.composeView.currentEmailDraft = new TuringEmailApp.Models.EmailDraft()
+
+          # TODO figure out how to test the sendEmail function after a timeout.
+
+        it "updates the draft", ->
+          spy = sinon.spy(TuringEmailApp.views.composeView, "updateDraft")
+          TuringEmailApp.views.composeView.$el.find("#compose_form #save_button").click()
+          expect(spy).toHaveBeenCalled()
+
+        it "resets the view", ->
+          spy = sinon.spy(TuringEmailApp.views.composeView, "resetView")
+          TuringEmailApp.views.composeView.sendEmail()
+          expect(spy).toHaveBeenCalled()
+
+        it "hides the compose modal", ->
+          spy = sinon.spy(TuringEmailApp.views.composeView, "hide")
+          TuringEmailApp.views.composeView.sendEmail()
+          expect(spy).toHaveBeenCalled()
+
+      describe "when the current email draft is not defined", ->
+        beforeEach ->
+          TuringEmailApp.views.composeView.currentEmailDraft = null
+
+        it "updates the email", ->
+          spy = sinon.spy(TuringEmailApp.views.composeView, "updateEmail")
+          TuringEmailApp.views.composeView.sendEmail()
+          expect(spy).toHaveBeenCalled()
+
+        it "resets the view", ->
+          spy = sinon.spy(TuringEmailApp.views.composeView, "resetView")
+          TuringEmailApp.views.composeView.sendEmail()
+          expect(spy).toHaveBeenCalled()
+
+        it "hides the compose modal", ->
+          spy = sinon.spy(TuringEmailApp.views.composeView, "hide")
+          TuringEmailApp.views.composeView.sendEmail()
+          expect(spy).toHaveBeenCalled()
+
+        it "sends the email after a delay", ->
+          spy = sinon.spy(TuringEmailApp.views.composeView, "sendEmailDelayed")
+          TuringEmailApp.views.composeView.sendEmail()
+          expect(spy).toHaveBeenCalled()
+
+    describe "#sendEmailDelayed", ->
+      beforeEach ->
+        @email = new TuringEmailApp.Models.EmailDraft()
+
+      it "shows the email sent alert", ->
+        spy = sinon.spy(TuringEmailApp.views.composeView, "showEmailSentAlert")
+        TuringEmailApp.views.composeView.sendEmailDelayed @email
+        expect(spy).toHaveBeenCalled()
+        expect(spy).toHaveBeenCalledWith(@email.toJSON())
 
     describe "#sendEmailDelayedError", ->
 

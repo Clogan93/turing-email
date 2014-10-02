@@ -204,11 +204,11 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
   sendEmailDelayed: (emailToSend) ->
     console.log "ComposeView sendEmailDelayed! - Setting up Undo button"
     @showEmailSentAlert(emailToSend.toJSON())
-    
+
     TuringEmailApp.sendEmailTimeout = setTimeout (=>
       console.log "ComposeView sendEmailDelayed CALLBACK! doing send"
       @removeEmailSentAlert()
-      
+
       if emailToSend.sendDraft?
         console.log "sendDraft!"
         emailToSend.sendDraft().done(->
