@@ -63,8 +63,7 @@ class @KeyboardShortcutHandler
   #Allows you to compose a new message. Shift + c allows you to compose a message in a new window.
   bind_compose: ->
     $(document).bind "keydown", "c", ->
-      $("#compose_button").click()
-      return
+      TuringEmailApp.views.composeView.show()
 
   #Opens or moves your cursor to a more recent conversation. You can hit Enter to expand a conversation.
   bind_move_to_newer_conversation: ->
