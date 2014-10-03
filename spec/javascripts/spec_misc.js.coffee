@@ -53,6 +53,17 @@ window.specPrepareEmailFoldersFetch = (emailFolders, server) ->
   
   return [server, validEmailFoldersFixture]
     
+window.specPrepareEmailThreadFetch = (server) ->
+  emailThreadFixtures = fixture.load("email_thread.fixture.json")
+  validEmailThreadFixture = emailThreadFixtures[0]["valid"]
+  
+  emailThread = new TuringEmailApp.Models.EmailThread(undefined, emailThreadUID: validEmailThreadFixture["uid"])
+  
+  server = sinon.fakeServer.create() if not server?
+  server.respondWith "GET", emailThread.url, JSON.stringify(validEmailThreadFixture)
+
+  return [server, emailThread, validEmailThreadFixture]
+  
 window.validateAttributes = (objectJSON, expectedAttributes) ->
   keys = (key for key in _.keys(objectJSON))
   keys.sort()

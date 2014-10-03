@@ -569,7 +569,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     $("#reports").show()
     $("#settings").hide()
     $(".main_email_list_content").css("height", "100%")
-    
+
   hideReports: ->
     $("#reports").hide()
 

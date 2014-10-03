@@ -270,12 +270,7 @@ describe "TuringEmailApp", ->
       describe "#selectedEmailThread", ->
         beforeEach ->
           @server.restore()
-          emailThreadFixtures = fixture.load("email_thread.fixture.json")
-          validEmailThreadFixture = emailThreadFixtures[0]["valid"]
-          @server = sinon.fakeServer.create()
-
-          @emailThread = new TuringEmailApp.Models.EmailThread(undefined, emailThreadUID: validEmailThreadFixture["uid"])
-          @server.respondWith "GET", @emailThread.url, JSON.stringify(validEmailThreadFixture)
+          [@server, @emailThread] = window.specPrepareEmailThreadFetch()
 
           @emailThread.fetch()
           @server.respond()
@@ -650,32 +645,188 @@ describe "TuringEmailApp", ->
       
       describe "#applyActionToSelectedThreads", ->
         return
-      
-  ###
+
   describe "#moveTuringEmailReportToTop", ->
-  
-    describe "if there is a report email", ->
-  
-      beforeEach ->
-        @turingEmailThread = _.values(@listView.listItemViews)[0].model
-  
-        @listView.collection.remove @turingEmailThread
-        @turingEmailThread.get("emails")[0].from_name = "Turing Email"
-        @listView.collection.add @turingEmailThread
-  
-      it "should move the email to the top", ->
-        expect($("#email_table_body").children()[0]).not.toContainText("Turing Email")
-  
-        @listView.moveTuringEmailReportToTop()
-  
-        expect($("#email_table_body").children()[0]).toContainText("Turing Email")
-  
+    beforeEach ->
+      @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
+
+      @listViewDiv = $("<div />", {id: "email_table_body"}).appendTo("body")
+      TuringEmailApp.views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView(
+        el: @listViewDiv
+        collection: @emailThreads
+      )
+
+      emailThreadsFixtures = fixture.load("email_threads.fixture.json");
+      @validEmailThreadsFixture = emailThreadsFixtures[0]["valid"]
+      
+      @server = sinon.fakeServer.create()
+
+    afterEach ->
+      @server.restore()
+      @listViewDiv.remove()
+
     describe "if there is not a report email", ->
-  
+      beforeEach ->
+        @server.respondWith "GET", @emailThreads.url, JSON.stringify(@validEmailThreadsFixture)
+        @emailThreads.fetch(reset: true)
+        @server.respond()
+
       it "should leave the emails in the same order", ->
-        emailTableBodyBefore = $("#email_table_body")
-        @listView.moveTuringEmailReportToTop()
-        emailTableBodyAfter = $("#email_table_body")
+        emailThreadsBefore = TuringEmailApp.views.emailThreadsListView.collection.clone()
+        emailTableBodyBefore = TuringEmailApp.views.emailThreadsListView.$el
+        
+        TuringEmailApp.moveTuringEmailReportToTop TuringEmailApp.views.emailThreadsListView
+        
+        emailTableBodyAfter = TuringEmailApp.views.emailThreadsListView.$el
+        emailThreadsAfter = TuringEmailApp.views.emailThreadsListView.collection
   
+        expect(emailThreadsAfter.length).toEqual emailThreadsBefore.length
+        expect(emailThreadsAfter.models).toEqual emailThreadsBefore.models
         expect(emailTableBodyBefore).toEqual emailTableBodyAfter
-  ###
+
+    describe "if there is a report email", ->
+      beforeEach ->
+        @server.respondWith "GET", @emailThreads.url, JSON.stringify(@validEmailThreadsFixture)
+        @emailThreads.fetch(reset: true)
+        @server.respond()
+
+        turingEmailThread = _.values(TuringEmailApp.views.emailThreadsListView.listItemViews)[0].model
+  
+        TuringEmailApp.views.emailThreadsListView.collection.remove turingEmailThread
+        turingEmailThread.get("emails")[0].subject = "Turing Email - Your daily Genie Report!"
+        TuringEmailApp.views.emailThreadsListView.collection.add turingEmailThread
+
+      it "should move the email to the top", ->
+        expect(TuringEmailApp.views.emailThreadsListView.$el.children()[0]).not.toContainText("Turing Email")
+  
+        TuringEmailApp.moveTuringEmailReportToTop TuringEmailApp.views.emailThreadsListView
+  
+        expect(TuringEmailApp.views.emailThreadsListView.$el.children()[0]).toContainText("Turing Email")
+
+  describe "showEmails", ->
+
+    it "calls hide all", ->
+      spy = sinon.spy(TuringEmailApp, "hideAll")
+      TuringEmailApp.showEmails()
+      expect(spy).toHaveBeenCalled()
+      spy.restore()
+
+  describe "hideEmails", ->
+    beforeEach ->
+      @emailTableDiv = $("<div />", {id: "email_table"}).appendTo("body")
+      @pagesDiv = $("<div />", {id: "pages"}).appendTo("body")
+      @previewPanelDiv = $("<div />", {id: "preview_panel"}).appendTo("body")
+      @mailBoxHeader = $("<div class='mail-box-header'></div>").appendTo("body")
+      @tableTableMail = $("<table class='table-mail'></table>").appendTo("body")
+
+    afterEach ->
+      @emailTableDiv.remove()
+      @pagesDiv.remove()
+      @previewPanelDiv.remove()
+      @mailBoxHeader.remove()
+      @tableTableMail.remove()
+
+    it "hides the preview panel element", ->
+      TuringEmailApp.hideEmails()
+      expect($('#preview_panel').is(':hidden')).toBeTruthy()
+
+    it "hides the mail box header element", ->
+      TuringEmailApp.hideEmails()
+      expect($('.mail-box-header').is(':hidden')).toBeTruthy()
+
+    it "hides the mail table element", ->
+      TuringEmailApp.hideEmails()
+      expect($('table.table-mail').is(':hidden')).toBeTruthy()
+
+    it "hides the pages", ->
+      TuringEmailApp.hideEmails()
+      expect($('#pages').is(':hidden')).toBeTruthy()
+
+    it "hides the email table element", ->
+      TuringEmailApp.hideEmails()
+      expect($('#email_table').is(':hidden')).toBeTruthy()
+
+  describe "showSettings", ->
+
+    it "calls hide all", ->
+      spy = sinon.spy(TuringEmailApp, "hideAll")
+      TuringEmailApp.showSettings()
+      expect(spy).toHaveBeenCalled()
+      spy.restore()
+
+    it "sets the main email list content height to be 100%", ->
+      $("<div class='main_email_list_content'></div>").appendTo("body")
+      TuringEmailApp.showReports()
+      expect($(".main_email_list_content")[0].style.height).toEqual "100%"
+
+  describe "hideSettings", ->
+    beforeEach ->
+      @settingsDiv = $("<div />", {id: "settings"}).appendTo("body")
+
+    afterEach ->
+      @settingsDiv.remove()
+
+    it "hides the settings element", ->
+      expect($('#settings').is(':hidden')).toBeFalsy()
+      TuringEmailApp.hideSettings()
+      expect($('#settings').is(':hidden')).toBeTruthy()
+
+  describe "showReports", ->
+    beforeEach ->
+      @settingsDiv = $("<div />", {id: "settings"}).appendTo("body")
+      @reportsDiv = $("<div />", {id: "reports"}).appendTo("body")
+
+    afterEach ->
+      @settingsDiv.remove()
+      @reportsDiv.remove()
+
+    it "calls hide all", ->
+      spy = sinon.spy(TuringEmailApp, "hideAll")
+      TuringEmailApp.showReports()
+      expect(spy).toHaveBeenCalled()
+      spy.restore()
+
+    it "hides the settings element", ->
+      TuringEmailApp.showReports()
+      expect($('#settings').is(':hidden')).toBeTruthy()
+
+    it "shows the reports element", ->
+      TuringEmailApp.showReports()
+      expect($('#reports').is(':hidden')).toBeFalsy()
+
+    it "sets the main email list content height to be 100%", ->
+      $("<div class='main_email_list_content'></div>").appendTo("body")
+      TuringEmailApp.showReports()
+      expect($(".main_email_list_content")[0].style.height).toEqual "100%"
+
+  describe "hideReports", ->
+    beforeEach ->
+      @reportsDiv = $("<div />", {id: "reports"}).appendTo("body")
+
+    afterEach ->
+      @reportsDiv.remove()
+
+    it "hides the reports element", ->
+      expect($('#reports').is(':hidden')).toBeFalsy()
+      TuringEmailApp.hideReports()
+      expect($('#reports').is(':hidden')).toBeTruthy()
+
+  describe "hideAll", ->
+
+    it "hides the emails", ->
+      spy = sinon.spy(TuringEmailApp, "hideEmails")
+      TuringEmailApp.hideAll()
+      expect(spy).toHaveBeenCalled()
+      spy.restore()
+
+    it "hides the reports", ->
+      spy = sinon.spy(TuringEmailApp, "hideReports")
+      TuringEmailApp.hideAll()
+      expect(spy).toHaveBeenCalled()
+      spy.restore()
+
+    it "hides the settings", ->
+      spy = sinon.spy(TuringEmailApp, "hideSettings")
+      TuringEmailApp.hideAll()
+      expect(spy).toHaveBeenCalled()
+      spy.restore()

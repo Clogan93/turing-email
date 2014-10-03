@@ -12,6 +12,8 @@ class TuringEmailApp.Views.Reports.ContactsReportView extends Backbone.View
 
     @$el.html(@template(googleChartData))
 
+    @renderGoogleChart googleChartData
+
     TuringEmailApp.showReports()
     return this
 
@@ -28,3 +30,22 @@ class TuringEmailApp.Views.Reports.ContactsReportView extends Backbone.View
       )
 
     return data
+
+  renderGoogleChart: (googleChartData) ->
+    google.load('visualization', '1.0',
+                 callback: => @drawCharts(googleChartData),
+                 packages: ["corechart"])
+
+  drawCharts: (googleChartData) ->
+    @drawEmailVolumeChart googleChartData.topSenders, "top_senders", "Incoming Emails"
+    @drawEmailVolumeChart googleChartData.topRecipients, "top_recipients", "Outgoing Emails"
+
+  drawEmailVolumeChart: (data, divID, chartTitle) ->
+    options =
+      title: chartTitle
+      width: 500
+      height: 300
+
+    chart = new google.visualization.PieChart($("#" + divID)[0])
+    dataTable = google.visualization.arrayToDataTable(data)
+    chart.draw dataTable, options

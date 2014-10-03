@@ -63,8 +63,7 @@ class @KeyboardShortcutHandler
   #Allows you to compose a new message. Shift + c allows you to compose a message in a new window.
   bind_compose: ->
     $(document).bind "keydown", "c", ->
-      $("#compose_button").click()
-      return
+      TuringEmailApp.views.composeView.show()
 
   #Opens or moves your cursor to a more recent conversation. You can hit Enter to expand a conversation.
   bind_move_to_newer_conversation: ->
@@ -72,19 +71,21 @@ class @KeyboardShortcutHandler
       @move_up_a_conversation()
 
   move_up_a_conversation: ->
-    tr_element = $("#email_table_body tr:nth-child(" + TuringEmailApp.current_email_thread_index + ")")
-    tr_element.removeClass("email_thread_highlight")
-    if TuringEmailApp.current_email_thread_index > 1
-      TuringEmailApp.current_email_thread_index -= 1
+    # TODO re-factor so that this works with the new select implementation.
 
-    tr_element = $("#email_table_body tr:nth-child(" + TuringEmailApp.current_email_thread_index + ")")
-    tr_element.addClass("email_thread_highlight")
+    # tr_element = $("#email_table_body tr:nth-child(" + TuringEmailApp.current_email_thread_index + ")")
+    # tr_element.removeClass("email_thread_highlight")
+    # if TuringEmailApp.current_email_thread_index > 1
+    #   TuringEmailApp.current_email_thread_index -= 1
 
-    link_components = tr_element.find("a").first().attr("href").split("/")
-    uid = link_components[link_components.length - 1]
+    # tr_element = $("#email_table_body tr:nth-child(" + TuringEmailApp.current_email_thread_index + ")")
+    # tr_element.addClass("email_thread_highlight")
 
-    if TuringEmailApp.models.userSettings.get("split_pane_mode") is "horizontal"
-      TuringEmailApp.routers.emailThreadsRouter.showEmailThread uid
+    # link_components = tr_element.find("a").first().attr("href").split("/")
+    # uid = link_components[link_components.length - 1]
+
+    # if TuringEmailApp.models.userSettings.get("split_pane_mode") is "horizontal"
+    #   TuringEmailApp.routers.emailThreadsRouter.showEmailThread uid
 
     return
 
@@ -94,19 +95,21 @@ class @KeyboardShortcutHandler
       @move_down_a_conversation()
 
   move_down_a_conversation: ->
-    tr_element = $("#email_table_body tr:nth-child(" + TuringEmailApp.current_email_thread_index + ")")
-    tr_element.removeClass("email_thread_highlight")
-    if TuringEmailApp.current_email_thread_index < 50
-      TuringEmailApp.current_email_thread_index += 1
+    # TODO re-factor so that this works with the new select implementation.
 
-    tr_element = $("#email_table_body tr:nth-child(" + TuringEmailApp.current_email_thread_index + ")")
-    tr_element.addClass("email_thread_highlight")
+    # tr_element = $("#email_table_body tr:nth-child(" + TuringEmailApp.current_email_thread_index + ")")
+    # tr_element.removeClass("email_thread_highlight")
+    # if TuringEmailApp.current_email_thread_index < 50
+    #   TuringEmailApp.current_email_thread_index += 1
 
-    link_components = tr_element.find("a").first().attr("href").split("/")
-    uid = link_components[link_components.length - 1]
+    # tr_element = $("#email_table_body tr:nth-child(" + TuringEmailApp.current_email_thread_index + ")")
+    # tr_element.addClass("email_thread_highlight")
 
-    if TuringEmailApp.models.userSettings.get("split_pane_mode") is "horizontal"
-      TuringEmailApp.routers.emailThreadsRouter.showEmailThread uid
+    # link_components = tr_element.find("a").first().attr("href").split("/")
+    # uid = link_components[link_components.length - 1]
+
+    # if TuringEmailApp.models.userSettings.get("split_pane_mode") is "horizontal"
+    #   TuringEmailApp.routers.emailThreadsRouter.showEmailThread uid
 
     return
 
@@ -159,7 +162,7 @@ class @KeyboardShortcutHandler
   #Refreshes your page and returns you to the inbox, or list of conversations.
   bind_return_to_conversation_list: ->
     $(document).bind "keydown", "u", ->
-      window.location.href = "http://localhost:4000/inbox";
+      window.location.href = "http://localhost:4000/mail";
       return
 
   bind_up_and_down_arrows: ->
