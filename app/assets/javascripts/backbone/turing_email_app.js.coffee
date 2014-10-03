@@ -248,7 +248,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   removeAlert: (token) ->
     return if not @currentAlert? || @currentAlert.data("token") != token
     @currentAlert.remove()
-    @currentAlert = null
+    @currentAlert = undefined
 
   ##############################
   ### Email Folder Functions ###

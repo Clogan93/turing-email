@@ -263,6 +263,8 @@ describe "TuringEmailApp", ->
   describe "after start", ->
     beforeEach ->
       TuringEmailApp.start()
+      @server.restore()
+      @server = sinon.fakeServer.create()
       
     describe "getters", ->
       describe "#selectedEmailThread", ->
@@ -287,12 +289,8 @@ describe "TuringEmailApp", ->
       describe "#selectedEmailFolder", ->
         beforeEach ->
           @server.restore()
-          emailFoldersFixtures = fixture.load("email_folders.fixture.json")
-          validEmailFoldersFixture = emailFoldersFixtures[0]["valid"]
-          @server = sinon.fakeServer.create()
-
           @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection()
-          @server.respondWith "GET", @emailFolders.url, JSON.stringify(validEmailFoldersFixture)
+          [@server] = specPrepareEmailFoldersFetch()
 
           @emailFolders.fetch()
           @server.respond()
@@ -305,12 +303,8 @@ describe "TuringEmailApp", ->
       describe "#selectedEmailFolderID", ->
         beforeEach ->
           @server.restore()
-          emailFoldersFixtures = fixture.load("email_folders.fixture.json")
-          validEmailFoldersFixture = emailFoldersFixtures[0]["valid"]
-          @server = sinon.fakeServer.create()
-
           @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection()
-          @server.respondWith "GET", @emailFolders.url, JSON.stringify(validEmailFoldersFixture)
+          [@server] = specPrepareEmailFoldersFetch(@emailFolders)
 
           @emailFolders.fetch()
           @server.respond()
@@ -529,9 +523,9 @@ describe "TuringEmailApp", ->
         @reloadEmailThreadsSpy.restore()
         
       it "posts the sync email request", ->
-        expect(@server.requests.length).toEqual 4
+        expect(@server.requests.length).toEqual 1
 
-        request = @server.requests[3]
+        request = @server.requests[0]
         expect(request.method).toEqual "POST"
         expect(request.url).toEqual "api/v1/email_accounts/sync"
 
@@ -549,6 +543,114 @@ describe "TuringEmailApp", ->
 
         expect(@reloadEmailThreadsSpy).toHaveBeenCalled()
 
+    describe "Alert Functions", ->
+      describe "#showAlert", ->
+        beforeEach ->
+          @alertText = "test"
+          @alertClass = "testAlert"
+          @alertSelector = "." + @alertClass
+
+          @removeAlertSpy = sinon.spy(TuringEmailApp, "removeAlert")
+          
+        afterEach ->
+          TuringEmailApp.removeAlert(@token)
+          @removeAlertSpy.restore()
+          
+        describe "when there is no current alert", ->
+          beforeEach ->
+            expect(TuringEmailApp.currentAlert).not.toBeDefined()
+            @token = TuringEmailApp.showAlert(@alertText, @alertClass)
+            
+          it "shows the alert", ->
+            expect($(@alertSelector).length).toEqual(1)
+            expect($(@alertSelector).text()).toEqual(@alertText)
+            
+          it "does not remove an existing alert", ->
+            expect(@removeAlertSpy).not.toHaveBeenCalled()
+            
+          it "returns the token", ->
+            expect($(@alertSelector).data("token")).toEqual(@token)
+      
+        describe "when an alert is displayed", ->
+          beforeEach ->
+            TuringEmailApp.showAlert("a", "b")
+            @token = TuringEmailApp.showAlert(@alertText, @alertClass)
+
+          it "removes the alert", ->
+            expect(@removeAlertSpy).toHaveBeenCalled()
+      
+      describe "#removeAlert", ->
+        beforeEach ->
+          @alertText = "test"
+          @alertClass = "testAlert"
+          @alertSelector = "." + @alertClass
+          
+          @token = TuringEmailApp.showAlert(@alertText, @alertClass)
+          
+          @alert = $(@alertSelector)
+          
+        describe "when the token does not match", ->
+          beforeEach ->
+            TuringEmailApp.removeAlert(@token + "1")
+            
+          it "does NOT remove the alert", ->
+            expect(@alert).toBeInDOM()
+            
+        describe "when the token matches", ->
+          beforeEach ->
+            TuringEmailApp.removeAlert(@token)
+
+          it "removes the alert", ->
+            expect(@alert).not.toBeInDOM()
+          
+    describe "Email Folder Functions", ->
+      describe "#loadEmailFolders", ->
+        beforeEach ->
+          @fetchSpy = sinon.spy(TuringEmailApp.collections.emailFolders, "fetch")
+          @resetSpy = sinon.backbone.spy(TuringEmailApp.collections.emailFolders, "reset")
+          @changeEmailFoldersSpy = sinon.backbone.spy(TuringEmailApp, "change:emailFolders")
+          
+        afterEach ->
+          @fetchSpy.restore()
+          @resetSpy.restore()
+          @changeEmailFoldersSpy.restore()
+          
+        it "fetches the email folders", ->
+          TuringEmailApp.loadEmailFolders()
+          expect(@fetchSpy).toHaveBeenCalled()
+          
+        describe "after the email folders are fetched", ->
+          beforeEach ->
+            @server.restore()
+            [@server] = specPrepareEmailFoldersFetch()
+            
+            TuringEmailApp.loadEmailFolders()
+            @server.respond()
+
+          it "the collection resets", ->
+            expect(@resetSpy).toHaveBeenCalled()
+
+          it "triggers the change:emailFolders event", ->
+            expect(@changeEmailFoldersSpy).toHaveBeenCalled()
+  
+    describe "Email Thread Functions", ->
+      describe "#loadEmailThread", ->
+        beforeEach ->
+          @callback = sinon.spy()
+          #TuringEmailApp.loadEmailThread()
+          
+        afterEach ->
+          @callback.restore()
+          
+        describe "when the email thread is in the collection", ->
+          #it "calls the callback", ->
+      
+      describe "#reloadEmailThreads", ->
+        return
+      
+      describe "#applyActionToSelectedThreads", ->
+        return
+      
   ###
   describe "#moveTuringEmailReportToTop", ->
   

@@ -137,6 +137,7 @@ Teaspoon.configure do |config|
   #
   # Available: dot, documentation, clean, json, junit, pride, snowday, swayze_or_oprah, tap, tap_y, teamcity
   #config.formatters = ["dot"]
+  config.formatters = ["documentation"]
 
   # Specify if you want color output from the formatters.
   config.color = true

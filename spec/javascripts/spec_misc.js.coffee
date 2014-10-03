@@ -42,6 +42,17 @@ window.specStartTuringEmailApp = ->
     Backbone.history.start(silent: true)
     specStartedHistory = true
 
+window.specPrepareEmailFoldersFetch = (emailFolders, server) ->
+  emailFoldersFixtures = fixture.load("email_folders.fixture.json")
+  validEmailFoldersFixture = emailFoldersFixtures[0]["valid"]
+  
+  emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection() if not emailFolders?
+  
+  server = sinon.fakeServer.create() if not server?
+  server.respondWith "GET", emailFolders.url, JSON.stringify(validEmailFoldersFixture)
+  
+  return [server, validEmailFoldersFixture]
+    
 window.validateAttributes = (objectJSON, expectedAttributes) ->
   keys = (key for key in _.keys(objectJSON))
   keys.sort()
