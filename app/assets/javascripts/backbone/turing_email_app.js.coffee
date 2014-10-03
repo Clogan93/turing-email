@@ -22,6 +22,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     
     @setupSearchBar()
     @setupComposeButton()
+    @setupFiltering()
 
     @setupToolbar()
     @setupUser()
@@ -33,7 +34,6 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @setupComposeView()
     @setupEmailThreads()
     @setupRouters()
-    @setupFiltering()
 
     Backbone.history.start() if not Backbone.History.started
     
@@ -80,6 +80,19 @@ window.TuringEmailApp = new(Backbone.View.extend(
   setupComposeButton: ->
     $("#compose_button").click =>
       @views.composeView.loadEmpty()
+
+  setupFiltering: ->
+    $(".create_filter").click (event) ->
+      event.preventDefault()
+      $('.dropdown a').trigger('click.bs.dropdown')
+
+    $("#filter_form").submit ->
+      url = "/api/v1/genie_rules"
+      $.post url, $("#filter_form").serialize()
+
+      $('.dropdown a').trigger('click.bs.dropdown')
+
+      return false # avoid to execute the actual submit of the form.
       
   setupToolbar: ->
     @views.toolbarView = new TuringEmailApp.Views.ToolbarView(
@@ -89,10 +102,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
     
     @views.toolbarView.render()
 
-    @listenTo(@views.toolbarView, "checkAllClicked", => @checkAllClicked)
-    @listenTo(@views.toolbarView, "checkAllReadClicked", => @checkAllReadClicked)
-    @listenTo(@views.toolbarView, "checkAllUnreadClicked", => @checkAllUnreadClicked)
-    @listenTo(@views.toolbarView, "uncheckAllClicked", => @uncheckAllClicked)
+    @listenTo(@views.toolbarView, "checkAllClicked", @checkAllClicked)
+    @listenTo(@views.toolbarView, "checkAllReadClicked", @checkAllReadClicked)
+    @listenTo(@views.toolbarView, "checkAllUnreadClicked", @checkAllUnreadClicked)
+    @listenTo(@views.toolbarView, "uncheckAllClicked", @uncheckAllClicked)
     @listenTo(@views.toolbarView, "readClicked", @readClicked)
     @listenTo(@views.toolbarView, "unreadClicked", @unreadClicked)
     @listenTo(@views.toolbarView, "archiveClicked", @archiveClicked)
@@ -438,9 +451,9 @@ window.TuringEmailApp = new(Backbone.View.extend(
     else
       @routers.emailFoldersRouter.navigate("#email_folder/" + emailFolderID, trigger: true)
 
-  ###########################
-  ### ComposeView #Events ###
-  ###########################
+  ##########################
+  ### ComposeView Events ###
+  ##########################
     
   draftChanged: ->
     @reloadEmailThreads() if @selectedEmailFolderID() is "DRAFT"
@@ -461,22 +474,6 @@ window.TuringEmailApp = new(Backbone.View.extend(
   ######################
   ### View Functions ###
   ######################
-
-  setupFiltering: ->
-    $(".create_filter").click ->
-      $('.dropdown a').trigger('click.bs.dropdown')
-      return false
-
-    $("#filter_form").submit ->
-      url = "/api/v1/genie_rules.json"
-      $.ajax
-        type: "POST"
-        url: url
-        data: $("#filter_form").serialize() # serializes the form's elements.
-
-      $('.dropdown a').trigger('click.bs.dropdown')
-
-      false # avoid to execute the actual submit of the form.
 
   isSplitPaneMode: ->
     splitPaneMode = @models.userSettings.get("split_pane_mode")
