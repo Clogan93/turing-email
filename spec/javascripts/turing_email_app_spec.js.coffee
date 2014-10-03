@@ -334,12 +334,7 @@ describe "TuringEmailApp", ->
         describe "the email thread exists", ->
           beforeEach ->
             @server.restore()
-
-            emailThreadsFixtures = fixture.load("email_threads.fixture.json");
-            validEmailThreadsFixture = emailThreadsFixtures[0]["valid"]
-
-            @server = sinon.fakeServer.create()
-            @server.respondWith "GET", TuringEmailApp.collections.emailThreads.url, JSON.stringify(validEmailThreadsFixture)
+            [@server] = specPrepareEmailThreadsFetch(TuringEmailApp.collections.emailThreads)
 
             TuringEmailApp.collections.emailThreads.fetch()
             @server.respond()
@@ -405,12 +400,7 @@ describe "TuringEmailApp", ->
       describe "#currentEmailFolderIs", ->
         beforeEach ->
           @server.restore()
-
-          emailThreadsFixtures = fixture.load("email_threads.fixture.json");
-          @validEmailThreadsFixture = emailThreadsFixtures[0]["valid"]
-
-          @server = sinon.fakeServer.create()
-          @server.respondWith "GET", TuringEmailApp.collections.emailThreads.url, JSON.stringify(@validEmailThreadsFixture)
+          [@server, @validEmailThreadsFixture] = specPrepareEmailThreadsFetch(TuringEmailApp.collections.emailThreads)
 
           @reloadEmailThreadsSpy = sinon.spy(TuringEmailApp, "reloadEmailThreads")
           @moveTuringEmailReportToTopSpy = sinon.spy(TuringEmailApp, "moveTuringEmailReportToTop")
@@ -678,21 +668,16 @@ describe "TuringEmailApp", ->
         collection: @emailThreads
       )
 
-      emailThreadsFixtures = fixture.load("email_threads.fixture.json");
-      @validEmailThreadsFixture = emailThreadsFixtures[0]["valid"]
-      
-      @server = sinon.fakeServer.create()
+      @server.restore()
+      [@server] = specPrepareEmailThreadsFetch(TuringEmailApp.collections.emailThreads)
+      @emailThreads.fetch(reset: true)
+      @server.respond()
 
     afterEach ->
       @server.restore()
       @listViewDiv.remove()
 
     describe "if there is not a report email", ->
-      beforeEach ->
-        @server.respondWith "GET", @emailThreads.url, JSON.stringify(@validEmailThreadsFixture)
-        @emailThreads.fetch(reset: true)
-        @server.respond()
-
       it "should leave the emails in the same order", ->
         emailThreadsBefore = TuringEmailApp.views.emailThreadsListView.collection.clone()
         emailTableBodyBefore = TuringEmailApp.views.emailThreadsListView.$el
@@ -708,10 +693,6 @@ describe "TuringEmailApp", ->
 
     describe "if there is a report email", ->
       beforeEach ->
-        @server.respondWith "GET", @emailThreads.url, JSON.stringify(@validEmailThreadsFixture)
-        @emailThreads.fetch(reset: true)
-        @server.respond()
-
         turingEmailThread = _.values(TuringEmailApp.views.emailThreadsListView.listItemViews)[0].model
   
         TuringEmailApp.views.emailThreadsListView.collection.remove turingEmailThread

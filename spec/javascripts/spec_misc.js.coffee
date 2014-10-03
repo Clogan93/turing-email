@@ -52,7 +52,18 @@ window.specPrepareEmailFoldersFetch = (emailFolders, server) ->
   server.respondWith "GET", emailFolders.url, JSON.stringify(validEmailFoldersFixture)
   
   return [server, validEmailFoldersFixture]
-    
+
+window.specPrepareEmailThreadsFetch = (emailThreads, server) ->
+  emailThreadsFixtures = fixture.load("email_threads.fixture.json");
+  validEmailThreadsFixture = emailThreadsFixtures[0]["valid"]
+
+  emailThreads = new TuringEmailApp.Collections.EmailFoldersCollection() if not emailThreads?
+
+  server = sinon.fakeServer.create() if not server?
+  server.respondWith "GET", emailThreads.url, JSON.stringify(validEmailThreadsFixture)
+
+  return [server, validEmailThreadsFixture]
+  
 window.specPrepareEmailThreadFetch = (server) ->
   emailThreadFixtures = fixture.load("email_thread.fixture.json")
   validEmailThreadFixture = emailThreadFixtures[0]["valid"]
