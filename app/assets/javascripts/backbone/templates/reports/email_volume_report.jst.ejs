@@ -1,31 +1,3 @@
-<%
-  function drawCharts() {
-    drawChart(obj.emailsPerDayGChartData, "emails_per_day_chart_div", "Daily Email Volume");
-    drawChart(obj.emailsPerWeekGChartData, "emails_per_week_chart_div", "Weekly Email Volume");
-    drawChart(obj.emailsPerMonthGChartData, "emails_per_month_chart_div", "Monthly Email Volume");
-  }
-
-  function drawChart(data, divID, chartTitle) {
-    var options = {
-      title: chartTitle,
-      hAxis: {titleTextStyle: {color: '#333'}},
-      vAxis: {minValue: 0}
-    };
-
-    var chart = new google.visualization.AreaChart($("#" + divID)[0]);
-    var dataTable = google.visualization.arrayToDataTable(data);
-
-    chart.draw(dataTable, options);
-  }
-
-  google.load("visualization", "1.0", {
-    callback: function() {
-      drawCharts()
-    },
-    packages:["corechart"]
-  })
-%>
-
 <div class="page-header">
   <h1 class="h1">Reports <small>email volume</small></h1>
 </div>

@@ -12,6 +12,8 @@ class TuringEmailApp.Views.Reports.EmailVolumeReportView extends Backbone.View
 
     @$el.html(@template(googleChartData))
 
+    @renderGoogleChart googleChartData
+
     TuringEmailApp.showReports()
     return this
 
@@ -84,3 +86,27 @@ class TuringEmailApp.Views.Reports.EmailVolumeReportView extends Backbone.View
       currentDate.setMonth(currentDate.getMonth() + 1)
 
     return data
+
+  renderGoogleChart: (googleChartData) ->
+    google.load('visualization', '1.0',
+                 callback: => @drawCharts(googleChartData),
+                 packages: ["corechart"])
+
+  drawCharts: (googleChartData) ->
+    @drawChart googleChartData.emailsPerDayGChartData, "emails_per_day_chart_div", "Daily Email Volume"
+    @drawChart googleChartData.emailsPerWeekGChartData, "emails_per_week_chart_div", "Weekly Email Volume"
+    @drawChart googleChartData.emailsPerMonthGChartData, "emails_per_month_chart_div", "Monthly Email Volume"
+
+  drawChart: (data, divID, chartTitle) ->
+    options =
+      title: chartTitle
+      hAxis:
+        titleTextStyle:
+          color: "#333"
+
+      vAxis:
+        minValue: 0
+
+    chart = new google.visualization.AreaChart($("#" + divID)[0])
+    dataTable = google.visualization.arrayToDataTable(data)
+    chart.draw dataTable, options

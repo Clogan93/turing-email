@@ -1,30 +1,3 @@
-<%
-  function drawCharts() {
-    drawEmailVolumeChart(obj.topSenders, "top_senders", "Incoming Emails");
-    drawEmailVolumeChart(obj.topRecipients, "top_recipients", "Outgoing Emails");
-  }
-
-  function drawEmailVolumeChart(data, divID, chartTitle) {
-    var options = {
-      title: chartTitle,
-      width: 500,
-      height: 300
-    };
-
-    var chart = new google.visualization.PieChart($("#" + divID)[0]);
-    var dataTable = google.visualization.arrayToDataTable(data);
-
-    chart.draw(dataTable, options);
-  }
-
-  google.load("visualization", "1.0", {
-    callback: function () {
-      drawCharts();
-    },
-    packages: ["corechart"]
-  })
-%>
-
 <div class="page-header">
   <h1 class="h1">Reports <small>top contacts</small></h1>
 </div>

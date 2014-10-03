@@ -38,6 +38,11 @@ describe "EmailVolumeReportView", ->
         div = $("#" + divID)
         expect(div).toBeVisible()
 
+    it "renders the google chart", ->
+      spy = sinon.spy(@emailVolumeReportView, "renderGoogleChart")
+      @emailVolumeReportView.render()
+      expect(spy).toHaveBeenCalled()
+
   describe "#getGoogleChartData", ->
     beforeEach ->
       @emailVolumeReport.fetch()
