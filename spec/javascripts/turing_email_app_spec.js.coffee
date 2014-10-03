@@ -646,6 +646,28 @@ describe "TuringEmailApp", ->
       describe "#applyActionToSelectedThreads", ->
         return
 
+  describe "#isSplitPaneMode", ->
+    return
+
+  describe "#showEmailThread", ->
+    return
+
+  describe "#showEmailEditorWithEmailThread", ->
+    beforeEach ->
+      @server.restore()
+
+      emailThreadsFixtures = fixture.load("email_threads.fixture.json");
+      @validEmailThreadsFixture = emailThreadsFixtures[0]["valid"]
+      @server.respondWith "GET", TuringEmailApp.collections.emailThreads.url, JSON.stringify(@validEmailThreadsFixture)
+      TuringEmailApp.collections.emailThreads.fetch()
+      @server.respond()
+      @emailThread = TuringEmailApp.collections.emailThreads.models[0]
+    
+    it "loads the email thread", ->
+      spy = sinon.spy(TuringEmailApp, "loadEmailThread")
+      TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid")
+      expect(spy).toHaveBeenCalled()
+
   describe "#moveTuringEmailReportToTop", ->
     beforeEach ->
       @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
