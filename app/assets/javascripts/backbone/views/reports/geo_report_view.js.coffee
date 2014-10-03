@@ -10,7 +10,9 @@ class TuringEmailApp.Views.Reports.GeoReportView extends Backbone.View
   render: ->
     googleChartData = @getGoogleChartData()
 
-    @$el.html(@template(googleChartData))
+    @$el.html(@template())
+
+    @renderGoogleChart googleChartData
 
     TuringEmailApp.showReports()
     return this
@@ -30,3 +32,17 @@ class TuringEmailApp.Views.Reports.GeoReportView extends Backbone.View
       )
 
     return data
+
+  renderGoogleChart: (googleChartData) ->
+    google.load('visualization', '1.0',
+                 callback: => @drawGeoChart(googleChartData, "geo_chart_div"),
+                 packages: ["corechart"])
+
+  drawGeoChart: (googleChartData, divID) ->
+    options =
+      region: "US"
+      displayMode: "markers"
+
+    chart = new google.visualization.GeoChart($("#" + divID)[0])
+    dataTable = google.visualization.arrayToDataTable(googleChartData.cityStats)
+    chart.draw dataTable, options

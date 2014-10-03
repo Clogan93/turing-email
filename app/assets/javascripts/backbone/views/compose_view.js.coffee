@@ -218,7 +218,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
 
       if emailToSend.sendDraft?
         console.log "sendDraft!"
-        emailToSend.sendDraft().done(->
+        emailToSend.sendDraft().done(=>
           @trigger "change:draft", this
         )
       else

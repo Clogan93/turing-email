@@ -14,7 +14,6 @@ describe "ListsReportView", ->
     @listsReportFixture = listsReportFixtures[0]
 
     @server = sinon.fakeServer.create()
-    @server.respondWith "GET", new TuringEmailApp.Models.ListsReport().url, JSON.stringify(@listsReportFixture)
 
   afterEach ->
     @server.restore()
@@ -25,6 +24,7 @@ describe "ListsReportView", ->
 
   describe "#render", ->
     beforeEach ->
+      @server.respondWith "GET", new TuringEmailApp.Models.ListsReport().url, JSON.stringify(@listsReportFixture)
       @listsReport.fetch()
       @server.respond()
 
@@ -41,3 +41,12 @@ describe "ListsReportView", ->
       expect(listReportStatsDiv).toContainHtml('<h4 class="h4">Email threads replied to per list</h4>')
       expect(listReportStatsDiv).toContainHtml('<h4 class="h4">Sent emails per list</h4>')
       expect(listReportStatsDiv).toContainHtml('<h4 class="h4">Sent emails replied to per list</h4>')
+
+  describe "when the first item in the list stats is null", ->
+    beforeEach ->
+      @server.respondWith "GET", new TuringEmailApp.Models.ListsReport().url, JSON.stringify(@listsReportFixture)
+      @listsReport.fetch()
+      @server.respond()
+
+    it "renders the second list stat", ->
+      # TODO figure out how to test the second list stat.

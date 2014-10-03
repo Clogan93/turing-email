@@ -15,7 +15,7 @@ class TuringEmailApp.Views.Reports.RecommendedRulesReportView extends Backbone.V
     return this
 
   setupRecommendedRulesLinks: ->
-    $(".rule_recommendation_link").click (event) ->
+    @$el.find(".rule_recommendation_link").click (event) ->
       event.preventDefault()
 
       $(@).parent().append('<br />

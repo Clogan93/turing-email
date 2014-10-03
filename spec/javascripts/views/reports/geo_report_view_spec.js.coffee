@@ -38,6 +38,11 @@ describe "GeoReportView", ->
         div = $("#" + divID)
         expect(div).toBeVisible()
 
+    it "renders the google chart", ->
+      spy = sinon.spy(@geoReportView, "renderGoogleChart")
+      @geoReportView.render()
+      expect(spy).toHaveBeenCalled()
+
   describe "#getGoogleChartData", ->
     beforeEach ->
       @geoReport.fetch()
@@ -48,4 +53,6 @@ describe "GeoReportView", ->
     it "converts the model into Google Chart data format", ->
       # TODO not sure how to test because what it renders is dependent on the current date
       #expect(@geoReportView.getGoogleChartData()).toEqual(@expectedGoogleChartData)
- 
+
+  describe "#renderGoogleChart", ->
+    # TODO write a test for renderGoogleChart

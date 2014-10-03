@@ -81,9 +81,69 @@ describe "ComposeView", ->
         TuringEmailApp.views.composeView.hide()
         expect(TuringEmailApp.views.composeView.$el.find("#composeModal").hasClass("in")).toBeFalsy()
 
+    describe "#showEmailSentAlert", ->
+      
+      describe "when the current alert token is defined", ->
+        beforeEach ->
+          TuringEmailApp.views.composeView.currentAlertToken = true
+
+        it "should remove the alert", ->
+          spy = sinon.spy(TuringEmailApp.views.composeView, "removeEmailSentAlert")
+          TuringEmailApp.views.composeView.showEmailSentAlert()
+          expect(spy).toHaveBeenCalled()
+
+      it "should show the alert", ->
+        spy = sinon.spy(TuringEmailApp, "showAlert")
+        TuringEmailApp.views.composeView.showEmailSentAlert()
+        expect(spy).toHaveBeenCalled()
+
+      it "should set the current alert token", ->
+        TuringEmailApp.views.composeView.currentAlertToken = null
+        TuringEmailApp.views.composeView.showEmailSentAlert()
+        expect(TuringEmailApp.views.composeView.currentAlertToken).toBeDefined()
+
+      it "binds the click event to undo email send button", ->
+        expect($("#undo_email_send")).toHandle("click")
+
+      describe "when the undo email send button is clicked", ->
+        beforeEach ->
+          TuringEmailApp.views.composeView.currentAlertToken = null
+          emailJSON = {}
+          TuringEmailApp.views.composeView.showEmailSentAlert(emailJSON)
+
+        it "should remove the alert", ->
+          spy = sinon.spy(TuringEmailApp.views.composeView, "removeEmailSentAlert")
+          $("#undo_email_send").click()
+          expect(spy).toHaveBeenCalled()
+
+        it "should load the email", ->
+          spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmail")
+          $("#undo_email_send").click()
+          expect(spy).toHaveBeenCalled()
+
+        it "show the compose modal", ->
+          spy = sinon.spy(TuringEmailApp.views.composeView, "show")
+          $("#undo_email_send").click()
+          expect(spy).toHaveBeenCalled()
+
+    describe "#removeEmailSentAlert", ->
+      
+      describe "when the current alert token is defined", ->
+        beforeEach ->
+          TuringEmailApp.views.composeView.currentAlertToken = true
+
+        it "should remove the alert", ->
+          spy = sinon.spy(TuringEmailApp, "removeAlert")
+          TuringEmailApp.views.composeView.removeEmailSentAlert()
+          expect(spy).toHaveBeenCalled()
+
+        it "should set the current alert token to be null", ->
+          TuringEmailApp.views.composeView.removeEmailSentAlert()
+          expect(TuringEmailApp.views.composeView.currentAlertToken is true).toBeTruthy()
+
     describe "#resetView", ->
 
-      it "clears the compose view input fields", ->
+      it "should clear the compose view input fields", ->
         TuringEmailApp.views.composeView.$el.find("#compose_form #to_input").val("This is the to input.")
         TuringEmailApp.views.composeView.$el.find("#compose_form #cc_input").val("This is the cc input.")
         TuringEmailApp.views.composeView.$el.find("#compose_form #bcc_input").val("This is the bcc input.")
@@ -415,7 +475,6 @@ describe "ComposeView", ->
             TuringEmailApp.views.composeView.savingDraft = true
 
           it "sends the email after a timeout", ->
-            # TODO figure out how to test the sendEmail function after a timeout.
               @spy = sinon.spy(TuringEmailApp.views.composeView, "sendEmail")
               TuringEmailApp.views.composeView.sendEmail()
 
@@ -482,13 +541,31 @@ describe "ComposeView", ->
           return @spy.callCount == 1
 
       describe "when send draft is defined", ->
+        beforeEach ->
+          @server = sinon.fakeServer.create()
+          @server.respondWith "POST", "/api/v1/email_accounts/send_draft", JSON.stringify({})
 
         it "should send the draft", ->
           @spy = sinon.spy(@email, "sendDraft")
           TuringEmailApp.views.composeView.sendEmailDelayed @email
+          @server.respond()
 
           waitsFor ->
             return @spy.callCount == 1
+
+        it "triggers change:draft upon being done", ->
+          @spySendDraft = sinon.spy(@email, "sendDraft")
+          @spyChangeDraft = sinon.backbone.spy(TuringEmailApp.views.composeView, "change:draft")
+          TuringEmailApp.views.composeView.sendEmailDelayed @email
+
+          waitsFor ->
+            return false if not @spySendDraft.called
+            
+            @server.respond()
+            expect(@spyChangeDraft).toHaveBeenCalled()
+
+            return true
+          , undefined, 10000
 
       describe "when send draft is not defined", ->
         beforeEach ->
@@ -500,17 +577,21 @@ describe "ComposeView", ->
           TuringEmailApp.views.composeView.sendEmailDelayed @email
 
           waitsFor ->
-            return @spy.callCount == 1
+            return @spy.called
 
         it "should should send the email after a delay if the initial sending doesn't work", ->
-          # TODO figure out how to test the fail handler.
-          # @spy = sinon.spy(TuringEmailApp.views.composeView, "sendEmailDelayedError")
-          # @server.respondWith "POST", "/api/v1/email_accounts/send_email", JSON.stringify({})
-          # @server.respond()
-          # TuringEmailApp.views.composeView.sendEmailDelayed @email
+          @spySendEmail = sinon.spy(@email, "sendEmail")
+          @spySendEmailDelayedError = sinon.spy(TuringEmailApp.views.composeView, "sendEmailDelayedError")
+          TuringEmailApp.views.composeView.sendEmailDelayed @email
 
-          # waitsFor ->
-          #   return @spy.callCount == 1
+          waitsFor ->
+            return false if not @spySendEmail.called
+            
+            @server.respond()
+            expect(@spySendEmailDelayedError).toHaveBeenCalled()
+
+            return true
+          , undefined, 10000
 
     describe "#sendEmailDelayedError", ->
 
