@@ -33,6 +33,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @setupComposeView()
     @setupEmailThreads()
     @setupRouters()
+    @setupFiltering()
 
     Backbone.history.start() if not Backbone.History.started
     
@@ -436,6 +437,22 @@ window.TuringEmailApp = new(Backbone.View.extend(
   ######################
   ### View Functions ###
   ######################
+
+  setupFiltering: ->
+    $(".create_filter").click ->
+      $('.dropdown a').trigger('click.bs.dropdown')
+      return false
+
+    $("#filter_form").submit ->
+      url = "/api/v1/genie_rules.json"
+      $.ajax
+        type: "POST"
+        url: url
+        data: $("#filter_form").serialize() # serializes the form's elements.
+
+      $('.dropdown a').trigger('click.bs.dropdown')
+
+      false # avoid to execute the actual submit of the form.
 
   isSplitPaneMode: ->
     splitPaneMode = @models.userSettings.get("split_pane_mode")

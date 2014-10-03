@@ -74,6 +74,36 @@ describe "TuringEmailApp", ->
       expect(@spy).toHaveBeenCalled()
       @spy.restore()
 
+  describe "#setupFiltering", ->
+    beforeEach ->
+      @createFilterDiv = $('<div class="create_filter"><div />').appendTo("body")
+      @filterFormDiv = $('<div id="filter_form"><div />').appendTo("body")
+      @dropdownDiv = $('<div class="dropdown"><a href="#"></a></div>').appendTo("body")
+      TuringEmailApp.setupFiltering()
+
+    it "binds the click event to save button", ->
+      expect($(".create_filter")).toHandle("click")
+
+    describe "when the create filter link is clicked", ->
+
+      it "triggers the click.bs.dropdown event on the dropdown a tag", ->
+        spyEvent = spyOnEvent('.dropdown a', 'click.bs.dropdown')
+        $('.create_filter').click()
+        expect('click.bs.dropdown').toHaveBeenTriggeredOn('.dropdown a')
+        expect(spyEvent).toHaveBeenTriggered()
+
+    it "binds the submit event to the filter form", ->
+      expect($("#filter_form")).toHandle("submit")
+
+    describe "when the filter form is submitted", ->
+
+      it "should post the email rule to the server", ->
+        $("#filter_form").submit()
+        expect(@server.requests.length).toEqual 4
+        request = @server.requests[0]
+        expect(request.method).toEqual "POST"
+        expect(request.url).toEqual "/api/v1/genie_rules.json"
+
   ###
   describe "#moveTuringEmailReportToTop", ->
   

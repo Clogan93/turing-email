@@ -70,7 +70,7 @@ describe "RecommendedRulesReportView", ->
         spyOnEvent(selector, "click")
         
         @recommendedRulesReportView.$el.find(".rule_recommendation_link").click()
-        
+
         expect("click").toHaveBeenPreventedOn(selector)
 
       it "shows the success alert", ->
@@ -83,7 +83,7 @@ describe "RecommendedRulesReportView", ->
       it "hides the rule recommendation link", ->
         @recommendedRulesReportView.$el.find(".rule_recommendation_link").click()
         expect(@recommendedRulesReportDiv).not.toContainHtml('<a class="rule_recommendation_link" href="' + @recommendedRulesReport.get("rules_recommended")[0].list_id + '">Create rule.</a>')
-        
+
       it "should post the email rule to the server", ->
         @recommendedRulesReportView.$el.find(".rule_recommendation_link").click()
         expect(@server.requests.length).toEqual 1
