@@ -5,6 +5,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   tagName: "div"
 
   initialize: (options) ->
+    @app = options.app
     
     @listenTo(options.app, "change:currentEmailFolder", @currentEmailFolderChanged)
     @listenTo(options.app, "change:emailFolders", @emailFoldersChanged)
@@ -32,9 +33,9 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
     @$el.find("div.icheckbox_square-green ins").click (event) =>
       if @allCheckboxIsChecked()
-        @trigger("checkAll", this)
+        @trigger("checkAllClicked", this)
       else
-        @trigger("uncheckAll", this)
+        @trigger("uncheckAllClicked", this)
 
   setupButtons: ->
     @setupBulkActionButtons()
@@ -70,17 +71,17 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   setupBulkActionButtons: ->
     @$el.find("#all_bulk_action").click =>
       @divAllCheckbox.iCheck("check")
-      @trigger("checkAll", this)
+      @trigger("checkAllClicked", this)
 
     @$el.find("#none_bulk_action").click =>
       @divAllCheckbox.iCheck("uncheck")
-      @trigger("uncheckAll", this)
+      @trigger("uncheckAllClicked", this)
 
     @$el.find("#read_bulk_action").click =>
-      @trigger("checkAllRead", this)
+      @trigger("checkAllReadClicked", this)
 
     @$el.find("#unread_bulk_action").click =>
-      @trigger("checkAllUnread", this)
+      @trigger("checkAllUnreadClicked", this)
 
   setupSearchButton: ->
     @$el.find("#search_input").change ->

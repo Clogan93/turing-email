@@ -22,6 +22,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     
     @setupSearchBar()
     @setupComposeButton()
+    @setupFiltering()
 
     @setupToolbar()
     @setupUser()
@@ -33,7 +34,6 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @setupComposeView()
     @setupEmailThreads()
     @setupRouters()
-    @setupFiltering()
 
     Backbone.history.start() if not Backbone.History.started
     
@@ -80,6 +80,19 @@ window.TuringEmailApp = new(Backbone.View.extend(
   setupComposeButton: ->
     $("#compose_button").click =>
       @views.composeView.loadEmpty()
+
+  setupFiltering: ->
+    $(".create_filter").click (event) ->
+      event.preventDefault()
+      $('.dropdown a').trigger('click.bs.dropdown')
+
+    $("#filter_form").submit ->
+      url = "/api/v1/genie_rules"
+      $.post url, $("#filter_form").serialize()
+
+      $('.dropdown a').trigger('click.bs.dropdown')
+
+      return false # avoid to execute the actual submit of the form.
       
   setupToolbar: ->
     @views.toolbarView = new TuringEmailApp.Views.ToolbarView(
@@ -89,11 +102,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
     
     @views.toolbarView.render()
 
-    @listenTo(@views.toolbarView, "checkAll", => @views.emailThreadsListView.checkAll())
-    @listenTo(@views.toolbarView, "checkAllRead", => @views.emailThreadsListView.checkAllRead())
-    @listenTo(@views.toolbarView, "checkAllUnread", => @views.emailThreadsListView.checkAllUnread())
-    @listenTo(@views.toolbarView, "uncheckAll", => @views.emailThreadsListView.uncheckAll())
-
+    @listenTo(@views.toolbarView, "checkAllClicked", @checkAllClicked)
+    @listenTo(@views.toolbarView, "checkAllReadClicked", @checkAllReadClicked)
+    @listenTo(@views.toolbarView, "checkAllUnreadClicked", @checkAllUnreadClicked)
+    @listenTo(@views.toolbarView, "uncheckAllClicked", @uncheckAllClicked)
     @listenTo(@views.toolbarView, "readClicked", @readClicked)
     @listenTo(@views.toolbarView, "unreadClicked", @unreadClicked)
     @listenTo(@views.toolbarView, "archiveClicked", @archiveClicked)
@@ -122,56 +134,30 @@ window.TuringEmailApp = new(Backbone.View.extend(
       collection: @collections.emailFolders
     )
     
-    @listenTo(@views.emailFoldersTreeView, "emailFolderSelected", (treeView, emailFolder) =>
-      emailFolderID = emailFolder.get("label_id")
-      
-      emailFolderURL = "#email_folder/" + emailFolderID
-      if window.location.hash is emailFolderURL
-        @routers.emailFoldersRouter.showFolder(emailFolderID)
-      else
-        @routers.emailFoldersRouter.navigate("#email_folder/" + emailFolderID, trigger: true)
-    )
+    @listenTo(@views.emailFoldersTreeView, "emailFolderSelected", @emailFolderSelected)
     
   setupComposeView: ->
     @views.composeView = new TuringEmailApp.Views.ComposeView(
       app: this
       el: $("#modals")
     )
-    @listenTo(@views.composeView, "change:draft", @draftChanged)
+    
     @views.composeView.render()
+
+    @listenTo(@views.composeView, "change:draft", @draftChanged)
     
   setupEmailThreads: ->
     @collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
     @views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView(
-      app: this
       el: $("#email_table_body")
       collection: @collections.emailThreads
     )
 
-    @listenTo(@views.emailThreadsListView, "listItemSelected", (listView, listItemView) =>
-      emailThread = listItemView.model
-      isDraft = emailThread.get("emails")[0].draft_id?
-      emailThreadUID = emailThread.get("uid")
+    @listenTo(@views.emailThreadsListView, "listItemSelected", @listItemSelected)
+    @listenTo(@views.emailThreadsListView, "listItemDeselected", @listItemDeselected)
+    @listenTo(@views.emailThreadsListView, "listItemChecked", @listItemChecked)
+    @listenTo(@views.emailThreadsListView, "listItemUnchecked", @listItemUnchecked)
 
-      if isDraft
-        @routers.emailThreadsRouter.navigate("#email_draft/" + emailThreadUID, trigger: true)
-      else
-        @routers.emailThreadsRouter.navigate("#email_thread/" + emailThreadUID, trigger: true)
-    )
-
-    @listenTo(@views.emailThreadsListView, "listItemDeselected", (listView, listItemView) =>
-      @routers.emailThreadsRouter.navigate("#email_thread/.", trigger: true)
-    )
-    
-    @listenTo(@views.emailThreadsListView, "listItemChecked", (listView, listItemView) =>
-      @currentEmailThreadView.$el.hide() if @currentEmailThreadView
-    )
-
-    @listenTo(@views.emailThreadsListView, "listItemUnchecked", (listView, listItemView) =>
-      if @views.emailThreadsListView.getCheckedListItemViews().length is 0
-        @currentEmailThreadView.$el.show() if @currentEmailThreadView
-    )
-  
   setupRouters: ->
     @routers.emailFoldersRouter = new TuringEmailApp.Routers.EmailFoldersRouter()
     @routers.emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
@@ -323,16 +309,28 @@ window.TuringEmailApp = new(Backbone.View.extend(
       
       @collections.emailThreads.remove selectedEmailThreads if remove
 
-    (if @isSplitPaneMode() then @currentEmailThreadIs(null) else goBackClicked()) if clearSelection
+    (if @isSplitPaneMode() then @currentEmailThreadIs(null) else @goBackClicked()) if clearSelection
 
   ######################
   ### General Events ###
   ######################
 
+  checkAllClicked: ->
+    @views.emailThreadsListView.checkAll()
+    
+  checkAllReadClicked: ->
+    @views.emailThreadsListView.checkAllRead()
+  
+  checkAllUnreadClicked: ->
+    @views.emailThreadsListView.checkAllUnread()
+  
+  uncheckAllClicked: ->
+    @views.emailThreadsListView.uncheckAll()
+
   readClicked: ->
     @applyActionToSelectedThreads(
       =>
-        @selectedEmailThread().seenIs(true)
+        @selectedEmailThread()?.seenIs(true)
         @views.emailThreadsListView.markEmailThreadRead(@selectedEmailThread())
       (checkedListItemViews, selectedEmailThreadUIDs) =>
         listItemView.model.seenIs(true) for listItemView in checkedListItemViews
@@ -343,7 +341,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   unreadClicked: ->
     @applyActionToSelectedThreads(
       =>
-        @selectedEmailThread().seenIs(false)
+        @selectedEmailThread()?.seenIs(false)
         @views.emailThreadsListView.markEmailThreadUnread(@selectedEmailThread())
       (checkedListItemViews, selectedEmailThreadUIDs) =>
         listItemView.model.seenIs(false) for listItemView in checkedListItemViews
@@ -366,7 +364,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   labelAsClicked: (labelID) ->
     @applyActionToSelectedThreads(
       =>
-        @selectedEmailThread().applyGmailLabel(labelID)
+        @selectedEmailThread()?.applyGmailLabel(labelID)
       (checkedListItemViews, selectedEmailThreadUIDs) =>
         TuringEmailApp.Models.EmailThread.applyGmailLabel(selectedEmailThreadUIDs, labelID)
       false, false
@@ -375,7 +373,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   moveToFolderClicked: (folderID) ->
     @applyActionToSelectedThreads(
       =>
-        @selectedEmailThread().moveToFolder(folderID)
+        @selectedEmailThread()?.moveToFolder(folderID)
       (checkedListItemViews, selectedEmailThreadUIDs) =>
         TuringEmailApp.Models.EmailThread.moveToFolder(selectedEmailThreadUIDs, folderID)
       true, true
@@ -399,7 +397,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   archiveClicked: ->
     @applyActionToSelectedThreads(
       =>
-        @selectedEmailThread().removeFromFolder(@selectedEmailFolderID())
+        @selectedEmailThread()?.removeFromFolder(@selectedEmailFolderID())
       (checkedListItemViews, selectedEmailThreadUIDs) =>
         TuringEmailApp.Models.EmailThread.removeFromFolder(selectedEmailThreadUIDs, @selectedEmailFolderID())
       true, true
@@ -408,15 +406,54 @@ window.TuringEmailApp = new(Backbone.View.extend(
   trashClicked: ->
     @applyActionToSelectedThreads(
       =>
-        @selectedEmailThread().trash()
+        @selectedEmailThread()?.trash()
       (checkedListItemViews, selectedEmailThreadUIDs) =>
         TuringEmailApp.Models.EmailThread.trash(selectedEmailThreadUIDs)
       true, true
     )
 
-  ###########################
-  ### ComposeView #Events ###
-  ###########################
+  #############################
+  ### EmailThreads.ListView ###
+  #############################
+
+  listItemSelected: (listView, listItemView) ->
+    emailThread = listItemView.model
+    isDraft = emailThread.get("emails")[0].draft_id?
+    emailThreadUID = emailThread.get("uid")
+
+    if isDraft
+      @routers.emailThreadsRouter.navigate("#email_draft/" + emailThreadUID, trigger: true)
+    else
+      @routers.emailThreadsRouter.navigate("#email_thread/" + emailThreadUID, trigger: true)
+
+  listItemDeselected: (listView, listItemView) ->
+    @routers.emailThreadsRouter.navigate("#email_thread/.", trigger: true)
+
+  listItemChecked: (listView, listItemView) ->
+    @currentEmailThreadView.$el.hide() if @currentEmailThreadView
+
+  listItemUnchecked: (listView, listItemView) ->
+    if @views.emailThreadsListView.getCheckedListItemViews().length is 0
+      @currentEmailThreadView.$el.show() if @currentEmailThreadView
+
+  ####################################
+  ### EmailFolders.TreeView Events ###
+  ####################################
+
+  emailFolderSelected: (treeView, emailFolder) ->
+    return if not emailFolder?
+
+    emailFolderID = emailFolder.get("label_id")
+
+    emailFolderURL = "#email_folder/" + emailFolderID
+    if window.location.hash is emailFolderURL
+      @routers.emailFoldersRouter.showFolder(emailFolderID)
+    else
+      @routers.emailFoldersRouter.navigate("#email_folder/" + emailFolderID, trigger: true)
+
+  ##########################
+  ### ComposeView Events ###
+  ##########################
     
   draftChanged: ->
     @reloadEmailThreads() if @selectedEmailFolderID() is "DRAFT"
@@ -437,22 +474,6 @@ window.TuringEmailApp = new(Backbone.View.extend(
   ######################
   ### View Functions ###
   ######################
-
-  setupFiltering: ->
-    $(".create_filter").click ->
-      $('.dropdown a').trigger('click.bs.dropdown')
-      return false
-
-    $("#filter_form").submit ->
-      url = "/api/v1/genie_rules.json"
-      $.ajax
-        type: "POST"
-        url: url
-        data: $("#filter_form").serialize() # serializes the form's elements.
-
-      $('.dropdown a').trigger('click.bs.dropdown')
-
-      false # avoid to execute the actual submit of the form.
 
   isSplitPaneMode: ->
     splitPaneMode = @models.userSettings.get("split_pane_mode")

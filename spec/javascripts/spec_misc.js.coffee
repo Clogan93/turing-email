@@ -27,7 +27,6 @@ window.specStartTuringEmailApp = ->
 
   TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
   TuringEmailApp.views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView(
-    app: TuringEmailApp
     el: $("#email_table_body")
     collection: TuringEmailApp.collections.emailThreads
   )

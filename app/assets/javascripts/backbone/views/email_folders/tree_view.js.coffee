@@ -5,6 +5,8 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
 
   # TODO write test
   initialize: (options) ->
+    @app = options.app
+    
     @listenTo(options.app, "change:emailFolderUnreadCount", @emailFolderUnreadCountChanged)
     
     @listenTo(@collection, "add", @render)
