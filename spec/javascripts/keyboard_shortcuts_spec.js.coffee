@@ -38,3 +38,42 @@ describe "KeyboardShortcutHandler", ->
       $(document).trigger(e)
 
       expect(spy).toHaveBeenCalled()
+
+  describe "when k is pressed", ->
+    beforeEach ->
+      @ksh.bind_move_to_newer_conversation()
+
+    it "moves up a conversation", ->
+      spy = sinon.spy(@ksh, "move_up_a_conversation")
+
+      e = jQuery.Event("keydown")
+      e.which = 75
+      $(document).trigger(e)
+
+      expect(spy).toHaveBeenCalled()
+
+  describe "when up is pressed", ->
+    beforeEach ->
+      @ksh.bind_up_and_down_arrows()
+
+    it "moves up a conversation", ->
+      spy = sinon.spy(@ksh, "move_up_a_conversation")
+
+      e = jQuery.Event("keydown")
+      e.which = 38
+      $(document).trigger(e)
+
+      expect(spy).toHaveBeenCalled()
+
+  describe "when down is pressed", ->
+    beforeEach ->
+      @ksh.bind_up_and_down_arrows()
+
+    it "moves down a conversation", ->
+      spy = sinon.spy(@ksh, "move_down_a_conversation")
+
+      e = jQuery.Event("keydown")
+      e.which = 40
+      $(document).trigger(e)
+
+      expect(spy).toHaveBeenCalled()
