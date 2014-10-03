@@ -12,6 +12,8 @@ class TuringEmailApp.Views.Reports.AttachmentsReportView extends Backbone.View
       
     @$el.html(@template(googleChartData))
 
+    @renderGoogleChart googleChartData
+
     TuringEmailApp.showReports()
     return this
     
@@ -31,7 +33,7 @@ class TuringEmailApp.Views.Reports.AttachmentsReportView extends Backbone.View
           a[0].localeCompare(b[0])
         )
       )
-      
+
     return data
 
   addContentTypeStatsToRunningAverage: (stats, runningAverages, runningAverageKey) ->
@@ -67,3 +69,117 @@ class TuringEmailApp.Views.Reports.AttachmentsReportView extends Backbone.View
       @addContentTypeStatsToRunningAverage(stats, reducedContentTypeStats, reducedType)
  
     return reducedContentTypeStats
+
+  renderGoogleChart: (googleChartData) ->
+    google.load('visualization', '1.0',
+                 callback: => @drawCharts(googleChartData),
+                 packages: ["corechart"])
+
+  drawCharts: (googleChartData) ->
+    @drawChart googleChartData.numAttachmentsGChartData, "num_attachments_chart_div", "Number of Attachments"
+    @drawChart googleChartData.averageFileSizeGChartData, "average_file_size_chart_div", "Average File Size", true
+
+  drawChart: (data, divID, chartTitle, humanizeFileSize=false) ->
+    options =
+      title: chartTitle
+      legend:
+        position: "none"
+
+      hAxis:
+        titleTextStyle:
+          color: "black"
+
+      vAxis:
+        titleTextStyle:
+          color: "black"
+
+    chart = new google.visualization.ColumnChart($("#" + divID)[0])
+    dataTable = google.visualization.arrayToDataTable(data)
+    if humanizeFileSize
+      @humanizeFileSizeGChartData dataTable
+      @humanizeFileSizeGChartAxis chart, dataTable, options
+    chart.draw dataTable, options
+
+  humanizeFileSizeGChartAxis: (chart, dataTable, options) ->
+    # get the axis values and reformat them
+    runOnce = google.visualization.events.addListener(chart, "ready", =>
+      google.visualization.events.removeListener runOnce
+      boundingBox = undefined
+      val = undefined
+      formattedVal = undefined
+      suffix = undefined
+      ticks = []
+      cli = chart.getChartLayoutInterface()
+      i = 0
+
+      while boundingBox = cli.getBoundingBox("vAxis#0#gridline#" + i)
+        val = cli.getVAxisValue(boundingBox.top)
+        
+        # sometimes, the axis value falls 1/2 way though the pixel height of the gridline,
+        # so we need to add in 1/2 the height
+        # this assumes that all axis values will be integers
+        val = cli.getVAxisValue(boundingBox.top + boundingBox.height / 2)  unless val is parseInt(val)
+        
+        # convert from base-10 counting to 2^10 counting
+        fileSizePower = 0
+
+        while val >= 1000
+          val /= 1000
+          fileSizePower++
+        formattedVal = val
+        val *= Math.pow(1024, fileSizePower)
+        fileSizeInfo = @getFileSizeSuffix(fileSizePower, formattedVal)
+        suffix = fileSizeInfo.suffix
+        formattedVal = fileSizeInfo.formattedVal
+        ticks.push
+          v: val
+          f: formattedVal + suffix
+
+        i++
+      options.vAxis = options.vAxis or {}
+      options.vAxis.ticks = ticks
+      chart.draw dataTable, options
+      return
+    )
+
+  humanizeFileSizeGChartData: (data) ->
+    # custom format data values
+    i = 0
+
+    while i < data.getNumberOfRows()
+      val = data.getValue(i, 1)
+      suffix = undefined
+      fileSizePower = 0
+      formattedVal = val
+
+      while formattedVal >= 1024
+        formattedVal /= 1024
+        fileSizePower++
+      fileSizeInfo = @getFileSizeSuffix(fileSizePower, formattedVal)
+      suffix = fileSizeInfo.suffix
+      formattedVal = fileSizeInfo.formattedVal
+      
+      # round to nearest decimal
+      formattedVal = (Math.round(formattedVal * 10) / 10) + suffix
+      data.setFormattedValue i, 1, formattedVal
+      i++
+
+  getFileSizeSuffix: (fileSizePower, formattedVal) ->
+    switch fileSizePower
+      when 0
+        suffix = "B"
+      when 1
+        suffix = "KB"
+      when 2
+        suffix = "MB"
+      when 3
+        suffix = "GB"
+      else
+        
+        # format to GB
+        while fileSizePower > 3
+          formattedVal *= 1024
+          fileSizePower--
+        suffix = "GB"
+    suffix: suffix
+    formattedVal: formattedVal
