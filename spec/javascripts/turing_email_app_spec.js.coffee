@@ -622,16 +622,81 @@ describe "TuringEmailApp", ->
       describe "#loadEmailThread", ->
         beforeEach ->
           @callback = sinon.spy()
-          #TuringEmailApp.loadEmailThread()
           
-        afterEach ->
-          @callback.restore()
+          @server.restore()
+          [@server] = specPrepareEmailThreadsFetch(TuringEmailApp.collections.emailThreads)
+
+        describe "when the email thread is NOT in the collection", ->
+          beforeEach ->
+            @server.restore()
+            [@server, @emailThread] = specPrepareEmailThreadFetch()
+            
+            @emailThread.fetch()
+            @server.respond()
+            
+            TuringEmailApp.loadEmailThread(@emailThread.get("uid"), @callback)
+
+          it "fetches the email thread and then calls the callback", ->
+            expect(@callback).not.toHaveBeenCalled()
+            @server.respond()
+            expect(@callback).toHaveBeenCalled()
           
         describe "when the email thread is in the collection", ->
-          #it "calls the callback", ->
+          beforeEach ->
+            TuringEmailApp.collections.emailThreads.fetch()
+            @server.respond()
+            TuringEmailApp.loadEmailThread(TuringEmailApp.collections.emailThreads.models[0].get("uid"), @callback)
+            
+          it "calls the callback", ->
+            expect(@callback).toHaveBeenCalled()
       
       describe "#reloadEmailThreads", ->
-        return
+        beforeEach ->
+          @fetchSpy = sinon.spy(TuringEmailApp.collections.emailThreads, "fetch")
+          @success = sinon.spy()
+          @error = sinon.spy()
+
+        afterEach ->
+          @fetchSpy.restore()
+          
+        it "fetches the email threads", ->
+          TuringEmailApp.reloadEmailThreads(success: @success, error: @error)
+          expect(@fetchSpy).toHaveBeenCalled()
+          
+        describe "on success", ->
+          beforeEach ->
+            [@server] = specPrepareEmailThreadsFetch(TuringEmailApp.collections.emailThreads)
+            TuringEmailApp.collections.emailThreads.fetch()
+            @server.respond()
+            @oldEmailThreads = TuringEmailApp.collections.emailThreads.models
+  
+            @stopListeningSpy = sinon.spy(TuringEmailApp, "stopListening")
+            
+            TuringEmailApp.reloadEmailThreads(success: @success, error: @error)
+            @server.respond()
+            
+          afterEach ->
+            @stopListeningSpy.restore()
+
+          it "stops listening on the old models", ->
+            expect(@stopListeningSpy).toHaveBeenCalledWith(oldEmailThread) for oldEmailThread in @oldEmailThreads
+            
+          it "calls the success callback", ->
+            expect(@success).toHaveBeenCalled()
+
+          it "does NOT call the error callback", ->
+            expect(@error).not.toHaveBeenCalled()
+          
+        describe "on error", ->
+          beforeEach ->
+            TuringEmailApp.reloadEmailThreads(success: @success, error: @error)
+            @server.respond()
+          
+          it "does NOT call the success callback", ->
+            expect(@success).not.toHaveBeenCalled()
+            
+          it "calls the error callback", ->
+            expect(@error).toHaveBeenCalled()
       
       describe "#applyActionToSelectedThreads", ->
         return

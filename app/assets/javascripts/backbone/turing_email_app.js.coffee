@@ -288,7 +288,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
         myOptions.success(collection, response, options) if myOptions?.success?
         
-      error: options?.error
+      error: myOptions?.error
     )
 
   applyActionToSelectedThreads: (singleAction, multiAction, remove=false, clearSelection=false) ->
