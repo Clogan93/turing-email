@@ -991,6 +991,64 @@ describe "TuringEmailApp", ->
           it "marks all the checked items in the list view as unread", ->
             expect(@markCheckedUnreadSpy).toHaveBeenCalled()
             
+      describe "#leftArrowClicked", ->
+        beforeEach ->
+          @origSelectedEmailFolderID = TuringEmailApp.selectedEmailFolderID
+          @folderID = "test"
+          TuringEmailApp.selectedEmailFolderID = => @folderID
+
+          @navigateSpy = sinon.spy(TuringEmailApp.routers.emailFoldersRouter, "navigate")
+          
+        afterEach ->
+          @navigateSpy.restore()
+          TuringEmailApp.selectedEmailFolderID = @origSelectedEmailFolderID
+
+        describe "page=1", ->
+          beforeEach ->
+            TuringEmailApp.collections.emailThreads.page = 1
+            TuringEmailApp.leftArrowClicked()
+            
+          it "does not go to the previous page", ->
+            expect(@navigateSpy).not.toHaveBeenCalled()
+
+        describe "page=2", ->
+          beforeEach ->
+            TuringEmailApp.collections.emailThreads.page = 2
+            TuringEmailApp.leftArrowClicked()
+
+          it "goes to the previous page", ->
+            expect(@navigateSpy).toHaveBeenCalledWith("#email_folder/" + @folderID + "/" + 1, trigger: true)
+
+      describe "#rightArrowClicked", ->
+        beforeEach ->
+          @origSelectedEmailFolderID = TuringEmailApp.selectedEmailFolderID
+          @folderID = "test"
+          TuringEmailApp.selectedEmailFolderID = => @folderID
+
+          TuringEmailApp.collections.emailThreads.page = 1
+
+          @navigateSpy = sinon.spy(TuringEmailApp.routers.emailFoldersRouter, "navigate")
+
+        afterEach ->
+          @navigateSpy.restore()
+          TuringEmailApp.selectedEmailFolderID = @origSelectedEmailFolderID
+
+        describe "max threads per page are loaded", ->
+          beforeEach ->
+            TuringEmailApp.collections.emailThreads.length = TuringEmailApp.Models.UserSettings.EmailThreadsPerPage
+            TuringEmailApp.rightArrowClicked()
+
+          it "goes to the next page", ->
+            expect(@navigateSpy).toHaveBeenCalledWith("#email_folder/" + @folderID + "/" + 2, trigger: true)
+
+        describe "max threads per page are not loaded", ->
+          beforeEach ->
+            TuringEmailApp.collections.emailThreads.length = TuringEmailApp.Models.UserSettings.EmailThreadsPerPage - 1
+            TuringEmailApp.rightArrowClicked()
+
+          it "does NOT go to the next page", ->
+            expect(@navigateSpy).not.toHaveBeenCalled()
+
     describe "#listItemSelected", ->
       beforeEach ->
         @server.restore()
@@ -1103,7 +1161,6 @@ describe "TuringEmailApp", ->
           it "navigates to the email folder url", ->
             spy = sinon.spy(TuringEmailApp.routers.emailFoldersRouter, "showFolder")
             TuringEmailApp.emailFolderSelected null, @emailFolder
-            expect(spy).toHaveBeenCalled()
             expect(spy).toHaveBeenCalledWith(@emailFolder.get("label_id"))
             spy.restore()
   
@@ -1114,7 +1171,6 @@ describe "TuringEmailApp", ->
           it "navigates to the email folder url", ->
             spy = sinon.spy(TuringEmailApp.routers.emailFoldersRouter, "navigate")
             TuringEmailApp.emailFolderSelected null, @emailFolder
-            expect(spy).toHaveBeenCalled()
             expect(spy).toHaveBeenCalledWith("#email_folder/" + @emailFolder.get("label_id"))
             spy.restore()
   
