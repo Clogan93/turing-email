@@ -1142,12 +1142,6 @@ describe "TuringEmailApp", ->
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
-        it "gets the selected email thread", ->
-          spy = sinon.spy(TuringEmailApp, "selectedEmailThread")
-          TuringEmailApp.archiveClicked()
-          expect(spy).toHaveBeenCalled()
-          spy.restore()
-
         it "removes the selected email thread from the folder", ->
           sEmailThread = TuringEmailApp.selectedEmailThread()
           spy = sinon.spy(sEmailThread, "removeFromFolder")
