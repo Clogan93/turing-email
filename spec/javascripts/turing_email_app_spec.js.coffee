@@ -950,6 +950,8 @@ describe "TuringEmailApp", ->
           TuringEmailApp.views.emailThreadsListView = @listView
           TuringEmailApp.collections.emailThreads = @emailThreads
 
+          @emailThread = @emailThreads.models[0]
+
         afterEach ->
           @listViewDiv.remove()
 
@@ -957,7 +959,6 @@ describe "TuringEmailApp", ->
           beforeEach ->
             @markEmailThreadUnreadSpy = sinon.spy(@listView, "markEmailThreadUnread")
 
-            @emailThread = @emailThreads.models[0]
             @emailThread.seenIs(true)
             @listView.select(@emailThread)
 
@@ -976,7 +977,6 @@ describe "TuringEmailApp", ->
           beforeEach ->
             @markCheckedUnreadSpy = sinon.spy(@listView, "markCheckedUnread")
 
-            @emailThread = @emailThreads.models[0]
             @emailThread.seenIs(false)
             @listView.check(@emailThread)
 
@@ -1049,6 +1049,92 @@ describe "TuringEmailApp", ->
           it "does NOT go to the next page", ->
             expect(@navigateSpy).not.toHaveBeenCalled()
 
+      describe "#labelAsClicked", ->
+        beforeEach ->
+          @server.restore()
+          [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
+
+          TuringEmailApp.views.emailThreadsListView = @listView
+          TuringEmailApp.collections.emailThreads = @emailThreads
+
+          @emailThread = @emailThreads.models[0]
+
+        afterEach ->
+          @listViewDiv.remove()
+
+        describe "when an email thread is selected", ->
+          beforeEach ->
+            @applyGmailLabelSpy = sinon.spy(@emailThread, "applyGmailLabel")
+
+            @listView.select(@emailThread)
+
+            @labelID = "test"
+            TuringEmailApp.labelAsClicked(@labelID)
+
+          afterEach ->
+            @applyGmailLabelSpy.restore()
+
+          it "applies the label to the selected email thread", ->
+            expect(@applyGmailLabelSpy).toHaveBeenCalledWith(@labelID)
+
+        describe "when an email thread is checked", ->
+          beforeEach ->
+            @applyGmailLabelSpy = sinon.spy(TuringEmailApp.Models.EmailThread, "applyGmailLabel")
+
+            @listView.check(@emailThread)
+
+            @labelID = "test"
+            TuringEmailApp.labelAsClicked(@labelID)
+
+          afterEach ->
+            @applyGmailLabelSpy.restore()
+
+          it "applies the label to the checked email threads", ->
+            expect(@applyGmailLabelSpy).toHaveBeenCalledWith([@emailThread.get("uid")], @labelID)
+
+      describe "#moveToFolderClicked", ->
+        beforeEach ->
+          @server.restore()
+          [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
+
+          TuringEmailApp.views.emailThreadsListView = @listView
+          TuringEmailApp.collections.emailThreads = @emailThreads
+
+          @emailThread = @emailThreads.models[0]
+
+        afterEach ->
+          @listViewDiv.remove()
+
+        describe "when an email thread is selected", ->
+          beforeEach ->
+            @moveToFolderSpy = sinon.spy(@emailThread, "moveToFolder")
+
+            @listView.select(@emailThread)
+
+            @folderID = "test"
+            TuringEmailApp.moveToFolderClicked(@folderID)
+
+          afterEach ->
+            @moveToFolderSpy.restore()
+
+          it "moves the selected email thread to the folder", ->
+            expect(@moveToFolderSpy).toHaveBeenCalledWith(@folderID)
+
+        describe "when an email thread is checked", ->
+          beforeEach ->
+            @moveToFolderSpy = sinon.spy(TuringEmailApp.Models.EmailThread, "moveToFolder")
+
+            @listView.check(@emailThread)
+
+            @folderID = "test"
+            TuringEmailApp.moveToFolderClicked(@folderID)
+
+          afterEach ->
+            @moveToFolderSpy.restore()
+
+          it "moves the checked email threads to the folder", ->
+            expect(@moveToFolderSpy).toHaveBeenCalledWith([@emailThread.get("uid")], @folderID)
+
       describe "#refreshClicked", ->
 
         it "reloads the email threads", ->
@@ -1120,167 +1206,102 @@ describe "TuringEmailApp", ->
           expect(spy).toHaveBeenCalled()
           expect(spy).toHaveBeenCalledWith(@emailThread.get("uid"), "forward")
           spy.restore()
-
-      describe "#labelAsClicked", ->
-        beforeEach ->
-          @server.restore()
-          [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
-
-          TuringEmailApp.views.emailThreadsListView = @listView
-          TuringEmailApp.collections.emailThreads = @emailThreads
-
-          @emailThread = @emailThreads.models[0]
-
-        afterEach ->
-          @listViewDiv.remove()
-
-        describe "when an email thread is selected", ->
-          beforeEach ->
-            @applyGmailLabelSpy = sinon.spy(@emailThread, "applyGmailLabel")
-            
-            @listView.select(@emailThread)
-
-            @labelID = "test"
-            TuringEmailApp.labelAsClicked(@labelID)
-
-          afterEach ->
-            @applyGmailLabelSpy.restore()
-
-          it "applies the label to the selected email thread", ->
-            expect(@applyGmailLabelSpy).toHaveBeenCalledWith(@labelID)
-
-        describe "when an email thread is checked", ->
-          beforeEach ->
-            @applyGmailLabelSpy = sinon.spy(TuringEmailApp.Models.EmailThread, "applyGmailLabel")
-
-            @listView.check(@emailThread)
-
-            @labelID = "test"
-            TuringEmailApp.labelAsClicked(@labelID)
-
-          afterEach ->
-            @applyGmailLabelSpy.restore()
-
-          it "applies the label to the checked email threads", ->
-            expect(@applyGmailLabelSpy).toHaveBeenCalledWith([@emailThread.get("uid")], @labelID)
-
-      describe "#moveToFolderClicked", ->
-        beforeEach ->
-          @server.restore()
-          [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
-
-          TuringEmailApp.views.emailThreadsListView = @listView
-          TuringEmailApp.collections.emailThreads = @emailThreads
-
-          @emailThread = @emailThreads.models[0]
-
-        afterEach ->
-          @listViewDiv.remove()
-
-        describe "when an email thread is selected", ->
-          beforeEach ->
-            @moveToFolderSpy = sinon.spy(@emailThread, "moveToFolder")
-
-            @listView.select(@emailThread)
-
-            @folderID = "test"
-            TuringEmailApp.moveToFolderClicked(@folderID)
-
-          afterEach ->
-            @moveToFolderSpy.restore()
-
-          it "moves the selected email thread to the folder", ->
-            expect(@moveToFolderSpy).toHaveBeenCalledWith(@folderID)
-
-        describe "when an email thread is checked", ->
-          beforeEach ->
-            @moveToFolderSpy = sinon.spy(TuringEmailApp.Models.EmailThread, "moveToFolder")
-
-            @listView.check(@emailThread)
-
-            @folderID = "test"
-            TuringEmailApp.moveToFolderClicked(@folderID)
-
-          afterEach ->
-            @moveToFolderSpy.restore()
-
-          it "moves the checked email threads to the folder", ->
-            expect(@moveToFolderSpy).toHaveBeenCalledWith([@emailThread.get("uid")], @folderID)
         
       describe "#archiveClicked", ->
         beforeEach ->
           @server.restore()
           [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
-    
+
           TuringEmailApp.views.emailThreadsListView = @listView
           TuringEmailApp.collections.emailThreads = @emailThreads
 
-          @emailThread = _.values(@listView.listItemViews)[0].model
+          @emailThread = @emailThreads.models[0]
 
-          TuringEmailApp.views.emailThreadsListView.select @emailThread
+          @origSelectedEmailFolderID = TuringEmailApp.selectedEmailFolderID
+          @folderID = "test"
+          TuringEmailApp.selectedEmailFolderID = => @folderID
 
         afterEach ->
+          TuringEmailApp.selectedEmailFolderID = => @origSelectedEmailFolderID
           @listViewDiv.remove()
 
-        it "applies the archive action to the selected threads", ->
-          spy = sinon.spy(TuringEmailApp, "applyActionToSelectedThreads")
-          TuringEmailApp.archiveClicked()
-          expect(spy).toHaveBeenCalled()
-          spy.restore()
+        describe "when an email thread is selected", ->
+          beforeEach ->
+            @removeFromFolderSpy = sinon.spy(@emailThread, "removeFromFolder")
 
-        it "removes the selected email thread from the folder", ->
-          sEmailThread = TuringEmailApp.selectedEmailThread()
-          spy = sinon.spy(sEmailThread, "removeFromFolder")
-          TuringEmailApp.archiveClicked()
-          expect(spy).toHaveBeenCalled()
-          expect(spy).toHaveBeenCalledWith(TuringEmailApp.selectedEmailFolderID())
-          spy.restore()
+            @listView.select(@emailThread)
 
-        it "removes the selected email thread's model from the folder", ->
-          spy = sinon.spy(TuringEmailApp.Models.EmailThread, "removeFromFolder")
-          TuringEmailApp.archiveClicked()
-          expect(spy).toHaveBeenCalled()
-          spy.restore()
+            @folderID = "test"
+            TuringEmailApp.archiveClicked(@folderID)
+
+          afterEach ->
+            @removeFromFolderSpy.restore()
+
+          it "remove the selected email thread from the selected folder", ->
+            expect(@removeFromFolderSpy).toHaveBeenCalledWith(@folderID)
+
+        describe "when an email thread is checked", ->
+          beforeEach ->
+            @removeFromFolderSpy = sinon.spy(TuringEmailApp.Models.EmailThread, "removeFromFolder")
+
+            @listView.check(@emailThread)
+
+            @folderID = "test"
+            TuringEmailApp.archiveClicked()
+
+          afterEach ->
+            @removeFromFolderSpy.restore()
+
+          it "removed the checked email threads from the selected folder", ->
+            expect(@removeFromFolderSpy).toHaveBeenCalledWith([@emailThread.get("uid")], @folderID)
 
       describe "#trashClicked", ->
         beforeEach ->
           @server.restore()
           [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
-    
+
           TuringEmailApp.views.emailThreadsListView = @listView
           TuringEmailApp.collections.emailThreads = @emailThreads
 
-          @emailThread = _.values(@listView.listItemViews)[0].model
+          @emailThread = @emailThreads.models[0]
 
-          TuringEmailApp.views.emailThreadsListView.select @emailThread
+          @origSelectedEmailFolderID = TuringEmailApp.selectedEmailFolderID
+          @folderID = "test"
+          TuringEmailApp.selectedEmailFolderID = => @folderID
 
         afterEach ->
+          TuringEmailApp.selectedEmailFolderID = => @origSelectedEmailFolderID
           @listViewDiv.remove()
 
-        it "applies the trash action to the selected threads", ->
-          spy = sinon.spy(TuringEmailApp, "applyActionToSelectedThreads")
-          TuringEmailApp.trashClicked()
-          expect(spy).toHaveBeenCalled()
-          spy.restore()
+        describe "when an email thread is selected", ->
+          beforeEach ->
+            @trashSpy = sinon.spy(@emailThread, "trash")
 
-        it "gets the selected email thread", ->
-          spy = sinon.spy(TuringEmailApp, "selectedEmailThread")
-          TuringEmailApp.trashClicked()
-          expect(spy).toHaveBeenCalled()
-          spy.restore()
+            @listView.select(@emailThread)
 
-        it "calls trash on the selected email thread", ->
-          sEmailThread = TuringEmailApp.selectedEmailThread()
-          spy = sinon.spy(sEmailThread, "trash")
-          TuringEmailApp.trashClicked()
-          expect(spy).toHaveBeenCalled()
-          spy.restore()
+            @folderID = "test"
+            TuringEmailApp.trashClicked(@folderID)
 
-        it "calls trash on the selected email thread's model", ->
-          spy = sinon.spy(TuringEmailApp.Models.EmailThread, "trash")
-          TuringEmailApp.trashClicked()
-          expect(spy).toHaveBeenCalled()
-          spy.restore()
+          afterEach ->
+            @trashSpy.restore()
+
+          it "trash the selected email", ->
+            expect(@trashSpy).toHaveBeenCalled()
+
+        describe "when an email thread is checked", ->
+          beforeEach ->
+            @trashSpy = sinon.spy(TuringEmailApp.Models.EmailThread, "trash")
+
+            @listView.check(@emailThread)
+
+            @folderID = "test"
+            TuringEmailApp.trashClicked()
+
+          afterEach ->
+            @trashSpy.restore()
+
+          it "trash the checked email threads", ->
+            expect(@trashSpy).toHaveBeenCalledWith([@emailThread.get("uid")])
 
     describe "#listItemSelected", ->
       beforeEach ->
