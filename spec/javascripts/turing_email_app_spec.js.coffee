@@ -651,6 +651,86 @@ describe "TuringEmailApp", ->
       describe "#applyActionToSelectedThreads", ->
         return
 
+  describe "#emailFolderSelected", ->
+
+    describe "when the email folder is defined", ->
+      beforeEach ->
+        @emailFolder = new TuringEmailApp.Models.EmailFolder()
+
+      describe "when the window location is already set to show the email folder page", ->
+        beforeEach ->
+          @emailFolder.set("label_id", "INBOX")
+
+        it "navigates to the email folder url", ->
+          spy = sinon.spy(TuringEmailApp.routers.emailFoldersRouter, "showFolder")
+          TuringEmailApp.emailFolderSelected null, @emailFolder
+          expect(spy).toHaveBeenCalled()
+          expect(spy).toHaveBeenCalledWith(@emailFolder.get("label_id"))
+          spy.restore()
+
+      describe "when the window location is not already set to show the email folder page", ->
+        beforeEach ->
+          @emailFolder.set("label_id", "Label_45")
+
+        it "navigates to the email folder url", ->
+          spy = sinon.spy(TuringEmailApp.routers.emailFoldersRouter, "navigate")
+          TuringEmailApp.emailFolderSelected null, @emailFolder
+          expect(spy).toHaveBeenCalled()
+          expect(spy).toHaveBeenCalledWith("#email_folder/" + @emailFolder.get("label_id"))
+          spy.restore()
+
+  describe "#draftChanged", ->
+
+    describe "when the selected email folder is DRAFT", ->
+      beforeEach ->
+        @selectedEmailFolderIDFunction = TuringEmailApp.selectedEmailFolderID
+        TuringEmailApp.selectedEmailFolderID = -> return "DRAFT"
+
+      afterEach ->
+        TuringEmailApp.selectedEmailFolderID = @selectedEmailFolderIDFunction
+
+      it "reloads the email thread if the selected email folder is DRAFT", ->
+        spy = sinon.spy(TuringEmailApp, "reloadEmailThreads")
+        TuringEmailApp.draftChanged()
+        expect(spy).toHaveBeenCalled()
+        spy.restore()
+
+    describe "when the selected email folder is not DRAFT", ->
+      beforeEach ->
+        @selectedEmailFolderIDFunction = TuringEmailApp.selectedEmailFolderID
+        TuringEmailApp.selectedEmailFolderID = -> return "INBOX"
+
+      afterEach ->
+        TuringEmailApp.selectedEmailFolderID = @selectedEmailFolderIDFunction
+
+      it "does not reloads the email thread if the selected email folder is DRAFT", ->
+        spy = sinon.spy(TuringEmailApp, "reloadEmailThreads")
+        TuringEmailApp.draftChanged()
+        expect(spy).not.toHaveBeenCalled()
+        spy.restore()
+
+  describe "#emailThreadSeenChanged", ->
+    beforeEach ->
+      @server.restore()
+      [@server] = specPrepareEmailThreadsFetch(TuringEmailApp.collections.emailThreads)
+      [@server] = specPrepareEmailFoldersFetch(TuringEmailApp.collections.emailFolders)
+      TuringEmailApp.collections.emailThreads.fetch(reset: true)
+      TuringEmailApp.collections.emailFolders.fetch(reset: true)
+      @server.respond()
+      @selectedEmailFolderIDFunction = TuringEmailApp.selectedEmailFolderID
+      TuringEmailApp.selectedEmailFolderID = -> return "INBOX"
+
+    afterEach ->
+      TuringEmailApp.selectedEmailFolderID = @selectedEmailFolderIDFunction
+
+    it "triggers a change:emailFolderUnreadCount event", ->
+      spy = sinon.backbone.spy(TuringEmailApp, "change:emailFolderUnreadCount")
+
+      emailThread = TuringEmailApp.collections.emailThreads.models[0]
+      TuringEmailApp.emailThreadSeenChanged emailThread, true
+
+      expect(spy).toHaveBeenCalled()
+
   describe "#isSplitPaneMode", ->
     beforeEach ->
       userSettingsFixtures = fixture.load("user_settings.fixture.json");

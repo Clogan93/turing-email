@@ -470,7 +470,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
       delta = if seenValue then -1 else 1
       currentFolder.set("num_unread_threads", currentFolder.get("num_unread_threads") + delta)
       @trigger("change:emailFolderUnreadCount", this, currentFolder)
-    
+
   ######################
   ### View Functions ###
   ######################
