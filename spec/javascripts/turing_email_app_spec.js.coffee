@@ -848,6 +848,149 @@ describe "TuringEmailApp", ->
             it "removes the item", ->
               expect(@emailThreads.findWhere(uid: @emailThread.uid)).toBeUndefined()
 
+    describe "General Events", ->
+      describe "#checkAllClicked", ->
+        beforeEach ->
+          @spy = sinon.spy(TuringEmailApp.views.emailThreadsListView, "checkAll")
+          TuringEmailApp.checkAllClicked()
+  
+        afterEach ->
+          @spy.restore()
+  
+        it "checks all the items in the email threads list view", ->
+          expect(@spy).toHaveBeenCalled()
+          
+      describe "#checkAllReadClicked", ->
+        beforeEach ->
+          @spy = sinon.spy(TuringEmailApp.views.emailThreadsListView, "checkAllRead")
+          TuringEmailApp.checkAllReadClicked()
+
+        afterEach ->
+          @spy.restore()
+
+        it "checks all the read items in the email threads list view", ->
+          expect(@spy).toHaveBeenCalled()
+
+      describe "#checkAllUnreadClicked", ->
+        beforeEach ->
+          @spy = sinon.spy(TuringEmailApp.views.emailThreadsListView, "checkAllUnread")
+          TuringEmailApp.checkAllUnreadClicked()
+
+        afterEach ->
+          @spy.restore()
+
+        it "checks all the unread items in the email threads list view", ->
+          expect(@spy).toHaveBeenCalled()
+
+      describe "#uncheckAllClicked", ->
+        beforeEach ->
+          @spy = sinon.spy(TuringEmailApp.views.emailThreadsListView, "uncheckAll")
+          TuringEmailApp.uncheckAllClicked()
+
+        afterEach ->
+          @spy.restore()
+
+        it "unchecks all items in the email threads list view", ->
+          expect(@spy).toHaveBeenCalled()
+          
+      describe "#readClicked", ->
+        beforeEach ->
+          @server.restore()
+          [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
+  
+          TuringEmailApp.views.emailThreadsListView = @listView
+          TuringEmailApp.collections.emailThreads = @emailThreads
+          
+        afterEach ->
+          @listViewDiv.remove()
+          
+        describe "when an email thread is selected", ->
+          beforeEach ->
+            @markEmailThreadReadSpy = sinon.spy(@listView, "markEmailThreadRead")
+            
+            @emailThread = @emailThreads.models[0]
+            @emailThread.seenIs(false)
+            @listView.select(@emailThread)
+            
+            TuringEmailApp.readClicked()
+          
+          afterEach ->
+            @markEmailThreadReadSpy.restore()
+            
+          it "sets the email thread to read", ->
+            expect(email.seen).toBeTruthy() for email in @emailThread.get("emails")
+
+          it "marks the email thread as read in the list view", ->
+            expect(@markEmailThreadReadSpy).toHaveBeenCalledWith(@emailThread)
+            
+        describe "when an email thread is checked", ->
+          beforeEach ->
+            @markCheckedReadSpy = sinon.spy(@listView, "markCheckedRead")
+
+            @emailThread = @emailThreads.models[0]
+            @emailThread.seenIs(false)
+            @listView.check(@emailThread)
+
+            TuringEmailApp.readClicked()
+
+          afterEach ->
+            @markCheckedReadSpy.restore()
+
+          it "sets the email thread to read", ->
+            expect(email.seen).toBeTruthy() for email in @emailThread.get("emails")
+
+          it "marks all the checked items in the list view as read", ->
+            expect(@markCheckedReadSpy).toHaveBeenCalled()
+
+      describe "#unreadClicked", ->
+        beforeEach ->
+          @server.restore()
+          [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
+
+          TuringEmailApp.views.emailThreadsListView = @listView
+          TuringEmailApp.collections.emailThreads = @emailThreads
+
+        afterEach ->
+          @listViewDiv.remove()
+
+        describe "when an email thread is selected", ->
+          beforeEach ->
+            @markEmailThreadUnreadSpy = sinon.spy(@listView, "markEmailThreadUnread")
+
+            @emailThread = @emailThreads.models[0]
+            @emailThread.seenIs(true)
+            @listView.select(@emailThread)
+
+            TuringEmailApp.unreadClicked()
+
+          afterEach ->
+            @markEmailThreadUnreadSpy.restore()
+
+          it "sets the email thread to unread", ->
+            expect(email.seen).toBeFalsy() for email in @emailThread.get("emails")
+
+          it "marks the email thread as unread in the list view", ->
+            expect(@markEmailThreadUnreadSpy).toHaveBeenCalledWith(@emailThread)
+
+        describe "when an email thread is checked", ->
+          beforeEach ->
+            @markCheckedUnreadSpy = sinon.spy(@listView, "markCheckedUnread")
+
+            @emailThread = @emailThreads.models[0]
+            @emailThread.seenIs(false)
+            @listView.check(@emailThread)
+
+            TuringEmailApp.unreadClicked()
+
+          afterEach ->
+            @markCheckedUnreadSpy.restore()
+
+          it "sets the email thread to unread", ->
+            expect(email.seen).toBeFalsy() for email in @emailThread.get("emails")
+
+          it "marks all the checked items in the list view as unread", ->
+            expect(@markCheckedUnreadSpy).toHaveBeenCalled()
+            
   describe "#listItemSelected", ->
     beforeEach ->
       @server.restore()
@@ -1189,7 +1332,7 @@ describe "TuringEmailApp", ->
         TuringEmailApp.showEmailEditorWithEmailThread emailThread.get("uid"), "reply"
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith(emailThread.get("emails")[0])
-    
+        
   describe "#moveTuringEmailReportToTop", ->
     beforeEach ->
       @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
