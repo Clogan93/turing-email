@@ -386,7 +386,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @routers.searchResultsRouter.navigate("#search/" + query, trigger: true)
 
   goBackClicked: ->
-    @routers.emailFoldersRouter.showFolder(@currentFolderID)
+    @routers.emailFoldersRouter.showFolder(@selectedEmailFolderID())
 
   replyClicked: ->
     @showEmailEditorWithEmailThread(@selectedEmailThread().get("uid"), "reply")

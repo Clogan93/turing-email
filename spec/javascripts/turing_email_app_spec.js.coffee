@@ -1049,6 +1049,78 @@ describe "TuringEmailApp", ->
           it "does NOT go to the next page", ->
             expect(@navigateSpy).not.toHaveBeenCalled()
 
+      describe "#refreshClicked", ->
+
+        it "reloads the email threads", ->
+          spy = sinon.spy(TuringEmailApp, "reloadEmailThreads")
+          TuringEmailApp.refreshClicked()
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+
+      describe "#searchClicked", ->
+
+        it "navigates to perform the search with the query", ->
+          seededChance = new Chance(1)
+          randomSearchQuery = seededChance.string({length: 10})
+          spy = sinon.spy(TuringEmailApp.routers.searchResultsRouter, "navigate")
+          TuringEmailApp.searchClicked(randomSearchQuery)
+          expect(spy).toHaveBeenCalled()
+          expect(spy).toHaveBeenCalledWith("#search/" + randomSearchQuery)
+          spy.restore()
+
+      describe "#goBackClicked", ->
+        beforeEach ->
+          @selectedEmailFolderIDFunction = TuringEmailApp.selectedEmailFolderID
+          TuringEmailApp.selectedEmailFolderID = -> return "test"
+
+        afterEach ->
+          TuringEmailApp.selectedEmailFolderID = @selectedEmailFolderIDFunction
+
+        it "shows the selected email folder", ->
+          spy = sinon.spy(TuringEmailApp.routers.emailFoldersRouter, "showFolder")
+          TuringEmailApp.goBackClicked()
+          expect(spy).toHaveBeenCalled()
+          expect(spy).toHaveBeenCalledWith("test")
+          spy.restore()
+
+      describe "#replyClicked", ->
+        beforeEach ->
+          @server.restore()
+          [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
+    
+          TuringEmailApp.views.emailThreadsListView = @listView
+          TuringEmailApp.collections.emailThreads = @emailThreads
+
+          @emailThread = _.values(@listView.listItemViews)[0].model
+
+          TuringEmailApp.views.emailThreadsListView.select @emailThread
+
+        it "shows the email editor with the selected email thread", ->
+          spy = sinon.spy(TuringEmailApp, "showEmailEditorWithEmailThread")
+          TuringEmailApp.replyClicked()
+          expect(spy).toHaveBeenCalled()
+          expect(spy).toHaveBeenCalledWith(@emailThread.get("uid"), "reply")
+          spy.restore()
+
+      describe "#forwardClicked", ->
+        beforeEach ->
+          @server.restore()
+          [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
+    
+          TuringEmailApp.views.emailThreadsListView = @listView
+          TuringEmailApp.collections.emailThreads = @emailThreads
+
+          @emailThread = _.values(@listView.listItemViews)[0].model
+
+          TuringEmailApp.views.emailThreadsListView.select @emailThread
+
+        it "shows the email editor with the selected email thread", ->
+          spy = sinon.spy(TuringEmailApp, "showEmailEditorWithEmailThread")
+          TuringEmailApp.forwardClicked()
+          expect(spy).toHaveBeenCalled()
+          expect(spy).toHaveBeenCalledWith(@emailThread.get("uid"), "forward")
+          spy.restore()
+
       describe "#archiveClicked", ->
         beforeEach ->
           @server.restore()
