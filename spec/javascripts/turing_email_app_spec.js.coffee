@@ -637,19 +637,87 @@ describe "TuringEmailApp", ->
       describe "#loadEmailThread", ->
         beforeEach ->
           @callback = sinon.spy()
-          #TuringEmailApp.loadEmailThread()
           
-        afterEach ->
-          @callback.restore()
+          @server.restore()
+          [@server] = specPrepareEmailThreadsFetch(TuringEmailApp.collections.emailThreads)
+
+        describe "when the email thread is NOT in the collection", ->
+          beforeEach ->
+            @server.restore()
+            [@server, @emailThread] = specPrepareEmailThreadFetch()
+            
+            @emailThread.fetch()
+            @server.respond()
+            
+            TuringEmailApp.loadEmailThread(@emailThread.get("uid"), @callback)
+
+          it "fetches the email thread and then calls the callback", ->
+            expect(@callback).not.toHaveBeenCalled()
+            @server.respond()
+            expect(@callback).toHaveBeenCalled()
           
         describe "when the email thread is in the collection", ->
-          #it "calls the callback", ->
+          beforeEach ->
+            TuringEmailApp.collections.emailThreads.fetch()
+            @server.respond()
+            TuringEmailApp.loadEmailThread(TuringEmailApp.collections.emailThreads.models[0].get("uid"), @callback)
+            
+          it "calls the callback", ->
+            expect(@callback).toHaveBeenCalled()
       
       describe "#reloadEmailThreads", ->
-        return
-      
-      describe "#applyActionToSelectedThreads", ->
-        return
+        beforeEach ->
+          @fetchSpy = sinon.spy(TuringEmailApp.collections.emailThreads, "fetch")
+          @success = sinon.spy()
+          @error = sinon.spy()
+
+        afterEach ->
+          @fetchSpy.restore()
+
+        it "fetches the email threads", ->
+          TuringEmailApp.reloadEmailThreads(success: @success, error: @error)
+          expect(@fetchSpy).toHaveBeenCalled()
+
+        describe "on success", ->
+          beforeEach ->
+            [@server] = specPrepareEmailThreadsFetch(TuringEmailApp.collections.emailThreads)
+            TuringEmailApp.collections.emailThreads.fetch()
+            @server.respond()
+            @oldEmailThreads = TuringEmailApp.collections.emailThreads.models
+
+            @stopListeningSpy = sinon.spy(TuringEmailApp, "stopListening")
+            @listenToSpy = sinon.spy(TuringEmailApp, "listenTo")
+
+            TuringEmailApp.reloadEmailThreads(success: @success, error: @error)
+            @server.respond()
+
+          afterEach ->
+            @stopListeningSpy.restore()
+            @listenToSpy.restore()
+
+          it "stops listening on the old models", ->
+            expect(@stopListeningSpy).toHaveBeenCalledWith(oldEmailThread) for oldEmailThread in @oldEmailThreads
+
+          it "listens for change:seen on the new models", ->
+            for emailThread in TuringEmailApp.collections.emailThreads.models
+              expect(@listenToSpy).toHaveBeenCalledWith(emailThread, "change:seen", TuringEmailApp.emailThreadSeenChanged)
+
+          it "calls the success callback", ->
+            expect(@success).toHaveBeenCalled()
+
+          it "does NOT call the error callback", ->
+            expect(@error).not.toHaveBeenCalled()
+
+        describe "on error", ->
+          beforeEach ->
+            TuringEmailApp.reloadEmailThreads(success: @success, error: @error)
+            @server.respond()
+
+          it "does NOT call the success callback", ->
+            expect(@success).not.toHaveBeenCalled()
+
+          it "calls the error callback", ->
+            expect(@error).toHaveBeenCalled()
 
   describe "#listItemSelected", ->
     return
@@ -760,185 +828,311 @@ describe "TuringEmailApp", ->
       emailThread = TuringEmailApp.collections.emailThreads.models[0]
       TuringEmailApp.emailThreadSeenChanged emailThread, true
 
-      expect(spy).toHaveBeenCalled()
+      expect(spy).toHaveBeenCalled()        
+      
+      describe "#applyActionToSelectedThreads", ->
+        beforeEach ->
+          @singleAction = sinon.spy()
+          @multiAction = sinon.spy()
+          
+          @server.restore()
+          [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
 
-  describe "#isSplitPaneMode", ->
-    beforeEach ->
-      userSettingsFixtures = fixture.load("user_settings.fixture.json");
-      @validUserSettingsFixture = userSettingsFixtures[0]["valid"]
+          TuringEmailApp.views.emailThreadsListView = @listView
+          TuringEmailApp.collections.emailThreads = @emailThreads
+          
+        afterEach ->
+          @listViewDiv.remove()
+          
+        describe "clearSelection", ->
+          beforeEach ->
+            @origisSplitPaneMode = TuringEmailApp.isSplitPaneMode
+            
+            @currentEmailThreadIsSpy = sinon.spy(TuringEmailApp, "currentEmailThreadIs")
+            @goBackClickedSpy = sinon.spy(TuringEmailApp, "goBackClicked")
+            
+          afterEach ->
+            @goBackClickedSpy.restore()
+            @currentEmailThreadIsSpy.restore()
 
-      @server = sinon.fakeServer.create()
+            TuringEmailApp.isSplitPaneMode = @origisSplitPaneMode
 
-      @server.respondWith "GET", "/api/v1/user_configurations", JSON.stringify(@validUserSettingsFixture)
+          describe "is true", ->
+            describe "with split pane", ->
+              beforeEach ->
+                TuringEmailApp.isSplitPaneMode = -> return true
+                TuringEmailApp.applyActionToSelectedThreads(@singleAction, @multiAction, true, true)
+                
+              it "clears the current email thread", ->
+                expect(@currentEmailThreadIsSpy).toHaveBeenCalledWith(null)
+                expect(@goBackClickedSpy).not.toHaveBeenCalled()
+            
+            describe "without split pane", ->
+              beforeEach ->
+                TuringEmailApp.isSplitPaneMode = -> return false
+                TuringEmailApp.applyActionToSelectedThreads(@singleAction, @multiAction, true, true)
 
-      TuringEmailApp.models.userSettings = new TuringEmailApp.Models.UserSettings()
-      TuringEmailApp.models.userSettings.fetch()
+              it "clears the current email thread", ->
+                expect(@currentEmailThreadIsSpy).not.toHaveBeenCalled()
+                expect(@goBackClickedSpy).toHaveBeenCalled()
+            
+          describe "is false", ->
+            describe "with split pane", ->
+              beforeEach ->
+                TuringEmailApp.isSplitPaneMode = -> return true
+                TuringEmailApp.applyActionToSelectedThreads(@singleAction, @multiAction, true, false)
 
-      @server.respond()
+              it "clears the current email thread", ->
+                expect(@currentEmailThreadIsSpy).not.toHaveBeenCalled()
+                expect(@goBackClickedSpy).not.toHaveBeenCalled()
 
-    describe "when split pane mode is horizontal in the user settings", ->
-      beforeEach ->
-        TuringEmailApp.models.userSettings.attributes.split_pane_mode = "horizontal"
+            describe "without split pane", ->
+              beforeEach ->
+                TuringEmailApp.isSplitPaneMode = -> return false
+                TuringEmailApp.applyActionToSelectedThreads(@singleAction, @multiAction, true, false)
 
-      it "should return true", ->
-        expect(TuringEmailApp.isSplitPaneMode()).toBeTruthy()
+              it "clears the current email thread", ->
+                expect(@currentEmailThreadIsSpy).not.toHaveBeenCalled()
+                expect(@goBackClickedSpy).not.toHaveBeenCalled()
+          
+        describe "when an item is selected", ->
+          beforeEach ->
+            @emailThread = @emailThreads.models[0]
+            @listView.select(@emailThread)
 
-    describe "when split pane mode is vertical in the user settings", ->
-      beforeEach ->
-        TuringEmailApp.models.userSettings.attributes.split_pane_mode = "vertical"
+          describe "when remove is true", ->
+            beforeEach ->
+              TuringEmailApp.applyActionToSelectedThreads(@singleAction, @multiAction, true)
 
-      it "should return true", ->
-        expect(TuringEmailApp.isSplitPaneMode()).toBeTruthy()
-
-    describe "when split pane mode is off in the user settings", ->
-
-      it "should return false", ->
-        expect(TuringEmailApp.isSplitPaneMode()).toBeFalsy()
-
-  describe "#showEmailThread", ->
-    beforeEach ->
-      @server.restore()
-      [@server] = specPrepareEmailThreadsFetch(TuringEmailApp.collections.emailThreads)
-      TuringEmailApp.collections.emailThreads.fetch(reset: true)
-      @server.respond()
-
-    it "marks the email thread as read", ->
-      spy = sinon.spy(TuringEmailApp.views.emailThreadsListView, "markEmailThreadRead")
-      emailThread = TuringEmailApp.collections.emailThreads.models[0]
-      TuringEmailApp.showEmailThread emailThread
-      expect(spy).toHaveBeenCalled()
-      expect(spy).toHaveBeenCalledWith(emailThread)
-
-    emailThreadViewEvents = ["goBackClicked", "replyClicked", "forwardClicked", "archiveClicked", "trashClicked"]
-    for event in emailThreadViewEvents
-      it "hooks the emailThreadView " + event + " event", ->
-        spy = sinon.spy(TuringEmailApp, event)
-        
-        emailThread = TuringEmailApp.collections.emailThreads.models[0]
-        TuringEmailApp.showEmailThread emailThread
-        TuringEmailApp.currentEmailThreadView.trigger(event)
-        
-        expect(spy).toHaveBeenCalled()
-        spy.restore()
-
-    describe "when split pane mode is on", ->
-      beforeEach ->
-        @isSplitPaneModeFunction = TuringEmailApp.isSplitPaneMode
-        TuringEmailApp.isSplitPaneMode = -> return true
-        @previewPanelDiv = $("<div />", {id: "preview_panel"}).appendTo("body")
-        @previewContentDiv = $("<div />", {id: "preview_content"}).appendTo("body")
-
-      afterEach ->
-        TuringEmailApp.isSplitPaneMode = @isSplitPaneModeFunction
-        @previewPanelDiv.remove()
-        @previewContentDiv.remove()
+            it "calls the single action", ->
+              expect(@singleAction).toHaveBeenCalled()
   
-      it "shows the preview panel element", ->
-        emailThread = TuringEmailApp.collections.emailThreads.models[0]
-        TuringEmailApp.showEmailThread(emailThread)
-        expect($('#preview_panel').is(':visible')).toBeTruthy()
+            it "does NOT call the multi action", ->
+              expect(@multiAction).not.toHaveBeenCalled()
+              
+            it "removes the item", ->
+              expect(@emailThreads.findWhere(uid: @emailThread.uid)).toBeFalsy()
 
-      it "renders the email thread in the preview panel", ->
-        emailThread = TuringEmailApp.collections.emailThreads.models[0]
-        TuringEmailApp.showEmailThread(emailThread)
-        expect(TuringEmailApp.currentEmailThreadView.$el).toEqual $('#preview_content')
+          describe "when remove is false", ->
+            beforeEach ->
+              TuringEmailApp.applyActionToSelectedThreads(@singleAction, @multiAction, false)
 
-    describe "when split pane mode is off", ->
+            it "calls the single action", ->
+              expect(@singleAction).toHaveBeenCalled()
+
+            it "does NOT call the multi action", ->
+              expect(@multiAction).not.toHaveBeenCalled()
+
+            it "removes the item", ->
+              expect(@emailThreads.findWhere(uid: @emailThread.uid)).toBeUndefined()
+
+        describe "when an item is checked", ->
+          beforeEach ->
+            @emailThread = @emailThreads.models[0]
+            @emailThreadUID = @emailThread.get("uid")
+            @listItemView = @listView.listItemViews[@emailThreadUID]
+            @listView.check(@emailThread)
+
+          describe "when remove is true", ->
+            beforeEach ->
+              TuringEmailApp.applyActionToSelectedThreads(@singleAction, @multiAction, true)
+
+            it "does NOT call the single action", ->
+              expect(@singleAction).not.toHaveBeenCalled()
+
+            it "calls the multi action", ->
+              expect(@multiAction).toHaveBeenCalledWith([@listItemView], [@emailThreadUID])
+
+            it "removes the item", ->
+              expect(@emailThreads.findWhere(uid: @emailThread.uid)).toBeFalsy()
+
+          describe "when remove is false", ->
+            beforeEach ->
+              TuringEmailApp.applyActionToSelectedThreads(@singleAction, @multiAction, false)
+
+            it "does NOT call the single action", ->
+              expect(@singleAction).not.toHaveBeenCalled()
+
+            it "calls the multi action", ->
+              expect(@multiAction).toHaveBeenCalledWith([@listItemView], [@emailThreadUID])
+
+            it "removes the item", ->
+              expect(@emailThreads.findWhere(uid: @emailThread.uid)).toBeUndefined()
+
+    describe "#isSplitPaneMode", ->
       beforeEach ->
-        @isSplitPaneModeFunction = TuringEmailApp.isSplitPaneMode
-        TuringEmailApp.isSplitPaneMode = -> return false
-        @emailFolderMailHeader = $("<div />", {id: "email-folder-mail-header"}).appendTo("body")
-        @emailTableBodyDiv = $("<div />", {id: "email_table_body"}).appendTo("body")
-
-      afterEach ->
-        TuringEmailApp.isSplitPaneMode = @isSplitPaneModeFunction
-        @emailFolderMailHeader.remove()
-        @emailTableBodyDiv.remove()
-
-      it "hides the email folder mail header", ->
-        emailThread = TuringEmailApp.collections.emailThreads.models[0]
-        TuringEmailApp.showEmailThread(emailThread)
-        expect($('#email-folder-mail-header').is(':hidden')).toBeTruthy()
-
-      it "renders the email thread in the email table body", ->
-        emailThread = TuringEmailApp.collections.emailThreads.models[0]
-        TuringEmailApp.showEmailThread(emailThread)
-        expect(TuringEmailApp.currentEmailThreadView.$el).toEqual $('#email_table_body')
-
-    describe "when the current email Thread is not null", ->
+        userSettingsFixtures = fixture.load("user_settings.fixture.json");
+        @validUserSettingsFixture = userSettingsFixtures[0]["valid"]
+    
+        @server = sinon.fakeServer.create()
+    
+        @server.respondWith "GET", "/api/v1/user_configurations", JSON.stringify(@validUserSettingsFixture)
+    
+        TuringEmailApp.models.userSettings = new TuringEmailApp.Models.UserSettings()
+        TuringEmailApp.models.userSettings.fetch()
+    
+        @server.respond()
+    
+      describe "when split pane mode is horizontal in the user settings", ->
+        beforeEach ->
+          TuringEmailApp.models.userSettings.attributes.split_pane_mode = "horizontal"
+    
+        it "should return true", ->
+          expect(TuringEmailApp.isSplitPaneMode()).toBeTruthy()
+    
+      describe "when split pane mode is vertical in the user settings", ->
+        beforeEach ->
+          TuringEmailApp.models.userSettings.attributes.split_pane_mode = "vertical"
+    
+        it "should return true", ->
+          expect(TuringEmailApp.isSplitPaneMode()).toBeTruthy()
+    
+      describe "when split pane mode is off in the user settings", ->
+    
+        it "should return false", ->
+          expect(TuringEmailApp.isSplitPaneMode()).toBeFalsy()
+    
+    describe "#showEmailThread", ->
       beforeEach ->
+        @server.restore()
+        [@server] = specPrepareEmailThreadsFetch(TuringEmailApp.collections.emailThreads)
+        TuringEmailApp.collections.emailThreads.fetch(reset: true)
+        @server.respond()
+    
+      it "marks the email thread as read", ->
+        spy = sinon.spy(TuringEmailApp.views.emailThreadsListView, "markEmailThreadRead")
         emailThread = TuringEmailApp.collections.emailThreads.models[0]
-        TuringEmailApp.showEmailThread(emailThread)
-
-      it "stops listening to the current email thread view", ->
-        appSpy = sinon.spy(TuringEmailApp, "stopListening")
-        viewSpy = sinon.spy(TuringEmailApp.currentEmailThreadView, "stopListening")
-        emailThread = TuringEmailApp.collections.emailThreads.models[1]
         TuringEmailApp.showEmailThread emailThread
-        expect(appSpy).toHaveBeenCalled()
-        expect(viewSpy).toHaveBeenCalled()
-
-  describe "#showEmailEditorWithEmailThread", ->
-    beforeEach ->
-      @server.restore()
-      [@server] = specPrepareEmailThreadsFetch(TuringEmailApp.collections.emailThreads)
-      TuringEmailApp.collections.emailThreads.fetch(reset: true)
-      @server.respond()
-
-    it "loads the email thread", ->
-      spy = sinon.spy(TuringEmailApp, "loadEmailThread")
-      emailThread = TuringEmailApp.collections.emailThreads.models[0]
-      TuringEmailApp.showEmailEditorWithEmailThread emailThread.get("uid")
-      expect(spy).toHaveBeenCalled()
-      expect(spy).toHaveBeenCalledWith(emailThread.get("uid"))
-
-    it "shows the compose view", ->
-      spy = sinon.spy(TuringEmailApp.views.composeView, "show")
-      emailThread = TuringEmailApp.collections.emailThreads.models[0]
-      TuringEmailApp.showEmailEditorWithEmailThread emailThread.get("uid")
-      expect(spy).toHaveBeenCalled()
-
-    describe "when in draft mode", ->
-
-      it "loads the email draft", ->
-        spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailDraft")
+        expect(spy).toHaveBeenCalled()
+        expect(spy).toHaveBeenCalledWith(emailThread)
+    
+      emailThreadViewEvents = ["goBackClicked", "replyClicked", "forwardClicked", "archiveClicked", "trashClicked"]
+      for event in emailThreadViewEvents
+        it "hooks the emailThreadView " + event + " event", ->
+          spy = sinon.spy(TuringEmailApp, event)
+    
+          emailThread = TuringEmailApp.collections.emailThreads.models[0]
+          TuringEmailApp.showEmailThread emailThread
+          TuringEmailApp.currentEmailThreadView.trigger(event)
+    
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+    
+      describe "when split pane mode is on", ->
+        beforeEach ->
+          @isSplitPaneModeFunction = TuringEmailApp.isSplitPaneMode
+          TuringEmailApp.isSplitPaneMode = -> return true
+          @previewPanelDiv = $("<div />", {id: "preview_panel"}).appendTo("body")
+          @previewContentDiv = $("<div />", {id: "preview_content"}).appendTo("body")
+    
+        afterEach ->
+          TuringEmailApp.isSplitPaneMode = @isSplitPaneModeFunction
+          @previewPanelDiv.remove()
+          @previewContentDiv.remove()
+    
+        it "shows the preview panel element", ->
+          emailThread = TuringEmailApp.collections.emailThreads.models[0]
+          TuringEmailApp.showEmailThread(emailThread)
+          expect($('#preview_panel').is(':visible')).toBeTruthy()
+    
+        it "renders the email thread in the preview panel", ->
+          emailThread = TuringEmailApp.collections.emailThreads.models[0]
+          TuringEmailApp.showEmailThread(emailThread)
+          expect(TuringEmailApp.currentEmailThreadView.$el).toEqual $('#preview_content')
+    
+      describe "when split pane mode is off", ->
+        beforeEach ->
+          @isSplitPaneModeFunction = TuringEmailApp.isSplitPaneMode
+          TuringEmailApp.isSplitPaneMode = -> return false
+          @emailFolderMailHeader = $("<div />", {id: "email-folder-mail-header"}).appendTo("body")
+          @emailTableBodyDiv = $("<div />", {id: "email_table_body"}).appendTo("body")
+    
+        afterEach ->
+          TuringEmailApp.isSplitPaneMode = @isSplitPaneModeFunction
+          @emailFolderMailHeader.remove()
+          @emailTableBodyDiv.remove()
+    
+        it "hides the email folder mail header", ->
+          emailThread = TuringEmailApp.collections.emailThreads.models[0]
+          TuringEmailApp.showEmailThread(emailThread)
+          expect($('#email-folder-mail-header').is(':hidden')).toBeTruthy()
+    
+        it "renders the email thread in the email table body", ->
+          emailThread = TuringEmailApp.collections.emailThreads.models[0]
+          TuringEmailApp.showEmailThread(emailThread)
+          expect(TuringEmailApp.currentEmailThreadView.$el).toEqual $('#email_table_body')
+    
+      describe "when the current email Thread is not null", ->
+        beforeEach ->
+          emailThread = TuringEmailApp.collections.emailThreads.models[0]
+          TuringEmailApp.showEmailThread(emailThread)
+    
+        it "stops listening to the current email thread view", ->
+          appSpy = sinon.spy(TuringEmailApp, "stopListening")
+          viewSpy = sinon.spy(TuringEmailApp.currentEmailThreadView, "stopListening")
+          emailThread = TuringEmailApp.collections.emailThreads.models[1]
+          TuringEmailApp.showEmailThread emailThread
+          expect(appSpy).toHaveBeenCalled()
+          expect(viewSpy).toHaveBeenCalled()
+    
+    describe "#showEmailEditorWithEmailThread", ->
+      beforeEach ->
+        @server.restore()
+        [@server] = specPrepareEmailThreadsFetch(TuringEmailApp.collections.emailThreads)
+        TuringEmailApp.collections.emailThreads.fetch(reset: true)
+        @server.respond()
+    
+      it "loads the email thread", ->
+        spy = sinon.spy(TuringEmailApp, "loadEmailThread")
         emailThread = TuringEmailApp.collections.emailThreads.models[0]
         TuringEmailApp.showEmailEditorWithEmailThread emailThread.get("uid")
         expect(spy).toHaveBeenCalled()
-        expect(spy).toHaveBeenCalledWith(emailThread.get("emails")[0])
-
-    describe "when in forward mode", ->
-
-      it "loads the email as a forward", ->
-        spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailAsForward")
+        expect(spy).toHaveBeenCalledWith(emailThread.get("uid"))
+    
+      it "shows the compose view", ->
+        spy = sinon.spy(TuringEmailApp.views.composeView, "show")
         emailThread = TuringEmailApp.collections.emailThreads.models[0]
-        TuringEmailApp.showEmailEditorWithEmailThread emailThread.get("uid"), "forward"
+        TuringEmailApp.showEmailEditorWithEmailThread emailThread.get("uid")
         expect(spy).toHaveBeenCalled()
-        expect(spy).toHaveBeenCalledWith(emailThread.get("emails")[0])
-
-    describe "when in reply mode", ->
-
-      it "loads the email as a reply", ->
-        spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailAsReply")
-        emailThread = TuringEmailApp.collections.emailThreads.models[0]
-        TuringEmailApp.showEmailEditorWithEmailThread emailThread.get("uid"), "reply"
-        expect(spy).toHaveBeenCalled()
-        expect(spy).toHaveBeenCalledWith(emailThread.get("emails")[0])
-
+    
+      describe "when in draft mode", ->
+    
+        it "loads the email draft", ->
+          spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailDraft")
+          emailThread = TuringEmailApp.collections.emailThreads.models[0]
+          TuringEmailApp.showEmailEditorWithEmailThread emailThread.get("uid")
+          expect(spy).toHaveBeenCalled()
+          expect(spy).toHaveBeenCalledWith(emailThread.get("emails")[0])
+    
+      describe "when in forward mode", ->
+    
+        it "loads the email as a forward", ->
+          spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailAsForward")
+          emailThread = TuringEmailApp.collections.emailThreads.models[0]
+          TuringEmailApp.showEmailEditorWithEmailThread emailThread.get("uid"), "forward"
+          expect(spy).toHaveBeenCalled()
+          expect(spy).toHaveBeenCalledWith(emailThread.get("emails")[0])
+    
+      describe "when in reply mode", ->
+    
+        it "loads the email as a reply", ->
+          spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailAsReply")
+          emailThread = TuringEmailApp.collections.emailThreads.models[0]
+          TuringEmailApp.showEmailEditorWithEmailThread emailThread.get("uid"), "reply"
+          expect(spy).toHaveBeenCalled()
+          expect(spy).toHaveBeenCalledWith(emailThread.get("emails")[0])
+    
+    describe "#moveTuringEmailReportToTop", ->
+      beforeEach ->
+        @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
+              
   describe "#moveTuringEmailReportToTop", ->
     beforeEach ->
-      @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
-
-      @listViewDiv = $("<div />", {id: "email_table_body"}).appendTo("body")
-      TuringEmailApp.views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView(
-        el: @listViewDiv
-        collection: @emailThreads
-      )
-
       @server.restore()
-      [@server] = specPrepareEmailThreadsFetch(@emailThreads)
-      @emailThreads.fetch(reset: true)
-      @server.respond()
+
+      [@listViewDiv, emailThreadsListView, emailThreads, @server] = specCreateEmailThreadsListView()
+      TuringEmailApp.views.emailThreadsListView = emailThreadsListView
+
 
     afterEach ->
       @server.restore()

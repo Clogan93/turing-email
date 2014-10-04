@@ -89,6 +89,16 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     @selectedListItemView?.deselect()
     @selectedListItemView = null
 
+  check: (emailThread, options) ->
+    listItemView = @listItemViews?[emailThread.get("uid")]
+    return false if not listItemView
+
+    @selectedListItemView?.deselect(options)
+
+    listItemView.check(options)
+
+    return true
+    
   checkAll: ->
     listItemView.check() for listItemView in _.values(@listItemViews)
 
