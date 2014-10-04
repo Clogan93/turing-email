@@ -990,7 +990,88 @@ describe "TuringEmailApp", ->
 
           it "marks all the checked items in the list view as unread", ->
             expect(@markCheckedUnreadSpy).toHaveBeenCalled()
-            
+
+      describe "#archiveClicked", ->
+        beforeEach ->
+          @server.restore()
+          [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
+    
+          TuringEmailApp.views.emailThreadsListView = @listView
+          TuringEmailApp.collections.emailThreads = @emailThreads
+
+          @emailThread = _.values(@listView.listItemViews)[0].model
+
+          TuringEmailApp.views.emailThreadsListView.select @emailThread
+
+        afterEach ->
+          @listViewDiv.remove()
+
+        it "applies the archive action to the selected threads", ->
+          spy = sinon.spy(TuringEmailApp, "applyActionToSelectedThreads")
+          TuringEmailApp.archiveClicked()
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+
+        it "gets the selected email thread", ->
+          spy = sinon.spy(TuringEmailApp, "selectedEmailThread")
+          TuringEmailApp.archiveClicked()
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+
+        it "removes the selected email thread from the folder", ->
+          sEmailThread = TuringEmailApp.selectedEmailThread()
+          spy = sinon.spy(sEmailThread, "removeFromFolder")
+          TuringEmailApp.archiveClicked()
+          expect(spy).toHaveBeenCalled()
+          expect(spy).toHaveBeenCalledWith(TuringEmailApp.selectedEmailFolderID())
+          spy.restore()
+
+        it "removes the selected email thread's model from the folder", ->
+          spy = sinon.spy(TuringEmailApp.Models.EmailThread, "removeFromFolder")
+          TuringEmailApp.archiveClicked()
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+
+      describe "#trashClicked", ->
+        beforeEach ->
+          @server.restore()
+          [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
+    
+          TuringEmailApp.views.emailThreadsListView = @listView
+          TuringEmailApp.collections.emailThreads = @emailThreads
+
+          @emailThread = _.values(@listView.listItemViews)[0].model
+
+          TuringEmailApp.views.emailThreadsListView.select @emailThread
+
+        afterEach ->
+          @listViewDiv.remove()
+
+        it "applies the trash action to the selected threads", ->
+          spy = sinon.spy(TuringEmailApp, "applyActionToSelectedThreads")
+          TuringEmailApp.trashClicked()
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+
+        it "gets the selected email thread", ->
+          spy = sinon.spy(TuringEmailApp, "selectedEmailThread")
+          TuringEmailApp.trashClicked()
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+
+        it "calls trash on the selected email thread", ->
+          sEmailThread = TuringEmailApp.selectedEmailThread()
+          spy = sinon.spy(sEmailThread, "trash")
+          TuringEmailApp.trashClicked()
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+
+        it "calls trash on the selected email thread's model", ->
+          spy = sinon.spy(TuringEmailApp.Models.EmailThread, "trash")
+          TuringEmailApp.trashClicked()
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+
     describe "#listItemSelected", ->
       beforeEach ->
         @server.restore()
