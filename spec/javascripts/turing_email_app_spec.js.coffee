@@ -436,7 +436,6 @@ describe "TuringEmailApp", ->
           it "triggers the change:currentEmailFolder event", ->
             expect(@changecurrentEmailFolderSpy).toHaveBeenCalledWith(TuringEmailApp, @emailFolder)
 
-        
         describe "before fetch", ->
           beforeEach ->
             @currentEmailThreadIsSpy = sinon.spy(TuringEmailApp, "currentEmailThreadIs")
@@ -692,35 +691,81 @@ describe "TuringEmailApp", ->
       TuringEmailApp.collections.emailThreads.fetch(reset: true)
       @server.respond()
 
+    it "marks the email thread as read", ->
+      spy = sinon.spy(TuringEmailApp.views.emailThreadsListView, "markEmailThreadRead")
+      emailThread = TuringEmailApp.collections.emailThreads.models[0]
+      TuringEmailApp.showEmailThread emailThread
+      expect(spy).toHaveBeenCalled()
+      expect(spy).toHaveBeenCalledWith(emailThread)
+
+    emailThreadViewEvents = ["goBackClicked", "replyClicked", "forwardClicked", "archiveClicked", "trashClicked"]
+    for event in emailThreadViewEvents
+      it "hooks the emailThreadView " + event + " event", ->
+        spy = sinon.spy(TuringEmailApp, event)
+        
+        emailThread = TuringEmailApp.collections.emailThreads.models[0]
+        TuringEmailApp.showEmailThread emailThread
+        TuringEmailApp.currentEmailThreadView.trigger(event)
+        
+        expect(spy).toHaveBeenCalled()
+        spy.restore()
+
     describe "when split pane mode is on", ->
       beforeEach ->
         @isSplitPaneModeFunction = TuringEmailApp.isSplitPaneMode
         TuringEmailApp.isSplitPaneMode = -> return true
         @previewPanelDiv = $("<div />", {id: "preview_panel"}).appendTo("body")
+        @previewContentDiv = $("<div />", {id: "preview_content"}).appendTo("body")
 
       afterEach ->
         TuringEmailApp.isSplitPaneMode = @isSplitPaneModeFunction
         @previewPanelDiv.remove()
+        @previewContentDiv.remove()
   
       it "shows the preview panel element", ->
         emailThread = TuringEmailApp.collections.emailThreads.models[0]
         TuringEmailApp.showEmailThread(emailThread)
         expect($('#preview_panel').is(':visible')).toBeTruthy()
 
+      it "renders the email thread in the preview panel", ->
+        emailThread = TuringEmailApp.collections.emailThreads.models[0]
+        TuringEmailApp.showEmailThread(emailThread)
+        expect(TuringEmailApp.currentEmailThreadView.$el).toEqual $('#preview_content')
+
     describe "when split pane mode is off", ->
       beforeEach ->
         @isSplitPaneModeFunction = TuringEmailApp.isSplitPaneMode
         TuringEmailApp.isSplitPaneMode = -> return false
         @emailFolderMailHeader = $("<div />", {id: "email-folder-mail-header"}).appendTo("body")
+        @emailTableBodyDiv = $("<div />", {id: "email_table_body"}).appendTo("body")
 
       afterEach ->
         TuringEmailApp.isSplitPaneMode = @isSplitPaneModeFunction
         @emailFolderMailHeader.remove()
+        @emailTableBodyDiv.remove()
 
       it "hides the email folder mail header", ->
         emailThread = TuringEmailApp.collections.emailThreads.models[0]
         TuringEmailApp.showEmailThread(emailThread)
         expect($('#email-folder-mail-header').is(':hidden')).toBeTruthy()
+
+      it "renders the email thread in the email table body", ->
+        emailThread = TuringEmailApp.collections.emailThreads.models[0]
+        TuringEmailApp.showEmailThread(emailThread)
+        expect(TuringEmailApp.currentEmailThreadView.$el).toEqual $('#email_table_body')
+
+    describe "when the current email Thread is not null", ->
+      beforeEach ->
+        emailThread = TuringEmailApp.collections.emailThreads.models[0]
+        TuringEmailApp.showEmailThread(emailThread)
+
+      it "stops listening to the current email thread view", ->
+        appSpy = sinon.spy(TuringEmailApp, "stopListening")
+        viewSpy = sinon.spy(TuringEmailApp.currentEmailThreadView, "stopListening")
+        emailThread = TuringEmailApp.collections.emailThreads.models[1]
+        TuringEmailApp.showEmailThread emailThread
+        expect(appSpy).toHaveBeenCalled()
+        expect(viewSpy).toHaveBeenCalled()
 
   describe "#showEmailEditorWithEmailThread", ->
     beforeEach ->
