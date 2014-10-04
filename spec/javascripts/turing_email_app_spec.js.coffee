@@ -849,7 +849,37 @@ describe "TuringEmailApp", ->
               expect(@emailThreads.findWhere(uid: @emailThread.uid)).toBeUndefined()
 
   describe "#listItemSelected", ->
-    return
+    beforeEach ->
+      @server.restore()
+      [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
+
+      TuringEmailApp.views.emailThreadsListView = @listView
+      TuringEmailApp.collections.emailThreads = @emailThreads
+
+      @listItemView = _.values(@listView.listItemViews)[0]
+
+    afterEach ->
+      @listViewDiv.remove()
+
+    describe "when the email is a draft", ->
+
+      it "navigates to the email draft", ->
+        spy = sinon.spy(TuringEmailApp.routers.emailThreadsRouter, "navigate")
+        TuringEmailApp.listItemSelected @listView, @listItemView
+        expect(spy).toHaveBeenCalled()
+        expect(spy).toHaveBeenCalledWith("#email_draft/" + @listItemView.model.get("uid"))
+        spy.restore()
+
+    describe "when the email is not draft", ->
+      beforeEach ->
+        @listView.listItemViews[@listItemView.model.get("uid")].model.get("emails")[0].draft_id = null
+
+      it "navigates to the email thread", ->
+        spy = sinon.spy(TuringEmailApp.routers.emailThreadsRouter, "navigate")
+        TuringEmailApp.listItemSelected @listView, @listItemView
+        expect(spy).toHaveBeenCalled()
+        expect(spy).toHaveBeenCalledWith("#email_thread/" + @listItemView.model.get("uid"))
+        spy.restore()
 
   describe "#listItemDeselected", ->
     it "navigates to the email thread url", ->
@@ -876,7 +906,45 @@ describe "TuringEmailApp", ->
       spy.restore()
 
   describe "#listItemUnchecked", ->
-    return
+
+    describe "when there is a current email thread view", ->
+      beforeEach ->
+        @server.restore()
+        [@server] = specPrepareEmailThreadsFetch(TuringEmailApp.collections.emailThreads)
+        TuringEmailApp.collections.emailThreads.fetch(reset: true)
+        @server.respond()
+        emailThread = TuringEmailApp.collections.emailThreads.models[0]
+        TuringEmailApp.showEmailThread emailThread
+
+      describe "when the number of check list items is not 0", ->
+
+        beforeEach ->
+          @getCheckedListItemViewsFunction = TuringEmailApp.getCheckedListItemViews
+          TuringEmailApp.views.emailThreadsListView.getCheckedListItemViews = -> return {"length" : 1}
+
+        afterEach ->
+          TuringEmailApp.getCheckedListItemViews = @getCheckedListItemViewsFunction
+
+        it "does not shows the current email thread view", ->
+          spy = sinon.spy(TuringEmailApp.currentEmailThreadView.$el, "show")
+          TuringEmailApp.listItemUnchecked null, null
+          expect(spy).not.toHaveBeenCalled()
+          spy.restore()
+
+      describe "when the number of check list items is 0 and there is a current email thread view", ->
+
+        beforeEach ->
+          @getCheckedListItemViewsFunction = TuringEmailApp.getCheckedListItemViews
+          TuringEmailApp.views.emailThreadsListView.getCheckedListItemViews = -> return {"length" : 0}
+
+        afterEach ->
+          TuringEmailApp.getCheckedListItemViews = @getCheckedListItemViewsFunction
+
+        it "shows the current email thread view", ->
+          spy = sinon.spy(TuringEmailApp.currentEmailThreadView.$el, "show")
+          TuringEmailApp.listItemUnchecked null, null
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
 
   describe "#emailFolderSelected", ->
 
