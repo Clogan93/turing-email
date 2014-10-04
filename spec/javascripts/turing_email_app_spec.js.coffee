@@ -651,6 +651,36 @@ describe "TuringEmailApp", ->
       describe "#applyActionToSelectedThreads", ->
         return
 
+  describe "#listItemSelected", ->
+    return
+
+  describe "#listItemDeselected", ->
+    it "navigates to the email thread url", ->
+      spy = sinon.spy(TuringEmailApp.routers.emailThreadsRouter, "navigate")
+      TuringEmailApp.listItemDeselected null, null
+      expect(spy).toHaveBeenCalled()
+      expect(spy).toHaveBeenCalledWith("#email_thread/.")
+      spy.restore()
+
+  describe "#listItemChecked", ->
+
+    beforeEach ->
+      @server.restore()
+      [@server] = specPrepareEmailThreadsFetch(TuringEmailApp.collections.emailThreads)
+      TuringEmailApp.collections.emailThreads.fetch(reset: true)
+      @server.respond()
+      emailThread = TuringEmailApp.collections.emailThreads.models[0]
+      TuringEmailApp.showEmailThread emailThread
+
+    it "hides the current email thread view.", ->
+      spy = sinon.spy(TuringEmailApp.currentEmailThreadView.$el, "hide")
+      TuringEmailApp.listItemChecked null, null
+      expect(spy).toHaveBeenCalled()
+      spy.restore()
+
+  describe "#listItemUnchecked", ->
+    return
+
   describe "#emailFolderSelected", ->
 
     describe "when the email folder is defined", ->
@@ -659,6 +689,7 @@ describe "TuringEmailApp", ->
 
       describe "when the window location is already set to show the email folder page", ->
         beforeEach ->
+          TuringEmailApp.routers.emailThreadsRouter.navigate("#email_folder/INBOX", trigger: true)
           @emailFolder.set("label_id", "INBOX")
 
         it "navigates to the email folder url", ->
