@@ -671,15 +671,21 @@ describe "TuringEmailApp", ->
             @oldEmailThreads = TuringEmailApp.collections.emailThreads.models
   
             @stopListeningSpy = sinon.spy(TuringEmailApp, "stopListening")
+            @listenToSpy = sinon.spy(TuringEmailApp, "listenTo")
             
             TuringEmailApp.reloadEmailThreads(success: @success, error: @error)
             @server.respond()
             
           afterEach ->
             @stopListeningSpy.restore()
+            @listenToSpy.restore()
 
           it "stops listening on the old models", ->
             expect(@stopListeningSpy).toHaveBeenCalledWith(oldEmailThread) for oldEmailThread in @oldEmailThreads
+            
+          it "listens for change:seen on the new models", ->
+            for emailThread in TuringEmailApp.collections.emailThreads.models
+              expect(@listenToSpy).toHaveBeenCalledWith(emailThread, "change:seen", TuringEmailApp.emailThreadSeenChanged)
             
           it "calls the success callback", ->
             expect(@success).toHaveBeenCalled()
@@ -699,22 +705,139 @@ describe "TuringEmailApp", ->
             expect(@error).toHaveBeenCalled()
       
       describe "#applyActionToSelectedThreads", ->
-        return
+        beforeEach ->
+          @singleAction = sinon.spy()
+          @multiAction = sinon.spy()
+          
+          @server.restore()
+          [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
+
+          TuringEmailApp.views.emailThreadsListView = @listView
+          TuringEmailApp.collections.emailThreads = @emailThreads
+          
+        afterEach ->
+          @listViewDiv.remove()
+          
+        describe "clearSelection", ->
+          beforeEach ->
+            @origisSplitPaneMode = TuringEmailApp.isSplitPaneMode
+            
+            @currentEmailThreadIsSpy = sinon.spy(TuringEmailApp, "currentEmailThreadIs")
+            @goBackClickedSpy = sinon.spy(TuringEmailApp, "goBackClicked")
+            
+          afterEach ->
+            @goBackClickedSpy.restore()
+            @currentEmailThreadIsSpy.restore()
+
+            TuringEmailApp.isSplitPaneMode = @origisSplitPaneMode
+
+          describe "is true", ->
+            describe "with split pane", ->
+              beforeEach ->
+                TuringEmailApp.isSplitPaneMode = -> return true
+                TuringEmailApp.applyActionToSelectedThreads(@singleAction, @multiAction, true, true)
+                
+              it "clears the current email thread", ->
+                expect(@currentEmailThreadIsSpy).toHaveBeenCalledWith(null)
+                expect(@goBackClickedSpy).not.toHaveBeenCalled()
+            
+            describe "without split pane", ->
+              beforeEach ->
+                TuringEmailApp.isSplitPaneMode = -> return false
+                TuringEmailApp.applyActionToSelectedThreads(@singleAction, @multiAction, true, true)
+
+              it "clears the current email thread", ->
+                expect(@currentEmailThreadIsSpy).not.toHaveBeenCalled()
+                expect(@goBackClickedSpy).toHaveBeenCalled()
+            
+          describe "is false", ->
+            describe "with split pane", ->
+              beforeEach ->
+                TuringEmailApp.isSplitPaneMode = -> return true
+                TuringEmailApp.applyActionToSelectedThreads(@singleAction, @multiAction, true, false)
+
+              it "clears the current email thread", ->
+                expect(@currentEmailThreadIsSpy).not.toHaveBeenCalled()
+                expect(@goBackClickedSpy).not.toHaveBeenCalled()
+
+            describe "without split pane", ->
+              beforeEach ->
+                TuringEmailApp.isSplitPaneMode = -> return false
+                TuringEmailApp.applyActionToSelectedThreads(@singleAction, @multiAction, true, false)
+
+              it "clears the current email thread", ->
+                expect(@currentEmailThreadIsSpy).not.toHaveBeenCalled()
+                expect(@goBackClickedSpy).not.toHaveBeenCalled()
+          
+        describe "when an item is selected", ->
+          beforeEach ->
+            @emailThread = @emailThreads.models[0]
+            @listView.select(@emailThread)
+
+          describe "when remove is true", ->
+            beforeEach ->
+              TuringEmailApp.applyActionToSelectedThreads(@singleAction, @multiAction, true)
+
+            it "calls the single action", ->
+              expect(@singleAction).toHaveBeenCalled()
+  
+            it "does NOT call the multi action", ->
+              expect(@multiAction).not.toHaveBeenCalled()
+              
+            it "removes the item", ->
+              expect(@emailThreads.findWhere(uid: @emailThread.uid)).toBeFalsy()
+
+          describe "when remove is false", ->
+            beforeEach ->
+              TuringEmailApp.applyActionToSelectedThreads(@singleAction, @multiAction, false)
+
+            it "calls the single action", ->
+              expect(@singleAction).toHaveBeenCalled()
+
+            it "does NOT call the multi action", ->
+              expect(@multiAction).not.toHaveBeenCalled()
+
+            it "removes the item", ->
+              expect(@emailThreads.findWhere(uid: @emailThread.uid)).toBeUndefined()
+
+        describe "when an item is checked", ->
+          beforeEach ->
+            @emailThread = @emailThreads.models[0]
+            @emailThreadUID = @emailThread.get("uid")
+            @listItemView = @listView.listItemViews[@emailThreadUID]
+            @listView.check(@emailThread)
+
+          describe "when remove is true", ->
+            beforeEach ->
+              TuringEmailApp.applyActionToSelectedThreads(@singleAction, @multiAction, true)
+
+            it "does NOT call the single action", ->
+              expect(@singleAction).not.toHaveBeenCalled()
+
+            it "calls the multi action", ->
+              expect(@multiAction).toHaveBeenCalledWith([@listItemView], [@emailThreadUID])
+
+            it "removes the item", ->
+              expect(@emailThreads.findWhere(uid: @emailThread.uid)).toBeFalsy()
+
+          describe "when remove is false", ->
+            beforeEach ->
+              TuringEmailApp.applyActionToSelectedThreads(@singleAction, @multiAction, false)
+
+            it "does NOT call the single action", ->
+              expect(@singleAction).not.toHaveBeenCalled()
+
+            it "calls the multi action", ->
+              expect(@multiAction).toHaveBeenCalledWith([@listItemView], [@emailThreadUID])
+
+            it "removes the item", ->
+              expect(@emailThreads.findWhere(uid: @emailThread.uid)).toBeUndefined()
 
   describe "#moveTuringEmailReportToTop", ->
     beforeEach ->
-      @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
-
-      @listViewDiv = $("<div />", {id: "email_table_body"}).appendTo("body")
-      TuringEmailApp.views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView(
-        el: @listViewDiv
-        collection: @emailThreads
-      )
-
       @server.restore()
-      [@server] = specPrepareEmailThreadsFetch(TuringEmailApp.collections.emailThreads)
-      @emailThreads.fetch(reset: true)
-      @server.respond()
+      [@listViewDiv, emailThreadsListView, emailThreads, @server] = specCreateEmailThreadsListView()
+      TuringEmailApp.views.emailThreadsListView = emailThreadsListView
 
     afterEach ->
       @server.restore()
