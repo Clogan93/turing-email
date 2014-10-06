@@ -26,48 +26,63 @@ describe "TreeView", ->
 
   describe "#render", ->
     beforeEach ->
-      @emailFolders.fetch()
-      @server.respond()
+      @treeDivTest = ->
+        expect(@treeDiv).toBeVisible()
 
-    it "renders the tree view", ->
-      expect(@treeDiv).toBeVisible()
+        for emailFolder in @emailFolders.models
+          labelID = emailFolder.get("label_id")
+          link = @treeDiv.find("#" + labelID)
 
-      for emailFolder in @emailFolders.models
-        continue if emailFolder.get("label_type") != "user"
-        
-        link = @treeDiv.find("#" + emailFolder.get("label_id"))
-        expect(link).toBeVisible()
-        expect(link).toHaveClass("label_link")
-        expect(link).toContainHtml(emailFolder.get("name") +
-                                   ' <span class="badge">' + emailFolder.get("num_unread_threads") + '</span>')
+          if emailFolder.get("label_type") == "user"
+            expect(link).toBeVisible()
+            expect(link).toHaveClass("label_link")
+            expect(link).toContainHtml(emailFolder.get("name") +
+              ' <span class="badge">' + emailFolder.get("num_unread_threads") + '</span>')
+          else if labelID is "INBOX"
+            badge = link.find("span.inbox_count_badge")
+            expect(badge.text()).toEqual("" + emailFolder.get("num_unread_threads"))
+          else if labelID is "DRAFT"
+            badge = link.find("span.badge")
+            expect(badge.text()).toEqual("" + emailFolder.get("num_threads"))
+      
+      @selectSpy = sinon.spy(@treeView, "select")
+
+    afterEach ->
+      @selectSpy.restore()
+
+    describe "without a selected item", ->
+      beforeEach ->
+        @emailFolders.fetch()
+        @server.respond()
+
+      it "renders the tree view", ->
+        @treeDivTest()
+
+      it "does not select the item", ->
+        expect(@selectSpy).not.toHaveBeenCalled()
+
+    describe "with a selected item", ->
+      beforeEach ->
+        @emailFolder = new TuringEmailApp.Models.EmailFolder()
+        @treeView.select(@emailFolder)
+
+        @emailFolders.fetch()
+        @server.respond()
+
+      it "renders the tree view", ->
+        @treeDivTest()
+
+      it "selects the item", ->
+        expect(@selectSpy).toHaveBeenCalledWith(@emailFolder)
 
   describe "#generateTree", ->
     # TODO write tests
-  
+
+  describe "Setup", ->
+    describe "#setupNodes", ->
+      beforeEach ->
+        @emailFolders.fetch()
+        @server.respond()
+
   describe "#select", ->
-    beforeEach ->
-      @emailFolders.fetch()
-      @server.respond()
-
-      @firstFolder = @emailFolders.models[0]
-      @secondFolder = @emailFolders.models[3]
-      @firstLabelID = @firstFolder.get("label_id")
-      @secondLabelID = @secondFolder.get("label_id")
-
-      @firstLabelDiv = @treeDiv.find('a[href="#email_folder/' + @firstLabelID + '"]')
-      @secondLabelDiv = @treeDiv.find('a[href="#email_folder/' + @secondLabelID + '"]')
-
-    it "changes the currently selected folder", ->
-      expect(@treeView.selectedItem()).toBeUndefined()
-      
-      @treeView.select(@firstFolder)
-      expect(@treeView.selectedItem()).toEqual(@firstFolder)
-      expect(@firstLabelDiv).toHandle("click")
-  
-      @treeView.select(@secondFolder)
-      expect(@treeView.selectedItem()).toEqual(@secondFolder)
-      expect(@secondLabelDiv).toHandle("click")
-      expect(@firstLabelDiv).not.toHandle("click")
-
-      @secondLabelDiv.click()
-      expect("click").toHaveBeenPreventedOn("#" + @secondLabelID)
+    
