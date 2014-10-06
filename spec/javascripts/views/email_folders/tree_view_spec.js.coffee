@@ -118,5 +118,26 @@ describe "TreeView", ->
           expect(spy).toHaveBeenCalled()
           expect(spy).toHaveBeenCalledWith(emailFolder)
 
+  describe "#selectedItem", ->
+
+    describe "without a selected item", ->
+      beforeEach ->
+        @emailFolders.fetch()
+        @server.respond()
+
+      it "should return null", ->
+        expect(@treeView.selectedItem()).toEqual null
+      
+    describe "with a selected item", ->
+      beforeEach ->
+        @emailFolder = new TuringEmailApp.Models.EmailFolder()
+        @treeView.select(@emailFolder)
+
+        @emailFolders.fetch()
+        @server.respond()
+
+      it "selects the item", ->
+        expect(@treeView.selectedItem()).toEqual @emailFolder
+
   describe "#select", ->
     return
