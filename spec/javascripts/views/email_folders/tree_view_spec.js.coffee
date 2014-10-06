@@ -78,7 +78,19 @@ describe "TreeView", ->
         expect(@selectSpy).toHaveBeenCalledWith(@emailFolder)
 
   describe "#generateTree", ->
-    # TODO write tests
+    beforeEach ->
+      @emailFolders.fetch()
+      @server.respond()
+
+    it "generates the correct tree", ->
+      @treeView.generateTree()
+      expect(@treeView.tree.emailFolder).toEqual null
+      expect(_.values(@treeView.tree.children).length).toEqual 9
+      expect(_.values(@treeView.tree.children["INBOX"].children).length).toEqual 0
+
+    it "correctly inserts sub-labels in the tree", ->
+      expect(_.values(@treeView.tree.children["Calendar"].children).length).toEqual 1
+      expect(_.keys(this.treeView.tree.children["Calendar"].children)[0]).toEqual "Google"
 
   describe "Setup", ->
     describe "#setupNodes", ->
@@ -140,7 +152,65 @@ describe "TreeView", ->
         expect(@treeView.selectedItem()).toEqual @emailFolder
 
   describe "#select", ->
-    return
+    beforeEach ->
+      @emailFolders.fetch()
+      @server.respond()
+
+    describe "with a selected item", ->
+      beforeEach ->
+        @emailFolders.fetch()
+        @server.respond()
+
+        @emailFolder = @emailFolders.models[0]
+        @otherEmailFolder = @emailFolders.models[1]
+        @treeView.select(@emailFolder, force: true)
+
+      it "deselects the item", ->
+        spy = sinon.backbone.spy(@treeView, "emailFolderDeselected")
+        @treeView.select(@otherEmailFolder, force: true)
+        expect(spy).toHaveBeenCalled()
+        expect(spy).toHaveBeenCalledWith(@treeView, @emailFolder)
+        spy.restore()
+
+      it "updates the tree view's selected item", ->
+        expect(@treeView.selectedItem()).toEqual @emailFolder
+        @treeView.select(@otherEmailFolder, force: true)
+        expect(@treeView.selectedItem()).toEqual @otherEmailFolder
+
+      it "triggers emailFolderSelected", ->
+        spy = sinon.backbone.spy(@treeView, "emailFolderSelected")
+        @treeView.select(@otherEmailFolder, force: true)
+        expect(spy).toHaveBeenCalled()
+        expect(spy).toHaveBeenCalledWith(@treeView, @otherEmailFolder)
+        spy.restore()
+
+      describe "when options silent is true", ->
+
+        it "does not triggers emailFolderSelected", ->
+          spy = sinon.backbone.spy(@treeView, "emailFolderSelected")
+          @treeView.select(@otherEmailFolder, force: true, silent: true)
+          expect(spy).not.toHaveBeenCalled()
+          spy.restore()
+
+  describe "#updateBadgeCount", ->
+    beforeEach ->
+      @emailFolders.fetch()
+      @server.respond()
+
+    describe "when the email folder is the inbox", ->
+      beforeEach ->
+        @inboxEmailFolder = @treeView.collection.getEmailFolder "INBOX"
+
+      it "updates the inbox count badge", ->
+        expect(@treeView.$el.find('.inbox_count_badge')).toContainHtml(@inboxEmailFolder.badgeString())
+
+    describe "when the email folder is not the inbox", ->
+      beforeEach ->
+        @emailFolderID = "Label_119"
+        @nonInboxEmailFolder = @treeView.collection.getEmailFolder @emailFolderID
+
+      it "updates the email folder's badge count", ->      
+        expect(@treeView.$el.find('a[href="' + @emailFolderID + '"]>.badge').html(@nonInboxEmailFolder.badgeString()))
 
   describe "#emailFolderUnreadCountChanged", ->
     beforeEach ->
