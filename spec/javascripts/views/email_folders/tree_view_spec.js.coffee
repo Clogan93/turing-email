@@ -141,3 +141,15 @@ describe "TreeView", ->
 
   describe "#select", ->
     return
+
+  describe "#emailFolderUnreadCountChanged", ->
+    beforeEach ->
+      @emailFolders.fetch()
+      @server.respond()
+      @emailFolder = @emailFolders.models[0]
+
+    it "updates the badge count", ->
+      spy = sinon.spy(@treeView, "updateBadgeCount")
+      @treeView.emailFolderUnreadCountChanged TuringEmailApp, @emailFolder
+      expect(spy).toHaveBeenCalled()
+      expect(spy).toHaveBeenCalledWith(@emailFolder)
