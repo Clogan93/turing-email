@@ -1,4 +1,4 @@
-<div class="mail-box-header">
+<div class="mail-box-header email-thread-header">
     <div class="pull-right tooltip-demo">
       <% if(!TuringEmailApp.isSplitPaneMode()) { %>
         <a class="btn btn-white btn-sm" id="email_back_button" data-toggle="tooltip" data-placement="top" title="Back">
@@ -19,10 +19,7 @@
         <i class="fa fa-trash-o"></i>
       </button>
     </div>
-  
-    <h2>
-        View Message
-    </h2>
+
     <div class="mail-tools tooltip-demo m-t-md">
 
         <h3>
@@ -41,10 +38,10 @@
       <% _.each(emails.reverse(), function(email, index) { %>
         <div class="email<%= (emails.length > 1 && index < emails.length - 1) && email.seen ? " collapsed_email" : "" %>">
           <div class="email_information">
-            <div class="col-md-3">
+            <div class="col-md-2">
               <%= fromPreview %>
             </div>
-            <div class="col-md-7">
+            <div class="col-md-8">
               <%= email.subject.trim() == "" ? "(no subject)" : email.subject %>
             </div>
             <div class="col-md-2">
