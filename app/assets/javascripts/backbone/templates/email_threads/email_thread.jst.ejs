@@ -26,11 +26,12 @@
     <div class="mail-tools tooltip-demo m-t-md">
 
         <h3>
-            <span class="font-noraml">Subject: </span><span id="email_subject"><%= emails[0].subject.trim() == "" ? "(no subject)" : emails[0].subject %></span>
+            <span class="font-noraml">Subject: </span><span id="email_subject"><%= subjectPreview %></span>
         </h3>
         <h5>
-            <span class="pull-right font-noraml">10:15AM 02 FEB 2014</span>
-            <span class="font-noraml">From: </span><%= emails[0].from_name == "" ? emails[0].from_address : emails[0].from_name %>
+            <span class="pull-right font-noraml"><%= datePreview %></span>
+            <span class="font-noraml">From: </span><%= fromPreview %>
+            <span class="font-noraml">From: </span><%= fromPreview %>
         </h5>
     </div>
 </div>
@@ -41,11 +42,13 @@
         <div class="email<%= (emails.length > 1 && index < emails.length - 1) && email.seen ? " collapsed_email" : "" %>">
           <div class="email_information">
             <div class="col-md-3">
-              <%= email.from_name == "" ? email.from_address : email.from_name %>
+              <%= fromPreview %>
             </div>
-
-            <div class="col-md-offset-7 col-md-2">
-              <%= email.date == null ? "" : email.date.substring(0, 10) %>
+            <div class="col-md-7">
+              <%= email.subject.trim() == "" ? "(no subject)" : email.subject %>
+            </div>
+            <div class="col-md-2">
+              <%= datePreview %>
             </div>
           </div>
           
