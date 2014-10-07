@@ -36,5 +36,5 @@
 //
 //= require ./vendors/chance.js
 //= require ./vendors/unserialize.jquery.latest.js
-//= require ./backbone_spy
-//= require ./spec_misc
+//= require ./lib/backbone_spy
+//= require ./lib/spec_misc
