@@ -41,6 +41,9 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
           @savingDraft = false
       )
 
+    @$el.find("#composeModal").on "hidden.bs.modal", (event) =>
+      @$el.find("#compose_form #save_button").click()
+
   show: ->
     @$el.find("#composeModal").modal "show"
     

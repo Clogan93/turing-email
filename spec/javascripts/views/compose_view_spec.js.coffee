@@ -69,6 +69,17 @@ describe "ComposeView", ->
             @server.respond([404, {}, ""])
             expect(TuringEmailApp.views.composeView.savingDraft).toEqual(false)
 
+      describe "when the compose modal is hidden", ->
+        beforeEach ->
+          TuringEmailApp.views.composeView.show()
+
+        it "saves the draft", ->
+          @spy = sinon.spy(TuringEmailApp.views.composeView, "updateDraft")
+          TuringEmailApp.views.composeView.hide()
+
+          waitsFor ->
+            return @spy.callCount == 1
+
     describe "#show", ->
 
       it "shows the compose modal", ->
@@ -475,13 +486,13 @@ describe "ComposeView", ->
             TuringEmailApp.views.composeView.savingDraft = true
 
           it "sends the email after a timeout", ->
-              @spy = sinon.spy(TuringEmailApp.views.composeView, "sendEmail")
-              TuringEmailApp.views.composeView.sendEmail()
+            @spy = sinon.spy(TuringEmailApp.views.composeView, "sendEmail")
+            TuringEmailApp.views.composeView.sendEmail()
 
-              waitsFor ->
-                return @spy.callCount == 2
+            waitsFor ->
+              return @spy.callCount == 2
 
-              TuringEmailApp.views.composeView.savingDraft = false
+            TuringEmailApp.views.composeView.savingDraft = false
 
         describe "when not saving the draft", ->
           beforeEach ->
