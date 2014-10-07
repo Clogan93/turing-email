@@ -184,6 +184,18 @@ describe "TreeView", ->
         expect(spy).toHaveBeenCalledWith(@treeView, @otherEmailFolder)
         spy.restore()
 
+      describe "when options the email folder is the same and force is false", ->
+
+        it "returns immediately", ->
+          emailFolderSelectedSpy = sinon.backbone.spy(@treeView, "emailFolderSelected")
+          emailFolderDeselectedSpy = sinon.backbone.spy(@treeView, "emailFolderDeselected")
+          @treeView.select(@emailFolder, force: false)
+          expect(emailFolderSelectedSpy).not.toHaveBeenCalled()
+          expect(emailFolderDeselectedSpy).not.toHaveBeenCalled()
+          expect(@treeView.selectedItem()).toEqual @emailFolder
+          emailFolderSelectedSpy.restore()
+          emailFolderDeselectedSpy.restore()
+
       describe "when options silent is true", ->
 
         it "does not triggers emailFolderSelected", ->
@@ -202,6 +214,7 @@ describe "TreeView", ->
         @inboxEmailFolder = @treeView.collection.getEmailFolder "INBOX"
 
       it "updates the inbox count badge", ->
+        @treeView.updateBadgeCount @inboxEmailFolder
         expect(@treeView.$el.find('.inbox_count_badge')).toContainHtml(@inboxEmailFolder.badgeString())
 
     describe "when the email folder is not the inbox", ->
@@ -209,7 +222,8 @@ describe "TreeView", ->
         @emailFolderID = "Label_119"
         @nonInboxEmailFolder = @treeView.collection.getEmailFolder @emailFolderID
 
-      it "updates the email folder's badge count", ->      
+      it "updates the email folder's badge count", ->
+        @treeView.updateBadgeCount @nonInboxEmailFolder
         expect(@treeView.$el.find('a[href="' + @emailFolderID + '"]>.badge').html(@nonInboxEmailFolder.badgeString()))
 
   describe "#emailFolderUnreadCountChanged", ->
