@@ -104,9 +104,7 @@ describe "EmailThreadView", ->
         expect(@emailThreadView.$el.find('.email')).toHandle("click")
 
       describe "when a .email is clicked", ->
-        
-        it "should call show on the email body", ->
-          aDotEmailElement = @emailThreadView.$el.find('.email').first()
-          spy = sinon.spy(aDotEmailElement.find(".email_body"), "show")
-          aDotEmailElement.click()
-          expect(spy).toHaveBeenCalled()
+
+        it "should show the email body", ->
+          @emailThreadView.$el.find('.email').first().click()
+          expect(@emailThreadView.$el.find('.email').first().find(".email_body").css("display")).toEqual "block"
