@@ -88,6 +88,15 @@
     "name": "Draft",
     "num_threads": 101,
     "num_unread_threads": 57
+  },
+  {
+    "label_id": "SENT",
+    "label_list_visibility": "labelShow",
+    "label_type": "system",
+    "message_list_visibility": "show",
+    "name": "Draft",
+    "num_threads": 50,
+    "num_unread_threads": 0
   }],
   
   "additional": {
