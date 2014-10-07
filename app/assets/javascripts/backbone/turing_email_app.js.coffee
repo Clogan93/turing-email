@@ -20,6 +20,8 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @collections = {}
     @routers = {}
     
+    @setupSidebar()
+    
     @setupSearchBar()
     @setupComposeButton()
     @setupFiltering()
@@ -72,6 +74,12 @@ window.TuringEmailApp = new(Backbone.View.extend(
     return
     #$("#email_table_body tr:nth-child(1)").addClass("email_thread_highlight")
     
+  setupSidebar: ->
+    @views.sidebar = new TuringEmailApp.Views.App.SidebarView(
+      el: $("#sidebar")
+    )
+    @views.sidebar.render()
+
   setupSearchBar: ->
     $("#top-search-form").submit (event) =>
       event.preventDefault();
