@@ -22,12 +22,23 @@ describe "SettingsRouter", ->
     expect(@settingsRouter.routes["settings"]).toEqual "showSettings"
 
   describe "settings", ->
-    beforeEach ->
-      @spy = sinon.spy(TuringEmailApp.Views, "SettingsView")
-      @settingsRouter.navigate "settings", trigger: true
+    describe "when user settings are defined", ->
+      beforeEach ->
+        @spy = sinon.spy(TuringEmailApp.Views, "SettingsView")
+        @settingsRouter.navigate "settings", trigger: true
 
-    afterEach ->
-      @spy.restore()
+      afterEach ->
+        @spy.restore()
 
-    it "shows a SettingsView", ->
-      expect(@spy).toHaveBeenCalled()
+      it "shows a SettingsView", ->
+        expect(@spy).toHaveBeenCalled()
+
+    describe "when user settings are not defined", ->
+      beforeEach ->
+        TuringEmailApp.models.userSettings = null
+
+      it "will fetch and then render the settings", ->
+        fetchSpy = sinon.spy(@settingsRouter, "renderSettingsView")
+        @settingsRouter.showSettings()
+        @server.respond()
+        expect(fetchSpy).toHaveBeenCalled()
