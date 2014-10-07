@@ -49,6 +49,17 @@ describe "EmailThreadView", ->
       # it "should render the subject attribute", ->
       #   expect(@emailThreadView.$el.find('#email_subject').text().trim()).toEqual @emailThread.get("emails")[0].subject
 
+      describe " when there is a no html or text parts of the email yet there is a body part", ->
+
+        it "should render the body part", ->
+          @seededChance = new Chance(1)
+          randomBodyText = @seededChance.string({length: 150})
+          @emailThread.get("emails")[0].html_part = null
+          @emailThread.get("emails")[0].text_part = null
+          @emailThread.get("emails")[0].body_text = randomBodyText
+          @emailThreadView.render()
+          expect(@emailThreadView.$el.find("pre#body_text")).toContainHtml(randomBodyText)
+
     describe "#setupButtons", ->
       
       it "should handle clicks", ->
