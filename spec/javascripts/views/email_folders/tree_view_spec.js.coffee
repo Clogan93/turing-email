@@ -77,6 +77,16 @@ describe "TreeView", ->
       it "selects the item", ->
         expect(@selectSpy).toHaveBeenCalledWith(@emailFolder)
 
+    describe "when one of the labels contains no unread emails", ->
+      beforeEach ->
+        @emailFolders.fetch()
+        @server.respond()
+        @emailFolders.models[4].set("num_unread_threads", 0)
+        @treeView.render()
+
+      it "assigns the contains_no_unread_emails class to the label with no unread emails", ->
+        expect(@treeView.$el.find(".contains_no_unread_emails")).toContainHtml('<span class="badge"></span>')
+
   describe "#generateTree", ->
     beforeEach ->
       @emailFolders.fetch()
