@@ -132,15 +132,36 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
 
     @$el.find("#compose_form #subject_input").val(@subjectWithPrefixFromEmail(emailJSON))
 
-  loadEmailBody: (emailJSON, insertReplyHeader=false) ->
-    console.log("ComposeView loadEmailBody!!")
-    body = ""
-    body += "\r\n\r\n\r\n\r\n" if insertReplyHeader
+  formatEmailReplyBody: (emailJSON) ->
+    bodyText = "\r\n\r\n\r\n\r\n"
+
+    tDate = new TDate()
+    tDate.initializeWithISO8601(emailJSON.date)
+
+    dateFromHeading = tDate.longFormDateString() + ", " + emailJSON.from_address + " wrote:"
+    bodyText += dateFromHeading
+    bodyText += "\r\n\r\n"
 
     if emailJSON.text_part?
-      body += emailJSON.text_part
+      for line in emailJSON.text_part.split("\n")
+        bodyText += "> " + line + "\n"
+    else if emailJSON.body_text
+      for line in emailJSON.body_text.split("\n")
+        bodyText += "> " + line + "\n"
+
+    return bodyText
+
+  loadEmailBody: (emailJSON, ifReply=false) ->
+    console.log("ComposeView loadEmailBody!!")
+    body = ""
+
+    if ifReply
+      body += @formatEmailReplyBody emailJSON 
     else
-      body += emailJSON.body_text if emailJSON.body_text
+      if emailJSON.text_part?
+        body += emailJSON.text_part
+      else
+        body += emailJSON.body_text if emailJSON.body_text
 
     @$el.find("#compose_form #compose_email_body").val(body)
 
