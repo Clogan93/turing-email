@@ -107,6 +107,7 @@ describe "ComposeView", ->
         spy = sinon.spy(TuringEmailApp, "showAlert")
         TuringEmailApp.views.composeView.showEmailSentAlert()
         expect(spy).toHaveBeenCalled()
+        spy.restore()
 
       it "should set the current alert token", ->
         TuringEmailApp.views.composeView.currentAlertToken = null
@@ -147,6 +148,7 @@ describe "ComposeView", ->
           spy = sinon.spy(TuringEmailApp, "removeAlert")
           TuringEmailApp.views.composeView.removeEmailSentAlert()
           expect(spy).toHaveBeenCalled()
+          spy.restore()
 
         it "should set the current alert token to be null", ->
           TuringEmailApp.views.composeView.removeEmailSentAlert()
