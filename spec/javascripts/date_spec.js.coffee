@@ -19,4 +19,4 @@ describe "TDate", ->
     it "should produce a correctly formatted date string", ->
     tDate = new TDate()
     tDate.initializeWithISO8601("2014-09-18T21:28:48.000Z")
-    expect(tDate.longFormDateString()).toEqual "Thu, Sep 18, 2014 at 2:28 PM"
+    expect(tDate.longFormDateString()).toEqual "Thu, Sep 18, 2014 at 14:28:48"

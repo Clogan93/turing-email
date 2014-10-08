@@ -166,6 +166,7 @@ describe "SettingsView", ->
         expect(spy).toHaveBeenCalled()
 
     it "should show the alert", ->
+      spy.restore()
       spy = sinon.spy(TuringEmailApp, "showAlert")
       @settingsView.showSettingsAlert()
       expect(spy).toHaveBeenCalled()
@@ -182,6 +183,7 @@ describe "SettingsView", ->
         @settingsView.currentAlertToken = true
 
       it "should remove the alert", ->
+        spy.restore()
         spy = sinon.spy(TuringEmailApp, "removeAlert")
         @settingsView.removeSettingsAlert()
         expect(spy).toHaveBeenCalled()
