@@ -68,7 +68,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
 
     if @currentAlertToken?
       @app.removeAlert(@currentAlertToken)
-      @currentAlerttoken = null
+      @currentAlertToken = null
     
   resetView: ->
     console.log("ComposeView RESET!!")

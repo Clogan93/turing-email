@@ -39,12 +39,25 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
       @model.set(genie_enabled: genie_enabled, split_pane_mode: split_pane_mode)
       @model.save(null, {
         patch: true
-        success: (model, response) ->
-          mailBody = $("#mailBody").prepend('<div class="alert alert-success settingsSaveAlert" role="alert">You have successfully saved your settings!</div>')
-          saveAlert = mailBody.children()[0]
+        success: (model, response) =>
+          @showSettingsSavedAlert()
 
           setTimeout (=>
-            $(saveAlert).remove()
+            @removeSettingsSavedAlert()
           ), 3000
         }
       )
+
+  showSettingsSavedAlert: ->
+    console.log "SettingsView showSettingsSavedAlert"
+
+    @removeSettingsSavedAlert() if @currentAlertToken?
+
+    @currentAlertToken = TuringEmailApp.showAlert('You have successfully saved your settings!', "alert-success")
+
+  removeSettingsSavedAlert: ->
+    console.log "SettingsView REMOVE SettingsSavedAlert"
+
+    if @currentAlertToken?
+      TuringEmailApp.removeAlert(@currentAlertToken)
+      @currentAlertToken = null
