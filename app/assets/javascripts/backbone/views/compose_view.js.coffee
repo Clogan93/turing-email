@@ -143,7 +143,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     bodyText += "\r\n\r\n"
 
     if emailJSON.html_part?
-      bodyText += emailJSON.html_part
+      bodyText += $(emailJSON.html_part).html()
     else if emailJSON.text_part?
       for line in emailJSON.text_part.split("\n")
         bodyText += "> " + line + "\n"
@@ -161,7 +161,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
       body += @formatEmailReplyBody emailJSON 
     else
       if emailJSON.html_part?
-        body += emailJSON.html_part
+        body += $(emailJSON.html_part).html()
       else if emailJSON.text_part?
         body += emailJSON.text_part
       else if emailJSON.body_text?
