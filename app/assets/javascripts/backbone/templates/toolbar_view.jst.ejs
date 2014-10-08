@@ -1,88 +1,90 @@
-<div class="pull-right mail-search">
-  <div class="input-group">
-    <input id="search_input" type="text" class="form-control input-sm" name="search" placeholder="Search email">
-
-    <div class="input-group-btn">
-      <a id="search_button_link" href="#">
-        <button class="btn btn-sm btn-primary">
-        Search
-        </button>
-      </a>
+<div class="mail-box-header" id="email-folder-mail-header">
+  <div class="pull-right mail-search">
+    <div class="input-group">
+      <input id="search_input" type="text" class="form-control input-sm" name="search" placeholder="Search email">
+  
+      <div class="input-group-btn">
+        <a id="search_button_link" href="#">
+          <button class="btn btn-sm btn-primary">
+          Search
+          </button>
+        </a>
+      </div>
     </div>
   </div>
-</div>
-
-<div id="inbox_title_header">
-
-  <h2>
-    <span id="title"></span>
-  </h2>
-
-</div>
-
-<div class="mail-tools tooltip-demo m-t-md row">
-  <div class="col-md-4">
-    <div class="dropdown" id="bulk_action_checkbox_dropdown">
-      <button class="btn" data-toggle="dropdown" type="button">
-        <input type="checkbox" class="i-checks">
+  
+  <div id="inbox_title_header">
+  
+    <h2>
+      <span id="title"></span>
+    </h2>
+  
+  </div>
+  
+  <div class="mail-tools tooltip-demo m-t-md row">
+    <div class="col-md-4">
+      <div class="dropdown" id="bulk_action_checkbox_dropdown">
+        <button class="btn" data-toggle="dropdown" type="button">
+          <input type="checkbox" class="i-checks">
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="labelAsDropdownMenu">
+          <li role="presentation"><a role="menuitem" tabindex="-1" id="all_bulk_action">All</a></li>
+          <li role="presentation"><a role="menuitem" tabindex="-1" id="none_bulk_action">None</a></li>
+          <li role="presentation"><a role="menuitem" tabindex="-1" id="read_bulk_action">Read</a></li>
+          <li role="presentation"><a role="menuitem" tabindex="-1" id="unread_bulk_action">Unread</a></li>
+        </ul>
+      </div>
+      <button id="refresh_button" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="left" title="Refresh inbox"><i class="fa fa-refresh"></i> Refresh
+      </button>
+      <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Mark as read"><i class="fa fa-eye"></i></button>
+      <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Mark as unread"><i class="fa fa-eye-slash"></i></button>
+      <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Archive"><i class="fa fa-archive"></i></button>
+      <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Move to trash"><i class="fa fa-trash-o"></i></button>
+    </div>
+  
+    <div class="dropdown col-md-2">
+      <button class="btn btn-primary dropdown-toggle" type="button" id="labelAsDropdownMenu" data-toggle="dropdown">
+        Label As:
         <span class="caret"></span>
       </button>
-      <ul class="dropdown-menu" role="menu" aria-labelledby="labelAsDropdownMenu">
-        <li role="presentation"><a role="menuitem" tabindex="-1" id="all_bulk_action">All</a></li>
-        <li role="presentation"><a role="menuitem" tabindex="-1" id="none_bulk_action">None</a></li>
-        <li role="presentation"><a role="menuitem" tabindex="-1" id="read_bulk_action">Read</a></li>
-        <li role="presentation"><a role="menuitem" tabindex="-1" id="unread_bulk_action">Unread</a></li>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="labelAsDropdownMenu"><%
+        for(var i = 0; i < emailFolders.length; i++) {
+          var labelAsLinkID = _.uniqueId("labelAsLink")%>  
+          <li role="presentation">
+            <a role="menuitem" tabindex="-1" class="label_as_link" href="#"
+               id="<%= labelAsLinkID %>" name="<%= emailFolders[i]["label_id"] %>">
+              <%= emailFolders[i]["name"] %>
+            </a>
+          </li><%
+        } %>
       </ul>
     </div>
-    <button id="refresh_button" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="left" title="Refresh inbox"><i class="fa fa-refresh"></i> Refresh
-    </button>
-    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Mark as read"><i class="fa fa-eye"></i></button>
-    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Mark as unread"><i class="fa fa-eye-slash"></i></button>
-    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Archive"><i class="fa fa-archive"></i></button>
-    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Move to trash"><i class="fa fa-trash-o"></i></button>
-  </div>
-
-  <div class="dropdown col-md-2">
-    <button class="btn btn-primary dropdown-toggle" type="button" id="labelAsDropdownMenu" data-toggle="dropdown">
-      Label As:
-      <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="labelAsDropdownMenu"><%
-      for(var i = 0; i < emailFolders.length; i++) {
-        var labelAsLinkID = _.uniqueId("labelAsLink")%>  
-        <li role="presentation">
-          <a role="menuitem" tabindex="-1" class="label_as_link" href="#"
-             id="<%= labelAsLinkID %>" name="<%= emailFolders[i]["label_id"] %>">
-            <%= emailFolders[i]["name"] %>
-          </a>
-        </li><%
-      } %>
-    </ul>
-  </div>
-
-  <div class="dropdown col-md-1">
-    <button class="btn btn-primary dropdown-toggle" type="button" id="moveToFolderDropdownMenu" data-toggle="dropdown">
-      Move To Folder:
-      <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="moveToFolderDropdownMenu"><%
-      for(var i = 0; i < emailFolders.length; i++) {
-        var moveToFolderLinkID = _.uniqueId("moveToFolderLink")%>
-        <li role="presentation">
-          <a role="menuitem" tabindex="-1" class="move_to_folder_link" href="#"
-             id="<%= moveToFolderLinkID %>" name="<%= emailFolders[i]["label_id"] %>">
-            <%= emailFolders[i]["name"] %>
-          </a>
-        </li><%
-      } %>
-    </ul>
-  </div>
-
-  <div class="btn-group pull-right">
-    <div id="current_emails_displayed_counter">
-      <span><span id="start_number">0</span>-<span id="end_number">0</span></span> of <span id="total_emails_number">0</span>
+  
+    <div class="dropdown col-md-1">
+      <button class="btn btn-primary dropdown-toggle" type="button" id="moveToFolderDropdownMenu" data-toggle="dropdown">
+        Move To Folder:
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="moveToFolderDropdownMenu"><%
+        for(var i = 0; i < emailFolders.length; i++) {
+          var moveToFolderLinkID = _.uniqueId("moveToFolderLink")%>
+          <li role="presentation">
+            <a role="menuitem" tabindex="-1" class="move_to_folder_link" href="#"
+               id="<%= moveToFolderLinkID %>" name="<%= emailFolders[i]["label_id"] %>">
+              <%= emailFolders[i]["name"] %>
+            </a>
+          </li><%
+        } %>
+      </ul>
     </div>
-    <button id="paginate_left_link" class="btn btn-white btn-sm"><i class="fa fa-arrow-left"></i></button>
-    <button id="paginate_right_link" class="btn btn-white btn-sm"><i class="fa fa-arrow-right"></i></button>
+  
+    <div class="btn-group pull-right">
+      <div id="current_emails_displayed_counter">
+        <span><span id="start_number">0</span>-<span id="end_number">0</span></span> of <span id="total_emails_number">0</span>
+      </div>
+      <button id="paginate_left_link" class="btn btn-white btn-sm"><i class="fa fa-arrow-left"></i></button>
+      <button id="paginate_right_link" class="btn btn-white btn-sm"><i class="fa fa-arrow-right"></i></button>
+    </div>
   </div>
 </div>

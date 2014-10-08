@@ -12,7 +12,6 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     @setupSwitches()
     @setupSaveButton()
 
-    TuringEmailApp.showSettings()
     return this
 
   setupEmailBankruptcyButton: ->
@@ -40,8 +39,8 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
       @model.save(null, {
         patch: true
         success: (model, response) ->
-          mailBody = $("#mailBody").prepend('<div class="alert alert-success settingsSaveAlert" role="alert">You have successfully saved your settings!</div>')
-          saveAlert = mailBody.children()[0]
+          primaryPane = $("#primaryPane").prepend('<div class="alert alert-success settingsSaveAlert" role="alert">You have successfully saved your settings!</div>')
+          saveAlert = primaryPane.children()[0]
 
           setTimeout (=>
             $(saveAlert).remove()

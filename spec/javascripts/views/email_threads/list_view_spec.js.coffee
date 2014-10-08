@@ -27,6 +27,8 @@ describe "ListView", ->
     @server.restore()
     @listViewDiv.remove()
 
+    specStopTuringEmailApp()
+
   describe "after fetch", ->
 
     beforeEach ->

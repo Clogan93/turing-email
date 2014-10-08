@@ -11,7 +11,6 @@ class TuringEmailApp.Views.Reports.RecommendedRulesReportView extends Backbone.V
     @$el.html(@template(@model.toJSON()))
     @setupRecommendedRulesLinks()
 
-    TuringEmailApp.showReports()
     return this
 
   setupRecommendedRulesLinks: ->

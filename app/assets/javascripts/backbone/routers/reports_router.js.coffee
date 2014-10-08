@@ -12,44 +12,46 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
     "top_contacts": "showTopContactsReport"
     "word_count_report": "showWordCountReport"
 
-  showReport: (divReportsID, ReportModel, ReportView) ->
-    reportModel = new ReportModel()
-    reportView = new ReportView(
-      model: reportModel
-      el: $("#" + divReportsID)
-    )
+  showAttachmentsReport: (divReportsID) ->
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.AttachmentsReport,
+                              TuringEmailApp.Views.Reports.AttachmentsReportView)
 
-    reportModel.fetch()
-    
-  showAttachmentsReport: (divReportsID="reports") ->
-    @showReport divReportsID, TuringEmailApp.Models.AttachmentsReport, TuringEmailApp.Views.Reports.AttachmentsReportView
+  showEmailVolumeReport: (divReportsID) ->
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.EmailVolumeReport,
+                              TuringEmailApp.Views.Reports.EmailVolumeReportView)
 
-  showEmailVolumeReport: (divReportsID="reports") ->
-    @showReport divReportsID, TuringEmailApp.Models.EmailVolumeReport, TuringEmailApp.Views.Reports.EmailVolumeReportView
+  showGeoReport: (divReportsID) ->
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.GeoReport,
+                              TuringEmailApp.Views.Reports.GeoReportView)
 
-  showGeoReport: (divReportsID="reports") ->
-    @showReport divReportsID, TuringEmailApp.Models.GeoReport, TuringEmailApp.Views.Reports.GeoReportView
+  showImpactReport: (divReportsID) ->
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.ImpactReport,
+                              TuringEmailApp.Views.Reports.ImpactReportView)
 
-  showImpactReport: (divReportsID="reports") ->
-    @showReport divReportsID, TuringEmailApp.Models.ImpactReport, TuringEmailApp.Views.Reports.ImpactReportView
+  showInboxEfficiencyReport: (divReportsID) ->
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.InboxEfficiencyReport,
+                              TuringEmailApp.Views.Reports.InboxEfficiencyReportView)
 
-  showInboxEfficiencyReport: (divReportsID="reports") ->
-    @showReport divReportsID, TuringEmailApp.Models.InboxEfficiencyReport, TuringEmailApp.Views.Reports.InboxEfficiencyReportView
+  showListsReport: (divReportsID) ->
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.ListsReport,
+                              TuringEmailApp.Views.Reports.ListsReportView)
 
-  showListsReport: (divReportsID="reports") ->
-    @showReport divReportsID, TuringEmailApp.Models.ListsReport, TuringEmailApp.Views.Reports.ListsReportView
+  showRecommendedRulesReport: (divReportsID) ->
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.RecommendedRulesReport,
+                              TuringEmailApp.Views.Reports.RecommendedRulesReportView)
 
-  showRecommendedRulesReport: (divReportsID="reports") ->
-    @showReport divReportsID, TuringEmailApp.Models.RecommendedRulesReport, TuringEmailApp.Views.Reports.RecommendedRulesReportView
+  showSummaryAnalyticsReport: (divReportsID) ->
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.SummaryAnalyticsReport,
+                              TuringEmailApp.Views.Reports.SummaryAnalyticsReportView)
 
-  showSummaryAnalyticsReport: (divReportsID="reports") ->
-    @showReport divReportsID, TuringEmailApp.Models.SummaryAnalyticsReport, TuringEmailApp.Views.Reports.SummaryAnalyticsReportView
+  showThreadsReport: (divReportsID) ->
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.ThreadsReport,
+                              TuringEmailApp.Views.Reports.ThreadsReportView)
 
-  showThreadsReport: (divReportsID="reports") ->
-    @showReport divReportsID, TuringEmailApp.Models.ThreadsReport, TuringEmailApp.Views.Reports.ThreadsReportView
+  showTopContactsReport: (divReportsID) ->
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.ContactsReport,
+                              TuringEmailApp.Views.Reports.ContactsReportView)
 
-  showTopContactsReport: (divReportsID="reports") ->
-    @showReport divReportsID, TuringEmailApp.Models.ContactsReport, TuringEmailApp.Views.Reports.ContactsReportView
-
-  showWordCountReport: (divReportsID="reports") ->
-    @showReport divReportsID, TuringEmailApp.Models.WordCountReport, TuringEmailApp.Views.Reports.WordCountReportView
+  showWordCountReport: (divReportsID) ->
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.WordCountReport,
+                              TuringEmailApp.Views.Reports.WordCountReportView)

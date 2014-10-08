@@ -9,6 +9,8 @@ describe "AnalyticsRouter", ->
   afterEach ->
     @server.restore()
 
+    specStopTuringEmailApp()
+
   it "has the expected routes", ->
     expect(@analyticsRouter.routes["analytics"]).toEqual "showAnalytics"
 

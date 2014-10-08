@@ -11,6 +11,4 @@ class TuringEmailApp.Views.AnalyticsView extends Backbone.View
     TuringEmailApp.routers.reportsRouter.showThreadsReport "threads_report"
     TuringEmailApp.routers.reportsRouter.showTopContactsReport "contacts_report"
 
-    TuringEmailApp.showReports()
-
     return this

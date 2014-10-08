@@ -9,6 +9,8 @@ describe "EmailFoldersRouter", ->
   afterEach ->
     @server.restore()
 
+    specStopTuringEmailApp()
+
   it "has the expected routes", ->
     expect(@emailFoldersRouter.routes["email_folder/:emailFolderID"]).toEqual "showFolder"
 

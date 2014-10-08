@@ -18,6 +18,8 @@ describe "SettingsRouter", ->
   afterEach ->
     @server.restore()
 
+    specStopTuringEmailApp()
+
   it "has the expected routes", ->
     expect(@settingsRouter.routes["settings"]).toEqual "showSettings"
 

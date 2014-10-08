@@ -14,7 +14,6 @@ class TuringEmailApp.Views.Reports.EmailVolumeReportView extends Backbone.View
 
     @renderGoogleChart googleChartData
 
-    TuringEmailApp.showReports()
     return this
 
   getGoogleChartData: ->
@@ -89,7 +88,7 @@ class TuringEmailApp.Views.Reports.EmailVolumeReportView extends Backbone.View
 
   renderGoogleChart: (googleChartData) ->
     google.load('visualization', '1.0',
-                 callback: => @drawCharts(googleChartData),
+                 callback: => @drawCharts(googleChartData)
                  packages: ["corechart"])
 
   drawCharts: (googleChartData) ->

@@ -9,5 +9,4 @@ class TuringEmailApp.Views.Reports.ThreadsReportView extends Backbone.View
 
   render: ->
     @$el.html(@template(@model.toJSON()))
-    TuringEmailApp.showReports()
     return this

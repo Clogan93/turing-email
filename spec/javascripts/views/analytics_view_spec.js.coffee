@@ -36,6 +36,8 @@ describe "AnalyticsView", ->
   afterEach ->
     @server.restore()
     @reportsDiv.remove()
+
+    specStopTuringEmailApp()
     
   it "has the right template", ->
     expect(@analyticsView.template).toEqual JST["backbone/templates/analytics"]

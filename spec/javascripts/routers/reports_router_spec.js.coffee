@@ -9,6 +9,8 @@ describe "ReportsRouter", ->
   afterEach ->
     @server.restore()
 
+    specStopTuringEmailApp()
+
   it "has the expected routes", ->
     expect(@reportsRouter.routes["attachments_report"]).toEqual "showAttachmentsReport"
     expect(@reportsRouter.routes["email_volume_report"]).toEqual "showEmailVolumeReport"
@@ -24,7 +26,7 @@ describe "ReportsRouter", ->
 
   describe "attachments_report", ->
     beforeEach ->
-      @spy = sinon.spy(TuringEmailApp.Views.Reports, "AttachmentsReportView")
+      @spy = sinon.spy(TuringEmailApp, "showReport")
       @reportsRouter.navigate "attachments_report", trigger: true
     
     afterEach ->
@@ -35,7 +37,7 @@ describe "ReportsRouter", ->
 
   describe "email_volume_report", ->
     beforeEach ->
-      @spy = sinon.spy(TuringEmailApp.Views.Reports, "EmailVolumeReportView")
+      @spy = sinon.spy(TuringEmailApp, "showReport")
       @reportsRouter.navigate "email_volume_report", trigger: true
 
     afterEach ->
@@ -46,7 +48,7 @@ describe "ReportsRouter", ->
 
   describe "geo_report", ->
     beforeEach ->
-      @spy = sinon.spy(TuringEmailApp.Views.Reports, "GeoReportView")
+      @spy = sinon.spy(TuringEmailApp, "showReport")
       @reportsRouter.navigate "geo_report", trigger: true
 
     afterEach ->
@@ -57,7 +59,7 @@ describe "ReportsRouter", ->
 
   describe "impact_report", ->
     beforeEach ->
-      @spy = sinon.spy(TuringEmailApp.Views.Reports, "ImpactReportView")
+      @spy = sinon.spy(TuringEmailApp, "showReport")
       @reportsRouter.navigate "impact_report", trigger: true
 
     afterEach ->
@@ -68,7 +70,7 @@ describe "ReportsRouter", ->
 
   describe "inbox_efficiency_report", ->
     beforeEach ->
-      @spy = sinon.spy(TuringEmailApp.Views.Reports, "InboxEfficiencyReportView")
+      @spy = sinon.spy(TuringEmailApp, "showReport")
       @reportsRouter.navigate "inbox_efficiency_report", trigger: true
 
     afterEach ->
@@ -79,7 +81,7 @@ describe "ReportsRouter", ->
 
   describe "lists_report", ->
     beforeEach ->
-      @spy = sinon.spy(TuringEmailApp.Views.Reports, "ListsReportView")
+      @spy = sinon.spy(TuringEmailApp, "showReport")
       @reportsRouter.navigate "lists_report", trigger: true
 
     afterEach ->
@@ -90,7 +92,7 @@ describe "ReportsRouter", ->
 
   describe "recommended_rules_report", ->
     beforeEach ->
-      @spy = sinon.spy(TuringEmailApp.Views.Reports, "RecommendedRulesReportView")
+      @spy = sinon.spy(TuringEmailApp, "showReport")
       @reportsRouter.navigate "recommended_rules_report", trigger: true
 
     afterEach ->
@@ -101,7 +103,7 @@ describe "ReportsRouter", ->
 
   describe "summary_analytics_report", ->
     beforeEach ->
-      @spy = sinon.spy(TuringEmailApp.Views.Reports, "SummaryAnalyticsReportView")
+      @spy = sinon.spy(TuringEmailApp, "showReport")
       @reportsRouter.navigate "summary_analytics_report", trigger: true
 
     afterEach ->
@@ -112,7 +114,7 @@ describe "ReportsRouter", ->
 
   describe "threads_report", ->
     beforeEach ->
-      @spy = sinon.spy(TuringEmailApp.Views.Reports, "ThreadsReportView")
+      @spy = sinon.spy(TuringEmailApp, "showReport")
       @reportsRouter.navigate "threads_report", trigger: true
 
     afterEach ->
@@ -123,7 +125,7 @@ describe "ReportsRouter", ->
 
   describe "top_contacts", ->
     beforeEach ->
-      @spy = sinon.spy(TuringEmailApp.Views.Reports, "ContactsReportView")
+      @spy = sinon.spy(TuringEmailApp, "showReport")
       @reportsRouter.navigate "top_contacts", trigger: true
 
     afterEach ->
@@ -134,7 +136,7 @@ describe "ReportsRouter", ->
 
   describe "word_count_report", ->
     beforeEach ->
-      @spy = sinon.spy(TuringEmailApp.Views.Reports, "WordCountReportView")
+      @spy = sinon.spy(TuringEmailApp, "showReport")
       @reportsRouter.navigate "word_count_report", trigger: true
 
     afterEach ->
