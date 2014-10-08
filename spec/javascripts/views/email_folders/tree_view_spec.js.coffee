@@ -21,6 +21,8 @@ describe "TreeView", ->
     @server.restore()
     @treeDiv.remove()
 
+    specStopTuringEmailApp()
+
   it "has the right template", ->
     expect(@treeView.template).toEqual JST["backbone/templates/email_folders/tree"]
 

@@ -20,6 +20,8 @@ describe "RecommendedRulesReportView", ->
     @server.restore()
     @recommendedRulesReportDiv.remove()
 
+    specStopTuringEmailApp()
+
   it "has the right template", ->
     expect(@recommendedRulesReportView.template).toEqual JST["backbone/templates/reports/recommended_rules_report"]
 
@@ -38,11 +40,6 @@ describe "RecommendedRulesReportView", ->
     it "renders the email rules", ->
       expect(@recommendedRulesReportDiv).toContainHtml('Rule: filter emails from ' + @recommendedRulesReport.get("rules_recommended")[0].list_id + " into " + @recommendedRulesReport.get("rules_recommended")[0].destination_folder + '.')
       expect(@recommendedRulesReportDiv).toContainHtml('<a class="rule_recommendation_link" href="' + @recommendedRulesReport.get("rules_recommended")[0].list_id + '">Create rule.</a>')
-
-    it "shows the reports", ->
-      spy = sinon.spy(TuringEmailApp, "showReports")
-      @recommendedRulesReportView.render()
-      expect(spy).toHaveBeenCalled()
 
     it "sets up the recommended rules links", ->
       spy = sinon.spy(@recommendedRulesReportView, "setupRecommendedRulesLinks")
@@ -86,6 +83,7 @@ describe "RecommendedRulesReportView", ->
 
       it "should post the email rule to the server", ->
         @recommendedRulesReportView.$el.find(".rule_recommendation_link").click()
+        
         expect(@server.requests.length).toEqual 1
         request = @server.requests[0]
         expect(request.method).toEqual "POST"

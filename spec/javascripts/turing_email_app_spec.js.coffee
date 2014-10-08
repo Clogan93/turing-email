@@ -20,7 +20,7 @@ describe "TuringEmailApp", ->
       expect(TuringEmailApp.collections).toBeDefined()
       expect(TuringEmailApp.routers).toBeDefined()
 
-    setupFunctions = ["setupSearchBar", "setupComposeButton", "setupFiltering", "setupToolbar", "setupUser",
+    setupFunctions = ["setupMainView", "setupSearchBar", "setupComposeButton", "setupFiltering", "setupToolbar", "setupUser",
                       "setupEmailFolders", "loadEmailFolders", "setupComposeView", "setupEmailThreads", "setupRouters"]
     for setupFunction in setupFunctions  
       it "calls the " + setupFunction + " function", ->
@@ -45,6 +45,13 @@ describe "TuringEmailApp", ->
       expect(@spy).toHaveBeenCalledWith(TuringEmailApp.syncEmail, 60000)
 
   describe "setup functions", ->
+    describe "#setupMainView", ->
+      beforeEach ->
+        TuringEmailApp.setupMainView()
+        
+      it "creates the main view", ->
+        expect(TuringEmailApp.views.mainView).toBeDefined()
+
     describe "#setupSearchBar", ->
       beforeEach ->
         @divSearchForm = $('<form role="search" id="top-search-form" class="navbar-form-custom"></form>').appendTo("body")
@@ -172,15 +179,11 @@ describe "TuringEmailApp", ->
         
         userFixtures = fixture.load("user.fixture.json");
         @validUserFixture = userFixtures[0]["valid"]
-  
-        userSettingsFixtures = fixture.load("user_settings.fixture.json");
-        @validUserSettingsFixture = userSettingsFixtures[0]["valid"]
-        
-        @server = sinon.fakeServer.create()
-  
+
+        [@server] = specPrepareUserSettingsFetch()
         @server.respondWith "GET", "/api/v1/users/current", JSON.stringify(@validUserFixture)
-        @server.respondWith "GET", "/api/v1/user_configurations", JSON.stringify(@validUserSettingsFixture)
         
+        TuringEmailApp.models.userSettings.fetch()
         TuringEmailApp.setupUser()
         
         @server.respond()
@@ -631,7 +634,7 @@ describe "TuringEmailApp", ->
             expect(@resetSpy).toHaveBeenCalled()
 
           it "triggers the change:emailFolders event", ->
-            expect(@changeEmailFoldersSpy).toHaveBeenCalled()
+            expect(@changeEmailFoldersSpy).toHaveBeenCalledWith(TuringEmailApp, TuringEmailApp.collections.emailFolders)
   
     describe "Email Thread Functions", ->
       describe "#loadEmailThread", ->
@@ -1482,16 +1485,8 @@ describe "TuringEmailApp", ->
         
     describe "#isSplitPaneMode", ->
       beforeEach ->
-        userSettingsFixtures = fixture.load("user_settings.fixture.json");
-        @validUserSettingsFixture = userSettingsFixtures[0]["valid"]
-    
-        @server = sinon.fakeServer.create()
-    
-        @server.respondWith "GET", "/api/v1/user_configurations", JSON.stringify(@validUserSettingsFixture)
-    
-        TuringEmailApp.models.userSettings = new TuringEmailApp.Models.UserSettings()
+        [@server] = specPrepareUserSettingsFetch()
         TuringEmailApp.models.userSettings.fetch()
-    
         @server.respond()
     
       describe "when split pane mode is horizontal in the user settings", ->
@@ -1688,130 +1683,55 @@ describe "TuringEmailApp", ->
     
           expect(TuringEmailApp.views.emailThreadsListView.$el.children()[0]).toContainText("Turing Email")
   
-    describe "showEmails", ->
-  
-      it "calls hide all", ->
-        spy = sinon.spy(TuringEmailApp, "hideAll")
+    describe "#showEmails", ->
+      beforeEach ->
+        @showEmailsSpy = sinon.spy(TuringEmailApp.views.mainView, "showEmails")
+        
         TuringEmailApp.showEmails()
-        expect(spy).toHaveBeenCalled()
-        spy.restore()
-  
-    describe "hideEmails", ->
-      beforeEach ->
-        @emailTableDiv = $("<div />", {id: "email_table"}).appendTo("body")
-        @pagesDiv = $("<div />", {id: "pages"}).appendTo("body")
-        @previewPanelDiv = $("<div />", {id: "preview_panel"}).appendTo("body")
-        @mailBoxHeader = $("<div class='mail-box-header'></div>").appendTo("body")
-        @tableTableMail = $("<table class='table-mail'></table>").appendTo("body")
-  
+        
       afterEach ->
-        @emailTableDiv.remove()
-        @pagesDiv.remove()
-        @previewPanelDiv.remove()
-        @mailBoxHeader.remove()
-        @tableTableMail.remove()
-  
-      it "hides the preview panel element", ->
-        TuringEmailApp.hideEmails()
-        expect($('#preview_panel').is(':hidden')).toBeTruthy()
-  
-      it "hides the mail box header element", ->
-        TuringEmailApp.hideEmails()
-        expect($('.mail-box-header').is(':hidden')).toBeTruthy()
-  
-      it "hides the mail table element", ->
-        TuringEmailApp.hideEmails()
-        expect($('table.table-mail').is(':hidden')).toBeTruthy()
-  
-      it "hides the pages", ->
-        TuringEmailApp.hideEmails()
-        expect($('#pages').is(':hidden')).toBeTruthy()
-  
-      it "hides the email table element", ->
-        TuringEmailApp.hideEmails()
-        expect($('#email_table').is(':hidden')).toBeTruthy()
-  
-    describe "showSettings", ->
-  
-      it "calls hide all", ->
-        spy = sinon.spy(TuringEmailApp, "hideAll")
+        @showEmailsSpy.restore()
+        
+      it "shows the emails on the main view", ->
+        expect(@showEmailsSpy).toHaveBeenCalled()
+        
+    describe "#showSettings", ->
+      beforeEach ->
+        @showSettingsSpy = sinon.spy(TuringEmailApp.views.mainView, "showSettings")
+
+        [@server] = specPrepareUserSettingsFetch()
+        TuringEmailApp.models.userSettings.fetch()
+        @server.respond()
+
         TuringEmailApp.showSettings()
-        expect(spy).toHaveBeenCalled()
-        spy.restore()
-  
-      it "sets the main email list content height to be 100%", ->
-        $("<div class='main_email_list_content'></div>").appendTo("body")
-        TuringEmailApp.showReports()
-        expect($(".main_email_list_content")[0].style.height).toEqual "100%"
-  
-    describe "hideSettings", ->
-      beforeEach ->
-        @settingsDiv = $("<div />", {id: "settings"}).appendTo("body")
-  
+
       afterEach ->
-        @settingsDiv.remove()
-  
-      it "hides the settings element", ->
-        expect($('#settings').is(':hidden')).toBeFalsy()
-        TuringEmailApp.hideSettings()
-        expect($('#settings').is(':hidden')).toBeTruthy()
-  
-    describe "showReports", ->
+        @showSettingsSpy.restore()
+
+      it "shows the Settings on the main view", ->
+        expect(@showSettingsSpy).toHaveBeenCalled()
+
+    describe "#showAnalytics", ->
       beforeEach ->
-        @settingsDiv = $("<div />", {id: "settings"}).appendTo("body")
-        @reportsDiv = $("<div />", {id: "reports"}).appendTo("body")
-  
+        @showAnalyticsSpy = sinon.spy(TuringEmailApp.views.mainView, "showAnalytics")
+
+        TuringEmailApp.showAnalytics()
+
       afterEach ->
-        @settingsDiv.remove()
-        @reportsDiv.remove()
-  
-      it "calls hide all", ->
-        spy = sinon.spy(TuringEmailApp, "hideAll")
-        TuringEmailApp.showReports()
-        expect(spy).toHaveBeenCalled()
-        spy.restore()
-  
-      it "hides the settings element", ->
-        TuringEmailApp.showReports()
-        expect($('#settings').is(':hidden')).toBeTruthy()
-  
-      it "shows the reports element", ->
-        TuringEmailApp.showReports()
-        expect($('#reports').is(':hidden')).toBeFalsy()
-  
-      it "sets the main email list content height to be 100%", ->
-        $("<div class='main_email_list_content'></div>").appendTo("body")
-        TuringEmailApp.showReports()
-        expect($(".main_email_list_content")[0].style.height).toEqual "100%"
-  
-    describe "hideReports", ->
+        @showAnalyticsSpy.restore()
+
+      it "shows the Analytics on the main view", ->
+        expect(@showAnalyticsSpy).toHaveBeenCalled()
+
+    describe "#showReport", ->
       beforeEach ->
-        @reportsDiv = $("<div />", {id: "reports"}).appendTo("body")
-  
+        @showReportSpy = sinon.spy(TuringEmailApp.views.mainView, "showReport")
+
+        TuringEmailApp.showReport(undefined, TuringEmailApp.Models.AttachmentsReport,
+                                  TuringEmailApp.Views.Reports.AttachmentsReportView)
+
       afterEach ->
-        @reportsDiv.remove()
-  
-      it "hides the reports element", ->
-        expect($('#reports').is(':hidden')).toBeFalsy()
-        TuringEmailApp.hideReports()
-        expect($('#reports').is(':hidden')).toBeTruthy()
-  
-    describe "hideAll", ->
-  
-      it "hides the emails", ->
-        spy = sinon.spy(TuringEmailApp, "hideEmails")
-        TuringEmailApp.hideAll()
-        expect(spy).toHaveBeenCalled()
-        spy.restore()
-  
-      it "hides the reports", ->
-        spy = sinon.spy(TuringEmailApp, "hideReports")
-        TuringEmailApp.hideAll()
-        expect(spy).toHaveBeenCalled()
-        spy.restore()
-  
-      it "hides the settings", ->
-        spy = sinon.spy(TuringEmailApp, "hideSettings")
-        TuringEmailApp.hideAll()
-        expect(spy).toHaveBeenCalled()
-        spy.restore()
+        @showReportSpy.restore()
+
+      it "shows the Analytics on the main view", ->
+        expect(@showReportSpy).toHaveBeenCalled()

@@ -14,7 +14,6 @@ class TuringEmailApp.Views.Reports.GeoReportView extends Backbone.View
 
     @renderGoogleChart googleChartData
 
-    TuringEmailApp.showReports()
     return this
 
   getGoogleChartData: ->
@@ -35,7 +34,7 @@ class TuringEmailApp.Views.Reports.GeoReportView extends Backbone.View
 
   renderGoogleChart: (googleChartData) ->
     google.load('visualization', '1.0',
-                 callback: => @drawGeoChart(googleChartData, "geo_chart_div"),
+                 callback: => @drawGeoChart(googleChartData, "geo_chart_div")
                  packages: ["corechart"])
 
   drawGeoChart: (googleChartData, divID) ->

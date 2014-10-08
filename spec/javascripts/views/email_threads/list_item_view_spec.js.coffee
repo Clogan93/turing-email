@@ -16,6 +16,8 @@ describe "ListItemView", ->
   afterEach ->
     @server.restore()
 
+    specStopTuringEmailApp()
+
   it "has the right template", ->
     expect(@listItemView.template).toEqual JST["backbone/templates/email_threads/list_item"]
 

@@ -10,7 +10,7 @@ class TuringEmailApp.Views.AnalyticsView extends Backbone.View
     TuringEmailApp.routers.reportsRouter.showListsReport "lists_report"
     TuringEmailApp.routers.reportsRouter.showThreadsReport "threads_report"
     TuringEmailApp.routers.reportsRouter.showTopContactsReport "contacts_report"
-
-    TuringEmailApp.showReports()
+    
+    @$el.attr("name", "analytics_view")
 
     return this

@@ -12,7 +12,6 @@ class TuringEmailApp.Views.Reports.WordCountReportView extends Backbone.View
 
     @$el.html(@template(googleChartData))
 
-    TuringEmailApp.showReports()
     return this
 
   getGoogleChartData: ->

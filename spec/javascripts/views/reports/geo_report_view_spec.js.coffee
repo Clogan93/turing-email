@@ -20,6 +20,8 @@ describe "GeoReportView", ->
     @server.restore()
     @geoReportDiv.remove()
 
+    specStopTuringEmailApp()
+
   it "has the right template", ->
     expect(@geoReportView.template).toEqual JST["backbone/templates/reports/geo_report"]
 

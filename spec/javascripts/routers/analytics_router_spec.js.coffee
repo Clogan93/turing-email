@@ -9,16 +9,18 @@ describe "AnalyticsRouter", ->
   afterEach ->
     @server.restore()
 
+    specStopTuringEmailApp()
+
   it "has the expected routes", ->
     expect(@analyticsRouter.routes["analytics"]).toEqual "showAnalytics"
 
   describe "analytics", ->
     beforeEach ->
-      @spy = sinon.spy(TuringEmailApp.Views, "AnalyticsView")
+      @showAnalyticsSpy = sinon.spy(TuringEmailApp, "showAnalytics")
       @analyticsRouter.navigate "analytics", trigger: true
 
     afterEach ->
-      @spy.restore()
+      @showAnalyticsSpy.restore()
 
-    it "shows an AnalyticsView", ->
-      expect(@spy).toHaveBeenCalled()
+    it "shows the analytics", ->
+      expect(@showAnalyticsSpy).toHaveBeenCalled()

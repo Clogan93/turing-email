@@ -95,6 +95,9 @@ describe "EmailThread", ->
 
       TuringEmailApp.models.user.fetch()
       @server.respond()
+      
+    afterEach ->
+      specStopTuringEmailApp()
 
     describe "#fromPreview", ->
 

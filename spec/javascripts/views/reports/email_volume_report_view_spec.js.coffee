@@ -20,6 +20,8 @@ describe "EmailVolumeReportView", ->
     @server.restore()
     @emailVolumeReportDiv.remove()
 
+    specStopTuringEmailApp()
+
   it "has the right template", ->
     expect(@emailVolumeReportView.template).toEqual JST["backbone/templates/reports/email_volume_report"]
 

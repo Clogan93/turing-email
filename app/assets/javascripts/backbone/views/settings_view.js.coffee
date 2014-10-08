@@ -12,7 +12,6 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     @setupSwitches()
     @setupSaveButton()
 
-    TuringEmailApp.showSettings()
     return this
 
   setupEmailBankruptcyButton: ->

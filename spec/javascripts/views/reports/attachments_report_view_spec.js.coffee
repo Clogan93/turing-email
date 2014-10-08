@@ -20,6 +20,8 @@ describe "AttachmentsReportView", ->
     @server.restore()
     @attachmentsReportDiv.remove()
 
+    specStopTuringEmailApp()
+
   it "has the right template", ->
     expect(@attachmentsReportView.template).toEqual JST["backbone/templates/reports/attachments_report"]
 

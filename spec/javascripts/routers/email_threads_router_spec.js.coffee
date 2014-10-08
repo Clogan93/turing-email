@@ -9,6 +9,8 @@ describe "EmailThreadsRouter", ->
   afterEach ->
     @server.restore()
 
+    specStopTuringEmailApp()
+
   it "has the expected routes", ->
     expect(@emailThreadsRouter.routes["email_thread/:emailThreadUID"]).toEqual "showEmailThread"
     expect(@emailThreadsRouter.routes["email_draft/:emailThreadUID"]).toEqual "showEmailDraft"

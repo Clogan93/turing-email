@@ -9,6 +9,8 @@ describe "SearchResultsRouter", ->
   afterEach ->
     @server.restore()
 
+    specStopTuringEmailApp()
+
   it "has the expected routes", ->
     expect(@searchResultsRouter.routes["search/:query"]).toEqual "showSearchResults"
 

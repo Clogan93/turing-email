@@ -2,14 +2,14 @@ describe "ToolbarView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    emailFoldersFixtures = fixture.load("email_folders.fixture.json")
-    @validEmailFoldersFixture = emailFoldersFixtures[0]["valid"]
-
-    @server = sinon.fakeServer.create()
-    @server.respondWith "GET", TuringEmailApp.collections.emailFolders.url, JSON.stringify(@validEmailFoldersFixture)
-
+    [@server] = specPrepareEmailFoldersFetch()
     TuringEmailApp.collections.emailFolders.fetch()
     @server.respond()
+    
+  afterEach ->
+    @server.restore()
+    
+    specStopTuringEmailApp()
 
   it "has the right template", ->
     expect(TuringEmailApp.views.toolbarView.template).toEqual JST["backbone/templates/toolbar_view"]
@@ -26,6 +26,7 @@ describe "ToolbarView", ->
 
   describe "after render", ->
     beforeEach ->
+      TuringEmailApp.views.toolbarView.emailFoldersChanged(TuringEmailApp, TuringEmailApp.collections.emailFolders)
       TuringEmailApp.views.toolbarView.render()
 
     describe "#render", ->
@@ -279,18 +280,23 @@ describe "ToolbarView", ->
 
     describe "#updateTitle", ->
       beforeEach ->
-        @newEmailFolderID = TuringEmailApp.collections.emailFolders.models[0].get("label_id")
-        TuringEmailApp.views.toolbarView.updateTitle @newEmailFolderID
-        @currentFolder = TuringEmailApp.collections.emailFolders.getEmailFolder(@newEmailFolderID)
+        @emailFolder = TuringEmailApp.collections.emailFolders.models[0]
+        TuringEmailApp.views.toolbarView.updateTitle @emailFolder
 
       it "updates the label name", ->
-        expect(TuringEmailApp.views.toolbarView.$el.find(".label_name").text()).toEqual @currentFolder.get("name")
+        expect(TuringEmailApp.views.toolbarView.$el.find(".label_name").text()).toEqual @emailFolder.get("name")
 
+<<<<<<< HEAD
       describe "updates the badge text", ->
 
         it "updates the label count badge to be the number of unread threads", ->
           badgeText = TuringEmailApp.views.toolbarView.$el.find(".label_count_badge").text()
           expect(badgeText).toEqual("(" + @currentFolder.get("num_unread_threads") + ")")
+=======
+      it "updates badge count", ->
+        badgeText = TuringEmailApp.views.toolbarView.$el.find(".label_count_badge").text()
+        expect(badgeText).toEqual("(" + @emailFolder.get("num_unread_threads") + ")")
+>>>>>>> master
 
       describe "when the email folder's badget string is empty", ->
 
@@ -310,44 +316,78 @@ describe "ToolbarView", ->
 
     describe "#updatePaginationText", ->
       beforeEach ->
-        @newEmailFolderID = TuringEmailApp.collections.emailFolders.models[0].get("label_id")
-        TuringEmailApp.views.toolbarView.updatePaginationText @newEmailFolderID
-        @currentFolder = TuringEmailApp.collections.emailFolders.getEmailFolder(@newEmailFolderID)
-        @currentPage = parseInt(TuringEmailApp.collections.emailThreads.page)
+        @emailFolder = TuringEmailApp.collections.emailFolders.models[0]
+        
+        @validatePaginationText = ->
+          totalEmailsNumber = parseInt(TuringEmailApp.views.toolbarView.$el.find("#total_emails_number").text())
+          expect(totalEmailsNumber).toEqual @emailFolder.get("num_threads")
+  
+          startNumber = parseInt(TuringEmailApp.views.toolbarView.$el.find("#start_number").text())
+          expect(startNumber).toEqual ((@page - 1) * TuringEmailApp.Models.UserSettings.EmailThreadsPerPage + 1)
 
-      #TODO figure out a way to test the time out.
 
-      it "correctly sets the total emails number", ->
-        htmlNumber = parseInt(TuringEmailApp.views.toolbarView.$el.find("#total_emails_number").text())
-        expect(htmlNumber).toEqual @currentFolder.get("num_threads")
+          lastThreadNumber = @page * TuringEmailApp.Models.UserSettings.EmailThreadsPerPage
+          if lastThreadNumber > totalEmailsNumber
+            lastThreadNumber = totalEmailsNumber
 
-      it "correctly sets the start_number", ->
-        htmlNumber = parseInt(TuringEmailApp.views.toolbarView.$el.find("#start_number").text())
-        expect(htmlNumber).toEqual ((@currentPage - 1) * 50 + 1)
-
-      it "correctly sets the end_number", ->
-        lastThreadNumber = @currentPage * 50
-        numThreads = @currentFolder.get("num_threads")
-        if lastThreadNumber > parseInt(numThreads)
-          lastThreadNumber = numThreads
-
-        htmlNumber = parseInt(TuringEmailApp.views.toolbarView.$el.find("#end_number").text())
-        expect(htmlNumber).toEqual lastThreadNumber
-
-      describe "when on the final page", ->
+          endNumber = parseInt(TuringEmailApp.views.toolbarView.$el.find("#end_number").text())
+          expect(endNumber).toEqual lastThreadNumber
+        
+      describe "first page", ->
         beforeEach ->
-          TuringEmailApp.collections.emailThreads.page = 4
-          TuringEmailApp.views.toolbarView.updatePaginationText @newEmailFolderID
+          @page = 1
 
-        it "correctly sets the end_number when on the final page", ->
-          lastThreadNumber = TuringEmailApp.collections.emailThreads.page * 50
-          numThreads = @currentFolder.get("num_threads")
-          if lastThreadNumber > parseInt(numThreads)
-            lastThreadNumber = numThreads
+          TuringEmailApp.views.toolbarView.updatePaginationText @emailFolder, @page
 
-          htmlNumber = parseInt(TuringEmailApp.views.toolbarView.$el.find("#end_number").text())
-          expect(htmlNumber).toEqual lastThreadNumber
+        it "updates the pagination text", ->
+          @validatePaginationText()
 
+      describe "last page", ->
+        beforeEach ->
+          @page = @emailFolder.get("num_threads") % TuringEmailApp.Models.UserSettings.EmailThreadsPerPage + 1
+          
+          TuringEmailApp.views.toolbarView.updatePaginationText @emailFolder, @page
+
+        it "updates the pagination text", ->
+          @validatePaginationText()
+
+    describe "TuringEmailApp Events", ->
+    
+      describe "#currentEmailFolderChanged", ->
+        beforeEach ->
+          @updateTitleSpy = sinon.spy(TuringEmailApp.views.toolbarView, "updateTitle")
+          @updatePaginationTextSpy = sinon.spy(TuringEmailApp.views.toolbarView, "updatePaginationText")
+  
+        afterEach ->
+          @updateTitleSpy.restore()
+          @updatePaginationTextSpy.restore()
+          
+        describe "with an email folder", ->
+          beforeEach ->
+            TuringEmailApp.views.toolbarView.currentEmailFolder = null
+            TuringEmailApp.views.toolbarView.currentEmailFolderPage = 0
+            
+            @emailFolder = TuringEmailApp.collections.emailFolders.models[0]
+            @emailFolderPage = 1
+            
+            TuringEmailApp.views.toolbarView.currentEmailFolderChanged(TuringEmailApp, @emailFolder, @emailFolderPage)
+          
+          it "updates the current email folder variables", ->
+            expect(TuringEmailApp.views.toolbarView.currentEmailFolder).toEqual(@emailFolder)
+            expect(TuringEmailApp.views.toolbarView.currentEmailFolderPage).toEqual(@emailFolderPage)
+            
+          it "updates the title", ->
+            expect(@updateTitleSpy).toHaveBeenCalledWith(@emailFolder)
+    
+          it "updates the pagination text", ->
+            expect(@updatePaginationTextSpy).toHaveBeenCalledWith(@emailFolder, @emailFolderPage)
+            
+        describe "without an email folder", ->
+          beforeEach ->
+            TuringEmailApp.views.toolbarView.currentEmailFolder = TuringEmailApp.collections.emailFolders.models[0]
+            TuringEmailApp.views.toolbarView.currentEmailFolderPage = 1
+
+<<<<<<< HEAD
       describe "when the email folder ID is not found locally", ->
 
         it "calls update pagination text again", ->
@@ -360,23 +400,43 @@ describe "ToolbarView", ->
     describe "#currentEmailFolderChanged", ->
       beforeEach ->
         @newEmailFolder = TuringEmailApp.collections.emailFolders.models[0]
+=======
+            @emailFolder = null
+            @emailFolderPage = 0
+>>>>>>> master
 
-      it "updates the title", ->
-        updateTitleSpy = sinon.spy(TuringEmailApp.views.toolbarView, "updateTitle")
-        TuringEmailApp.views.toolbarView.currentEmailFolderChanged(TuringEmailApp, @newEmailFolder)
-        expect(updateTitleSpy).toHaveBeenCalled()
-        updateTitleSpy.restore()
+            TuringEmailApp.views.toolbarView.currentEmailFolderChanged(TuringEmailApp, @emailFolder, @emailFolderPage)
 
-      it "updates the pagination text", ->
-        updatePaginationTextSpy = sinon.spy(TuringEmailApp.views.toolbarView, "updatePaginationText")
-        TuringEmailApp.views.toolbarView.currentEmailFolderChanged(TuringEmailApp, @newEmailFolder)
-        expect(updatePaginationTextSpy).toHaveBeenCalled()
-        updatePaginationTextSpy.restore()
+          it "updates the current email folder variables", ->
+            expect(TuringEmailApp.views.toolbarView.currentEmailFolder).toEqual(@emailFolder)
+            expect(TuringEmailApp.views.toolbarView.currentEmailFolderPage).toEqual(@emailFolderPage)
 
-    describe "#emailFoldersChanged", ->
+          it "updates the title", ->
+            expect(@updateTitleSpy).toHaveBeenCalledWith(@emailFolder)
 
-      it "triggers render", ->
-        spy = sinon.spy(TuringEmailApp.views.toolbarView, "render")
-        TuringEmailApp.views.toolbarView.emailFoldersChanged()
-        expect(spy).toHaveBeenCalled()
-        spy.restore()
+          it "updates the pagination text", ->
+            expect(@updatePaginationTextSpy).toHaveBeenCalledWith(@emailFolder, @emailFolderPage)
+  
+      describe "#emailFoldersChanged", ->
+        beforeEach ->
+          @renderSpy = sinon.spy(TuringEmailApp.views.toolbarView, "render")
+          TuringEmailApp.views.toolbarView.emailFoldersChanged()
+          
+        afterEach ->
+          @renderSpy.restore()
+          
+        it "triggers render", ->
+          expect(@renderSpy).toHaveBeenCalled()
+  
+      describe "#emailFolderUnreadCountChanged", ->
+        beforeEach ->
+          @emailFolder = TuringEmailApp.collections.emailFolders.models[0]
+          @spy = sinon.spy(TuringEmailApp.views.toolbarView, "updateTitle")
+          
+          TuringEmailApp.views.toolbarView.emailFolderUnreadCountChanged(TuringEmailApp, @emailFolder)
+          
+        afterEach ->
+          @spy.restore()
+          
+        it "updates the title with the emailFodler", ->
+          expect(@spy).toHaveBeenCalledWith(@emailFolder)

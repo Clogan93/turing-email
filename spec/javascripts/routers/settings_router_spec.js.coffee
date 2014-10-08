@@ -18,10 +18,13 @@ describe "SettingsRouter", ->
   afterEach ->
     @server.restore()
 
+    specStopTuringEmailApp()
+
   it "has the expected routes", ->
     expect(@settingsRouter.routes["settings"]).toEqual "showSettings"
 
   describe "settings", ->
+<<<<<<< HEAD
     describe "when user settings are defined", ->
       beforeEach ->
         @spy = sinon.spy(TuringEmailApp.Views, "SettingsView")
@@ -42,3 +45,14 @@ describe "SettingsRouter", ->
         @settingsRouter.showSettings()
         @server.respond()
         expect(fetchSpy).toHaveBeenCalled()
+=======
+    beforeEach ->
+      @showSettingsSpy = sinon.spy(TuringEmailApp, "showSettings")
+      @settingsRouter.navigate "settings", trigger: true
+
+    afterEach ->
+      @showSettingsSpy.restore()
+
+    it "shows the settings", ->
+      expect(@showSettingsSpy).toHaveBeenCalled()
+>>>>>>> master

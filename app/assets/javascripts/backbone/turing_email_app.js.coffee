@@ -20,6 +20,8 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @collections = {}
     @routers = {}
     
+    @setupMainView()
+    
     @setupSearchBar()
     @setupComposeButton()
     @setupFiltering()
@@ -71,7 +73,14 @@ window.TuringEmailApp = new(Backbone.View.extend(
   setupKeyboardShortcuts: ->
     return
     #$("#email_table_body tr:nth-child(1)").addClass("email_thread_highlight")
-    
+  
+  setupMainView: ->
+    @views.mainView = new TuringEmailApp.Views.Main(
+      app: TuringEmailApp
+      el: $("#main")
+    )
+    @views.mainView.render()
+
   setupSearchBar: ->
     $("#top-search-form").submit (event) =>
       event.preventDefault();
@@ -95,12 +104,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
       return false # avoid to execute the actual submit of the form.
       
   setupToolbar: ->
-    @views.toolbarView = new TuringEmailApp.Views.ToolbarView(
-      app: this
-      el: $("#email-folder-mail-header")
-    )
-    
-    @views.toolbarView.render()
+    @views.toolbarView = @views.mainView.toolbarView
 
     @listenTo(@views.toolbarView, "checkAllClicked", @checkAllClicked)
     @listenTo(@views.toolbarView, "checkAllReadClicked", @checkAllReadClicked)
@@ -137,21 +141,13 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @listenTo(@views.emailFoldersTreeView, "emailFolderSelected", @emailFolderSelected)
     
   setupComposeView: ->
-    @views.composeView = new TuringEmailApp.Views.ComposeView(
-      app: this
-      el: $("#modals")
-    )
-    
-    @views.composeView.render()
+    @views.composeView = @views.mainView.composeView
 
     @listenTo(@views.composeView, "change:draft", @draftChanged)
     
   setupEmailThreads: ->
     @collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
-    @views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView(
-      el: $("#email_table_body")
-      collection: @collections.emailThreads
-    )
+    @views.emailThreadsListView = @views.mainView.createEmailThreadsListView(@collections.emailThreads)
 
     @listenTo(@views.emailThreadsListView, "listItemSelected", @listItemSelected)
     @listenTo(@views.emailThreadsListView, "listItemDeselected", @listItemDeselected)
@@ -217,7 +213,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
         emailFolder = @collections.emailFolders.getEmailFolder(emailFolderID)
         @views.emailFoldersTreeView.select(emailFolder, silent: true)
-        @trigger "change:currentEmailFolder", this, emailFolder
+        @trigger("change:currentEmailFolder", this, emailFolder, parseInt(@collections.emailThreads.page))
   
         @showEmails()
     )
@@ -524,59 +520,30 @@ window.TuringEmailApp = new(Backbone.View.extend(
     )
 
   moveTuringEmailReportToTop: (emailThreadsListView) ->
-    for listView in _.values(emailThreadsListView.listItemViews)
-      emailThread = listView.model
+    for listItemView in _.values(emailThreadsListView.listItemViews)
+      emailThread = listItemView.model
       
       if emailThread.get("emails")[0].subject is "Turing Email - Your daily Genie Report!"
         emailThreadsListView.collection.remove(emailThread)
         emailThreadsListView.collection.unshift(emailThread)
 
-        listView = emailThreadsListView.listItemViews[emailThread.get("uid")]
-        trReportEmail = listView.$el
+        trReportEmail = listItemView.$el
         trReportEmail.remove()
         emailThreadsListView.$el.prepend(trReportEmail)
 
         return
     
   showEmails: ->
-    @hideAll()
-    
-    $("#preview_panel").show()
-    $(".mail-box-header").show()
-    $("table.table-mail").show()
-    $("#pages").show()
-    $("#email_table").show()
-    
-  hideEmails: ->
-    $("#preview_panel").hide()
-    $(".mail-box-header").hide()
-    $("table.table-mail").hide()
-    $("#pages").hide()
-    $("#email_table").hide()
-    
+    @views.mainView.showEmails()
+
   showSettings: ->
-    @hideAll()
-
-    $("#settings").show()
-    $(".main_email_list_content").css("height", "100%")
-
-  hideSettings: ->
-    $("#settings").hide()
+    @views.mainView.showSettings()
     
-  showReports: ->
-    @hideAll()
+  showAnalytics: ->
+    @views.mainView.showAnalytics()
 
-    $("#reports").show()
-    $("#settings").hide()
-    $(".main_email_list_content").css("height", "100%")
-
-  hideReports: ->
-    $("#reports").hide()
-
-  hideAll: ->
-    @hideEmails()
-    @hideReports()
-    @hideSettings()
+  showReport: (divReportsID, ReportModel, ReportView) ->
+    @views.mainView.showReport(divReportsID, ReportModel, ReportView)
 
 ))(el: document.body)
 

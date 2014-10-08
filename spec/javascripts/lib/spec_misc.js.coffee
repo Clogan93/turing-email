@@ -1,10 +1,21 @@
 specStartedHistory = false
 
+window.specStopTuringEmailApp = ->
+  $("#main").remove()
+
 window.specStartTuringEmailApp = ->
   TuringEmailApp.models = {}
   TuringEmailApp.views = {}
   TuringEmailApp.collections = {}
   TuringEmailApp.routers = {}
+
+  $("<div />", {id: "main"}).appendTo("body")
+  
+  TuringEmailApp.views.mainView = new TuringEmailApp.Views.Main(
+    app: TuringEmailApp
+    el: $("#main")
+  )
+  TuringEmailApp.views.mainView.render()
 
   TuringEmailApp.views.toolbarView = new TuringEmailApp.Views.ToolbarView(
     app: TuringEmailApp
@@ -20,16 +31,11 @@ window.specStartTuringEmailApp = ->
     collection: TuringEmailApp.collections.emailFolders
   )
 
-  TuringEmailApp.views.composeView = new TuringEmailApp.Views.ComposeView(
-    app: TuringEmailApp
-  )
+  TuringEmailApp.views.composeView = TuringEmailApp.views.mainView.composeView
   TuringEmailApp.listenTo(TuringEmailApp.views.composeView, "change:draft", TuringEmailApp.draftChanged)
 
   TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
-  TuringEmailApp.views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView(
-    el: $("#email_table_body")
-    collection: TuringEmailApp.collections.emailThreads
-  )
+  TuringEmailApp.views.emailThreadsListView = TuringEmailApp.views.mainView.createEmailThreadsListView(TuringEmailApp.collections.emailThreads)
 
   TuringEmailApp.routers.emailFoldersRouter = new TuringEmailApp.Routers.EmailFoldersRouter()
   TuringEmailApp.routers.emailThreadsRouter = new TuringEmailApp.Routers.EmailThreadsRouter()
@@ -42,6 +48,17 @@ window.specStartTuringEmailApp = ->
     Backbone.history.start(silent: true)
     specStartedHistory = true
 
+window.specPrepareUserSettingsFetch = (userSettings, server) ->
+  userSettingsFixtures = fixture.load("user_settings.fixture.json");
+  validUserSettingsFixture = userSettingsFixtures[0]["valid"]
+
+  server = sinon.fakeServer.create() if not server?
+
+  userSettings = new TuringEmailApp.Models.UserSettings() if not userSettings?
+  server.respondWith "GET", userSettings.url, JSON.stringify(validUserSettingsFixture)
+
+  return [server, validUserSettingsFixture]
+    
 window.specPrepareEmailFoldersFetch = (emailFolders, server) ->
   emailFoldersFixtures = fixture.load("email_folders.fixture.json")
   validEmailFoldersFixture = emailFoldersFixtures[0]["valid"]

@@ -5,6 +5,9 @@ describe "KeyboardShortcutHandler", ->
     specStartTuringEmailApp()
     @ksh = new KeyboardShortcutHandler
     @ksh.keyboard_shortcuts_are_turned_on = true
+    
+  afterEach ->
+    specStopTuringEmailApp()
 
   it "should trigger a compose modal upon pressing c", ->
     @ksh.bind_compose()

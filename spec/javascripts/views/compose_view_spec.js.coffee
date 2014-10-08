@@ -2,6 +2,9 @@ describe "ComposeView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
+  afterEach ->
+    specStopTuringEmailApp()
+    
   it "has the right template", ->
     expect(TuringEmailApp.views.composeView.template).toEqual JST["backbone/templates/compose"]
 

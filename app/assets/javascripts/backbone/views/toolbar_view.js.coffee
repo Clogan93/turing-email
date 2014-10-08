@@ -6,19 +6,27 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
   initialize: (options) ->
     @app = options.app
+    @currentEmailFolders = options.emailFolders if options.emailFolders?
     
     @listenTo(options.app, "change:currentEmailFolder", @currentEmailFolderChanged)
     @listenTo(options.app, "change:emailFolders", @emailFoldersChanged)
     @listenTo(options.app, "change:emailFolderUnreadCount", @emailFolderUnreadCountChanged)
+
+    @$el.addClass("mail-box-header")
+    @$el.attr("id", "email-folder-mail-header")
   
   render: ->
-    emailFolders = TuringEmailApp.collections.emailFolders?.toJSON() ? []
+    emailFolders = @currentEmailFolders?.toJSON() ? []
     @$el.html(@template({'emailFolders' : emailFolders}))
     
     @setupAllCheckbox()
     @divAllCheckbox = @$el.find("div.icheckbox_square-green")
     
     @setupButtons()
+
+    if @currentEmailFolder?
+      @updateTitle(@currentEmailFolder)
+      @updatePaginationText(@currentEmailFolder, @currentEmailFolderPage)
     
     return this
 
@@ -102,9 +110,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   uncheckAllCheckbox: ->
     @divAllCheckbox.iCheck("uncheck")
 
-  updateTitle: (emailFolderID, attempt=1) ->
-    emailFolder = TuringEmailApp.collections.emailFolders.getEmailFolder(emailFolderID)
-    
+  updateTitle: (emailFolder) ->
     if emailFolder?
       folderName = emailFolder.get("name")
       badgeString = emailFolder.badgeString()
@@ -113,54 +119,46 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
         badgeString = ""
       else
         badgeString = "(" + badgeString + ")"
+    else
+      folderName = ""
+      badgeString = ""
 
-      @$el.find("#title").html('<span class="label_name">' + folderName +
-                               '</span> <span class="label_count_badge">' + badgeString + '</span>')
-    else if attempt < TuringEmailApp.Views.ToolbarView.MAX_RETRY_ATTEMPTS
-      setTimeout(
-        =>
-          @updateTitle(emailFolderID, attempt + 1)
-        500
-      )
+    @$el.find("#title").html('<span class="label_name">' + folderName + '</span> ' +
+                             '<span class="label_count_badge">' + badgeString + '</span>')
 
-  updatePaginationText: (folderID, attempt=1) ->
-    currentFolder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
-    
-    if currentFolder?
-      numThreads = currentFolder.get("num_threads")
-      @$el.find("#total_emails_number").html(numThreads)
+  updatePaginationText: (emailFolder, page) ->
+    if emailFolder? && page?
+      numThreads = emailFolder.get("num_threads")
       
-      currentPage = parseInt(TuringEmailApp.collections.emailThreads.page)
+      firstThreadNumber = if numThreads is 0 then 0 else (page - 1) * TuringEmailApp.Models.UserSettings.EmailThreadsPerPage + 1
       
-      firstThreadNumber = (currentPage - 1) * 50 + 1
-      @$el.find("#start_number").html(firstThreadNumber)
-      
-      lastThreadNumber = currentPage * 50
+      lastThreadNumber = page * TuringEmailApp.Models.UserSettings.EmailThreadsPerPage
       if lastThreadNumber > parseInt(numThreads)
         lastThreadNumber = numThreads
-      @$el.find("#end_number").html(lastThreadNumber)
-    else if attempt < TuringEmailApp.Views.ToolbarView.MAX_RETRY_ATTEMPTS
-      setTimeout(
-        =>
-          @updatePaginationText(folderID, attempt + 1)
-        500
-      )
+    else
+      numThreads = 0
+      firstThreadNumber = 0
+      lastThreadNumber = 0
+
+    @$el.find("#total_emails_number").html(numThreads)
+    @$el.find("#start_number").html(firstThreadNumber)
+    @$el.find("#end_number").html(lastThreadNumber)
 
   #############################
   ### TuringEmailApp Events ###
   #############################
 
-  currentEmailFolderChanged: (app, emailFolder) ->
-    return if not emailFolder?
+  currentEmailFolderChanged: (app, emailFolder, page) ->
+    @currentEmailFolder = emailFolder
+    @currentEmailFolderPage = page    
 
-    emailFolderID = emailFolder.get("label_id")
-    
-    @updateTitle emailFolderID
-    @updatePaginationText emailFolderID
+    @updateTitle(emailFolder)
+    @updatePaginationText(emailFolder, page)
 
-  emailFoldersChanged: (app) ->
+  emailFoldersChanged: (app, emailFolders) ->
+    @currentEmailFolders = emailFolders
     @render()
 
   # TODO write test
   emailFolderUnreadCountChanged: (app, emailFolder) ->
-    @updateTitle(emailFolder.get("label_id"))
+    @updateTitle(emailFolder)
