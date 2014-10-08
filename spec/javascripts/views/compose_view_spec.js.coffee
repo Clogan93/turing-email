@@ -150,7 +150,7 @@ describe "ComposeView", ->
 
         it "should set the current alert token to be null", ->
           TuringEmailApp.views.composeView.removeEmailSentAlert()
-          expect(TuringEmailApp.views.composeView.currentAlertToken is true).toBeTruthy()
+          expect(TuringEmailApp.views.composeView.currentAlertToken is null).toBeTruthy()
 
     describe "#resetView", ->
 
