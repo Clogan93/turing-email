@@ -146,7 +146,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @listenTo(@views.composeView, "change:draft", @draftChanged)
     
   setupEmailThreads: ->
-    @collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
+    @collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsSearchResultsCollection()
     @views.emailThreadsListView = @views.mainView.createEmailThreadsListView(@collections.emailThreads)
 
     @listenTo(@views.emailThreadsListView, "listItemSelected", @listItemSelected)
@@ -275,7 +275,15 @@ window.TuringEmailApp = new(Backbone.View.extend(
       )
       
   reloadEmailThreads: (myOptions) ->
-    @collections.emailThreads.fetch(
+    loader = null
+    
+    if myOptions?.query?
+      loader = @collections.emailThreads.search
+    else
+      loader = @collections.emailThreads.fetch
+    
+    loader.call(@collections.emailThreads,
+      query: myOptions?.query
       reset: true
       
       success: (collection, response, options) =>
@@ -285,6 +293,14 @@ window.TuringEmailApp = new(Backbone.View.extend(
         myOptions.success(collection, response, options) if myOptions?.success?
         
       error: myOptions?.error
+    )
+
+  loadSearchResults: (query) ->
+    @reloadEmailThreads(
+      query: query
+      
+      success: (collection, response, options) =>
+        @views.mainView.showEmails()
     )
 
   applyActionToSelectedThreads: (singleAction, multiAction, remove=false, clearSelection=false) ->
@@ -474,7 +490,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   isSplitPaneMode: ->
     splitPaneMode = @models.userSettings.get("split_pane_mode")
     return splitPaneMode is "horizontal" || splitPaneMode is "vertical"
-
+    
   showEmailThread: (emailThread) ->
     emailThreadView = @views.mainView.showEmailThread(emailThread, @isSplitPaneMode())
 

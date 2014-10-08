@@ -48,6 +48,17 @@ window.specStartTuringEmailApp = ->
     Backbone.history.start(silent: true)
     specStartedHistory = true
 
+window.specPrepareSearchResultsFetch = (server) ->
+  emailThreadSearchResultsFixtures = fixture.load("email_thread_search_results.fixture.json");
+  validEmailThreadSearchResultsFixture = emailThreadSearchResultsFixtures[0]["valid"]
+
+  server = sinon.fakeServer.create() if not server?
+
+  server.respondWith "POST", TuringEmailApp.Collections.EmailThreadsSearchResultsCollection.SEARCH_URL,
+                     JSON.stringify(validEmailThreadSearchResultsFixture)
+  
+  return [server, validEmailThreadSearchResultsFixture]
+
 window.specPrepareUserSettingsFetch = (userSettings, server) ->
   userSettingsFixtures = fixture.load("user_settings.fixture.json");
   validUserSettingsFixture = userSettingsFixtures[0]["valid"]
@@ -58,7 +69,7 @@ window.specPrepareUserSettingsFetch = (userSettings, server) ->
   server.respondWith "GET", userSettings.url, JSON.stringify(validUserSettingsFixture)
 
   return [server, validUserSettingsFixture]
-    
+
 window.specPrepareEmailFoldersFetch = (emailFolders, server) ->
   emailFoldersFixtures = fixture.load("email_folders.fixture.json")
   validEmailFoldersFixture = emailFoldersFixtures[0]["valid"]
@@ -69,7 +80,7 @@ window.specPrepareEmailFoldersFetch = (emailFolders, server) ->
   server.respondWith "GET", emailFolders.url, JSON.stringify(validEmailFoldersFixture)
   
   return [server, validEmailFoldersFixture]
-
+  
 window.specPrepareEmailThreadsFetch = (emailThreads, server) ->
   emailThreadsFixtures = fixture.load("email_threads.fixture.json");
   validEmailThreadsFixture = emailThreadsFixtures[0]["valid"]

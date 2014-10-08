@@ -671,15 +671,26 @@ describe "TuringEmailApp", ->
       describe "#reloadEmailThreads", ->
         beforeEach ->
           @fetchSpy = sinon.spy(TuringEmailApp.collections.emailThreads, "fetch")
+          @searchSpy = sinon.spy(TuringEmailApp.collections.emailThreads, "search")
+          
           @success = sinon.spy()
           @error = sinon.spy()
 
         afterEach ->
+          @searchSpy.restore()
           @fetchSpy.restore()
 
-        it "fetches the email threads", ->
-          TuringEmailApp.reloadEmailThreads(success: @success, error: @error)
-          expect(@fetchSpy).toHaveBeenCalled()
+        describe "without query", ->
+          it "fetches the email threads", ->
+            TuringEmailApp.reloadEmailThreads(success: @success, error: @error)
+            expect(@fetchSpy).toHaveBeenCalled()
+            expect(@searchSpy).not.toHaveBeenCalled()
+        
+        describe "with query", ->
+          it "searches for the email threads", ->
+            TuringEmailApp.reloadEmailThreads(query: "test", success: @success, error: @error)
+            expect(@fetchSpy).toHaveBeenCalled()
+            expect(@searchSpy).toHaveBeenCalled()
 
         describe "on success", ->
           beforeEach ->
@@ -722,6 +733,28 @@ describe "TuringEmailApp", ->
           it "calls the error callback", ->
             expect(@error).toHaveBeenCalled()
 
+      describe "#loadSearchResults", ->
+        beforeEach ->
+          @reloadEmailThreadsSpy = sinon.spy(TuringEmailApp, "reloadEmailThreads")
+          @showEmailsStub = sinon.stub(TuringEmailApp.views.mainView, "showEmails", ->)
+          
+          @server.restore()
+          [@server, @validEmailThreadSearchResultsFixture] = specPrepareSearchResultsFetch()
+
+          TuringEmailApp.loadSearchResults("test")
+          @server.respond()
+          
+        afterEach ->
+          @showEmailsStub.restore()
+          @reloadEmailThreadsSpy.restore()
+
+        it "reloads the email threads", ->
+          expect(@reloadEmailThreadsSpy).toHaveBeenCalled()
+          
+        describe "on success", ->
+          it "shows the emails", ->
+            expect(@showEmailsStub).toHaveBeenCalled()
+            
       describe "#applyActionToSelectedThreads", ->
         beforeEach ->
           @singleAction = sinon.spy()
