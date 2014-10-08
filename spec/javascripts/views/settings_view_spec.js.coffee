@@ -151,11 +151,7 @@ describe "SettingsView", ->
       @server.respondWith "PATCH", @userSettings.url, JSON.stringify(@userSettings)
       @server.respond()
 
-<<<<<<< HEAD
       expect(showSettingsAlertSpy).toHaveBeenCalled()
-=======
-      expect($("#primaryPane")).toContainHtml('<div class="alert alert-success settingsSaveAlert" role="alert">You have successfully saved your settings!</div>')
->>>>>>> master
 
       waitsFor ->
         return removeSettingsAlertSpy.callCount == 1
