@@ -1320,13 +1320,34 @@ describe "TuringEmailApp", ->
         @listViewDiv.remove()
   
       describe "when the email is a draft", ->
-  
-        it "navigates to the email draft", ->
-          spy = sinon.spy(TuringEmailApp.routers.emailThreadsRouter, "navigate")
-          TuringEmailApp.listItemSelected @listView, @listItemView
-          expect(spy).toHaveBeenCalled()
-          expect(spy).toHaveBeenCalledWith("#email_draft/" + @listItemView.model.get("uid"))
-          spy.restore()
+        describe "when the current folder is NOT the drafts folder", ->
+          it "navigates to the email thread", ->
+            spy = sinon.spy(TuringEmailApp.routers.emailThreadsRouter, "navigate")
+            TuringEmailApp.listItemSelected @listView, @listItemView
+            expect(spy).toHaveBeenCalled()
+            expect(spy).toHaveBeenCalledWith("#email_thread/" + @listItemView.model.get("uid"))
+            spy.restore()
+
+        describe "when the current folder IS the drafts folder", ->
+          beforeEach ->
+            @server.restore()
+            [@server] = specPrepareEmailFoldersFetch(TuringEmailApp.collections.emailFolders)
+            TuringEmailApp.collections.emailFolders.fetch(reset: true)
+            @server.respond()
+            
+            @emailFolder = TuringEmailApp.collections.emailFolders.getEmailFolder("DRAFT")
+            @stub = sinon.stub(TuringEmailApp, "selectedEmailFolder")
+            @stub.returns(@emailFolder)
+            
+          afterEach ->
+            @stub.restore()
+            
+          it "navigates to the email draft", ->
+            spy = sinon.spy(TuringEmailApp.routers.emailThreadsRouter, "navigate")
+            TuringEmailApp.listItemSelected @listView, @listItemView
+            expect(spy).toHaveBeenCalled()
+            expect(spy).toHaveBeenCalledWith("#email_draft/" + @listItemView.model.get("uid"))
+            spy.restore()
   
       describe "when the email is not draft", ->
         beforeEach ->
