@@ -38,9 +38,10 @@ describe "EmailThreadView", ->
         textParts = []
 
         #Collect Attributes from the rendered DOM.
-        @emailThreadView.$el.find('.email_information .col-md-3').each ->
-          fromNames.push $(this).text().trim()
-        @emailThreadView.$el.find('.email_body .col-md-11').each ->
+        @emailThreadView.$el.find(".email_information").each ->
+          fromNames.push $($(this).find(".col-md-2")[0]).text().trim()
+          
+        @emailThreadView.$el.find(".email_body .col-md-11").each ->
           textParts.push $(this).text().trim()
 
         #Run expectations
@@ -60,7 +61,7 @@ describe "EmailThreadView", ->
           @emailThread.get("emails")[0].text_part = null
           @emailThread.get("emails")[0].body_text = randomBodyText
           @emailThreadView.render()
-          expect(@emailThreadView.$el.find("pre#body_text")).toContainHtml(randomBodyText)
+          expect(@emailThreadView.$el.find("pre[name='body_text']")).toContainHtml(randomBodyText)
 
     describe "#setupButtons", ->
       

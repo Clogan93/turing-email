@@ -151,17 +151,17 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
 
     return bodyText
 
-  loadEmailBody: (emailJSON, ifReply=false) ->
+  loadEmailBody: (emailJSON, isReply=false) ->
     console.log("ComposeView loadEmailBody!!")
     body = ""
 
-    if ifReply
+    if isReply
       body += @formatEmailReplyBody emailJSON 
     else
       if emailJSON.text_part?
         body += emailJSON.text_part
-      else
-        body += emailJSON.body_text if emailJSON.body_text
+      else if emailJSON.body_text?
+        body += emailJSON.body_text 
 
     @$el.find("#compose_form #compose_email_body").val(body)
 

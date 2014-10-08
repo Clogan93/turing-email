@@ -28,7 +28,6 @@
         <h5>
             <span class="pull-right font-noraml"><%= datePreview %></span>
             <span class="font-noraml">From: </span><%= fromPreview %>
-            <span class="font-noraml">From: </span><%= fromPreview %>
         </h5>
     </div>
 </div>
@@ -65,7 +64,7 @@
                     <pre><%= email.text_part %></pre>
                   <%
                   } else if(email.body_text != null) {%>
-                    <pre id="body_text"><%= email.body_text %></pre>
+                    <pre name="body_text"><%= email.body_text %></pre>
                   <%
                   }
                 %>
