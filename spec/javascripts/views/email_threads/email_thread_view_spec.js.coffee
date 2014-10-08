@@ -38,9 +38,10 @@ describe "EmailThreadView", ->
         textParts = []
 
         #Collect Attributes from the rendered DOM.
-        @emailThreadView.$el.find('.email_information .col-md-3').each ->
-          fromNames.push $(this).text().trim()
-        @emailThreadView.$el.find('.email_body .col-md-11').each ->
+        @emailThreadView.$el.find(".email_information").each ->
+          fromNames.push $($(this).find(".col-md-2")[0]).text().trim()
+          
+        @emailThreadView.$el.find(".email_body .col-md-11").each ->
           textParts.push $(this).text().trim()
 
         #Run expectations
@@ -50,6 +51,17 @@ describe "EmailThreadView", ->
 
       # it "should render the subject attribute", ->
       #   expect(@emailThreadView.$el.find('#email_subject').text().trim()).toEqual @emailThread.get("emails")[0].subject
+
+      describe " when there is a no html or text parts of the email yet there is a body part", ->
+
+        it "should render the body part", ->
+          @seededChance = new Chance(1)
+          randomBodyText = @seededChance.string({length: 150})
+          @emailThread.get("emails")[0].html_part = null
+          @emailThread.get("emails")[0].text_part = null
+          @emailThread.get("emails")[0].body_text = randomBodyText
+          @emailThreadView.render()
+          expect(@emailThreadView.$el.find("pre[name='body_text']")).toContainHtml(randomBodyText)
 
     describe "#setupButtons", ->
       
@@ -106,8 +118,6 @@ describe "EmailThreadView", ->
         expect(@emailThreadView.$el.find('.email')).toHandle("click")
 
       describe "when a .email is clicked", ->
-        it "should call show on the email body", ->
-          aDotEmailElement = @emailThreadView.$el.find('.email').first()
-          spy = sinon.spy(aDotEmailElement.find(".email_body"), "show")
-          aDotEmailElement.click()
-          expect(spy).toHaveBeenCalled()
+        it "should show the email body", ->
+          @emailThreadView.$el.find('.email').first().click()
+          expect(@emailThreadView.$el.find('.email').first().find(".email_body").css("display")).toEqual "block"

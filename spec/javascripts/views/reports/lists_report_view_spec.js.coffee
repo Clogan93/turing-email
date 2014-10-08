@@ -5,6 +5,7 @@ describe "ListsReportView", ->
     @listsReport = new TuringEmailApp.Models.ListsReport()
 
     @listsReportDiv = $("<div />", {id: "lists_report"}).appendTo("body")
+
     @listsReportView = new TuringEmailApp.Views.Reports.ListsReportView(
       model: @listsReport
       el: @listsReportDiv

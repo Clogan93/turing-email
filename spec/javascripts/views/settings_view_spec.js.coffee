@@ -88,12 +88,17 @@ describe "SettingsView", ->
         emailBankruptcyButton.click()
         expect("click").toHaveBeenPreventedOn("#email_bankruptcy_button")
   
-        expect(@settingsDiv).toContainText("You have successfully declared email bankruptcy!")
-        
         expect(@server.requests.length).toEqual 2
         request = @server.requests[1]
         expect(request.method).toEqual "POST"
         expect(request.url).toEqual "/api/v1/users/declare_email_bankruptcy"
+
+      it "show the settings alert", ->
+        spy = sinon.spy(@settingsView, "showSettingsAlert")
+        emailBankruptcyButton = @settingsDiv.find("#email_bankruptcy_button")
+        emailBankruptcyButton.click()
+        expect(spy).toHaveBeenCalled()
+        spy.restore()
 
   describe "save button", ->
     beforeEach ->
@@ -133,6 +138,9 @@ describe "SettingsView", ->
       expect(@userSettings.get("split_pane_mode")).toEqual("horizontal")
 
     it "displays a success alert after the save button is clicked and then hides it", ->
+      showSettingsAlertSpy = sinon.spy(@settingsView, "showSettingsAlert")
+      removeSettingsAlertSpy = sinon.spy(@settingsView, "removeSettingsAlert")
+
       #Change one attribute
       expect(@userSettings.get("genie_enabled")).toEqual(true)
       genieSwitch = $("#genie_switch")
@@ -143,7 +151,46 @@ describe "SettingsView", ->
       @server.respondWith "PATCH", @userSettings.url, JSON.stringify(@userSettings)
       @server.respond()
 
-      expect($("#primary_pane")).toContainHtml('<div class="alert alert-success settingsSaveAlert" role="alert">You have successfully saved your settings!</div>')
+      expect(showSettingsAlertSpy).toHaveBeenCalled()
 
       waitsFor ->
-        $("div.alert.alert-success.settingsSaveAlert").length == 0
+        return removeSettingsAlertSpy.callCount == 1
+
+  describe "#showSettingsAlert", ->
+    
+    describe "when the current alert token is defined", ->
+      beforeEach ->
+        @settingsView.currentAlertToken = true
+
+      it "should remove the alert", ->
+        spy = sinon.spy(@settingsView, "removeSettingsAlert")
+        @settingsView.showSettingsAlert()
+        expect(spy).toHaveBeenCalled()
+        spy.restore()
+
+    it "should show the alert", ->
+      spy = sinon.spy(TuringEmailApp, "showAlert")
+      @settingsView.showSettingsAlert()
+      expect(spy).toHaveBeenCalled()
+      spy.restore()
+
+    it "should set the current alert token", ->
+      @settingsView.currentAlertToken = null
+      @settingsView.showSettingsAlert()
+      expect(@settingsView.currentAlertToken).toBeDefined()
+
+  describe "#removeSettingsAlert", ->
+    
+    describe "when the current alert token is defined", ->
+      beforeEach ->
+        @settingsView.currentAlertToken = true
+
+      it "should remove the alert", ->
+        spy = sinon.spy(TuringEmailApp, "removeAlert")
+        @settingsView.removeSettingsAlert()
+        expect(spy).toHaveBeenCalled()
+        spy.restore()
+
+      it "should set the current alert token to be null", ->
+        @settingsView.removeSettingsAlert()
+        expect(@settingsView.currentAlertToken is null).toBeTruthy()

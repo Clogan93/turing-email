@@ -36,6 +36,15 @@
     "num_unread_threads": 164
   },
   {
+    "label_id": "Label_50",
+    "label_list_visibility": "labelShow",
+    "label_type": "user",
+    "message_list_visibility": "show",
+    "name": "Calendar/Google",
+    "num_threads": 200,
+    "num_unread_threads": 141
+  },
+  {
     "label_id": "CATEGORY_PERSONAL",
     "label_list_visibility": null,
     "label_type": "system",
@@ -79,6 +88,15 @@
     "name": "Draft",
     "num_threads": 101,
     "num_unread_threads": 57
+  },
+  {
+    "label_id": "SENT",
+    "label_list_visibility": "labelShow",
+    "label_type": "system",
+    "message_list_visibility": "show",
+    "name": "Draft",
+    "num_threads": 50,
+    "num_unread_threads": 0
   }],
   
   "additional": {

@@ -1,4 +1,4 @@
-<div class="mail-box-header">
+<div class="mail-box-header email-thread-header">
     <div class="pull-right tooltip-demo">
       <% if(!TuringEmailApp.isSplitPaneMode()) { %>
         <a class="btn btn-white btn-sm" id="email_back_button" data-toggle="tooltip" data-placement="top" title="Back">
@@ -19,18 +19,15 @@
         <i class="fa fa-trash-o"></i>
       </button>
     </div>
-  
-    <h2>
-        View Message
-    </h2>
+
     <div class="mail-tools tooltip-demo m-t-md">
 
         <h3>
-            <span class="font-noraml">Subject: </span><span id="email_subject"><%= emails[0].subject.trim() == "" ? "(no subject)" : emails[0].subject %></span>
+            <span class="font-noraml">Subject: </span><span id="email_subject"><%= subjectPreview %></span>
         </h3>
         <h5>
-            <span class="pull-right font-noraml">10:15AM 02 FEB 2014</span>
-            <span class="font-noraml">From: </span><%= emails[0].from_name == "" ? emails[0].from_address : emails[0].from_name %>
+            <span class="pull-right font-noraml"><%= datePreview %></span>
+            <span class="font-noraml">From: </span><%= fromPreview %>
         </h5>
     </div>
 </div>
@@ -40,12 +37,14 @@
       <% _.each(emails.reverse(), function(email, index) { %>
         <div class="email<%= (emails.length > 1 && index < emails.length - 1) && email.seen ? " collapsed_email" : "" %>">
           <div class="email_information">
-            <div class="col-md-3">
-              <%= email.from_name == "" ? email.from_address : email.from_name %>
+            <div class="col-md-2">
+              <%= fromPreview %>
             </div>
-
-            <div class="col-md-offset-7 col-md-2">
-              <%= email.date == null ? "" : email.date.substring(0, 10) %>
+            <div class="col-md-8">
+              <%= email.subject.trim() == "" ? "(no subject)" : email.subject %>
+            </div>
+            <div class="col-md-2">
+              <%= datePreview %>
             </div>
           </div>
           
@@ -57,17 +56,15 @@
             <div class="row">
               <div class="col-md-11">
                 <%
-                  if(email.subject.trim() == "Turing Email - Your daily Genie Report!") {
-                    %>
-                    <iframe id="email_iframe<%= index %>" style="width: 100%;"></iframe><%
-                  } else if(email.html_part != null) {%>
+                  if(email.subject.trim() == "Turing Email - Your daily Genie Report!" || email.html_part != null) {
+                  %>
                     <iframe id="email_iframe<%= index %>" style="width: 100%;"></iframe>
                   <%
                   } else if(email.text_part != null) {%>
                     <pre><%= email.text_part %></pre>
                   <%
                   } else if(email.body_text != null) {%>
-                    <pre><%= email.body_text %></pre>
+                    <pre name="body_text"><%= email.body_text %></pre>
                   <%
                   }
                 %>

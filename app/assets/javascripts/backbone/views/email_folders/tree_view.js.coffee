@@ -81,9 +81,9 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
       @trigger("emailFolderDeselected", this, @selectedItem())
 
     @selectedEmailFolder = emailFolder
-    
+
     @trigger("emailFolderSelected", this, emailFolder) if (not options?.silent?) || options.silent is false
-    
+
   updateBadgeCount: (emailFolder) ->
     emailFolderID = emailFolder.get("label_id")
 

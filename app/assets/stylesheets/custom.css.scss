@@ -164,11 +164,6 @@ body
     font-size: 18px;
   }
 
-  .email
-  {
-    padding-bottom: 20px;
-  }
-
   .collapsed_email
   {
     background-color: rgb(243, 243, 243);
@@ -386,7 +381,6 @@ a#refresh_link
   bottom: 0px;
   left: 18.5%;
   z-index: 1000;
-  overflow-y: scroll;
   display: none;
   background-color: white;
 
@@ -402,6 +396,7 @@ a#refresh_link
   #preview_content
   {
     height: 100%;
+    overflow-y: scroll;
   }
 }
 
@@ -482,4 +477,9 @@ a#refresh_link
 {
   position: fixed;
   left: 30%;
+}
+
+.email-thread-header
+{
+  padding-top: 10px;
 }

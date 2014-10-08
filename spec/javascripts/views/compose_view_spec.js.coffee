@@ -72,6 +72,17 @@ describe "ComposeView", ->
             @server.respond([404, {}, ""])
             expect(TuringEmailApp.views.composeView.savingDraft).toEqual(false)
 
+      describe "when the compose modal is hidden", ->
+        beforeEach ->
+          TuringEmailApp.views.composeView.show()
+
+        it "saves the draft", ->
+          @spy = sinon.spy(TuringEmailApp.views.composeView, "updateDraft")
+          TuringEmailApp.views.composeView.hide()
+
+          waitsFor ->
+            return @spy.callCount == 1
+
     describe "#show", ->
 
       it "shows the compose modal", ->
@@ -99,6 +110,7 @@ describe "ComposeView", ->
         spy = sinon.spy(TuringEmailApp, "showAlert")
         TuringEmailApp.views.composeView.showEmailSentAlert()
         expect(spy).toHaveBeenCalled()
+        spy.restore()
 
       it "should set the current alert token", ->
         TuringEmailApp.views.composeView.currentAlertToken = null
@@ -139,10 +151,11 @@ describe "ComposeView", ->
           spy = sinon.spy(TuringEmailApp, "removeAlert")
           TuringEmailApp.views.composeView.removeEmailSentAlert()
           expect(spy).toHaveBeenCalled()
+          spy.restore()
 
         it "should set the current alert token to be null", ->
           TuringEmailApp.views.composeView.removeEmailSentAlert()
-          expect(TuringEmailApp.views.composeView.currentAlertToken is true).toBeTruthy()
+          expect(TuringEmailApp.views.composeView.currentAlertToken is null).toBeTruthy()
 
     describe "#resetView", ->
 
@@ -346,6 +359,27 @@ describe "ComposeView", ->
         subjectWithPrefixFromEmail = TuringEmailApp.views.composeView.subjectWithPrefixFromEmail(emailJSON)
         expect(TuringEmailApp.views.composeView.$el.find("#compose_form #subject_input").val()).toEqual subjectWithPrefixFromEmail
 
+    describe "#formatEmailReplyBody", ->
+      beforeEach ->
+        @seededChance = new Chance(1)
+        @emailJSON = {}
+        @emailJSON["date"] = "2014-09-18T21:28:48.000Z"
+        @emailJSON["from_address"] =  @seededChance.email()
+        @emailJSON["text_part"] = @seededChance.string({length: 250})
+        @emailJSON["body_text"] = @seededChance.string({length: 250})
+
+      it "renders the date-from heading", ->
+        bodyText = TuringEmailApp.views.composeView.formatEmailReplyBody @emailJSON
+        tDate = new TDate()
+        tDate.initializeWithISO8601(@emailJSON.date)
+        dateFromHeading = tDate.longFormDateString() + ", " + @emailJSON.from_address + " wrote:"
+        expect(bodyText).toContain dateFromHeading
+
+      it "adds > to the beginning of each line of the body", ->
+        @emailJSON["text_part"] = "a\nb\nc\nd\n"
+        bodyText = TuringEmailApp.views.composeView.formatEmailReplyBody @emailJSON
+        expect(bodyText).toContain "> a\n> b\n> c\n> d\n> "
+
     describe "#loadEmailBody", ->
       beforeEach ->
         @seededChance = new Chance(1)
@@ -478,13 +512,13 @@ describe "ComposeView", ->
             TuringEmailApp.views.composeView.savingDraft = true
 
           it "sends the email after a timeout", ->
-              @spy = sinon.spy(TuringEmailApp.views.composeView, "sendEmail")
-              TuringEmailApp.views.composeView.sendEmail()
+            @spy = sinon.spy(TuringEmailApp.views.composeView, "sendEmail")
+            TuringEmailApp.views.composeView.sendEmail()
 
-              waitsFor ->
-                return @spy.callCount == 2
+            waitsFor ->
+              return @spy.callCount == 2
 
-              TuringEmailApp.views.composeView.savingDraft = false
+            TuringEmailApp.views.composeView.savingDraft = false
 
         describe "when not saving the draft", ->
           beforeEach ->

@@ -15,13 +15,17 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     return this
 
   setupEmailBankruptcyButton: ->
-    @$el.find("#email_bankruptcy_button").click (event) ->
+    @$el.find("#email_bankruptcy_button").click (event) =>
       event.preventDefault()
       
       confirm_response = confirm("Are you sure you want to declare email bankruptcy?")
       if confirm_response
-        $(@).parent().append('<br /><div class="alert alert-success" role="alert">You have successfully declared email bankruptcy!</div>')
+        @showSettingsAlert('You have successfully declared email bankruptcy!')
         $.post "/api/v1/users/declare_email_bankruptcy"
+
+        setTimeout (=>
+          @removeSettingsAlert()
+        ), 3000
 
   setupSwitches: ->
     @$el.find("#keyboard_shortcuts_switch").bootstrapSwitch()
@@ -38,12 +42,25 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
       @model.set(genie_enabled: genie_enabled, split_pane_mode: split_pane_mode)
       @model.save(null, {
         patch: true
-        success: (model, response) ->
-          primaryPane = $("#primary_pane").prepend('<div class="alert alert-success settingsSaveAlert" role="alert">You have successfully saved your settings!</div>')
-          saveAlert = primaryPane.children()[0]
+        success: (model, response) =>
+          @showSettingsAlert('You have successfully saved your settings!')
 
           setTimeout (=>
-            $(saveAlert).remove()
+            @removeSettingsAlert()
           ), 3000
         }
       )
+
+  showSettingsAlert: (alertMessage) ->
+    console.log "SettingsView showSettingsAlert"
+
+    @removeSettingsAlert() if @currentAlertToken?
+
+    @currentAlertToken = TuringEmailApp.showAlert(alertMessage, "alert-success")
+
+  removeSettingsAlert: ->
+    console.log "SettingsView REMOVE SettingsAlert"
+
+    if @currentAlertToken?
+      TuringEmailApp.removeAlert(@currentAlertToken)
+      @currentAlertToken = null

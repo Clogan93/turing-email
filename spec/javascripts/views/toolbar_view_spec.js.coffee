@@ -290,6 +290,22 @@ describe "ToolbarView", ->
         badgeText = TuringEmailApp.views.toolbarView.$el.find(".label_count_badge").text()
         expect(badgeText).toEqual("(" + @emailFolder.get("num_unread_threads") + ")")
 
+      describe "when the email folder's badget string is empty", ->
+
+        it "sets the badge to empty", ->
+          TuringEmailApp.views.toolbarView.updateTitle "SENT"
+          badgeText = TuringEmailApp.views.toolbarView.$el.find(".label_count_badge").text()
+          expect(badgeText).toEqual ""
+
+      describe "when the email folder ID is not found locally", ->
+
+        it "calls update title again", ->
+          @spy = sinon.spy(TuringEmailApp.views.toolbarView, "updateTitle")
+          TuringEmailApp.views.toolbarView.updateTitle "non-existent email folder ID"
+
+          waitsFor ->
+            return @spy.callCount == 5
+
     describe "#updatePaginationText", ->
       beforeEach ->
         @emailFolder = TuringEmailApp.collections.emailFolders.models[0]
@@ -362,7 +378,7 @@ describe "ToolbarView", ->
           beforeEach ->
             TuringEmailApp.views.toolbarView.currentEmailFolder = TuringEmailApp.collections.emailFolders.models[0]
             TuringEmailApp.views.toolbarView.currentEmailFolderPage = 1
-
+            
             @emailFolder = null
             @emailFolderPage = 0
 
