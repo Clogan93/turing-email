@@ -6,13 +6,17 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
   initialize: (options) ->
     @app = options.app
+    @currentEmailFolders = options.emailFolders if options.emailFolders?
     
     @listenTo(options.app, "change:currentEmailFolder", @currentEmailFolderChanged)
     @listenTo(options.app, "change:emailFolders", @emailFoldersChanged)
     @listenTo(options.app, "change:emailFolderUnreadCount", @emailFolderUnreadCountChanged)
+
+    @$el.addClass("mail-box-header")
+    @$el.attr("id", "email-folder-mail-header")
   
   render: ->
-    emailFolders = TuringEmailApp.collections.emailFolders?.toJSON() ? []
+    emailFolders = @currentEmailFolders?.toJSON() ? []
     @$el.html(@template({'emailFolders' : emailFolders}))
     
     @setupAllCheckbox()
@@ -151,7 +155,8 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @updateTitle(emailFolder)
     @updatePaginationText(emailFolder, page)
 
-  emailFoldersChanged: (app) ->
+  emailFoldersChanged: (app, emailFolders) ->
+    @currentEmailFolders = emailFolders
     @render()
 
   # TODO write test

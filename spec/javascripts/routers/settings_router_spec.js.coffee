@@ -25,11 +25,11 @@ describe "SettingsRouter", ->
 
   describe "settings", ->
     beforeEach ->
-      @spy = sinon.spy(TuringEmailApp.Views, "SettingsView")
+      @showSettingsSpy = sinon.spy(TuringEmailApp, "showSettings")
       @settingsRouter.navigate "settings", trigger: true
 
     afterEach ->
-      @spy.restore()
+      @showSettingsSpy.restore()
 
-    it "shows a SettingsView", ->
-      expect(@spy).toHaveBeenCalled()
+    it "shows the settings", ->
+      expect(@showSettingsSpy).toHaveBeenCalled()

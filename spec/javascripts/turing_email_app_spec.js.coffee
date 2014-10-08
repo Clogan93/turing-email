@@ -20,7 +20,7 @@ describe "TuringEmailApp", ->
       expect(TuringEmailApp.collections).toBeDefined()
       expect(TuringEmailApp.routers).toBeDefined()
 
-    setupFunctions = ["setupSearchBar", "setupComposeButton", "setupFiltering", "setupToolbar", "setupUser",
+    setupFunctions = ["setupMainView", "setupSearchBar", "setupComposeButton", "setupFiltering", "setupToolbar", "setupUser",
                       "setupEmailFolders", "loadEmailFolders", "setupComposeView", "setupEmailThreads", "setupRouters"]
     for setupFunction in setupFunctions  
       it "calls the " + setupFunction + " function", ->
@@ -45,6 +45,13 @@ describe "TuringEmailApp", ->
       expect(@spy).toHaveBeenCalledWith(TuringEmailApp.syncEmail, 60000)
 
   describe "setup functions", ->
+    describe "#setupMainView", ->
+      beforeEach ->
+        TuringEmailApp.setupMainView()
+        
+      it "creates the main view", ->
+        expect(TuringEmailApp.views.mainView).toBeDefined()
+
     describe "#setupSearchBar", ->
       beforeEach ->
         @divSearchForm = $('<form role="search" id="top-search-form" class="navbar-form-custom"></form>').appendTo("body")
@@ -172,15 +179,11 @@ describe "TuringEmailApp", ->
         
         userFixtures = fixture.load("user.fixture.json");
         @validUserFixture = userFixtures[0]["valid"]
-  
-        userSettingsFixtures = fixture.load("user_settings.fixture.json");
-        @validUserSettingsFixture = userSettingsFixtures[0]["valid"]
-        
-        @server = sinon.fakeServer.create()
-  
+
+        [@server] = specPrepareUserSettingsFetch()
         @server.respondWith "GET", "/api/v1/users/current", JSON.stringify(@validUserFixture)
-        @server.respondWith "GET", "/api/v1/user_configurations", JSON.stringify(@validUserSettingsFixture)
         
+        TuringEmailApp.models.userSettings.fetch()
         TuringEmailApp.setupUser()
         
         @server.respond()
@@ -631,7 +634,7 @@ describe "TuringEmailApp", ->
             expect(@resetSpy).toHaveBeenCalled()
 
           it "triggers the change:emailFolders event", ->
-            expect(@changeEmailFoldersSpy).toHaveBeenCalled()
+            expect(@changeEmailFoldersSpy).toHaveBeenCalledWith(TuringEmailApp, TuringEmailApp.collections.emailFolders)
   
     describe "Email Thread Functions", ->
       describe "#loadEmailThread", ->
@@ -1482,16 +1485,8 @@ describe "TuringEmailApp", ->
         
     describe "#isSplitPaneMode", ->
       beforeEach ->
-        userSettingsFixtures = fixture.load("user_settings.fixture.json");
-        @validUserSettingsFixture = userSettingsFixtures[0]["valid"]
-    
-        @server = sinon.fakeServer.create()
-    
-        @server.respondWith "GET", "/api/v1/user_configurations", JSON.stringify(@validUserSettingsFixture)
-    
-        TuringEmailApp.models.userSettings = new TuringEmailApp.Models.UserSettings()
+        [@server] = specPrepareUserSettingsFetch()
         TuringEmailApp.models.userSettings.fetch()
-    
         @server.respond()
     
       describe "when split pane mode is horizontal in the user settings", ->
@@ -1688,7 +1683,55 @@ describe "TuringEmailApp", ->
     
           expect(TuringEmailApp.views.emailThreadsListView.$el.children()[0]).toContainText("Turing Email")
   
-    describe "showEmails", ->
-  
-    describe "showSettings", ->
-  
+    describe "#showEmails", ->
+      beforeEach ->
+        @showEmailsSpy = sinon.spy(TuringEmailApp.views.mainView, "showEmails")
+        
+        TuringEmailApp.showEmails()
+        
+      afterEach ->
+        @showEmailsSpy.restore()
+        
+      it "shows the emails on the main view", ->
+        expect(@showEmailsSpy).toHaveBeenCalled()
+        
+    describe "#showSettings", ->
+      beforeEach ->
+        @showSettingsSpy = sinon.spy(TuringEmailApp.views.mainView, "showSettings")
+
+        [@server] = specPrepareUserSettingsFetch()
+        TuringEmailApp.models.userSettings.fetch()
+        @server.respond()
+
+        TuringEmailApp.showSettings()
+
+      afterEach ->
+        @showSettingsSpy.restore()
+
+      it "shows the Settings on the main view", ->
+        expect(@showSettingsSpy).toHaveBeenCalled()
+
+    describe "#showAnalytics", ->
+      beforeEach ->
+        @showAnalyticsSpy = sinon.spy(TuringEmailApp.views.mainView, "showAnalytics")
+
+        TuringEmailApp.showAnalytics()
+
+      afterEach ->
+        @showAnalyticsSpy.restore()
+
+      it "shows the Analytics on the main view", ->
+        expect(@showAnalyticsSpy).toHaveBeenCalled()
+
+    describe "#showReport", ->
+      beforeEach ->
+        @showReportSpy = sinon.spy(TuringEmailApp.views.mainView, "showReport")
+
+        TuringEmailApp.showReport(undefined, TuringEmailApp.Models.AttachmentsReport,
+                                  TuringEmailApp.Views.Reports.AttachmentsReportView)
+
+      afterEach ->
+        @showReportSpy.restore()
+
+      it "shows the Analytics on the main view", ->
+        expect(@showReportSpy).toHaveBeenCalled()

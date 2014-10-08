@@ -2,16 +2,13 @@ describe "ToolbarView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    emailFoldersFixtures = fixture.load("email_folders.fixture.json")
-    @validEmailFoldersFixture = emailFoldersFixtures[0]["valid"]
-
-    @server = sinon.fakeServer.create()
-    @server.respondWith "GET", TuringEmailApp.collections.emailFolders.url, JSON.stringify(@validEmailFoldersFixture)
-
+    [@server] = specPrepareEmailFoldersFetch()
     TuringEmailApp.collections.emailFolders.fetch()
     @server.respond()
     
   afterEach ->
+    @server.restore()
+    
     specStopTuringEmailApp()
 
   it "has the right template", ->
@@ -29,6 +26,7 @@ describe "ToolbarView", ->
 
   describe "after render", ->
     beforeEach ->
+      TuringEmailApp.views.toolbarView.emailFoldersChanged(TuringEmailApp, TuringEmailApp.collections.emailFolders)
       TuringEmailApp.views.toolbarView.render()
 
     describe "#render", ->

@@ -26,7 +26,6 @@ class TuringEmailApp.Views.Main extends Backbone.View
       app: @app
       el: @$el.find("#compose_view")
     )
-
     @composeView.render()
     
   createEmailThreadsListView: (emailThreads) ->
@@ -41,7 +40,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
     $("#primaryPane").append(@toolbarView.$el)
     @toolbarView.render()
     
-    $("#primaryPane").append('<div class="mail-box">
+    $("#primaryPane").append('<div class="mail-box" name="email_threads_list_view">
                              <table class="table table-hover table-mail">
                                <tbody id="email_table_body"></tbody>
                              </table>
@@ -51,21 +50,23 @@ class TuringEmailApp.Views.Main extends Backbone.View
     @emailThreadsListView.render()
     
   showSettings: ->
-    if not @settingsView?
-      @settingsView = new TuringEmailApp.Views.SettingsView(
-        model: TuringEmailApp.models.userSettings
-        el: $("#primaryPane")
-      )
+    settingsView = new TuringEmailApp.Views.SettingsView(
+      model: TuringEmailApp.models.userSettings
+      el: $("#primaryPane")
+    )
 
-    @settingsView.render()
+    settingsView.render()
+    
+    return settingsView
 
   showAnalytics: ->
-    if not @analyticsView?
-      @analyticsView = new TuringEmailApp.Views.AnalyticsView(
+    analyticsView = new TuringEmailApp.Views.AnalyticsView(
         el: $("#primaryPane")
       )
 
-    @analyticsView.render()
+    analyticsView.render()
+    
+    return analyticsView
 
   showReport: (divReportsID = "primaryPane", ReportModel, ReportView) ->
     reportModel = new ReportModel()
@@ -75,3 +76,5 @@ class TuringEmailApp.Views.Main extends Backbone.View
     )
 
     reportModel.fetch()
+    
+    return reportView

@@ -9,7 +9,7 @@ window.specStartTuringEmailApp = ->
   TuringEmailApp.collections = {}
   TuringEmailApp.routers = {}
 
-  $('<div id="main"></div>').appendTo("body")
+  $("<div />", {id: "main"}).appendTo("body")
   
   TuringEmailApp.views.mainView = new TuringEmailApp.Views.Main(
     app: TuringEmailApp
@@ -48,6 +48,17 @@ window.specStartTuringEmailApp = ->
     Backbone.history.start(silent: true)
     specStartedHistory = true
 
+window.specPrepareUserSettingsFetch = (userSettings, server) ->
+  userSettingsFixtures = fixture.load("user_settings.fixture.json");
+  validUserSettingsFixture = userSettingsFixtures[0]["valid"]
+
+  server = sinon.fakeServer.create() if not server?
+
+  userSettings = new TuringEmailApp.Models.UserSettings() if not userSettings?
+  server.respondWith "GET", userSettings.url, JSON.stringify(validUserSettingsFixture)
+
+  return [server, validUserSettingsFixture]
+    
 window.specPrepareEmailFoldersFetch = (emailFolders, server) ->
   emailFoldersFixtures = fixture.load("email_folders.fixture.json")
   validEmailFoldersFixture = emailFoldersFixtures[0]["valid"]
