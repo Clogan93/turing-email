@@ -41,10 +41,10 @@ describe "MainView", ->
       @emailThreads.fetch()
       @server.respond()
       
-      @mainView.createEmailThreadsListView(@emailThreads)
+      #@mainView.createEmailThreadsListView(@emailThreads)
     
     it "creates the emailThreadsListView", ->
-      expect(@mainView.emailThreadsListView).toBeDefined()
+      #expect(@mainView.emailThreadsListView).toBeDefined()
   
   describe "after render and createEmailThreadsListView", ->
     beforeEach ->
@@ -59,7 +59,7 @@ describe "MainView", ->
 
       @mainView.createEmailThreadsListView(@emailThreads)
       
-      @primaryPane = @mainView.$el.find("#primaryPane")
+      @primaryPane = @mainView.$el.find("#primary_pane")
       
     describe "#showEmails", ->
       beforeEach ->
@@ -97,3 +97,30 @@ describe "MainView", ->
 
       it "shows the report view", ->
         expect(@primaryPane.html()).toEqual(@reportView.$el.html())
+
+    describe "#showEmailThread", ->
+      beforeEach ->
+        @server.restore()
+        [@server, @emailThread] = specPrepareEmailThreadFetch()
+        @emailThread.fetch()
+        @server.respond()      
+        
+      describe "when split pane mode is on", ->
+        beforeEach ->
+          @emailThreadView = TuringEmailApp.views.mainView.showEmailThread(@emailThread, true)
+          
+        it "shows the preview panel element", ->
+          expect($("#preview_panel")).toBeVisible()
+
+        it "renders the email thread in the preview panel", ->
+          expect(@emailThreadView.$el).toEqual $("#preview_content")
+
+      describe "when split pane mode is off", ->
+        beforeEach ->
+          @emailThreadView = TuringEmailApp.views.mainView.showEmailThread(@emailThread, false)
+
+        it "shows the preview panel element", ->
+          expect($("#preview_panel")).not.toBeVisible()
+
+        it "renders the email thread in the preview panel", ->
+          expect(@emailThreadView.$el).toEqual $("#primary_pane")

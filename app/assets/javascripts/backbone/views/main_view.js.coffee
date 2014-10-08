@@ -36,11 +36,11 @@ class TuringEmailApp.Views.Main extends Backbone.View
     return @emailThreadsListView
     
   showEmails: ->
-    $("#primaryPane").html("")
-    $("#primaryPane").append(@toolbarView.$el)
+    $("#primary_pane").html("")
+    $("#primary_pane").append(@toolbarView.$el)
     @toolbarView.render()
     
-    $("#primaryPane").append('<div class="mail-box" name="email_threads_list_view">
+    $("#primary_pane").append('<div class="mail-box" name="email_threads_list_view">
                              <table class="table table-hover table-mail">
                                <tbody id="email_table_body"></tbody>
                              </table>
@@ -52,7 +52,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
   showSettings: ->
     settingsView = new TuringEmailApp.Views.SettingsView(
       model: TuringEmailApp.models.userSettings
-      el: $("#primaryPane")
+      el: $("#primary_pane")
     )
 
     settingsView.render()
@@ -61,14 +61,14 @@ class TuringEmailApp.Views.Main extends Backbone.View
 
   showAnalytics: ->
     analyticsView = new TuringEmailApp.Views.AnalyticsView(
-        el: $("#primaryPane")
+        el: $("#primary_pane")
       )
 
     analyticsView.render()
     
     return analyticsView
 
-  showReport: (divReportsID = "primaryPane", ReportModel, ReportView) ->
+  showReport: (divReportsID = "primary_pane", ReportModel, ReportView) ->
     reportModel = new ReportModel()
     reportView = new ReportView(
       model: reportModel
@@ -78,3 +78,19 @@ class TuringEmailApp.Views.Main extends Backbone.View
     reportModel.fetch()
     
     return reportView
+
+  showEmailThread: (emailThread, isSplitPaneMode) ->
+    if isSplitPaneMode
+      @$el.find("#preview_panel").show()
+      emailThreadViewSelector = "#preview_content"
+    else
+      @$el.find("#preview_panel").hide()
+      emailThreadViewSelector = "#primary_pane"
+
+    emailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
+      model: emailThread
+      el: $(emailThreadViewSelector)
+    )
+    emailThreadView.render()
+  
+    return emailThreadView

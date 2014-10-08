@@ -100,7 +100,7 @@ describe "SettingsView", ->
       @userSettings.fetch()
       @server.respond()
 
-      @mailBodyDiv = $("<div />", {id: "primaryPane"}).appendTo("body")
+      @mailBodyDiv = $("<div />", {id: "primary_pane"}).appendTo("body")
       
     afterEach ->
       @mailBodyDiv.remove()
@@ -143,7 +143,7 @@ describe "SettingsView", ->
       @server.respondWith "PATCH", @userSettings.url, JSON.stringify(@userSettings)
       @server.respond()
 
-      expect($("#primaryPane")).toContainHtml('<div class="alert alert-success settingsSaveAlert" role="alert">You have successfully saved your settings!</div>')
+      expect($("#primary_pane")).toContainHtml('<div class="alert alert-success settingsSaveAlert" role="alert">You have successfully saved your settings!</div>')
 
       waitsFor ->
         $("div.alert.alert-success.settingsSaveAlert").length == 0

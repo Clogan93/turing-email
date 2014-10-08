@@ -39,7 +39,7 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
       @model.save(null, {
         patch: true
         success: (model, response) ->
-          primaryPane = $("#primaryPane").prepend('<div class="alert alert-success settingsSaveAlert" role="alert">You have successfully saved your settings!</div>')
+          primaryPane = $("#primary_pane").prepend('<div class="alert alert-success settingsSaveAlert" role="alert">You have successfully saved your settings!</div>')
           saveAlert = primaryPane.children()[0]
 
           setTimeout (=>
