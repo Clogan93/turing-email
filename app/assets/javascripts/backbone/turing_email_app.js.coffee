@@ -414,7 +414,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
   listItemSelected: (listView, listItemView) ->
     emailThread = listItemView.model
-    isDraft = emailThread.get("emails")[0].draft_id?
+    isDraft = emailThread.get("emails")[0].draft_id? && @selectedEmailFolder()?.get("label_id") is "DRAFT"
     emailThreadUID = emailThread.get("uid")
 
     if isDraft
