@@ -164,13 +164,13 @@ describe "ComposeView", ->
         TuringEmailApp.views.composeView.$el.find("#compose_form #cc_input").val("This is the cc input.")
         TuringEmailApp.views.composeView.$el.find("#compose_form #bcc_input").val("This is the bcc input.")
         TuringEmailApp.views.composeView.$el.find("#compose_form #subject_input").val("This is the subject input.")
-        TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").val("This is the compose email body.")
+        TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").html("This is the compose email body.")
 
         expect(TuringEmailApp.views.composeView.$el.find("#compose_form #to_input").val()).toEqual "This is the to input."
         expect(TuringEmailApp.views.composeView.$el.find("#compose_form #cc_input").val()).toEqual "This is the cc input."
         expect(TuringEmailApp.views.composeView.$el.find("#compose_form #bcc_input").val()).toEqual "This is the bcc input."
         expect(TuringEmailApp.views.composeView.$el.find("#compose_form #subject_input").val()).toEqual "This is the subject input."
-        expect(TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").val()).toEqual "This is the compose email body."
+        expect(TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").html()).toEqual "This is the compose email body."
 
         TuringEmailApp.views.composeView.resetView()
 
@@ -178,7 +178,7 @@ describe "ComposeView", ->
         expect(TuringEmailApp.views.composeView.$el.find("#compose_form #cc_input").val()).toEqual ""
         expect(TuringEmailApp.views.composeView.$el.find("#compose_form #bcc_input").val()).toEqual ""
         expect(TuringEmailApp.views.composeView.$el.find("#compose_form #subject_input").val()).toEqual ""
-        expect(TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").val()).toEqual ""
+        expect(TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").html()).toEqual ""
 
       it "removes the email sent error alert", ->
         TuringEmailApp.views.composeView.resetView()
@@ -389,26 +389,38 @@ describe "ComposeView", ->
         # emailJSON = {}
         # emailJSON["text_part"] = @seededChance.string({length: 250})
         # TuringEmailApp.views.composeView.loadEmailBody emailJSON, true
-        # expect(TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").val()).toContain("\r\n\r\n\r\n\r\n")
+        # expect(TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").html()).toContain("\r\n\r\n\r\n\r\n")
 
-      it "adds the text part to the body when it is defined", ->
+      it "adds the text part part to the body when it is defined", ->
         emailJSON = {}
         emailJSON["text_part"] = @seededChance.string({length: 250})
         TuringEmailApp.views.composeView.loadEmailBody emailJSON
-        expect(TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").val()).toContain(emailJSON.text_part)
+
+        rawHtml = TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").html()
+        decodedHtml = $("<div/>").html(rawHtml).text()
+
+        expect(decodedHtml).toContain(emailJSON.text_part)
 
       it "adds the text part to the body when both the text part and body text are defined", ->
         emailJSON = {}
         emailJSON["text_part"] = @seededChance.string({length: 250})
         emailJSON["body_text"] = @seededChance.string({length: 250})
         TuringEmailApp.views.composeView.loadEmailBody emailJSON
-        expect(TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").val()).toContain(emailJSON.text_part)
+
+        rawHtml = TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").html()
+        decodedHtml = $("<div/>").html(rawHtml).text()
+
+        expect(decodedHtml).toContain(emailJSON.text_part)
 
       it "adds the body text to the body when the text part is not defined and the body text is defined", ->
         emailJSON = {}
         emailJSON["body_text"] = @seededChance.string({length: 250})
         TuringEmailApp.views.composeView.loadEmailBody emailJSON
-        expect(TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").val()).toContain(emailJSON.body_text)
+
+        rawHtml = TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").html()
+        decodedHtml = $("<div/>").html(rawHtml).text()
+
+        expect(decodedHtml).toContain(emailJSON.body_text)
 
     describe "#subjectWithPrefixFromEmail", ->
       beforeEach ->
@@ -462,7 +474,7 @@ describe "ComposeView", ->
         TuringEmailApp.views.composeView.$el.find("#compose_form #cc_input").val(@seededChance.email())
         TuringEmailApp.views.composeView.$el.find("#compose_form #bcc_input").val(@seededChance.email())
         TuringEmailApp.views.composeView.$el.find("#compose_form #subject_input").val(@seededChance.string({length: 25}))
-        TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").val(@seededChance.string({length: 250}))
+        TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").html(@seededChance.string({length: 250}))
 
         TuringEmailApp.views.composeView.emailInReplyToUID = chance.integer({min: 1, max: 10000})
 
@@ -484,7 +496,7 @@ describe "ComposeView", ->
         expect(@email.get("subject")).toEqual TuringEmailApp.views.composeView.$el.find("#compose_form #subject_input").val()
 
       it "updates the email model with the email body input value from the compose form", ->
-        expect(@email.get("email_body")).toEqual TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").val()
+        expect(@email.get("email_body")).toEqual TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").html()
 
     describe "sendEmail", ->
 
