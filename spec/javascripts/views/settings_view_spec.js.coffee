@@ -157,6 +157,14 @@ describe "SettingsView", ->
         return removeSettingsAlertSpy.callCount == 1
 
   describe "#setupEmailRulesButton", ->
+    beforeEach ->
+      @userSettings.fetch()
+      @server.respond()
+
+      @mailBodyDiv = $("<div />", {id: "primary_pane"}).appendTo("body")
+      
+    afterEach ->
+      @mailBodyDiv.remove()
 
     it "binds the click event to the email rules button", ->
       expect(@settingsView.$el.find("#email_rules_button")).toHandle("click")
@@ -169,7 +177,6 @@ describe "SettingsView", ->
         expect('click.bs.dropdown').toHaveBeenTriggeredOn('#email-rule-dropdown a')
 
         expect(spy).toHaveBeenTriggered()
-        spy.restore()
 
   describe "#showSettingsAlert", ->
 
