@@ -104,7 +104,7 @@ describe "TuringEmailApp", ->
       beforeEach ->
         @createFilterDiv = $('<div class="create_filter"><div />').appendTo("body")
         @filterFormDiv = $('<div id="filter_form"><div />').appendTo("body")
-        @dropdownDiv = $('<div class="dropdown"><a href="#"></a></div>').appendTo("body")
+        @dropdownDiv = $('<div class="dropdown" id="email-rule-dropdown"><a href="#"></a></div>').appendTo("body")
         
         TuringEmailApp.setupFiltering()
       
@@ -118,9 +118,10 @@ describe "TuringEmailApp", ->
   
       describe "when the create filter link is clicked", ->
         it "triggers the click.bs.dropdown event on the dropdown link", ->
-          spy = spyOnEvent('.dropdown a', 'click.bs.dropdown')
+          spy = spyOnEvent('#email-rule-dropdown a', 'click.bs.dropdown')
           $('.create_filter').click()
-          expect('click.bs.dropdown').toHaveBeenTriggeredOn('.dropdown a')
+          expect('click.bs.dropdown').toHaveBeenTriggeredOn('#email-rule-dropdown a')
+
           expect(spy).toHaveBeenTriggered()
   
       it "hooks the submit action on the filter form", ->
@@ -138,11 +139,11 @@ describe "TuringEmailApp", ->
           expect(request.url).toEqual "/api/v1/genie_rules"
 
         it "triggers the click.bs.dropdown event on the dropdown link", ->
-          spy = spyOnEvent('.dropdown a', 'click.bs.dropdown')
+          spy = spyOnEvent('#email-rule-dropdown a', 'click.bs.dropdown')
           $("#filter_form").submit()
-          expect('click.bs.dropdown').toHaveBeenTriggeredOn('.dropdown a')
+          expect('click.bs.dropdown').toHaveBeenTriggeredOn('#email-rule-dropdown a')
           expect(spy).toHaveBeenTriggered()
-        
+
     describe "#setupToolbar", ->
       it "creates the toolbar view", ->
         TuringEmailApp.setupToolbar()
@@ -554,7 +555,11 @@ describe "TuringEmailApp", ->
           @alertSelector = "." + @alertClass
 
           @removeAlertSpy = sinon.spy(TuringEmailApp, "removeAlert")
-          
+
+          if TuringEmailApp.currentAlert?
+            TuringEmailApp.currentAlert.remove()
+            TuringEmailApp.currentAlert = undefined
+
         afterEach ->
           TuringEmailApp.removeAlert(@token)
           @removeAlertSpy.restore()
