@@ -104,12 +104,7 @@ describe "SettingsView", ->
     beforeEach ->
       @userSettings.fetch()
       @server.respond()
-
-      @mailBodyDiv = $("<div />", {id: "primary_pane"}).appendTo("body")
       
-    afterEach ->
-      @mailBodyDiv.remove()
-
     it "saves the model to the server", ->
       spyOnEvent("#user_settings_save_button", "click")
       saveButton = @settingsDiv.find("#user_settings_save_button")

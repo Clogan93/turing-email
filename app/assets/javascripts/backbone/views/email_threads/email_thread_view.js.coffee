@@ -10,7 +10,6 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
 
   render: ->
     if @model
-
       modelJSON = @model.toJSON()
       modelJSON["fromPreview"] = @model.fromPreview()
       modelJSON["subjectPreview"] = @model.subjectPreview()
@@ -30,6 +29,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     return this
 
   # TODO refactor
+  # TODO write tests
   renderGenieReport: ->
     for email, index in @model.get("emails")
       if email.subject is "Turing Email - Your daily Genie Report!"
@@ -68,6 +68,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
           $('.dropdown a').trigger('click.bs.dropdown')
           return false
 
+  # TODO write tests
   renderHTMLEmails: ->
     for email, index in @model.get("emails")
       if email.html_part?
@@ -99,13 +100,12 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     @$el.find("i.fa-trash-o").parent().click =>
       @trigger("trashClicked", this)
 
+  # TODO write tests
   insertHtmlIntoIframe: (email, index) ->
     iframe = @$el.find("#email_iframe" + index.toString())
     
-    iframe.contents().find("body").append(email.html_part)
-    body_height_sum = iframe.contents().find("body").height()
-   
-    body_height_adjusted = body_height_sum + 25
-    body_height_adjusted_string = body_height_adjusted.toString() + "px"
-
-    iframe.css("height", body_height_adjusted_string)
+    iframe.contents().find("html").html(email.html_part)
+    email_height = iframe.contents().find("html").outerHeight(true)
+    
+    iframe.contents().find("html").css("overflow", "hidden")
+    iframe.css("height", email_height.toString() + "px")

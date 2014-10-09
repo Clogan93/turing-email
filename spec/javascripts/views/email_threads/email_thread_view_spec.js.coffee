@@ -63,6 +63,16 @@ describe "EmailThreadView", ->
           @emailThreadView.render()
           expect(@emailThreadView.$el.find("pre[name='body_text']")).toContainHtml(randomBodyText)
 
+    describe "#setupEmailExpandAndCollapse", ->
+
+      it "should have .email handle clicks", ->
+        expect(@emailThreadView.$el.find('.email')).toHandle("click")
+
+      describe "when a .email is clicked", ->
+        it "should show the email body", ->
+          @emailThreadView.$el.find('.email').first().click()
+          expect(@emailThreadView.$el.find('.email').first().find(".email_body").css("display")).toEqual "block"
+
     describe "#setupButtons", ->
       
       it "should handle clicks", ->
@@ -111,13 +121,3 @@ describe "EmailThreadView", ->
             @emailThreadView.$el.find("#email_back_button").click()
             expect(spy).toHaveBeenCalled()
             spy.restore()
-
-    describe "#setupEmailExpandAndCollapse", ->
-
-      it "should have .email handle clicks", ->
-        expect(@emailThreadView.$el.find('.email')).toHandle("click")
-
-      describe "when a .email is clicked", ->
-        it "should show the email body", ->
-          @emailThreadView.$el.find('.email').first().click()
-          expect(@emailThreadView.$el.find('.email').first().find(".email_body").css("display")).toEqual "block"

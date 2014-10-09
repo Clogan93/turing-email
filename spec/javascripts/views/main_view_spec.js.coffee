@@ -59,7 +59,7 @@ describe "MainView", ->
 
       @mainView.createEmailThreadsListView(@emailThreads)
       
-      @primaryPane = @mainView.$el.find("#primary_pane")
+      @primaryPane = @mainView.$el.find("[name=primary_pane]")
       
     describe "#showEmails", ->
       beforeEach ->
@@ -123,4 +123,4 @@ describe "MainView", ->
           expect($("#preview_panel")).not.toBeVisible()
 
         it "renders the email thread in the preview panel", ->
-          expect(@emailThreadView.$el).toEqual $("#primary_pane")
+          expect(@emailThreadView.$el).toEqual $("[name=primary_pane]")

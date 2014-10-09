@@ -1,9 +1,11 @@
 describe "TuringEmailApp", ->
   beforeEach ->
     @server = sinon.fakeServer.create()
+    @mainDiv = $("<div />", id: "main").appendTo($("body"))
 
   afterEach ->
     @server.restore()
+    @mainDiv.remove()
 
   it "has the app objects defined", ->
     expect(TuringEmailApp.Models).toBeDefined()
@@ -266,6 +268,8 @@ describe "TuringEmailApp", ->
   describe "after start", ->
     beforeEach ->
       TuringEmailApp.start()
+      TuringEmailApp.showEmails()
+      
       @server.restore()
       @server = sinon.fakeServer.create()
       
@@ -736,7 +740,7 @@ describe "TuringEmailApp", ->
       describe "#loadSearchResults", ->
         beforeEach ->
           @reloadEmailThreadsSpy = sinon.spy(TuringEmailApp, "reloadEmailThreads")
-          @showEmailsStub = sinon.stub(TuringEmailApp.views.mainView, "showEmails", ->)
+          @showEmailsStub = sinon.stub(TuringEmailApp, "showEmails", ->)
           
           @server.restore()
           [@server, @validEmailThreadSearchResultsFixture] = specPrepareSearchResultsFetch()
@@ -1703,7 +1707,7 @@ describe "TuringEmailApp", ->
         @showEmailsSpy.restore()
         
       it "shows the emails on the main view", ->
-        expect(@showEmailsSpy).toHaveBeenCalled()
+        expect(@showEmailsSpy).toHaveBeenCalledWith(TuringEmailApp.isSplitPaneMode())
         
     describe "#showSettings", ->
       beforeEach ->

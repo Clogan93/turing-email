@@ -72,6 +72,7 @@ class Api::V1::EmailThreadsController < ApiController
     notes 'If the folder name does not exist it is created.'
 
     param :form, :email_thread_uids, :string, :required, 'Email Thread UIDs'
+    param :form, :email_folder_id, :string, :required, 'Email Folder ID'
     param :form, :email_folder_name, :string, :required, 'Email Folder Name'
 
     response :ok
@@ -91,6 +92,7 @@ class Api::V1::EmailThreadsController < ApiController
     notes 'If the Gmail Label does not exist it is created.'
 
     param :form, :email_thread_uids, :string, :required, 'Email Thread UIDs'
+    param :form, :gmail_label_id, :string, :required, 'Gmail Label ID'
     param :form, :gmail_label_name, :string, :required, 'Gmail Label Name'
 
     response :ok

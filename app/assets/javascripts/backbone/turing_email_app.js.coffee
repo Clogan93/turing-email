@@ -206,16 +206,16 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @reloadEmailThreads(
       success: (collection, response, options) =>
         @moveTuringEmailReportToTop(@views.emailThreadsListView)
-        
-        if @isSplitPaneMode() && @collections.emailThreads.length > 0 &&
-           not @collections.emailThreads.models[0].get("emails")[0].draft_id?
-          @currentEmailThreadIs(@collections.emailThreads.models[0].get("uid"))
 
         emailFolder = @collections.emailFolders.getEmailFolder(emailFolderID)
         @views.emailFoldersTreeView.select(emailFolder, silent: true)
         @trigger("change:currentEmailFolder", this, emailFolder, parseInt(@collections.emailThreads.page))
   
         @showEmails()
+
+        if @isSplitPaneMode() && @collections.emailThreads.length > 0 &&
+            not @collections.emailThreads.models[0].get("emails")[0].draft_id?
+          @currentEmailThreadIs(@collections.emailThreads.models[0].get("uid"))
     )
     
   ######################
@@ -300,7 +300,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
       query: query
       
       success: (collection, response, options) =>
-        @views.mainView.showEmails()
+        @showEmails()
     )
 
   applyActionToSelectedThreads: (singleAction, multiAction, remove=false, clearSelection=false) ->
@@ -538,7 +538,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
         return
     
   showEmails: ->
-    @views.mainView.showEmails()
+    @views.mainView.showEmails(@isSplitPaneMode())
 
   showSettings: ->
     @views.mainView.showSettings()

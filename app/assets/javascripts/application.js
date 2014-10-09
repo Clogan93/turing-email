@@ -12,6 +12,9 @@
 //
 //= require jquery
 //= require jquery_ujs
+//
+//= require jquery-ui/draggable
+//
 // require turbolinks - disabled because its breaking backbone
 //
 //= require bootstrap-sprockets
