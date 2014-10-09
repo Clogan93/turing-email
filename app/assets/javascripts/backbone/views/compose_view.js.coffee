@@ -142,6 +142,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     bodyText += dateFromHeading
     bodyText += "\r\n\r\n"
 
+    htmlFailed = true
     if emailJSON.html_part?
       try
         bodyText += $(emailJSON.html_part).html()
@@ -165,6 +166,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     if isReply
       body += @formatEmailReplyBody emailJSON 
     else
+      htmlFailed = true
       if emailJSON.html_part?
         try
           body += $(emailJSON.html_part).html()

@@ -375,10 +375,14 @@ describe "ComposeView", ->
         dateFromHeading = tDate.longFormDateString() + ", " + @emailJSON.from_address + " wrote:"
         expect(bodyText).toContain dateFromHeading
 
-      it "adds > to the beginning of each line of the body", ->
-        @emailJSON["text_part"] = "a\nb\nc\nd\n"
-        bodyText = TuringEmailApp.views.composeView.formatEmailReplyBody @emailJSON
-        expect(bodyText).toContain "> a\n> b\n> c\n> d\n> "
+      describe "for the text part", ->
+        beforeEach ->
+          @emailJSON["text_part"] = "a\nb\nc\nd\n"
+          @emailJSON["html_part"] = null
+
+        it "adds > to the beginning of each line of the body", ->
+          bodyText = TuringEmailApp.views.composeView.formatEmailReplyBody @emailJSON
+          expect(bodyText).toContain "> a\n> b\n> c\n> d\n> "
 
     describe "#loadEmailBody", ->
       beforeEach ->

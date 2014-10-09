@@ -123,6 +123,7 @@ describe "TuringEmailApp", ->
           expect('click.bs.dropdown').toHaveBeenTriggeredOn('#email-rule-dropdown a')
 
           expect(spy).toHaveBeenTriggered()
+          spy.restore()
   
       it "hooks the submit action on the filter form", ->
         expect($("#filter_form")).toHandle("submit")
@@ -143,6 +144,7 @@ describe "TuringEmailApp", ->
           $("#filter_form").submit()
           expect('click.bs.dropdown').toHaveBeenTriggeredOn('#email-rule-dropdown a')
           expect(spy).toHaveBeenTriggered()
+          spy.restore()
 
     describe "#setupToolbar", ->
       it "creates the toolbar view", ->

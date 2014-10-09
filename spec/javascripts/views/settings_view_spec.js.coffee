@@ -156,8 +156,23 @@ describe "SettingsView", ->
       waitsFor ->
         return removeSettingsAlertSpy.callCount == 1
 
+  describe "#setupEmailRulesButton", ->
+
+    it "binds the click event to the email rules button", ->
+      expect(@settingsView.$el.find("#email_rules_button")).toHandle("click")
+
+    describe "when the email rules button is clicked", ->
+
+      it "triggers the click.bs.dropdown event on the dropdown link", ->
+        spy = spyOnEvent('#email-rule-dropdown a', 'click.bs.dropdown')
+        @settingsView.$el.find("#email_rules_button").click()
+        expect('click.bs.dropdown').toHaveBeenTriggeredOn('#email-rule-dropdown a')
+
+        expect(spy).toHaveBeenTriggered()
+        spy.restore()
+
   describe "#showSettingsAlert", ->
-    
+
     describe "when the current alert token is defined", ->
       beforeEach ->
         @settingsView.currentAlertToken = true
