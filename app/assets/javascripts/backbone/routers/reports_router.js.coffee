@@ -2,6 +2,7 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
   routes:
     "attachments_report": "showAttachmentsReport"
     "email_volume_report": "showEmailVolumeReport"
+    "folders_report": "showFoldersReport"
     "geo_report": "showGeoReport"
     "impact_report": "showImpactReport"
     "inbox_efficiency_report": "showInboxEfficiencyReport"
@@ -19,6 +20,10 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
   showEmailVolumeReport: (divReportsID) ->
     TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.EmailVolumeReport,
                               TuringEmailApp.Views.Reports.EmailVolumeReportView)
+
+  showFoldersReport: (divReportsID) ->
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.FoldersReport,
+                              TuringEmailApp.Views.Reports.FoldersReportView)
 
   showGeoReport: (divReportsID) ->
     TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.GeoReport,
