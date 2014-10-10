@@ -570,13 +570,22 @@ describe "TuringEmailApp", ->
             
           it "shows the alert", ->
             expect($(@alertSelector).length).toEqual(1)
-            expect($(@alertSelector).text()).toEqual(@alertText)
+            expect($(@alertSelector).text()).toEqual(@alertText + " (dismiss)")
             
           it "does not remove an existing alert", ->
             expect(@removeAlertSpy).not.toHaveBeenCalled()
             
           it "returns the token", ->
             expect($(@alertSelector).data("token")).toEqual(@token)
+            
+          it "adds the dismiss link", ->
+            expect($(".dismiss-alert").length).toEqual(1)
+            expect($(".dismiss-alert-link").length).toEqual(1)
+            expect($(".dismiss-alert-link")).toHandle("click")
+            
+          it "dismisses the alert when the dismiss alert link is clicked", ->
+            $(".dismiss-alert-link").click()
+            expect(@removeAlertSpy).toHaveBeenCalledWith(@token)
       
         describe "when an alert is displayed", ->
           beforeEach ->
