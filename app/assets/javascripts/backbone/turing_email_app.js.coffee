@@ -551,6 +551,15 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @views.mainView.showEmails(@isSplitPaneMode())
 
   showSettings: ->
+    if _.keys(@models.userSettings.attributes).length is 0
+      setTimeout(
+        =>
+          @showSettings()
+        100
+      )
+
+      return
+
     @views.mainView.showSettings()
     
   showAnalytics: ->
