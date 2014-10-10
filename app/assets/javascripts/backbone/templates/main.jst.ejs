@@ -20,13 +20,13 @@
         </ul>
       </nav>
 
-      <div class="dropdown">
+      <div class="dropdown" id="email-rule-dropdown">
         <a data-toggle="dropdown" href="#"></a>
         <div class="dropdown-menu" id="email_filter_dropdown">
           <form id="filter_form">
-            <input type="text" class="form-control" id="toInput" placeholder="To"/>
+            <input type="text" class="form-control" id="emailRuleToInput" placeholder="To"/>
             <input type="text" id="email_filter_from" class="form-control" placeholder="From"/>
-            <input type="text" class="form-control" placeholder="Subject"/>
+            <input type="text" id="subjectFilterForm" class="form-control" placeholder="Subject"/>
             <input type="text" id="email_filter_list" class="form-control" placeholder="List Name"/>
             <button type="submit" class="btn btn-primary">Create filter with these conditions</button>
           </form>
@@ -47,3 +47,4 @@
 </div>
 
 <div id="compose_view"></div>
+<div class="create_folder_view"></div>

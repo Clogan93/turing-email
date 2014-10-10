@@ -45,7 +45,10 @@ describe "MainView", ->
       
     it "resized", ->
       expect(@resizeSpy).toHaveBeenCalled()
-            
+
+    it "creates the create folder view", ->
+      expect(@mainView.createFolderView).toBeDefined()
+
   describe "#createEmailThreadsListView", ->
     beforeEach ->
       @server.restore()

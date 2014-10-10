@@ -30,9 +30,15 @@ class TuringEmailApp.Views.Main extends Backbone.View
       el: @$el.find("#compose_view")
     )
     @composeView.render()
-    
+
+    @createFolderView = new TuringEmailApp.Views.EmailFolders.CreateFolderView(
+      app: @app
+      el: @$el.find(".create_folder_view")
+    )
+    @createFolderView.render()
+
     @resize()
-    
+
   createEmailThreadsListView: (emailThreads) ->
     @emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView(
       collection: emailThreads

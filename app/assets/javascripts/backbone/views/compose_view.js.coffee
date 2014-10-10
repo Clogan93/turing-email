@@ -84,7 +84,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     @$el.find("#compose_form #bcc_input").val("")
 
     @$el.find("#compose_form #subject_input").val("")
-    @$el.find("#compose_form #compose_email_body").val("")
+    @$el.find("#compose_form #compose_email_body").html("")
 
   loadEmpty: ->
     @resetView()
@@ -142,7 +142,16 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     bodyText += dateFromHeading
     bodyText += "\r\n\r\n"
 
-    if emailJSON.text_part?
+    htmlFailed = true
+    if emailJSON.html_part?
+      try
+        bodyText += $(emailJSON.html_part).html()
+        htmlFailed = false
+      catch error
+        console.log error
+        htmlFailed = true
+    
+    if htmlFailed and emailJSON.text_part?
       for line in emailJSON.text_part.split("\n")
         bodyText += "> " + line + "\n"
     else if emailJSON.body_text
@@ -158,12 +167,22 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     if isReply
       body += @formatEmailReplyBody emailJSON 
     else
-      if emailJSON.text_part?
+      htmlFailed = true
+      
+      if emailJSON.html_part?
+        try
+          body += $(emailJSON.html_part).html()
+          htmlFailed = false
+        catch error
+          console.log error
+          htmlFailed = true
+      
+      if htmlFailed and emailJSON.text_part?
         body += emailJSON.text_part
       else if emailJSON.body_text?
-        body += emailJSON.body_text 
+        body += emailJSON.body_text
 
-    @$el.find("#compose_form #compose_email_body").val(body)
+    @$el.find("#compose_form #compose_email_body").html(body)
 
   subjectWithPrefixFromEmail: (emailJSON, subjectPrefix="") ->
     console.log("ComposeView subjectWithPrefixFromEmail")
@@ -187,7 +206,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     email.set("bccs",  @$el.find("#compose_form").find("#bcc_input").val().split(","))
 
     email.set("subject", @$el.find("#compose_form").find("#subject_input").val())
-    email.set("email_body", @$el.find("#compose_form").find("#compose_email_body").val())
+    email.set("email_body", @$el.find("#compose_form").find("#compose_email_body").html())
 
   sendEmail: (draftToSend=null) ->
     console.log "ComposeView sendEmail!"

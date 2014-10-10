@@ -23,7 +23,7 @@ describe "TuringEmailApp", ->
       expect(TuringEmailApp.routers).toBeDefined()
 
     setupFunctions = ["setupMainView", "setupSearchBar", "setupComposeButton", "setupFiltering", "setupToolbar", "setupUser",
-                      "setupEmailFolders", "loadEmailFolders", "setupComposeView", "setupEmailThreads", "setupRouters"]
+                      "setupEmailFolders", "loadEmailFolders", "setupComposeView", "setupCreateFolderView", "setupEmailThreads", "setupRouters"]
     for setupFunction in setupFunctions  
       it "calls the " + setupFunction + " function", ->
         spy = sinon.spy(TuringEmailApp, setupFunction)
@@ -106,7 +106,7 @@ describe "TuringEmailApp", ->
       beforeEach ->
         @createFilterDiv = $('<div class="create_filter"><div />').appendTo("body")
         @filterFormDiv = $('<div id="filter_form"><div />').appendTo("body")
-        @dropdownDiv = $('<div class="dropdown"><a href="#"></a></div>').appendTo("body")
+        @dropdownDiv = $('<div class="dropdown" id="email-rule-dropdown"><a href="#"></a></div>').appendTo("body")
         
         TuringEmailApp.setupFiltering()
       
@@ -120,9 +120,10 @@ describe "TuringEmailApp", ->
   
       describe "when the create filter link is clicked", ->
         it "triggers the click.bs.dropdown event on the dropdown link", ->
-          spy = spyOnEvent('.dropdown a', 'click.bs.dropdown')
+          spy = spyOnEvent('#email-rule-dropdown a', 'click.bs.dropdown')
           $('.create_filter').click()
-          expect('click.bs.dropdown').toHaveBeenTriggeredOn('.dropdown a')
+          expect('click.bs.dropdown').toHaveBeenTriggeredOn('#email-rule-dropdown a')
+
           expect(spy).toHaveBeenTriggered()
   
       it "hooks the submit action on the filter form", ->
@@ -140,11 +141,11 @@ describe "TuringEmailApp", ->
           expect(request.url).toEqual "/api/v1/genie_rules"
 
         it "triggers the click.bs.dropdown event on the dropdown link", ->
-          spy = spyOnEvent('.dropdown a', 'click.bs.dropdown')
+          spy = spyOnEvent('#email-rule-dropdown a', 'click.bs.dropdown')
           $("#filter_form").submit()
-          expect('click.bs.dropdown').toHaveBeenTriggeredOn('.dropdown a')
+          expect('click.bs.dropdown').toHaveBeenTriggeredOn('#email-rule-dropdown a')
           expect(spy).toHaveBeenTriggered()
-        
+
     describe "#setupToolbar", ->
       it "creates the toolbar view", ->
         TuringEmailApp.setupToolbar()
@@ -159,7 +160,8 @@ describe "TuringEmailApp", ->
       toolbarViewEvents = ["checkAllClicked", "checkAllReadClicked", "checkAllUnreadClicked", "uncheckAllClicked",
                            "readClicked", "unreadClicked", "archiveClicked", "trashClicked",
                            "leftArrowClicked", "rightArrowClicked",
-                           "labelAsClicked", "moveToFolderClicked", "refreshClicked", "searchClicked"]
+                           "labelAsClicked", "moveToFolderClicked", "refreshClicked", "searchClicked",
+                           "createNewLabelClicked", "createNewEmailFolderClicked"]
       for event in toolbarViewEvents
         it "hooks the toolbar " + event + " event", ->
           spy = sinon.spy(TuringEmailApp, event)
@@ -217,10 +219,10 @@ describe "TuringEmailApp", ->
     describe "#setupComposeView", ->
       it "creates the compose view", ->
         TuringEmailApp.setupComposeView()
-  
+
         expect(TuringEmailApp.views.composeView).toBeDefined()
         expect(TuringEmailApp.views.composeView.app).toEqual(TuringEmailApp)
-  
+
       it "renders the compose view", ->
         # TODO figure out how to test render
         return
@@ -233,7 +235,24 @@ describe "TuringEmailApp", ->
   
         expect(spy).toHaveBeenCalled()
         spy.restore()
-        
+
+    describe "#setupCreateFolderView", ->
+      it "creates the create folder view", ->
+        TuringEmailApp.setupCreateFolderView()
+
+        expect(TuringEmailApp.views.createFolderView).toBeDefined()
+        expect(TuringEmailApp.views.createFolderView.app).toEqual(TuringEmailApp)
+
+      it "hooks the create folder view createFolderFormSubmitted event", ->
+        spy = sinon.spy(TuringEmailApp, "createFolderFormSubmitted")
+  
+        TuringEmailApp.setupCreateFolderView()
+        TuringEmailApp.views.createFolderView.trigger("createFolderFormSubmitted", TuringEmailApp.views.createFolderView, "label", "test label name")
+
+        expect(spy).toHaveBeenCalled()
+        expect(spy).toHaveBeenCalledWith("label", "test label name")
+        spy.restore()
+
     describe "#setupEmailThreads", ->
       it "creates the email threads collection and list view", ->
         TuringEmailApp.setupEmailThreads()
@@ -558,7 +577,11 @@ describe "TuringEmailApp", ->
           @alertSelector = "." + @alertClass
 
           @removeAlertSpy = sinon.spy(TuringEmailApp, "removeAlert")
-          
+
+          if TuringEmailApp.currentAlert?
+            TuringEmailApp.currentAlert.remove()
+            TuringEmailApp.currentAlert = undefined
+
         afterEach ->
           TuringEmailApp.removeAlert(@token)
           @removeAlertSpy.restore()
@@ -1527,7 +1550,30 @@ describe "TuringEmailApp", ->
           TuringEmailApp.draftChanged()
           expect(spy).not.toHaveBeenCalled()
           spy.restore()
-  
+
+    describe "#createFolderFormSubmitted", ->
+      beforeEach ->
+        seededChance = new Chance(1)
+        @randomFolderName = seededChance.string({length: 20})
+
+      describe "when the mode is label", ->
+
+        it "calls labels as clicked with the label name", ->
+          spy = sinon.spy(TuringEmailApp, "labelAsClicked")
+          TuringEmailApp.createFolderFormSubmitted("label", @randomFolderName)
+          expect(spy).toHaveBeenCalled()
+          expect(spy).toHaveBeenCalledWith(undefined, @randomFolderName)
+          spy.restore()
+
+      describe "when the mode is folder", ->
+
+        it "calls move to folder clicked with the folder name", ->
+          spy = sinon.spy(TuringEmailApp, "moveToFolderClicked")
+          TuringEmailApp.createFolderFormSubmitted("folder", @randomFolderName)
+          expect(spy).toHaveBeenCalled()
+          expect(spy).toHaveBeenCalledWith(undefined, @randomFolderName)
+          spy.restore()
+
     describe "#emailThreadSeenChanged", ->
       beforeEach ->
         @server.restore()

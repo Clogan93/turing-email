@@ -11,6 +11,7 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     @setupEmailBankruptcyButton()
     @setupSwitches()
     @setupSaveButton()
+    @setupEmailRulesButton()
 
     return this
 
@@ -50,6 +51,11 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
           ), 3000
         }
       )
+
+  setupEmailRulesButton: ->
+    @$el.find("#email_rules_button").click (event) =>
+      $("#email-rule-dropdown a").trigger('click.bs.dropdown')
+      return false
 
   showSettingsAlert: (alertMessage) ->
     console.log "SettingsView showSettingsAlert"

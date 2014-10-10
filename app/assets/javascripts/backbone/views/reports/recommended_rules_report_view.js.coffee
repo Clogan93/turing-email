@@ -8,7 +8,9 @@ class TuringEmailApp.Views.Reports.RecommendedRulesReportView extends Backbone.V
     @listenTo(@model, "destroy", @remove)
 
   render: ->
-    @$el.html(@template(@model.toJSON()))
+    modelJSON = @model.toJSON()
+    @$el.html(@template(modelJSON))
+    
     @setupRecommendedRulesLinks()
 
     return this

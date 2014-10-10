@@ -34,6 +34,8 @@ window.specStartTuringEmailApp = ->
   TuringEmailApp.views.composeView = TuringEmailApp.views.mainView.composeView
   TuringEmailApp.listenTo(TuringEmailApp.views.composeView, "change:draft", TuringEmailApp.draftChanged)
 
+  TuringEmailApp.views.createFolderView = TuringEmailApp.views.mainView.createFolderView
+
   TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
   TuringEmailApp.views.emailThreadsListView = TuringEmailApp.views.mainView.createEmailThreadsListView(TuringEmailApp.collections.emailThreads)
 

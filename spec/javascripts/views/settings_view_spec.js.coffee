@@ -10,11 +10,10 @@ describe "SettingsView", ->
       model: @userSettings
     )
 
-    userSettingsFixtures = fixture.load("user_settings.fixture.json");
-    @validUserSettingsFixture = userSettingsFixtures[0]["valid"]
+    [@server] = specPrepareUserSettingsFetch()
 
-    @server = sinon.fakeServer.create()
-    @server.respondWith "GET", @userSettings.url, JSON.stringify(@validUserSettingsFixture)
+    @userSettings.fetch()
+    @server.respond()
 
   afterEach ->
     @server.restore()
@@ -26,10 +25,6 @@ describe "SettingsView", ->
     expect(@settingsView.template).toEqual JST["backbone/templates/settings"]
 
   describe "#render", ->
-    beforeEach ->
-      @userSettings.fetch()
-      @server.respond()
-
     it "renders the settings view", ->
       expect(@settingsDiv.find("div[class=page-header]")).toContainHtml('<h1 class="h1">Settings</h1>')
 
@@ -60,10 +55,6 @@ describe "SettingsView", ->
       expect(@settingsDiv).toContainHtml('<button type="button" class="btn btn-success" id="user_settings_save_button">Save</button>')
 
   describe "email bankruptcy button", ->
-    beforeEach ->
-      @userSettings.fetch()
-      @server.respond()
-
     describe "the user cancels the action", ->
       beforeEach ->
         window.confirm = ->
@@ -101,10 +92,6 @@ describe "SettingsView", ->
         spy.restore()
 
   describe "save button", ->
-    beforeEach ->
-      @userSettings.fetch()
-      @server.respond()
-      
     it "saves the model to the server", ->
       spyOnEvent("#user_settings_save_button", "click")
       saveButton = @settingsDiv.find("#user_settings_save_button")
@@ -151,8 +138,20 @@ describe "SettingsView", ->
       waitsFor ->
         return removeSettingsAlertSpy.callCount == 1
 
+  describe "#setupEmailRulesButton", ->
+    it "binds the click event to the email rules button", ->
+      expect(@settingsView.$el.find("#email_rules_button")).toHandle("click")
+
+    describe "when the email rules button is clicked", ->
+
+      it "triggers the click.bs.dropdown event on the dropdown link", ->
+        spy = spyOnEvent('#email-rule-dropdown a', 'click.bs.dropdown')
+        @settingsView.$el.find("#email_rules_button").click()
+        expect('click.bs.dropdown').toHaveBeenTriggeredOn('#email-rule-dropdown a')
+
+        expect(spy).toHaveBeenTriggered()
+
   describe "#showSettingsAlert", ->
-    
     describe "when the current alert token is defined", ->
       beforeEach ->
         @settingsView.currentAlertToken = true
