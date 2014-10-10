@@ -31,7 +31,10 @@ describe "MainView", ->
 
     it "creates the compose view", ->
       expect(@mainView.composeView).toBeDefined()
-            
+
+    it "creates the create folder view", ->
+      expect(@mainView.createFolderView).toBeDefined()
+
   describe "#createEmailThreadsListView", ->
     beforeEach ->
       @server.restore()
