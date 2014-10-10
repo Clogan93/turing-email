@@ -395,15 +395,15 @@ describe "ComposeView", ->
         # TuringEmailApp.views.composeView.loadEmailBody emailJSON, true
         # expect(TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").html()).toContain("\r\n\r\n\r\n\r\n")
 
-      it "adds the text part part to the body when it is defined", ->
+      it "adds the text part to the body when it is defined", ->
         emailJSON = {}
         emailJSON["text_part"] = @seededChance.string({length: 250})
         TuringEmailApp.views.composeView.loadEmailBody emailJSON
 
         rawHtml = TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").html()
-        decodedHtml = $("<div/>").html(rawHtml).text()
+        textFromHTML = $("<div/>").html(rawHtml).text()
 
-        expect(decodedHtml).toContain(emailJSON.text_part)
+        expect(textFromHTML).toContain(emailJSON.text_part)
 
       it "adds the text part to the body when both the text part and body text are defined", ->
         emailJSON = {}
@@ -412,9 +412,9 @@ describe "ComposeView", ->
         TuringEmailApp.views.composeView.loadEmailBody emailJSON
 
         rawHtml = TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").html()
-        decodedHtml = $("<div/>").html(rawHtml).text()
+        textFromHTML = $("<div/>").html(rawHtml).text()
 
-        expect(decodedHtml).toContain(emailJSON.text_part)
+        expect(textFromHTML).toContain(emailJSON.text_part)
 
       it "adds the body text to the body when the text part is not defined and the body text is defined", ->
         emailJSON = {}
@@ -422,9 +422,9 @@ describe "ComposeView", ->
         TuringEmailApp.views.composeView.loadEmailBody emailJSON
 
         rawHtml = TuringEmailApp.views.composeView.$el.find("#compose_form #compose_email_body").html()
-        decodedHtml = $("<div/>").html(rawHtml).text()
+        textFromHTML = $("<div/>").html(rawHtml).text()
 
-        expect(decodedHtml).toContain(emailJSON.body_text)
+        expect(textFromHTML).toContain(emailJSON.body_text)
 
     describe "#subjectWithPrefixFromEmail", ->
       beforeEach ->

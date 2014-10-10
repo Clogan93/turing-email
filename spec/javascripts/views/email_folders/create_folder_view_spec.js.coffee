@@ -8,21 +8,22 @@ describe "CreateFolderView", ->
   it "has the right template", ->
     expect(TuringEmailApp.views.createFolderView.template).toEqual JST["backbone/templates/email_folders/create_folder"]
 
+  describe "#render", ->
+    beforeEach ->
+      TuringEmailApp.views.createFolderView.render()
+      
+    it "calls setupCreateFolderView", ->
+      spy = sinon.spy(TuringEmailApp.views.createFolderView, "setupCreateFolderView")
+      TuringEmailApp.views.createFolderView.render()
+      expect(spy).toHaveBeenCalled()
+    
   describe "after render", ->
     beforeEach ->
       TuringEmailApp.views.createFolderView.render()
 
-    describe "#render", ->
-      
-      it "calls setupCreateFolderView", ->
-        spy = sinon.spy(TuringEmailApp.views.createFolderView, "setupCreateFolderView")
-        TuringEmailApp.views.createFolderView.render()
-        expect(spy).toHaveBeenCalled()
-
     describe "#setupCreateFolderView", ->
-
-      it "binds the submit event to .createFolderForm", ->
-        expect(TuringEmailApp.views.createFolderView.$el.find(".createFolderForm")).toHandle("submit")
+      it "binds the submit event to create-folder-form", ->
+        expect(TuringEmailApp.views.createFolderView.$el.find(".create-folder-form")).toHandle("submit")
 
       describe "when the create folder form is submitted", ->
         beforeEach ->
@@ -30,24 +31,39 @@ describe "CreateFolderView", ->
 
         it "triggers createFolderFormSubmitted", ->
           spy = sinon.backbone.spy(TuringEmailApp.views.createFolderView, "createFolderFormSubmitted")
-          TuringEmailApp.views.createFolderView.$el.find(".createFolderForm").submit()
+          TuringEmailApp.views.createFolderView.$el.find(".create-folder-form").submit()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
         it "hides the create folder modal", ->
           spy = sinon.spy(TuringEmailApp.views.createFolderView, "hide")
-          TuringEmailApp.views.createFolderView.$el.find(".createFolderForm").submit()
+          TuringEmailApp.views.createFolderView.$el.find(".create-folder-form").submit()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
     describe "#show", ->
+      describe "for label", ->
+        beforeEach ->
+          TuringEmailApp.views.createFolderView.show("label")
+          
+        it "sets the folderType", ->
+          expect(TuringEmailApp.views.createFolderView.mode).toEqual("label")
+          
+        it "shows the create folder modal", ->
+          expect($("body")).toContain(".modal-backdrop.fade.in")
+      
+      describe "for folder", ->
+        beforeEach ->
+          TuringEmailApp.views.createFolderView.show("folder")
 
-      it "shows the create folder modal", ->
-        TuringEmailApp.views.createFolderView.show()
-        expect($("body")).toContain(".modal-backdrop.fade.in")
+        it "sets the folderType", ->
+          expect(TuringEmailApp.views.createFolderView.mode).toEqual("folder")
+
+        it "shows the create folder modal", ->
+          expect($("body")).toContain(".modal-backdrop.fade.in")
 
     describe "#hide", ->
 
       it "hides the create folder modal", ->
         TuringEmailApp.views.createFolderView.hide()
-        expect(TuringEmailApp.views.createFolderView.$el.find(".createFolderModal").hasClass("in")).toBeFalsy()
+        expect(TuringEmailApp.views.createFolderView.$el.find(".create-folder-modal").hasClass("in")).toBeFalsy()

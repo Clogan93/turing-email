@@ -98,20 +98,19 @@ window.TuringEmailApp = new(Backbone.View.extend(
       return false
 
     $("#filter_form").submit =>
-      $.post "/api/v1/genie_rules", { from_address: $("#filter_form #email_filter_from").val(), to_address: $("#filter_form #emailRuleToInput").val(), subject: $("#filter_form #subjectFilterForm").val(), list_id: $("#filter_form #email_filter_list").val() }
+      $.post "/api/v1/genie_rules", {
+        from_address: $("#filter_form #email_filter_from").val(),
+        to_address: $("#filter_form #emailRuleToInput").val(),
+        subject: $("#filter_form #subjectFilterForm").val(),
+        list_id: $("#filter_form #email_filter_list").val()
+      }
 
       $("#email-rule-dropdown a").trigger('click.bs.dropdown')
 
-      if @currentAlertToken?
-        @removeAlert(@currentAlertToken)
-        @currentAlertToken = null
-
-      @currentAlertToken = @showAlert('You have successfully created a brain rule!', "alert-success")
+      alertToken = @showAlert('You have successfully created a brain rule!', "alert-success")
 
       setTimeout (=>
-        if @currentAlertToken?
-          @removeAlert(@currentAlertToken)
-          @currentAlertToken = null
+        @removeAlert(alertToken)
       ), 3000
 
       return false # avoid to execute the actual submit of the form.
@@ -429,12 +428,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
     )
 
   createNewLabelClicked: ->
-    @views.createFolderView.folderType = "label"
-    @views.createFolderView.show()
+    @views.createFolderView.show("label")
 
   createNewEmailFolderClicked: ->
-    @views.createFolderView.folderType = "folder"
-    @views.createFolderView.show()
+    @views.createFolderView.show("folder")
 
   #############################
   ### EmailThreads.ListView ###
@@ -483,7 +480,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @reloadEmailThreads() if @selectedEmailFolderID() is "DRAFT"
 
   ###############################
-  ### createFolderView Events ###
+  ### CreateFolderView Events ###
   ###############################
     
   createFolderFormSubmitted: (mode, folderName) ->

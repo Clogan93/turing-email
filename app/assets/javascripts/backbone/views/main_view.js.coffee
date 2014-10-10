@@ -30,7 +30,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
 
     @createFolderView = new TuringEmailApp.Views.EmailFolders.CreateFolderView(
       app: @app
-      el: @$el.find("#create_folder_view")
+      el: @$el.find(".create_folder_view")
     )
     @createFolderView.render()
 
