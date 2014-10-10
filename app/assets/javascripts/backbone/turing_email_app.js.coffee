@@ -34,6 +34,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @loadEmailFolders()
 
     @setupComposeView()
+    @setupCreateFolderView()
     @setupEmailThreads()
     @setupRouters()
 
@@ -132,9 +133,11 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @listenTo(@views.toolbarView, "moveToFolderClicked", (toolbarView, folderID) => @moveToFolderClicked(folderID))
     @listenTo(@views.toolbarView, "refreshClicked", @refreshClicked)
     @listenTo(@views.toolbarView, "searchClicked", (toolbarView, query) => @searchClicked(query))
-    
+    @listenTo(@views.toolbarView, "createNewLabelClicked", @createNewLabelClicked)
+    @listenTo(@views.toolbarView, "createNewEmailFolderClicked", @createNewEmailFolderClicked)
+
     @trigger("change:toolbarView", this, @views.toolbarView)
-  
+
   setupUser: ->
     @models.user = new TuringEmailApp.Models.User()
     @models.user.fetch()
@@ -156,7 +159,12 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @views.composeView = @views.mainView.composeView
 
     @listenTo(@views.composeView, "change:draft", @draftChanged)
-    
+
+  setupCreateFolderView: ->
+    @views.createFolderView = @views.mainView.createFolderView
+
+    @listenTo(@views.createFolderView, "createFolderFormSubmitted", (createFolderView, mode, folderName) => @createFolderFormSubmitted(mode, folderName))
+
   setupEmailThreads: ->
     @collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
     @views.emailThreadsListView = @views.mainView.createEmailThreadsListView(@collections.emailThreads)
@@ -369,21 +377,21 @@ window.TuringEmailApp = new(Backbone.View.extend(
                                            (@collections.emailThreads.page + 1),
                                            trigger: true)
 
-  labelAsClicked: (labelID) ->
+  labelAsClicked: (labelID, labelName) ->
     @applyActionToSelectedThreads(
       =>
-        @selectedEmailThread()?.applyGmailLabel(labelID)
+        @selectedEmailThread()?.applyGmailLabel(labelID, labelName)
       (checkedListItemViews, selectedEmailThreadUIDs) =>
-        TuringEmailApp.Models.EmailThread.applyGmailLabel(selectedEmailThreadUIDs, labelID)
+        TuringEmailApp.Models.EmailThread.applyGmailLabel(selectedEmailThreadUIDs, labelID, labelName)
       false, false
     )
 
-  moveToFolderClicked: (folderID) ->
+  moveToFolderClicked: (folderID, folderName) ->
     @applyActionToSelectedThreads(
       =>
-        @selectedEmailThread()?.moveToFolder(folderID)
+        @selectedEmailThread()?.moveToFolder(folderID, folderName)
       (checkedListItemViews, selectedEmailThreadUIDs) =>
-        TuringEmailApp.Models.EmailThread.moveToFolder(selectedEmailThreadUIDs, folderID)
+        TuringEmailApp.Models.EmailThread.moveToFolder(selectedEmailThreadUIDs, folderID, folderName)
       true, true
     )
 
@@ -419,6 +427,14 @@ window.TuringEmailApp = new(Backbone.View.extend(
         TuringEmailApp.Models.EmailThread.trash(selectedEmailThreadUIDs)
       true, true
     )
+
+  createNewLabelClicked: ->
+    @views.createFolderView.folderType = "label"
+    @views.createFolderView.show()
+
+  createNewEmailFolderClicked: ->
+    @views.createFolderView.folderType = "folder"
+    @views.createFolderView.show()
 
   #############################
   ### EmailThreads.ListView ###
@@ -465,6 +481,16 @@ window.TuringEmailApp = new(Backbone.View.extend(
     
   draftChanged: ->
     @reloadEmailThreads() if @selectedEmailFolderID() is "DRAFT"
+
+  ###############################
+  ### createFolderView Events ###
+  ###############################
+    
+  createFolderFormSubmitted: (mode, folderName) ->
+    if mode == "label"
+      @labelAsClicked undefined, folderName
+    else
+      @moveToFolderClicked undefined, folderName
 
   ##########################
   ### EmailThread Events ###

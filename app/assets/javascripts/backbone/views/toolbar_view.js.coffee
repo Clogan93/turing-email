@@ -70,8 +70,14 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @$el.find(".label_as_link").click (event) =>
       @trigger("labelAsClicked", this, $(event.target).attr("name"))
 
+    @$el.find(".createNewLabel").click =>
+      @trigger("createNewLabelClicked", this)
+
     @$el.find(".move_to_folder_link").click (event) =>
       @trigger("moveToFolderClicked", this, $(event.target).attr("name"))
+
+    @$el.find(".createNewEmailFolder").click =>
+      @trigger("createNewEmailFolderClicked", this)
 
     @$el.find("#refresh_button").click =>
       @trigger("refreshClicked", this)
