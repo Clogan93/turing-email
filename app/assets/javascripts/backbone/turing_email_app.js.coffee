@@ -98,20 +98,19 @@ window.TuringEmailApp = new(Backbone.View.extend(
       return false
 
     $("#filter_form").submit =>
-      $.post "/api/v1/genie_rules", { from_address: $("#filter_form #email_filter_from").val(), to_address: $("#filter_form #emailRuleToInput").val(), subject: $("#filter_form #subjectFilterForm").val(), list_id: $("#filter_form #email_filter_list").val() }
+      $.post "/api/v1/genie_rules", {
+        from_address: $("#filter_form #email_filter_from").val(),
+        to_address: $("#filter_form #emailRuleToInput").val(),
+        subject: $("#filter_form #subjectFilterForm").val(),
+        list_id: $("#filter_form #email_filter_list").val()
+      }
 
       $("#email-rule-dropdown a").trigger('click.bs.dropdown')
 
-      if @currentAlertToken?
-        @removeAlert(@currentAlertToken)
-        @currentAlertToken = null
-
-      @currentAlertToken = @showAlert('You have successfully created a brain rule!', "alert-success")
+      alertToken = @showAlert('You have successfully created a brain rule!', "alert-success")
 
       setTimeout (=>
-        if @currentAlertToken?
-          @removeAlert(@currentAlertToken)
-          @currentAlertToken = null
+        @removeAlert(alertToken)
       ), 3000
 
       return false # avoid to execute the actual submit of the form.
@@ -166,7 +165,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @listenTo(@views.createFolderView, "createFolderFormSubmitted", (createFolderView, mode, folderName) => @createFolderFormSubmitted(mode, folderName))
 
   setupEmailThreads: ->
-    @collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
+    @collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsSearchResultsCollection()
     @views.emailThreadsListView = @views.mainView.createEmailThreadsListView(@collections.emailThreads)
 
     @listenTo(@views.emailThreadsListView, "listItemSelected", @listItemSelected)
@@ -226,16 +225,16 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @reloadEmailThreads(
       success: (collection, response, options) =>
         @moveTuringEmailReportToTop(@views.emailThreadsListView)
-        
-        if @isSplitPaneMode() && @collections.emailThreads.length > 0 &&
-           not @collections.emailThreads.models[0].get("emails")[0].draft_id?
-          @currentEmailThreadIs(@collections.emailThreads.models[0].get("uid"))
 
         emailFolder = @collections.emailFolders.getEmailFolder(emailFolderID)
         @views.emailFoldersTreeView.select(emailFolder, silent: true)
         @trigger("change:currentEmailFolder", this, emailFolder, parseInt(@collections.emailThreads.page))
   
         @showEmails()
+
+        if @isSplitPaneMode() && @collections.emailThreads.length > 0 &&
+            not @collections.emailThreads.models[0].get("emails")[0].draft_id?
+          @currentEmailThreadIs(@collections.emailThreads.models[0].get("uid"))
     )
     
   ######################
@@ -255,11 +254,21 @@ window.TuringEmailApp = new(Backbone.View.extend(
   showAlert: (text, classType) ->
     @removeAlert(@currentAlert.data("token")) if @currentAlert?
     
-    html = '<div class="text-center alert ' + classType + '" role="alert" style="z-index: 2000; margin-bottom: 0px;">' + text + '</div>'
+    html = '<div class="text-center alert ' + classType +
+           '" role="alert" style="z-index: 2000; margin-bottom: 0px; position: absolute; width: 100%;">' + text +
+           '</div>'
+    
     @currentAlert = $(html).prependTo("body")
     @currentAlert.data("token", _.uniqueId())
+
+    token = @currentAlert.data("token")
     
-    return @currentAlert.data("token")
+    dismissDiv = $('<span class="dismiss-alert"> (<span class="dismiss-alert-link">dismiss</span>)</span>').appendTo(@currentAlert)
+    dismissDiv.find(".dismiss-alert-link").click(=>
+      @removeAlert(token)
+    )
+    
+    return token
     
   removeAlert: (token) ->
     return if not @currentAlert? || @currentAlert.data("token") != token
@@ -295,7 +304,15 @@ window.TuringEmailApp = new(Backbone.View.extend(
       )
       
   reloadEmailThreads: (myOptions) ->
-    @collections.emailThreads.fetch(
+    loader = null
+    
+    if myOptions?.query?
+      loader = @collections.emailThreads.search
+    else
+      loader = @collections.emailThreads.fetch
+    
+    loader.call(@collections.emailThreads,
+      query: myOptions?.query
       reset: true
       
       success: (collection, response, options) =>
@@ -305,6 +322,14 @@ window.TuringEmailApp = new(Backbone.View.extend(
         myOptions.success(collection, response, options) if myOptions?.success?
         
       error: myOptions?.error
+    )
+
+  loadSearchResults: (query) ->
+    @reloadEmailThreads(
+      query: query
+      
+      success: (collection, response, options) =>
+        @showEmails()
     )
 
   applyActionToSelectedThreads: (singleAction, multiAction, remove=false, clearSelection=false) ->
@@ -429,12 +454,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
     )
 
   createNewLabelClicked: ->
-    @views.createFolderView.folderType = "label"
-    @views.createFolderView.show()
+    @views.createFolderView.show("label")
 
   createNewEmailFolderClicked: ->
-    @views.createFolderView.folderType = "folder"
-    @views.createFolderView.show()
+    @views.createFolderView.show("folder")
 
   #############################
   ### EmailThreads.ListView ###
@@ -483,7 +506,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @reloadEmailThreads() if @selectedEmailFolderID() is "DRAFT"
 
   ###############################
-  ### createFolderView Events ###
+  ### CreateFolderView Events ###
   ###############################
     
   createFolderFormSubmitted: (mode, folderName) ->
@@ -512,7 +535,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   isSplitPaneMode: ->
     splitPaneMode = @models.userSettings.get("split_pane_mode")
     return splitPaneMode is "horizontal" || splitPaneMode is "vertical"
-
+    
   showEmailThread: (emailThread) ->
     emailThreadView = @views.mainView.showEmailThread(emailThread, @isSplitPaneMode())
 
@@ -560,9 +583,18 @@ window.TuringEmailApp = new(Backbone.View.extend(
         return
     
   showEmails: ->
-    @views.mainView.showEmails()
+    @views.mainView.showEmails(@isSplitPaneMode())
 
   showSettings: ->
+    if _.keys(@models.userSettings.attributes).length is 0
+      setTimeout(
+        =>
+          @showSettings()
+        100
+      )
+
+      return
+
     @views.mainView.showSettings()
     
   showAnalytics: ->

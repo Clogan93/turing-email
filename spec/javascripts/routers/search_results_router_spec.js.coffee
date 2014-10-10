@@ -16,11 +16,13 @@ describe "SearchResultsRouter", ->
 
   describe "search/:query", ->
     beforeEach ->
-      @spy = sinon.spy(TuringEmailApp.Views.EmailThreads, "ListView")
-      @searchResultsRouter.navigate "search/test", trigger: true
+      @stub = sinon.stub(TuringEmailApp, "loadSearchResults", ->)
+      @query = "test search"
+      
+      @searchResultsRouter.navigate "search/" + @query, trigger: true
 
     afterEach ->
-      @spy.restore()
+      @stub.restore()
 
-    it "shows a ListView", ->
-      expect(@spy).toHaveBeenCalled()
+    it "loads the search results", ->
+      expect(@stub).toHaveBeenCalledWith(@query)

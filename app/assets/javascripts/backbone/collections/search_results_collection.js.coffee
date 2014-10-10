@@ -1,15 +1,22 @@
 class TuringEmailApp.Collections.EmailThreadsSearchResultsCollection extends TuringEmailApp.Collections.EmailThreadsCollection
-  url: "/api/v1/email_accounts/search_threads"
+  @SEARCH_URL = "/api/v1/email_accounts/search_threads"
 
   parse: (response, options) ->
     # not sure this is the right thing to do. Maybe there should be a EmailSearchResultsModel
-    # that has two attributes - nextPageToken and emailThreads collection. 
-    @nextPageToken = response.next_page_token
-    return response.email_threads
-
-  search: (query) ->
+    # that has two attributes - nextPageToken and emailThreads collection.
+    
+    if response.email_threads?
+      @nextPageToken = response.next_page_token
+      return response.email_threads
+    else
+      return response
+    
+  search: (options) ->
     @fetch(
-      data: {'query': query}
+      url: TuringEmailApp.Collections.EmailThreadsSearchResultsCollection.SEARCH_URL
+      data: {'query': options.query}
       type: 'POST'
-      reset: true
+      reset: options.reset
+      success: options.success
+      error: options.error
     )

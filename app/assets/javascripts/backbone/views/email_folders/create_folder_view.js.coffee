@@ -8,21 +8,24 @@ class TuringEmailApp.Views.EmailFolders.CreateFolderView extends Backbone.View
   
   render: ->
     @$el.html(@template())
+    
     @setupCreateFolderView()
+    
     return this
 
   setupCreateFolderView: ->
-    @$el.find(".createFolderForm").submit =>
+    @$el.find(".create-folder-form").submit =>
       console.log "Creating folder..."
 
-      @trigger "createFolderFormSubmitted", this, @folderType, $(".createFolderForm .createFolderInput").val()
+      @trigger "createFolderFormSubmitted", this, @mode, $(".create-folder-form .create-folder-input").val()
 
       @hide()
 
       return false
 
-  show: ->
-    @$el.find(".createFolderModal").modal "show"
+  show: (mode) ->
+    @mode = mode
+    @$el.find(".create-folder-modal").modal "show"
     
   hide: ->
-    @$el.find(".createFolderModal").modal "hide"
+    @$el.find(".create-folder-modal").modal "hide"

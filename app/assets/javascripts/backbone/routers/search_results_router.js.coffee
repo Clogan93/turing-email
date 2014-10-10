@@ -3,11 +3,4 @@ class TuringEmailApp.Routers.SearchResultsRouter extends Backbone.Router
     "search/:query": "showSearchResults"
 
   showSearchResults: (query) ->
-    TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsSearchResultsCollection()
-
-    TuringEmailApp.views.emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView(
-      el: $("#email_table_body")
-      collection: TuringEmailApp.collections.emailThreads
-    )
-
-    TuringEmailApp.collections.emailThreads.search(query)
+    TuringEmailApp.loadSearchResults(query)

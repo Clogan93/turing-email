@@ -150,6 +150,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
       catch error
         console.log error
         htmlFailed = true
+    
     if htmlFailed and emailJSON.text_part?
       for line in emailJSON.text_part.split("\n")
         bodyText += "> " + line + "\n"
@@ -167,6 +168,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
       body += @formatEmailReplyBody emailJSON 
     else
       htmlFailed = true
+      
       if emailJSON.html_part?
         try
           body += $(emailJSON.html_part).html()
@@ -174,6 +176,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
         catch error
           console.log error
           htmlFailed = true
+      
       if htmlFailed and emailJSON.text_part?
         body += emailJSON.text_part
       else if emailJSON.body_text?

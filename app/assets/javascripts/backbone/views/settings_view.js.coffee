@@ -6,7 +6,6 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     @listenTo(@model, "destroy", @remove)
 
   render: ->
-    console.log @model.toJSON()
     @$el.html(@template(@model.toJSON()))
 
     @setupEmailBankruptcyButton()

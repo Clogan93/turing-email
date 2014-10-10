@@ -13,7 +13,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @listenTo(options.app, "change:emailFolderUnreadCount", @emailFolderUnreadCountChanged)
 
     @$el.addClass("mail-box-header")
-    @$el.attr("id", "email-folder-mail-header")
+    @$el.addClass("toolbar")
   
   render: ->
     emailFolders = @currentEmailFolders?.toJSON() ? []
