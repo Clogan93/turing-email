@@ -123,9 +123,18 @@ class TuringEmailApp.Views.Main extends Backbone.View
     
   showSettings: ->
     return false if not @primaryPaneDiv?
+
+    if _.keys(@app.models.userSettings.attributes).length is 0
+      setTimeout(
+        =>
+          @showSettings()
+        100
+      )
+      
+      return
     
     settingsView = new TuringEmailApp.Views.SettingsView(
-      model: TuringEmailApp.models.userSettings
+      model: @app.models.userSettings
     )
     settingsView.render()
     
