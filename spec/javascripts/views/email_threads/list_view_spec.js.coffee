@@ -4,11 +4,10 @@ describe "ListView", ->
 
     @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
 
-    @listViewDiv = $("<div />", {id: "email_table_body"}).appendTo("body")
     @listView = new TuringEmailApp.Views.EmailThreads.ListView(
-      el: @listViewDiv
       collection: @emailThreads
     )
+    $("body").append(@listView.$el)
 
     emailThreadsFixtures = fixture.load("email_threads.fixture.json");
     @validEmailThreadsFixture = emailThreadsFixtures[0]["valid"]
@@ -25,7 +24,6 @@ describe "ListView", ->
 
   afterEach ->
     @server.restore()
-    @listViewDiv.remove()
 
     specStopTuringEmailApp()
 
@@ -58,7 +56,7 @@ describe "ListView", ->
 
     describe "#render", ->
       it "renders the email threads", ->
-        expect(@listViewDiv.find("tr").length).toEqual(@emailThreads.models.length)
+        expect(@listView.$el.find("tr").length).toEqual(@emailThreads.models.length)
 
     describe "#resetView", ->
       it "render", ->

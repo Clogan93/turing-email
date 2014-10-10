@@ -106,17 +106,16 @@ window.specPrepareEmailThreadFetch = (server) ->
 window.specCreateEmailThreadsListView = (server) ->
   emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
 
-  listViewDiv = $("<div />", {id: "email_table_body"}).appendTo("body")
   emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView(
-    el: listViewDiv
     collection: emailThreads
   )
+  $("body").append(emailThreadsListView)
 
   [server, validEmailThreadsFixture] = specPrepareEmailThreadsFetch(emailThreads, server)
   emailThreads.fetch()
   server.respond()
   
-  return [listViewDiv, emailThreadsListView, emailThreads, server, validEmailThreadsFixture]
+  return [emailThreadsListView.$el, emailThreadsListView, emailThreads, server, validEmailThreadsFixture]
   
 window.validateAttributes = (objectJSON, expectedAttributes) ->
   keys = (key for key in _.keys(objectJSON))

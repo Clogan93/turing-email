@@ -13,7 +13,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
   render: ->
     @$el.html(@template())
     
-    @primaryPaneDiv = @$el.find("[name=primary_pane]")
+    @primaryPaneDiv = @$el.find(".primary_pane")
     
     @sidebarView = new @app.Views.App.SidebarView(
       el: @$el.find("[name=sidebar]")
@@ -67,7 +67,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
     @primaryPaneDiv.height(height)
     
   resizeSplitPane: ->
-    splitPaneDiv = $("[name=split_pane]")
+    splitPaneDiv = @$el.find(".split_pane")
     return if splitPaneDiv.length is 0
 
     height = $(window).height() - splitPaneDiv.offset().top - 6
@@ -76,14 +76,18 @@ class TuringEmailApp.Views.Main extends Backbone.View
     
     splitPaneDiv.height(height)
 
+  ######################
+  ### View Functions ###
+  ######################
+    
   showEmails: (isSplitPaneMode) ->
     return false if not @primaryPaneDiv?
 
     @primaryPaneDiv.html("")
 
-    emailThreadsListViewDiv = $('<div class="mail-box" name="email_threads_list_view" style="border: none; margin: 0px;">
+    emailThreadsListViewDiv = $('<div class="mail-box email_threads_list_view" style="border: none; margin: 0px;">
                                    <table class="table table-hover table-mail">
-                                     <tbody id="email_table_body"></tbody>
+                                     <tbody class="email_threads_list_view_tbody"></tbody>
                                    </table>
                                  </div>')
 
@@ -91,12 +95,12 @@ class TuringEmailApp.Views.Main extends Backbone.View
     @toolbarView.render()
 
     if isSplitPaneMode
-      splitPane = $("<div />", {name: "split_pane"}).appendTo(@primaryPaneDiv)
+      splitPane = $("<div />", {class: "split_pane"}).appendTo(@primaryPaneDiv)
 
       emailThreadsListViewDiv.addClass("ui-layout-center")
       splitPane.append(emailThreadsListViewDiv)
       
-      emailThreadViewDiv = $("<div />", {name: "email_thread_view"}).appendTo(splitPane)
+      emailThreadViewDiv = $("<div />", {class: "email_thread_view"}).appendTo(splitPane)
       emailThreadViewDiv.addClass("ui-layout-south")
 
       @resizeSplitPane()
@@ -112,7 +116,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
     else
       @primaryPaneDiv.append(emailThreadsListViewDiv)
     
-    @emailThreadsListView.$el = $("#email_table_body")
+    @emailThreadsListView.$el = @$el.find(".email_threads_list_view_tbody")
     @emailThreadsListView.render()
     
     return true
@@ -168,15 +172,16 @@ class TuringEmailApp.Views.Main extends Backbone.View
     )
     
     if isSplitPaneMode
-      emailThreadViewSelector = "[name=email_thread_view]"
+      emailThreadViewDiv = @$el.find(".email_thread_view")
+
+      if emailThreadViewDiv.length is 0
+        @showEmails(isSplitPaneMode)
+        emailThreadViewDiv = @$el.find(".email_thread_view")
     else
-      emailThreadViewSelector = "[name=primary_pane]"
+      emailThreadViewDiv = @primaryPaneDiv
 
-    if $(emailThreadViewSelector).length is 0
-      @showEmails(isSplitPaneMode)
-
-    $(emailThreadViewSelector).html("")
-    $(emailThreadViewSelector).append(emailThreadView.$el)
+    emailThreadViewDiv.html("")
+    emailThreadViewDiv.append(emailThreadView.$el)
     
     emailThreadView.render()
   
