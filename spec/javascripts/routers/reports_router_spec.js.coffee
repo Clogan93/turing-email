@@ -14,6 +14,7 @@ describe "ReportsRouter", ->
   it "has the expected routes", ->
     expect(@reportsRouter.routes["attachments_report"]).toEqual "showAttachmentsReport"
     expect(@reportsRouter.routes["email_volume_report"]).toEqual "showEmailVolumeReport"
+    expect(@reportsRouter.routes["folders_report"]).toEqual "showFoldersReport"
     expect(@reportsRouter.routes["geo_report"]).toEqual "showGeoReport"
     expect(@reportsRouter.routes["impact_report"]).toEqual "showImpactReport"
     expect(@reportsRouter.routes["inbox_efficiency_report"]).toEqual "showInboxEfficiencyReport"
@@ -44,6 +45,17 @@ describe "ReportsRouter", ->
       @spy.restore()
 
     it "shows an EmailVolumeReportView", ->
+      expect(@spy).toHaveBeenCalled()
+
+  describe "folders_report", ->
+    beforeEach ->
+      @spy = sinon.spy(TuringEmailApp, "showReport")
+      @reportsRouter.navigate "folders_report", trigger: true
+
+    afterEach ->
+      @spy.restore()
+
+    it "shows a showFoldersReport", ->
       expect(@spy).toHaveBeenCalled()
 
   describe "geo_report", ->

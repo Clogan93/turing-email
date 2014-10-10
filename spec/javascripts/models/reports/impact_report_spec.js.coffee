@@ -21,5 +21,5 @@ describe "ImpactReport", ->
       @impactReport.fetch()
       @server.respond()
 
-    it "loads the contacts report", ->
+    it "loads the percent sent emails replied to", ->
       validateAttributes(@impactReport.toJSON(), ["percent_sent_emails_replied_to"])
