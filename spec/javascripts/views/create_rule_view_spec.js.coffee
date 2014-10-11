@@ -3,7 +3,7 @@ describe "CreateRuleView", ->
     specStartTuringEmailApp()
 
     @createRuleDiv = $("<div class='create_rule_view'></div>").appendTo("body")
-    @createRuleView = new TuringEmailApp.Views.CreateRuleView(
+    @createRuleView = new TuringEmailApp.Views.App.CreateRuleView(
       app: TuringEmailApp
       el: $(".create_rule_view")
     )
@@ -13,7 +13,7 @@ describe "CreateRuleView", ->
     specStopTuringEmailApp()
 
   it "has the right template", ->
-    expect(@createRuleView.template).toEqual JST["backbone/templates/create_rule"]
+    expect(@createRuleView.template).toEqual JST["backbone/templates/app/create_rule"]
 
   describe "#render", ->
 

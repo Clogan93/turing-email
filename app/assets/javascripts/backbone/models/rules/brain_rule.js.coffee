@@ -1,1 +1,3 @@
-class TuringEmailApp.Models.BrainRule extends Backbone.Model
+TuringEmailApp.Models.Rules ||= {}
+
+class TuringEmailApp.Models.Rules.BrainRule extends Backbone.Model

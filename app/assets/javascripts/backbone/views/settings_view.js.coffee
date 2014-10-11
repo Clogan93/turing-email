@@ -60,7 +60,7 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
       )
 
   setupRuleCreation: ->
-    @createRulesView = new TuringEmailApp.Views.CreateRuleView(
+    @createRulesView = new TuringEmailApp.Views.App.CreateRuleView(
       app: TuringEmailApp
       el: @$el.find(".create_rule_view")
     )
@@ -68,10 +68,12 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
 
     @$el.find("#email_rules_button").click (event) =>
       @createRulesView.show("email_rule")
+      
       return false
 
     @$el.find("#genie_rules_button").click (event) =>
       @createRulesView.show("genie_rule")
+
       return false
 
   setupRuleDeletion: ->

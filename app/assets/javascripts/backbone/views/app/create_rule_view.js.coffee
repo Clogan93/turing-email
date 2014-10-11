@@ -1,5 +1,7 @@
-class TuringEmailApp.Views.CreateRuleView extends Backbone.View
-  template: JST["backbone/templates/create_rule"]
+TuringEmailApp.Views.App ||= {}
+
+class TuringEmailApp.Views.App.CreateRuleView extends Backbone.View
+  template: JST["backbone/templates/app/create_rule"]
 
   initialize: (options) ->
     @app = options.app
@@ -49,6 +51,7 @@ class TuringEmailApp.Views.CreateRuleView extends Backbone.View
       @$el.find(".create-rule-form .create-email-rule-destination-folder").show()
     else if @mode is "genie_rule"
       @$el.find(".create-rule-form .create-email-rule-destination-folder").hide()
+
     @$el.find("#email-rule-dropdown a").trigger('click.bs.dropdown')
     
   hide: ->

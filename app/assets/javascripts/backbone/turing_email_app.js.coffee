@@ -577,10 +577,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
       return
 
-    @collections.emailRules = new TuringEmailApp.Collections.EmailRulesCollection()
+    @collections.emailRules = new TuringEmailApp.Collections.Rules.EmailRulesCollection()
     @collections.emailRules.fetch(reset: true)
 
-    @collections.brainRules = new TuringEmailApp.Collections.BrainRulesCollection()
+    @collections.brainRules = new TuringEmailApp.Collections.Rules.BrainRulesCollection()
     @collections.brainRules.fetch(reset: true)
 
     @views.mainView.showSettings()
