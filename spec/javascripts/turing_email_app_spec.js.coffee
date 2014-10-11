@@ -125,26 +125,6 @@ describe "TuringEmailApp", ->
           expect('click.bs.dropdown').toHaveBeenTriggeredOn('#email-rule-dropdown a')
 
           expect(spy).toHaveBeenTriggered()
-  
-      it "hooks the submit action on the filter form", ->
-        expect($("#filter_form")).toHandle("submit")
-  
-      describe "when the filter form is submitted", ->
-        it "posts the email rule to the server", ->
-          $("#filter_form").submit()
-          
-          expect(@server.requests.length).toEqual 1
-          
-          request = @server.requests[0]
-          # TODO test posted form values
-          expect(request.method).toEqual "POST"
-          expect(request.url).toEqual "/api/v1/genie_rules"
-
-        it "triggers the click.bs.dropdown event on the dropdown link", ->
-          spy = spyOnEvent('#email-rule-dropdown a', 'click.bs.dropdown')
-          $("#filter_form").submit()
-          expect('click.bs.dropdown').toHaveBeenTriggeredOn('#email-rule-dropdown a')
-          expect(spy).toHaveBeenTriggered()
 
     describe "#setupToolbar", ->
       it "creates the toolbar view", ->
@@ -1763,22 +1743,41 @@ describe "TuringEmailApp", ->
         
       it "shows the emails on the main view", ->
         expect(@showEmailsSpy).toHaveBeenCalledWith(TuringEmailApp.isSplitPaneMode())
-        
+
     describe "#showSettings", ->
       beforeEach ->
-        @showSettingsSpy = sinon.spy(TuringEmailApp.views.mainView, "showSettings")
+        @server.restore()
+
+        brainRulesFixtures = fixture.load("rules/brain_rules.fixture.json", true)
+        @validBrainRulesFixture = brainRulesFixtures[0]
+
+        emailRulesFixtures = fixture.load("rules/email_rules.fixture.json", true)
+        @validEmailRulesFixture = emailRulesFixtures[0]
 
         [@server] = specPrepareUserSettingsFetch()
+        @server.respondWith "GET", "/api/v1/genie_rules", JSON.stringify(@validBrainRulesFixture)
+        @server.respondWith "GET", "/api/v1/email_rules", JSON.stringify(@validEmailRulesFixture)
         TuringEmailApp.models.userSettings.fetch()
         @server.respond()
 
-        TuringEmailApp.showSettings()
-
       afterEach ->
-        @showSettingsSpy.restore()
+        @server.restore()
 
       it "shows the Settings on the main view", ->
+        @showSettingsSpy = sinon.spy(TuringEmailApp.views.mainView, "showSettings")
+        TuringEmailApp.showSettings()
         expect(@showSettingsSpy).toHaveBeenCalled()
+        @showSettingsSpy.restore()
+
+      it "loads the brain rules", ->
+        TuringEmailApp.showSettings()
+        @server.respond()
+        validateBrainRulesAttributes(TuringEmailApp.collections.brainRules.models[0].toJSON())
+
+      it "loads the email rules", ->
+        TuringEmailApp.showSettings()
+        @server.respond()
+        validateEmailRulesAttributes(TuringEmailApp.collections.emailRules.models[0].toJSON())
 
     describe "#showAnalytics", ->
       beforeEach ->

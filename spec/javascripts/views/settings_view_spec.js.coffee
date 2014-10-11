@@ -138,18 +138,31 @@ describe "SettingsView", ->
       waitsFor ->
         return removeSettingsAlertSpy.callCount == 1
 
-  describe "#setupEmailRulesButton", ->
+  describe "#setupRuleCreation", ->
+
     it "binds the click event to the email rules button", ->
       expect(@settingsView.$el.find("#email_rules_button")).toHandle("click")
 
     describe "when the email rules button is clicked", ->
 
-      it "triggers the click.bs.dropdown event on the dropdown link", ->
-        spy = spyOnEvent('#email-rule-dropdown a', 'click.bs.dropdown')
+      it "shows the create rules view in email_rule mode", ->
+        spy = sinon.spy(@settingsView.createRulesView, "show")
         @settingsView.$el.find("#email_rules_button").click()
-        expect('click.bs.dropdown').toHaveBeenTriggeredOn('#email-rule-dropdown a')
+        expect(spy).toHaveBeenCalled()
+        expect(spy).toHaveBeenCalledWith("email_rule")
+        spy.restore()
 
-        expect(spy).toHaveBeenTriggered()
+    it "binds the click event to the brain rules button", ->
+      expect(@settingsView.$el.find("#genie_rules_button")).toHandle("click")
+
+    describe "when the brain rules button is clicked", ->
+
+      it "shows the create rules view in genie_rule mode", ->
+        spy = sinon.spy(@settingsView.createRulesView, "show")
+        @settingsView.$el.find("#genie_rules_button").click()
+        expect(spy).toHaveBeenCalled()
+        expect(spy).toHaveBeenCalledWith("genie_rule")
+        spy.restore()
 
   describe "#showSettingsAlert", ->
     describe "when the current alert token is defined", ->

@@ -134,7 +134,15 @@ window.validateUserAttributes = (userJSON) ->
 window.validateUserSettingsAttributes = (userSettingsJSON) ->
   expectedAttributes = ["id", "genie_enabled", "split_pane_mode"]
   validateAttributes(userSettingsJSON, expectedAttributes)
-  
+
+window.validateBrainRulesAttributes = (brainRulesJSON) ->
+  expectedAttributes = ["uid", "from_address", "to_address", "subject", "list_id"]
+  validateAttributes(brainRulesJSON, expectedAttributes)
+
+window.validateEmailRulesAttributes = (emailRulesJSON) ->
+  expectedAttributes = ["uid", "from_address", "to_address", "subject", "list_id", "destination_folder_name"]
+  validateAttributes(emailRulesJSON, expectedAttributes)
+
 window.validateEmailFolderAttributes = (emailFolderJSON) ->
   expectedAttributes = ["label_id", "name",
                          "message_list_visibility", "label_list_visibility",
