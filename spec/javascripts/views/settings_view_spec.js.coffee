@@ -13,12 +13,12 @@ describe "SettingsView", ->
     [@server] = specPrepareUserSettingsFetch()
 
     @server.respondWith "GET", "/api/v1/genie_rules", JSON.stringify(@validBrainRulesFixture)
-    TuringEmailApp.collections.brainRules = new TuringEmailApp.Collections.BrainRulesCollection()
+    TuringEmailApp.collections.brainRules = new TuringEmailApp.Collections.Rules.BrainRulesCollection()
     TuringEmailApp.collections.brainRules.fetch()
     @server.respond()
 
     @server.respondWith "GET", "/api/v1/email_rules", JSON.stringify(@validEmailRulesFixture)
-    TuringEmailApp.collections.emailRules = new TuringEmailApp.Collections.EmailRulesCollection()
+    TuringEmailApp.collections.emailRules = new TuringEmailApp.Collections.Rules.EmailRulesCollection()
     TuringEmailApp.collections.emailRules.fetch()
     @server.respond()
 

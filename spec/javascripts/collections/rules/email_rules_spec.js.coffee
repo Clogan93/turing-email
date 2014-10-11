@@ -4,7 +4,7 @@ describe "EmailRulesCollection", ->
     @validEmailRulesFixture = emailRulesFixtures[0]
 
     @url = "/api/v1/email_rules"
-    @emailRulesCollection = new TuringEmailApp.Collections.EmailRulesCollection()
+    @emailRulesCollection = new TuringEmailApp.Collections.Rules.EmailRulesCollection()
 
     @server = sinon.fakeServer.create()
     @server.respondWith "GET", @url, JSON.stringify(@validEmailRulesFixture)
@@ -16,7 +16,7 @@ describe "EmailRulesCollection", ->
     @server.restore()
 
   it "should use the EmailRule model", ->
-    expect(@emailRulesCollection.model).toEqual TuringEmailApp.Models.EmailRule
+    expect(@emailRulesCollection.model).toEqual TuringEmailApp.Models.Rules.EmailRule
 
   it "has the right url", ->
     expect(@emailRulesCollection.url).toEqual @url

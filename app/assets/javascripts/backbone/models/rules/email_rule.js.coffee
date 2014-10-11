@@ -1,1 +1,3 @@
-class TuringEmailApp.Models.EmailRule extends Backbone.Model
+TuringEmailApp.Models.Rules ||= {}
+
+class TuringEmailApp.Models.Rules.EmailRule extends Backbone.Model

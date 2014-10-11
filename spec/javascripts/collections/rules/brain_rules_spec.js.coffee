@@ -4,7 +4,7 @@ describe "BrainRulesCollection", ->
     @validBrainRulesFixture = brainRulesFixtures[0]
 
     @url = "/api/v1/genie_rules"
-    @brainRulesCollection = new TuringEmailApp.Collections.BrainRulesCollection()
+    @brainRulesCollection = new TuringEmailApp.Collections.Rules.BrainRulesCollection()
 
     @server = sinon.fakeServer.create()
     @server.respondWith "GET", @url, JSON.stringify(@validBrainRulesFixture)
@@ -16,7 +16,7 @@ describe "BrainRulesCollection", ->
     @server.restore()
 
   it "should use the BrainRule model", ->
-    expect(@brainRulesCollection.model).toEqual TuringEmailApp.Models.BrainRule
+    expect(@brainRulesCollection.model).toEqual TuringEmailApp.Models.Rules.BrainRule
 
   it "has the right url", ->
     expect(@brainRulesCollection.url).toEqual @url
