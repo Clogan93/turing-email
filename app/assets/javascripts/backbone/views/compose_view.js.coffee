@@ -131,55 +131,61 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
 
     @$el.find("#compose_form #subject_input").val(@subjectWithPrefixFromEmail(emailJSON))
 
+  parseEmail: (emailJSON) ->
+    htmlFailed = true
+    
+    if emailJSON.html_part?
+      try
+        body = $($.parseHTML(emailJSON.html_part))
+        htmlFailed = false
+      catch error
+        console.log error
+        htmlFailed = true
+
+    if htmlFailed || not emailJSON.html_part?
+      bodyText = ""
+      
+      text = ""
+      if emailJSON.text_part?
+        text = emailJSON.text_part
+      else if emailJSON.body_text?
+        text = emailJSON.body_text
+      
+      for line in text.split("\n")
+        bodyText += "> " + line + "\n"
+
+      body = bodyText
+    
+    return [body, !htmlFailed]
+    
   formatEmailReplyBody: (emailJSON) ->
-    bodyText = "\r\n\r\n\r\n\r\n"
+    headerText = "\r\n\r\n"
 
     tDate = new TDate()
     tDate.initializeWithISO8601(emailJSON.date)
 
     dateFromHeading = tDate.longFormDateString() + ", " + emailJSON.from_address + " wrote:"
-    bodyText += dateFromHeading
-    bodyText += "\r\n\r\n"
+    headerText += dateFromHeading
+    headerText += "\r\n\r\n"
 
-    htmlFailed = true
-    if emailJSON.html_part?
-      try
-        bodyText += $(emailJSON.html_part).html()
-        htmlFailed = false
-      catch error
-        console.log error
-        htmlFailed = true
-    
-    if htmlFailed and emailJSON.text_part?
-      for line in emailJSON.text_part.split("\n")
-        bodyText += "> " + line + "\n"
-    else if emailJSON.body_text
-      for line in emailJSON.body_text.split("\n")
-        bodyText += "> " + line + "\n"
+    [body, html] = @parseEmail(emailJSON)
 
-    return bodyText
+    if html
+      headerText = headerText.replace(/\r\n/g, "<br />")  
+      body.prepend(headerText)
+    else
+      body = $($.parseHTML(headerText + body))
+
+    return body
 
   loadEmailBody: (emailJSON, isReply=false) ->
     console.log("ComposeView loadEmailBody!!")
-    body = ""
-
+    
     if isReply
-      body += @formatEmailReplyBody emailJSON 
+      body = @formatEmailReplyBody(emailJSON) 
     else
-      htmlFailed = true
-      
-      if emailJSON.html_part?
-        try
-          body += $(emailJSON.html_part).html()
-          htmlFailed = false
-        catch error
-          console.log error
-          htmlFailed = true
-      
-      if htmlFailed and emailJSON.text_part?
-        body += emailJSON.text_part
-      else if emailJSON.body_text?
-        body += emailJSON.body_text
+      [body, html] = @parseEmail(emailJSON)
+      body = $.parseHTML(body) if not html
 
     @$el.find("#compose_form #compose_email_body").html(body)
 

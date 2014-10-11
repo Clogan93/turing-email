@@ -174,6 +174,20 @@ describe "TuringEmailAppKeyboardHandler", ->
       it "show the reply email view", ->
         expect(@replyClickedStub).toHaveBeenCalled()
 
+    describe "#showForward", ->
+      beforeEach ->
+        @event = jQuery.Event("keydown")
+
+        @forwardClickedStub = sinon.stub(@keyboardHandler.app, "forwardClicked")
+
+        @keyboardHandler.showForward(@event)
+
+      afterEach ->
+        @forwardClickedStub.restore()
+
+      it "show the forward email view", ->
+        expect(@forwardClickedStub).toHaveBeenCalled()
+
     describe "#archiveEmail", ->
       beforeEach ->
         @event = jQuery.Event("keydown")

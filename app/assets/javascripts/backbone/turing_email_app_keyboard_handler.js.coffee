@@ -11,6 +11,7 @@ class @TuringEmailAppKeyboardHandler
         "C": (event) => @showCompose(event)
 
         "R": (event) => @showReply(event)
+        "F": (event) => @showForward(event)
         
         "E": (event) => @archiveEmail(event)
         "Y": (event) => @archiveEmail(event)
@@ -51,6 +52,11 @@ class @TuringEmailAppKeyboardHandler
     event.preventDefault()
 
     @app.replyClicked()
+
+  showForward: (event) ->
+    event.preventDefault()
+
+    @app.forwardClicked()
     
   archiveEmail: (event) ->
     event.preventDefault()

@@ -354,6 +354,9 @@ describe "ComposeView", ->
         subjectWithPrefixFromEmail = TuringEmailApp.views.composeView.subjectWithPrefixFromEmail(emailJSON)
         expect(TuringEmailApp.views.composeView.$el.find("#compose_form #subject_input").val()).toEqual subjectWithPrefixFromEmail
 
+    describe "#parseEmail", ->
+      # TODO write tests
+        
     describe "#formatEmailReplyBody", ->
       beforeEach ->
         @seededChance = new Chance(1)
@@ -364,7 +367,8 @@ describe "ComposeView", ->
         @emailJSON["body_text"] = @seededChance.string({length: 250})
 
       it "renders the date-from heading", ->
-        bodyText = TuringEmailApp.views.composeView.formatEmailReplyBody @emailJSON
+        replyBody = TuringEmailApp.views.composeView.formatEmailReplyBody(@emailJSON)
+        bodyText = replyBody.text()
         tDate = new TDate()
         tDate.initializeWithISO8601(@emailJSON.date)
         dateFromHeading = tDate.longFormDateString() + ", " + @emailJSON.from_address + " wrote:"
@@ -376,7 +380,8 @@ describe "ComposeView", ->
           @emailJSON["html_part"] = null
 
         it "adds > to the beginning of each line of the body", ->
-          bodyText = TuringEmailApp.views.composeView.formatEmailReplyBody @emailJSON
+          replyBody = TuringEmailApp.views.composeView.formatEmailReplyBody(@emailJSON)
+          bodyText = replyBody.text()
           expect(bodyText).toContain "> a\n> b\n> c\n> d\n> "
 
     describe "#loadEmailBody", ->
