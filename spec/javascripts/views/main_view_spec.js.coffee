@@ -148,17 +148,38 @@ describe "MainView", ->
       describe "#showSettings", ->
         beforeEach ->
           @server.restore()
-  
+
+          brainRulesFixtures = fixture.load("rules/brain_rules.fixture.json", true)
+          @validBrainRulesFixture = brainRulesFixtures[0]
+
+          emailRulesFixtures = fixture.load("rules/email_rules.fixture.json", true)
+          @validEmailRulesFixture = emailRulesFixtures[0]
+
           [@server] = specPrepareUserSettingsFetch()
-          TuringEmailApp.models.userSettings.fetch()
           @server.respond()
-          
+
+          @server.respondWith "GET", "/api/v1/genie_rules", JSON.stringify(@validBrainRulesFixture)
+          TuringEmailApp.collections.brainRules = new TuringEmailApp.Collections.BrainRulesCollection()
+          TuringEmailApp.collections.brainRules.fetch()
+          @server.respond()
+
+          @server.respondWith "GET", "/api/v1/email_rules", JSON.stringify(@validEmailRulesFixture)
+          TuringEmailApp.collections.emailRules = new TuringEmailApp.Collections.EmailRulesCollection()
+          TuringEmailApp.collections.emailRules.fetch()
+          @server.respond()
+
           @settingsView = @mainView.showSettings()
   
         it "shows the settings view", ->
           expect(@primaryPane.children().length).toEqual(1)
           expect($(@primaryPane.children()[0]).html()).toEqual(@settingsView.$el.html())
-  
+
+        it "sets the brain rules on the settings view", ->
+          expect(@settingsView.brainRules).toEqual TuringEmailApp.collections.brainRules
+    
+        it "sets the email rules on the settings view", ->
+          expect(@settingsView.emailRules).toEqual TuringEmailApp.collections.emailRules
+
       describe "#showAnalytics", ->
         beforeEach ->
           @analyticsView = @mainView.showAnalytics()
