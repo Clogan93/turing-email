@@ -13,8 +13,9 @@ describe "TuringEmailAppKeyboardHandler", ->
         "J": "moveSelectionDown"
 
         "C": "showCompose"
-
+        
         "R": "showReply"
+        "F": "showForward"
 
         "E": "archiveEmail"
         "Y": "archiveEmail"
