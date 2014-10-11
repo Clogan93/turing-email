@@ -25,8 +25,9 @@
 //= require backbone
 //= require backbone_rails_sync
 //= require backbone_datalink
-//= require backbone/turing_email_app
 //= require backbone-validation
+//
+//= require backbone/turing_email_app
 //
 //= require_tree ../../../vendor/assets/javascripts/
 //= require_tree .

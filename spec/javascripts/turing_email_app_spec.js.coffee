@@ -22,8 +22,10 @@ describe "TuringEmailApp", ->
       expect(TuringEmailApp.collections).toBeDefined()
       expect(TuringEmailApp.routers).toBeDefined()
 
-    setupFunctions = ["setupMainView", "setupSearchBar", "setupComposeButton", "setupFiltering", "setupToolbar", "setupUser",
-                      "setupEmailFolders", "loadEmailFolders", "setupComposeView", "setupCreateFolderView", "setupEmailThreads", "setupRouters"]
+    setupFunctions = ["setupKeyboardHandler", "setupMainView", "setupSearchBar", "setupComposeButton", "setupFiltering",
+                      "setupToolbar", "setupUser", "setupEmailFolders", "loadEmailFolders", "setupComposeView",
+                      "setupCreateFolderView", "setupEmailThreads", "setupRouters"]
+
     for setupFunction in setupFunctions  
       it "calls the " + setupFunction + " function", ->
         spy = sinon.spy(TuringEmailApp, setupFunction)
@@ -47,6 +49,13 @@ describe "TuringEmailApp", ->
       expect(@spy).toHaveBeenCalledWith(TuringEmailApp.syncEmail, 60000)
 
   describe "setup functions", ->
+    describe "#setupKeyboardHandler", ->
+      beforeEach ->
+        TuringEmailApp.setupKeyboardHandler()
+        
+      it "creates the keyboard handler", ->
+        expect(TuringEmailApp.keyboardHandler).toBeDefined()
+      
     describe "#setupMainView", ->
       beforeEach ->
         TuringEmailApp.setupMainView()
@@ -99,6 +108,14 @@ describe "TuringEmailApp", ->
   
         @divComposeButton.click()
   
+        expect(@spy).toHaveBeenCalled()
+        @spy.restore()
+
+      it "shows the compose view on click", ->
+        @spy = sinon.spy(TuringEmailApp.views.composeView, "show")
+
+        @divComposeButton.click()
+
         expect(@spy).toHaveBeenCalled()
         @spy.restore()
 

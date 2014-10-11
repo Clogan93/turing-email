@@ -149,6 +149,9 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @$el.find("#total_emails_number").html(numThreads)
     @$el.find("#start_number").html(firstThreadNumber)
     @$el.find("#end_number").html(lastThreadNumber)
+    
+  showMoveToFolderMenu: ->
+    @$el.find("#moveToFolderDropdownMenu").trigger("click.bs.dropdown")
 
   #############################
   ### TuringEmailApp Events ###
