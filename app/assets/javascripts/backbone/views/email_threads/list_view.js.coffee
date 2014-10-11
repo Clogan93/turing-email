@@ -135,6 +135,48 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     for listItemView in _.values(@listItemViews)
       listItemView.markUnread() if listItemView.isChecked()
 
+  moveSelectionUp: ->
+    return false if not @selectedListItemView?
+    
+    selectedItemIndex = _.indexOf(_.values(@listItemViews), @selectedListItemView)
+    return false if selectedItemIndex <= 0
+
+    listItemView = _.values(@listItemViews)[selectedItemIndex - 1]
+    @select(listItemView.model)
+
+    @scrollListItemIntoView(listItemView, "top")
+    
+    return listItemView
+      
+  moveSelectionDown: ->
+    return false if not @selectedListItemView?
+
+    selectedItemIndex = _.indexOf(_.values(@listItemViews), @selectedListItemView)
+    return false if selectedItemIndex >= _.size(@listItemViews) - 1
+
+    listItemView = _.values(@listItemViews)[selectedItemIndex + 1]
+    @select(listItemView.model)
+
+    @scrollListItemIntoView(listItemView, "bottom")
+
+    return listItemView
+    
+  scrollListItemIntoView: (listItemView, position) ->
+    el = listItemView.$el
+    top = el.position().top
+    bottom = top + el.outerHeight(true)
+    
+    parent = @$el.parent().parent()
+    
+    if position is "bottom"
+      if bottom > parent.height()
+        delta = bottom - parent.height()
+        parent.scrollTop(parent.scrollTop() + delta)
+    else if position is "top"
+      if top < 0
+        delta = -top
+        parent.scrollTop(parent.scrollTop() - delta)
+      
   ###########################
   ### ListItemView Events ###
   ###########################

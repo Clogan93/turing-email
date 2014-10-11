@@ -20,6 +20,8 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @collections = {}
     @routers = {}
     
+    @setupKeyboardHandler()
+    
     @setupMainView()
     
     @setupSearchBar()
@@ -53,27 +55,9 @@ window.TuringEmailApp = new(Backbone.View.extend(
   ### Setup Functions ###
   #######################
 
-  # TODO implement
-  setupSplitPaneResizing: ->
-    return
-    # if TuringEmailApp.isSplitPaneMode()
-    #   $("#resize_border").mousedown ->
-    #     TuringEmailApp.mouseStart = null
-    #     $(document).mousemove (event) ->
-    #       if !TuringEmailApp.mouseStart?
-    #         TuringEmailApp.mouseStart = event.pageY
-    #       if event.pageY - TuringEmailApp.mouseStart > 100
-    #         $("#preview_panel").height("30%")
-    #         TuringEmailApp.mouseStart = null
-    #       return
-    
-    #     $(document).one "mouseup", ->
-    #       $(document).unbind "mousemove"
-
-  # TODO implement
-  setupKeyboardShortcuts: ->
-    return
-    #$("#email_table_body tr:nth-child(1)").addClass("email_thread_highlight")
+  setupKeyboardHandler: ->
+    @keyboardHandler = new TuringEmailAppKeyboardHandler(this)
+    @keyboardHandler.start()
   
   setupMainView: ->
     @views.mainView = new TuringEmailApp.Views.Main(

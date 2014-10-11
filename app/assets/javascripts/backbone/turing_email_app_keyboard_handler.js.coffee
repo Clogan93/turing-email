@@ -1,18 +1,39 @@
-
-class @KeyboardShortcutHandler
-
-  constructor: ->
-    this.keyboard_shortcuts_are_turned_on = false
-    TuringEmailApp.current_email_thread_index = 1
-
+class @TuringEmailAppKeyboardHandler
+  constructor: (@app) ->
+    @handlers =
+      "keydown": @onKeyDown
+    
   start: ->
-    if this.keyboard_shortcuts_are_turned_on
-      this.bind_keys()
+    this.bindKeys()
+    
+  stop: ->
+    this.unbindKeys()
 
-  bind_keys: ->
+  bindKeys: ->
+    $(document).on(event, this, callback) for event, callback of @handlers
+
+  unbindKeys: ->
+    $(document).off(event, callback) for event, callback of @handlers
+
+  onKeyDown: (event) ->
+    if event.which == 38
+      event.data.onUpArrow(event)
+    else if event.which == 40
+      event.data.onDownArrow(event)
+    
+  onUpArrow: (event) ->
+    event.preventDefault()
+
+    event.data.app.views.mainView.emailThreadsListView.moveSelectionUp()
+
+  onDownArrow: (event) ->
+    event.preventDefault()
+
+    event.data.app.views.mainView.emailThreadsListView.moveSelectionDown()
+
+  ###
     #Implemented
     this.bind_compose()
-    this.bind_up_and_down_arrows()
     this.bind_move_to_newer_conversation()
     this.bind_move_to_older_conversation()
     this.bind_move_to()
@@ -24,7 +45,7 @@ class @KeyboardShortcutHandler
     this.bind_reply()
     this.bind_return_to_conversation_list()
 
-    #Unimplemented
+    # NOT implemented
     this.bind_compose_in_a_new_tab()
     this.bind_search()
     this.bind_newer_message()
@@ -59,120 +80,63 @@ class @KeyboardShortcutHandler
     this.bind_escape_from_input_field()
     this.bind_group_membership()
     this.bind_undo()
+    ###
 
+  ###
   #Allows you to compose a new message. Shift + c allows you to compose a message in a new window.
   bind_compose: ->
     $(document).bind "keydown", "c", ->
-      TuringEmailApp.views.composeView.show()
+      return
 
   #Opens or moves your cursor to a more recent conversation. You can hit Enter to expand a conversation.
   bind_move_to_newer_conversation: ->
-    $(document).bind "keydown", "k", =>
-      @move_up_a_conversation()
-
-  move_up_a_conversation: ->
-    # TODO re-factor so that this works with the new select implementation.
-
-    # tr_element = $("#email_table_body tr:nth-child(" + TuringEmailApp.current_email_thread_index + ")")
-    # tr_element.removeClass("email_thread_highlight")
-    # if TuringEmailApp.current_email_thread_index > 1
-    #   TuringEmailApp.current_email_thread_index -= 1
-
-    # tr_element = $("#email_table_body tr:nth-child(" + TuringEmailApp.current_email_thread_index + ")")
-    # tr_element.addClass("email_thread_highlight")
-
-    # link_components = tr_element.find("a").first().attr("href").split("/")
-    # uid = link_components[link_components.length - 1]
-
-    # if TuringEmailApp.models.userSettings.get("split_pane_mode") is "horizontal"
-    #   TuringEmailApp.routers.emailThreadsRouter.showEmailThread uid
-
+  $(document).bind "keydown", "k", =>
     return
 
   #Opens or moves your cursor to the next oldest conversation. You can hit Enter to expand a conversation.
   bind_move_to_older_conversation: ->
     $(document).bind "keydown", "j", =>
-      @move_down_a_conversation()
-
-  move_down_a_conversation: ->
-    # TODO re-factor so that this works with the new select implementation.
-
-    # tr_element = $("#email_table_body tr:nth-child(" + TuringEmailApp.current_email_thread_index + ")")
-    # tr_element.removeClass("email_thread_highlight")
-    # if TuringEmailApp.current_email_thread_index < 50
-    #   TuringEmailApp.current_email_thread_index += 1
-
-    # tr_element = $("#email_table_body tr:nth-child(" + TuringEmailApp.current_email_thread_index + ")")
-    # tr_element.addClass("email_thread_highlight")
-
-    # link_components = tr_element.find("a").first().attr("href").split("/")
-    # uid = link_components[link_components.length - 1]
-
-    # if TuringEmailApp.models.userSettings.get("split_pane_mode") is "horizontal"
-    #   TuringEmailApp.routers.emailThreadsRouter.showEmailThread uid
-
-    return
+      return
 
   #Moves the conversation from the inbox to a different label, Spam or Trash.
   bind_move_to: ->
     $(document).bind "keydown", "v", ->
-      $("#moveToFolderDropdownMenu").click()
+      return
 
   #Automatically checks and selects a conversation so that you can archive, apply a label, or choose an action from the drop-down menu to apply to that conversation.
   bind_select_conversation: ->
     $(document).bind "keydown", "x", =>
-      $("#email_table_body tr:nth-child(" + TuringEmailApp.current_email_thread_index + ") .icheckbox_square-green").toggleClass("checked")
+      return
 
   #Automatically removes the message or conversation from your current view.
   bind_remove_from_current_view: ->
     $(document).bind "keydown", "y", ->
-      $("i.fa-archive").parent().click()
+      return
 
   #Archive your conversation from any view.
   bind_archive: ->
     $(document).bind "keydown", "e", ->
-      $("i.fa-archive").parent().click()
+      return
 
   #Moves the conversation to Trash.
   bind_delete: ->
     $(document).bind "keydown", "#", ->
-      $("i.fa-trash-o").parent().click()
+      return
 
   #Opens your conversation. Also expands or collapses a message if you are in 'Conversation View.'
   bind_open: ->
     $(document).bind "keydown", "o", =>
-      $("#email_table_body tr:nth-child(" + TuringEmailApp.current_email_thread_index + ") .mail-subject a")[0].click()
+      return
 
   #Replies to the message sender. Shift + r allows you to reply to a message in a new window. (Only applicable in 'Conversation View.')
   bind_reply: ->
     $(document).bind "keydown", "r", =>
-      emailThreadIndex = TuringEmailApp.current_email_thread_index - 1
-      last_email_in_thread = TuringEmailApp.emailThreads.models[emailThreadIndex].get("emails")[0]
-
-      if last_email_in_thread.reply_to_address?
-        $("#compose_form #to_input").val(last_email_in_thread.reply_to_address)
-      else
-        $("#compose_form #to_input").val(last_email_in_thread.from_address)
-
-      $("#compose_form #subject_input").val("Re: " + last_email_in_thread.subject)
-      $("#compose_form #compose_email_body").val("\n\n\n\n\n" + TuringEmailApp.composeView.retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes(last_email_in_thread))
-
-      $("#composeModal").modal "show"
+      return
 
   #Refreshes your page and returns you to the inbox, or list of conversations.
   bind_return_to_conversation_list: ->
     $(document).bind "keydown", "u", ->
-      window.location.href = "http://localhost:4000/mail";
       return
-
-  bind_up_and_down_arrows: ->
-    $(document).keydown (e) =>
-      switch e.which
-        when 38 then @move_up_a_conversation() #Up
-        when 40 then @move_down_a_conversation() #Down
-        else
-          return
-      e.preventDefault()
 
   #Opens a compose window in a new tab.
   bind_compose_in_a_new_tab: ->
@@ -343,7 +307,4 @@ class @KeyboardShortcutHandler
   bind_undo: ->
     $(document).bind "keydown", "z", ->
       return
-
-ksh = new KeyboardShortcutHandler
-ksh.keyboard_shortcuts_are_turned_on = true
-ksh.start()
+###
