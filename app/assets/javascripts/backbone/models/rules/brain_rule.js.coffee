@@ -1,0 +1,1 @@
+class TuringEmailApp.Models.BrainRule extends Backbone.Model

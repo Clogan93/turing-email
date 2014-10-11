@@ -1,17 +1,24 @@
 class TuringEmailApp.Views.SettingsView extends Backbone.View
   template: JST["backbone/templates/settings"]
 
-  initialize: ->
+  initialize: (options) ->
+    @emailRules = options.emailRules
+    @brainRules = options.brainRules
+
+    @listenTo(options.emailRules, "reset", @render)
+    @listenTo(options.brainRules, "reset", @render)
     @listenTo(@model, "change", @render)
     @listenTo(@model, "destroy", @remove)
 
   render: ->
-    @$el.html(@template(@model.toJSON()))
+    console.log @brainRules.toJSON()
+    @$el.html(@template({'userSettings' : @model.toJSON(), 'emailRules' : @emailRules.toJSON(), 'brainRules' : @brainRules.toJSON()}))
 
     @setupEmailBankruptcyButton()
     @setupSwitches()
     @setupSaveButton()
-    @setupEmailRulesButton()
+    @setupRuleCreation()
+    @setupRuleDeletion()
 
     return this
 
@@ -52,10 +59,35 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
         }
       )
 
-  setupEmailRulesButton: ->
+  setupRuleCreation: ->
+    @createRulesView = new TuringEmailApp.Views.CreateRuleView(
+      app: TuringEmailApp
+      el: @$el.find(".create_rule_view")
+    )
+    @createRulesView.render()
+
     @$el.find("#email_rules_button").click (event) =>
-      $("#email-rule-dropdown a").trigger('click.bs.dropdown')
+      @createRulesView.show("email_rule")
       return false
+
+    @$el.find("#genie_rules_button").click (event) =>
+      @createRulesView.show("genie_rule")
+      return false
+
+  setupRuleDeletion: ->
+    @$el.find(".email-rules-table .rule-deletion-button").click (event) ->
+      $.ajax
+        url: "/api/v1/email_rules/" + $(@).attr("data") + ".json"
+        type: "DELETE"
+
+      $(@).parent().parent().remove()
+
+    @$el.find(".brain-rules-table .rule-deletion-button").click (event) ->
+      $.ajax
+        url: "/api/v1/genie_rules/" + $(@).attr("data") + ".json"
+        type: "DELETE"
+
+      $(@).parent().parent().remove()
 
   showSettingsAlert: (alertMessage) ->
     console.log "SettingsView showSettingsAlert"

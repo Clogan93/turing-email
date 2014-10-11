@@ -97,24 +97,6 @@ window.TuringEmailApp = new(Backbone.View.extend(
       $("#email-rule-dropdown a").trigger('click.bs.dropdown')
       return false
 
-    $("#filter_form").submit =>
-      $.post "/api/v1/genie_rules", {
-        from_address: $("#filter_form #email_filter_from").val(),
-        to_address: $("#filter_form #emailRuleToInput").val(),
-        subject: $("#filter_form #subjectFilterForm").val(),
-        list_id: $("#filter_form #email_filter_list").val()
-      }
-
-      $("#email-rule-dropdown a").trigger('click.bs.dropdown')
-
-      alertToken = @showAlert('You have successfully created a brain rule!', "alert-success")
-
-      setTimeout (=>
-        @removeAlert(alertToken)
-      ), 3000
-
-      return false # avoid to execute the actual submit of the form.
-
   setupToolbar: ->
     @views.toolbarView = @views.mainView.toolbarView
 
@@ -595,8 +577,14 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
       return
 
+    @collections.emailRules = new TuringEmailApp.Collections.EmailRulesCollection()
+    @collections.emailRules.fetch(reset: true)
+
+    @collections.brainRules = new TuringEmailApp.Collections.BrainRulesCollection()
+    @collections.brainRules.fetch(reset: true)
+
     @views.mainView.showSettings()
-    
+
   showAnalytics: ->
     @views.mainView.showAnalytics()
 

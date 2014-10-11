@@ -288,7 +288,7 @@ a#refresh_link {
     margin-bottom: 3%;
   }
 
-  #emailRuleToInput {
+  .create-email-rule-to {
     margin-top: 3%;
   }
 
@@ -411,4 +411,9 @@ a#refresh_link {
 #compose_email_body {
   height: 250px;
   overflow: scroll;
+}
+
+.settings-table thead th
+{
+  font-weight: bold;
 }
