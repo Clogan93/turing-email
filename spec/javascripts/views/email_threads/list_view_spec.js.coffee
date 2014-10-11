@@ -391,7 +391,61 @@ describe "ListView", ->
             expect(@listView.moveSelectionDown()).toBeFalsy()
       
     describe "#scrollListItemIntoView", ->
-      # TODO write test
+      beforeEach ->
+        @listItemView = _.values(@listView.listItemViews)[0]
+        @el = @listItemView.$el
+        
+        @parent = @el.parent().parent()
+        @top = @el.position().top
+        @bottom = @top + @el.outerHeight(true)
+        
+      describe "listItemView is on screen", ->
+        beforeEach ->
+          @parent.scrollTop(@top)
+          @scrollTopSpy = sinon.spy(@parent, "scrollTop")
+
+        afterEach ->
+          @parent.scrollTop(0)
+          @scrollTopSpy.restore()
+
+        describe "position=bottom", ->
+          beforeEach ->
+            @listView.scrollListItemIntoView(@listItemView, "bottom")
+            
+          it "not to have scrolled", ->
+            expect(@scrollTopSpy).not.toHaveBeenCalled()
+
+        describe "position=top", ->
+          beforeEach ->
+            @listView.scrollListItemIntoView(@listItemView, "top")
+
+          it "not to have scrolled", ->
+            expect(@scrollTopSpy).not.toHaveBeenCalled()
+
+      describe "listItemView is off screen", ->
+        beforeEach ->
+          @el.css("top": @parent.height() + "px", "position": "absolute")
+          @top = @el.position().top
+          @bottom = @top + @el.outerHeight(true)
+        
+          @scrollTopSpy = sinon.spy($.prototype, "scrollTop")
+
+        afterEach ->
+          @scrollTopSpy.restore()
+
+        describe "position=bottom", ->
+          beforeEach ->
+            @listView.scrollListItemIntoView(@listItemView, "bottom")
+
+          it "to have scrolled the list item into view", ->
+            expect(@scrollTopSpy).toHaveBeenCalledWith(@bottom - @parent.height())
+
+        describe "position=top", ->
+          beforeEach ->
+            @listView.scrollListItemIntoView(@listItemView, "top")
+
+          it "to have scrolled the list item into view", ->
+            expect(@scrollTopSpy).toHaveBeenCalled(@top)
             
     describe "ListItemView Events", ->
       describe "#hookListItemViewEvents", ->

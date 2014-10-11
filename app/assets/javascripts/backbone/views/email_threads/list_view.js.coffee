@@ -167,13 +167,12 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     bottom = top + el.outerHeight(true)
     
     parent = @$el.parent().parent()
-    
-    if position is "bottom"
-      if bottom > parent.height()
-        delta = bottom - parent.height()
+
+    if top < 0 || bottom > parent.height()
+      if position is "bottom"
+        delta = bottom - parent.outerHeight(true)
         parent.scrollTop(parent.scrollTop() + delta)
-    else if position is "top"
-      if top < 0
+      else if position is "top"
         delta = -top
         parent.scrollTop(parent.scrollTop() - delta)
       
