@@ -2,15 +2,33 @@ describe "SettingsView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
+    brainRulesFixtures = fixture.load("rules/brain_rules.fixture.json", true)
+    @validBrainRulesFixture = brainRulesFixtures[0]
+
+    emailRulesFixtures = fixture.load("rules/email_rules.fixture.json", true)
+    @validEmailRulesFixture = emailRulesFixtures[0]
+
     @userSettings = new TuringEmailApp.Models.UserSettings()
+
+    [@server] = specPrepareUserSettingsFetch()
+
+    @server.respondWith "GET", "/api/v1/genie_rules", JSON.stringify(@validBrainRulesFixture)
+    TuringEmailApp.collections.brainRules = new TuringEmailApp.Collections.BrainRulesCollection()
+    TuringEmailApp.collections.brainRules.fetch()
+    @server.respond()
+
+    @server.respondWith "GET", "/api/v1/email_rules", JSON.stringify(@validEmailRulesFixture)
+    TuringEmailApp.collections.emailRules = new TuringEmailApp.Collections.EmailRulesCollection()
+    TuringEmailApp.collections.emailRules.fetch()
+    @server.respond()
 
     @settingsDiv = $("<div />", {id: "settings"}).appendTo("body")
     @settingsView = new TuringEmailApp.Views.SettingsView(
       el: @settingsDiv
       model: @userSettings
+      emailRules: TuringEmailApp.collections.emailRules
+      brainRules: TuringEmailApp.collections.brainRules
     )
-
-    [@server] = specPrepareUserSettingsFetch()
 
     @userSettings.fetch()
     @server.respond()
@@ -66,7 +84,7 @@ describe "SettingsView", ->
         emailBankruptcyButton.click()
         expect("click").toHaveBeenPreventedOn("#email_bankruptcy_button")
 
-        expect(@server.requests.length).toEqual 1
+        expect(@server.requests.length).toEqual 3
         
     describe "the user confirms the action", ->
       beforeEach ->
@@ -79,8 +97,8 @@ describe "SettingsView", ->
         emailBankruptcyButton.click()
         expect("click").toHaveBeenPreventedOn("#email_bankruptcy_button")
   
-        expect(@server.requests.length).toEqual 2
-        request = @server.requests[1]
+        expect(@server.requests.length).toEqual 4
+        request = @server.requests[3]
         expect(request.method).toEqual "POST"
         expect(request.url).toEqual "/api/v1/users/declare_email_bankruptcy"
 
@@ -98,8 +116,8 @@ describe "SettingsView", ->
       saveButton.click()
       expect("click").toHaveBeenPreventedOn("#user_settings_save_button")
 
-      expect(@server.requests.length).toEqual 2
-      request = @server.requests[1]
+      expect(@server.requests.length).toEqual 4
+      request = @server.requests[3]
       expect(request.method).toEqual "PATCH"
       expect(request.url).toEqual "/api/v1/user_configurations"
 
@@ -163,6 +181,46 @@ describe "SettingsView", ->
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith("genie_rule")
         spy.restore()
+
+  describe "#setupRuleDeletion", ->
+
+    it "binds the click event to the email rule table's rule deletion button", ->
+      expect(@settingsView.$el.find(".email-rules-table .rule-deletion-button")).toHandle("click")
+
+    describe "clicking on the email rule table's rule deletion button", ->
+
+      it "deletes the associated rule and removes its element from the DOM", ->
+        removeSpy = sinon.spy($.prototype, "remove")
+
+        firstDeleteButton = @settingsView.$el.find(".email-rules-table .rule-deletion-button").first()
+        firstDeleteButton.click()
+
+        expect(@server.requests.length).toEqual 4
+        request = @server.requests[3]
+        expect(request.method).toEqual "DELETE"
+        expect(request.url).toEqual "/api/v1/email_rules/" + firstDeleteButton.attr("data") + ".json"
+
+        expect(removeSpy).toHaveBeenCalled()
+        removeSpy.restore()
+
+    it "binds the click event to the brain rule table's rule deletion button", ->
+      expect(@settingsView.$el.find(".brain-rules-table .rule-deletion-button")).toHandle("click")
+
+    describe "clicking on the brain rule table's rule deletion button", ->
+
+      it "deletes the associated rule and removes its element from the DOM", ->
+        removeSpy = sinon.spy($.prototype, "remove")
+
+        firstDeleteButton = @settingsView.$el.find(".brain-rules-table .rule-deletion-button").first()
+        firstDeleteButton.click()
+
+        expect(@server.requests.length).toEqual 4
+        request = @server.requests[3]
+        expect(request.method).toEqual "DELETE"
+        expect(request.url).toEqual "/api/v1/genie_rules/" + firstDeleteButton.attr("data") + ".json"
+
+        expect(removeSpy).toHaveBeenCalled()
+        removeSpy.restore()
 
   describe "#showSettingsAlert", ->
     describe "when the current alert token is defined", ->
