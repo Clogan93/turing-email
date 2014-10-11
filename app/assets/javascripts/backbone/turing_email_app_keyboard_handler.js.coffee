@@ -5,17 +5,17 @@ class @TuringEmailAppKeyboardHandler
         "up": (event) => @moveSelectionUp(event)
         "down": (event) => @moveSelectionDown(event)
         
-        "k": (event) => @moveSelectionUp(event)
-        "j": (event) => @moveSelectionDown(event)
+        "K": (event) => @moveSelectionUp(event)
+        "J": (event) => @moveSelectionDown(event)
         
-        "c": (event) => @showCompose(event)
+        "C": (event) => @showCompose(event)
 
-        "r": (event) => @showReply(event)
+        "R": (event) => @showReply(event)
         
-        "e": (event) => @archiveEmail(event)
-        "y": (event) => @archiveEmail(event)
+        "E": (event) => @archiveEmail(event)
+        "Y": (event) => @archiveEmail(event)
 
-        "v": (event) => @showMoveToFolderMenu(event)
+        "V": (event) => @showMoveToFolderMenu(event)
     
   start: ->
     this.bindKeys()

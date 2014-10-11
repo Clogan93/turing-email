@@ -4,6 +4,23 @@ describe "TuringEmailAppKeyboardHandler", ->
     
     @keyboardHandler = new TuringEmailAppKeyboardHandler(TuringEmailApp)
 
+    @handlers =
+      "keydown":
+        "up": "moveSelectionUp"
+        "down": "moveSelectionDown"
+
+        "K": "moveSelectionUp"
+        "J": "moveSelectionDown"
+
+        "C": "showCompose"
+
+        "R": "showReply"
+
+        "E": "archiveEmail"
+        "Y": "archiveEmail"
+
+        "V": "showMoveToFolderMenu"
+
   afterEach ->
     specStopTuringEmailApp()
 
@@ -11,11 +28,9 @@ describe "TuringEmailAppKeyboardHandler", ->
     it "saves the app variable", ->
       expect(@keyboardHandler.app).toEqual(TuringEmailApp)
 
-    handlers =
-      "keydown": ["up", "down", "k", "j", "c", "r", "e", "y", "v"]
-    
-    for type, events of handlers
-      it "handles the " + type + " events", ->
+    it "handles the events", ->
+      for type, typeHandlers of @handlers
+        events = _.keys(typeHandlers)
         expect(_.keys(@keyboardHandler.handlers[type]).sort()).toEqual(events.sort())      
 
   describe "#start", ->
@@ -45,10 +60,24 @@ describe "TuringEmailAppKeyboardHandler", ->
       @keyboardHandler.bindKeys()
 
     it "binds the handlers", ->
-      # TODO figureout how to test - jquery hotkeys is messingit up because it intercepts the handler
-      #for type, typeHandlers of @keyboardHandler.handlers
-        #for keys, callback of typeHandlers
-          #expect($(document)).toHandleWith(type, callback)
+      for type, typeHandlers of @handlers
+        for keys, callbackName of typeHandlers
+          @spy = sinon.stub(@keyboardHandler, callbackName, ->)
+
+          @event = jQuery.Event("keydown")
+          
+          if keys == "up"
+            @event.which = $.ui.keyCode.UP
+          else if keys == "down"
+            @event.which = $.ui.keyCode.DOWN
+          else
+            @event.which = keys.charCodeAt(0)
+
+          $(document).trigger(@event)
+          
+          expect(@spy).toHaveBeenCalled()
+          
+          @spy.restore()
 
   describe "#unbindKeys", ->
     beforeEach ->
@@ -56,10 +85,24 @@ describe "TuringEmailAppKeyboardHandler", ->
       @keyboardHandler.unbindKeys()
 
     it "unbinds the events", ->
-      # TODO figureout how to test - jquery hotkeys is messingit up because it intercepts the handler
-      #for type, typeHandlers of @keyboardHandler.handlers
-        #for keys, callback of typeHandlers
-          #expect($(document)).not.toHandleWith(type, callback)
+      for type, typeHandlers of @handlers
+        for keys, callbackName of typeHandlers
+          @spy = sinon.stub(@keyboardHandler, callbackName, ->)
+
+          @event = jQuery.Event("keydown")
+
+          if keys == "up"
+            @event.which = $.ui.keyCode.UP
+          else if keys == "down"
+            @event.which = $.ui.keyCode.DOWN
+          else
+            @event.which = keys.charCodeAt(0)
+
+          $(document).trigger(@event)
+
+          expect(@spy).not.toHaveBeenCalled()
+
+          @spy.restore()
     
   describe "after start", ->
     beforeEach ->
@@ -73,11 +116,9 @@ describe "TuringEmailAppKeyboardHandler", ->
       
       beforeEach ->
         @event = jQuery.Event("keydown")
-        @event.data = @keyboardHandler
-        @event.which = $.ui.keyCode.UP
-
+        
         @moveSelectionUpStub = sinon.stub(@keyboardHandler.app.views.emailThreadsListView, "moveSelectionUp")
-
+        
         @keyboardHandler.moveSelectionUp(@event)
 
       afterEach ->
@@ -91,11 +132,9 @@ describe "TuringEmailAppKeyboardHandler", ->
       
       beforeEach ->
         @event = jQuery.Event("keydown")
-        @event.data = @keyboardHandler
-        @event.which = $.ui.keyCode.DOWN
-
+        
         @moveSelectionDownStub = sinon.stub(@keyboardHandler.app.views.emailThreadsListView, "moveSelectionDown")
-
+        
         @keyboardHandler.moveSelectionDown(@event)
 
       afterEach ->
@@ -107,8 +146,7 @@ describe "TuringEmailAppKeyboardHandler", ->
     describe "#showCompose", ->
       beforeEach ->
         @event = jQuery.Event("keydown")
-        @event.data = @keyboardHandler
-  
+        
         @loadEmptyStub = sinon.stub(@keyboardHandler.app.views.composeView, "loadEmpty")
         @showStub = sinon.stub(@keyboardHandler.app.views.composeView, "show")
   
@@ -125,7 +163,6 @@ describe "TuringEmailAppKeyboardHandler", ->
     describe "#showReply", ->
       beforeEach ->
         @event = jQuery.Event("keydown")
-        @event.data = @keyboardHandler
 
         @replyClickedStub = sinon.stub(@keyboardHandler.app, "replyClicked")
   
@@ -140,7 +177,6 @@ describe "TuringEmailAppKeyboardHandler", ->
     describe "#archiveEmail", ->
       beforeEach ->
         @event = jQuery.Event("keydown")
-        @event.data = @keyboardHandler
   
         @archiveClickedStub = sinon.stub(@keyboardHandler.app, "archiveClicked")
   
@@ -155,7 +191,6 @@ describe "TuringEmailAppKeyboardHandler", ->
     describe "#showMoveToFolderMenu", ->
       beforeEach ->
         @event = jQuery.Event("keydown")
-        @event.data = @keyboardHandler
   
         @showMoveToFolderMenuStub = sinon.stub(@keyboardHandler.app.views.toolbarView, "showMoveToFolderMenu")
   

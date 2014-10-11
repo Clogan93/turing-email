@@ -415,10 +415,16 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @routers.emailFoldersRouter.showFolder(@selectedEmailFolderID())
 
   replyClicked: ->
+    return false if not @selectedEmailThread()?
+    
     @showEmailEditorWithEmailThread(@selectedEmailThread().get("uid"), "reply")
+    return @selectedEmailThread()
 
   forwardClicked: ->
+    return false if not @selectedEmailThread()?
+    
     @showEmailEditorWithEmailThread(@selectedEmailThread().get("uid"), "forward")
+    return @selectedEmailThread()
 
   archiveClicked: ->
     @applyActionToSelectedThreads(
