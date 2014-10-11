@@ -88,7 +88,6 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
 
   loadEmpty: ->
     @resetView()
-    @show()
 
   loadEmail: (emailJSON) ->
     console.log("ComposeView loadEmail!!")

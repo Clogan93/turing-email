@@ -74,6 +74,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   setupComposeButton: ->
     $("#compose_button").click =>
       @views.composeView.loadEmpty()
+      @views.composeView.show()
 
   setupFiltering: ->
     $(".create_filter").click (event) ->

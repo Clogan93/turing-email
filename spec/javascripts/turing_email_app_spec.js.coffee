@@ -111,6 +111,14 @@ describe "TuringEmailApp", ->
         expect(@spy).toHaveBeenCalled()
         @spy.restore()
 
+      it "shows the compose view on click", ->
+        @spy = sinon.spy(TuringEmailApp.views.composeView, "show")
+
+        @divComposeButton.click()
+
+        expect(@spy).toHaveBeenCalled()
+        @spy.restore()
+
     describe "#setupFiltering", ->
       beforeEach ->
         @createFilterDiv = $('<div class="create_filter"><div />').appendTo("body")
