@@ -8,7 +8,7 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
     @app = options.app
     
     @listenTo(options.app, "change:emailFolderUnreadCount", @emailFolderUnreadCountChanged)
-    
+
     @listenTo(@collection, "add", @render)
     @listenTo(@collection, "remove", @render)
     @listenTo(@collection, "reset", @render)
@@ -78,9 +78,11 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
     return if @selectedItem() is emailFolder && options?.force != true
 
     if @selectedItem()?
+      @$el.find("#" + @selectedItem().get("label_id")).removeClass("selected_tree_folder")
       @trigger("emailFolderDeselected", this, @selectedItem())
 
     @selectedEmailFolder = emailFolder
+    @$el.find("#" + emailFolder.get("label_id")).addClass("selected_tree_folder")
 
     @trigger("emailFolderSelected", this, emailFolder) if (not options?.silent?) || options.silent is false
 
