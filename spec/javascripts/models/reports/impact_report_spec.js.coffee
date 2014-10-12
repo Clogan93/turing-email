@@ -3,7 +3,7 @@ describe "ImpactReport", ->
     impactFixtures = fixture.load("reports/impact_report.fixture.json", true);
     @impactFixture = impactFixtures[0]
 
-    @impactReport = new TuringEmailApp.Models.ImpactReport()
+    @impactReport = new TuringEmailApp.Models.Reports.ImpactReport()
 
     @server = sinon.fakeServer.create()
 

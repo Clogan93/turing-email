@@ -3,7 +3,7 @@ describe "ListsReport", ->
     listsFixtures = fixture.load("reports/lists_report.fixture.json", true);
     @listsFixture = listsFixtures[0]
 
-    @listsReport = new TuringEmailApp.Models.ListsReport()
+    @listsReport = new TuringEmailApp.Models.Reports.ListsReport()
 
     @server = sinon.fakeServer.create()
 

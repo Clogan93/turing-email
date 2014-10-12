@@ -3,7 +3,7 @@ describe "EmailVolumeReport", ->
     emailVolumeReportFixtures = fixture.load("reports/email_volume_report.fixture.json", true);
     @emailVolumeReportFixture = emailVolumeReportFixtures[0]
 
-    @emailVolumeReport = new TuringEmailApp.Models.EmailVolumeReport()
+    @emailVolumeReport = new TuringEmailApp.Models.Reports.EmailVolumeReport()
 
     @server = sinon.fakeServer.create()
 

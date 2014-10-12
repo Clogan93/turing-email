@@ -14,49 +14,49 @@ class TuringEmailApp.Routers.ReportsRouter extends Backbone.Router
     "word_count_report": "showWordCountReport"
 
   showAttachmentsReport: (divReportsID) ->
-    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.AttachmentsReport,
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.Reports.AttachmentsReport,
                               TuringEmailApp.Views.Reports.AttachmentsReportView)
 
   showEmailVolumeReport: (divReportsID) ->
-    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.EmailVolumeReport,
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.Reports.EmailVolumeReport,
                               TuringEmailApp.Views.Reports.EmailVolumeReportView)
 
   showFoldersReport: (divReportsID) ->
-    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.FoldersReport,
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.Reports.FoldersReport,
                               TuringEmailApp.Views.Reports.FoldersReportView)
 
   showGeoReport: (divReportsID) ->
-    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.GeoReport,
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.Reports.GeoReport,
                               TuringEmailApp.Views.Reports.GeoReportView)
 
   showImpactReport: (divReportsID) ->
-    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.ImpactReport,
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.Reports.ImpactReport,
                               TuringEmailApp.Views.Reports.ImpactReportView)
 
   showInboxEfficiencyReport: (divReportsID) ->
-    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.InboxEfficiencyReport,
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.Reports.InboxEfficiencyReport,
                               TuringEmailApp.Views.Reports.InboxEfficiencyReportView)
 
   showListsReport: (divReportsID) ->
-    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.ListsReport,
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.Reports.ListsReport,
                               TuringEmailApp.Views.Reports.ListsReportView)
 
   showRecommendedRulesReport: (divReportsID) ->
-    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.RecommendedRulesReport,
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.Reports.RecommendedRulesReport,
                               TuringEmailApp.Views.Reports.RecommendedRulesReportView)
 
   showSummaryAnalyticsReport: (divReportsID) ->
-    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.SummaryAnalyticsReport,
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.Reports.SummaryAnalyticsReport,
                               TuringEmailApp.Views.Reports.SummaryAnalyticsReportView)
 
   showThreadsReport: (divReportsID) ->
-    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.ThreadsReport,
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.Reports.ThreadsReport,
                               TuringEmailApp.Views.Reports.ThreadsReportView)
 
   showTopContactsReport: (divReportsID) ->
-    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.ContactsReport,
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.Reports.ContactsReport,
                               TuringEmailApp.Views.Reports.ContactsReportView)
 
   showWordCountReport: (divReportsID) ->
-    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.WordCountReport,
+    TuringEmailApp.showReport(divReportsID, TuringEmailApp.Models.Reports.WordCountReport,
                               TuringEmailApp.Views.Reports.WordCountReportView)

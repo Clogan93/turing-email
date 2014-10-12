@@ -3,7 +3,7 @@ describe "InboxEfficiencyReport", ->
     inboxEfficiencyFixtures = fixture.load("reports/inbox_efficiency_report.fixture.json", true);
     @inboxEfficiencyFixture = inboxEfficiencyFixtures[0]
 
-    @inboxEfficiencyReport = new TuringEmailApp.Models.InboxEfficiencyReport()
+    @inboxEfficiencyReport = new TuringEmailApp.Models.Reports.InboxEfficiencyReport()
 
     @server = sinon.fakeServer.create()
 

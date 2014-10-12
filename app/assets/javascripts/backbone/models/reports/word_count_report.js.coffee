@@ -1,4 +1,6 @@
-class TuringEmailApp.Models.WordCountReport extends Backbone.Model
+TuringEmailApp.Models.Reports ||= {}
+
+class TuringEmailApp.Models.Reports.WordCountReport extends Backbone.Model
   validation:
     word_counts:
       required: true

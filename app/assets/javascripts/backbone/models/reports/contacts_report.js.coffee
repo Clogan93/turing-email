@@ -1,4 +1,6 @@
-class TuringEmailApp.Models.ContactsReport extends Backbone.Model
+TuringEmailApp.Models.Reports ||= {}
+
+class TuringEmailApp.Models.Reports.ContactsReport extends Backbone.Model
   url: "/api/v1/email_reports/contacts_report"
 
   validation:

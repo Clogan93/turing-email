@@ -3,7 +3,7 @@ describe "RecommendedRulesReport", ->
     recommendedRulesFixtures = fixture.load("reports/recommended_rules_report.fixture.json", true);
     @recommendedRulesFixture = recommendedRulesFixtures[0]
 
-    @recommendedRulesReport = new TuringEmailApp.Models.RecommendedRulesReport()
+    @recommendedRulesReport = new TuringEmailApp.Models.Reports.RecommendedRulesReport()
 
     @server = sinon.fakeServer.create()
 

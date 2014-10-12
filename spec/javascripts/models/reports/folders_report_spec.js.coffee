@@ -3,7 +3,7 @@ describe "FoldersReport", ->
     foldersFixtures = fixture.load("reports/folders_report.fixture.json", true);
     @foldersFixture = foldersFixtures[0]
 
-    @foldersReport = new TuringEmailApp.Models.FoldersReport()
+    @foldersReport = new TuringEmailApp.Models.Reports.FoldersReport()
 
     @server = sinon.fakeServer.create()
 

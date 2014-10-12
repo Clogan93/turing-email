@@ -3,7 +3,7 @@ describe "WordCountReport", ->
     wordCountFixtures = fixture.load("reports/word_count_report.fixture.json", true);
     @wordCountFixture = wordCountFixtures[0]
 
-    @wordCountsReport = new TuringEmailApp.Models.WordCountReport()
+    @wordCountsReport = new TuringEmailApp.Models.Reports.WordCountReport()
 
     @server = sinon.fakeServer.create()
 

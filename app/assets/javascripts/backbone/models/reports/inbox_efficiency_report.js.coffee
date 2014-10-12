@@ -1,4 +1,6 @@
-class TuringEmailApp.Models.InboxEfficiencyReport extends Backbone.Model
+TuringEmailApp.Models.Reports ||= {}
+
+class TuringEmailApp.Models.Reports.InboxEfficiencyReport extends Backbone.Model
   validation:
     average_response_time_in_minutes:
       required: true

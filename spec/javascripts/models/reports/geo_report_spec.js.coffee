@@ -3,7 +3,7 @@ describe "GeoReport", ->
     geoReportFixtures = fixture.load("reports/geo_report.fixture.json", true);
     @geoReportFixture = geoReportFixtures[0]
 
-    @geoReport = new TuringEmailApp.Models.GeoReport()
+    @geoReport = new TuringEmailApp.Models.Reports.GeoReport()
 
     @server = sinon.fakeServer.create()
 

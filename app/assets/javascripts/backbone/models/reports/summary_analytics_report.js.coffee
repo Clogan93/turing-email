@@ -1,4 +1,6 @@
-class TuringEmailApp.Models.SummaryAnalyticsReport extends Backbone.Model
+TuringEmailApp.Models.Reports ||= {}
+
+class TuringEmailApp.Models.Reports.SummaryAnalyticsReport extends Backbone.Model
   validation:
     number_of_conversations:
       required: true

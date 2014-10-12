@@ -3,7 +3,7 @@ describe "ThreadsReport", ->
     threadsFixtures = fixture.load("reports/threads_report.fixture.json", true);
     @threadsFixture = threadsFixtures[0]
 
-    @threadssReport = new TuringEmailApp.Models.ThreadsReport()
+    @threadssReport = new TuringEmailApp.Models.Reports.ThreadsReport()
 
     @server = sinon.fakeServer.create()
 
