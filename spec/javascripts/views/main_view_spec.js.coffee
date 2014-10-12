@@ -145,6 +145,11 @@ describe "MainView", ->
             expect(splitPane.children()[1]).toHaveClass("email_thread_view")
             expect(splitPane.children()[2]).toHaveClass("ui-layout-resizer-south")
 
+          it "adds the no conversation selected text when there is no conversation selected", ->
+            splitPane = $(@primaryPane.children()[1])
+            emailThreadView = splitPane.children()[1]
+            expect(emailThreadView).toContainHtml("<div class='email-thread-view-default-text'>No conversations selected</div>")
+
       describe "#showSettings", ->
         beforeEach ->
           @server.restore()

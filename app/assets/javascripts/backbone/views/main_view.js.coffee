@@ -106,7 +106,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
       emailThreadsListViewDiv.addClass("ui-layout-center")
       splitPane.append(emailThreadsListViewDiv)
       
-      emailThreadViewDiv = $("<div />", {class: "email_thread_view"}).appendTo(splitPane)
+      emailThreadViewDiv = $("<div class='email_thread_view'><div class='email-thread-view-default-text'>No conversations selected</div></div>").appendTo(splitPane)
       emailThreadViewDiv.addClass("ui-layout-south")
 
       @resizeSplitPane()
