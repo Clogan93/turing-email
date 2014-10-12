@@ -25,7 +25,6 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @setupButtons()
 
     if @currentEmailFolder?
-      @updateTitle(@currentEmailFolder)
       @updatePaginationText(@currentEmailFolder, @currentEmailFolderPage)
     
     return this
@@ -47,7 +46,6 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
   setupButtons: ->
     @setupBulkActionButtons()
-    @setupSearchButton()
 
     @$el.find("i.fa-eye").parent().click =>
       @trigger("readClicked", this)
@@ -97,15 +95,6 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @$el.find("#unread_bulk_action").click =>
       @trigger("checkAllUnreadClicked", this)
 
-  setupSearchButton: ->
-    @$el.find("#search_input").change ->
-      TuringEmailApp.views.toolbarView.$el.find("a#search_button_link").attr("href", "#search/" + $(@).val())
-
-    @$el.find("#search_input").keypress (event) =>
-      if event.which is 13
-        event.preventDefault();
-        @trigger("searchClicked", this, $(event.target).val())
-
   #################
   ### Functions ###
   #################
@@ -115,22 +104,6 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     
   uncheckAllCheckbox: ->
     @divAllCheckbox.iCheck("uncheck")
-
-  updateTitle: (emailFolder) ->
-    if emailFolder?
-      folderName = emailFolder.get("name")
-      badgeString = emailFolder.badgeString()
-
-      if badgeString is "" || badgeString is "0"
-        badgeString = ""
-      else
-        badgeString = "(" + badgeString + ")"
-    else
-      folderName = ""
-      badgeString = ""
-
-    @$el.find("#title").html('<span class="label_name">' + folderName + '</span> ' +
-                             '<span class="label_count_badge">' + badgeString + '</span>')
 
   updatePaginationText: (emailFolder, page) ->
     if emailFolder? && page?
@@ -161,7 +134,6 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @currentEmailFolder = emailFolder
     @currentEmailFolderPage = page    
 
-    @updateTitle(emailFolder)
     @updatePaginationText(emailFolder, page)
 
   emailFoldersChanged: (app, emailFolders) ->
@@ -170,4 +142,4 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
   # TODO write test
   emailFolderUnreadCountChanged: (app, emailFolder) ->
-    @updateTitle(emailFolder)
+    return

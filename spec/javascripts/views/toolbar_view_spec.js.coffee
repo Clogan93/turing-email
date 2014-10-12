@@ -104,11 +104,6 @@ describe "ToolbarView", ->
         @toolbarView.setupButtons()
         expect(spy).toHaveBeenCalled()
 
-      it "sets up the search button", ->
-        spy = sinon.spy(@toolbarView, "setupSearchButton")
-        @toolbarView.setupButtons()
-        expect(spy).toHaveBeenCalled()
-
       describe "when i.fa-eye is clicked", ->
         it "triggers readClicked", ->
           spy = sinon.backbone.spy(@toolbarView, "readClicked")
@@ -216,45 +211,6 @@ describe "ToolbarView", ->
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
-    describe "#setupSearchButton", ->
-
-      it "should set up the search input handle change events", ->
-        expect(@toolbarView.$el.find("#search_input")).toHandle("change")
-
-      it "should set up the search input handle keypress events", ->
-        expect(@toolbarView.$el.find("#search_input")).toHandle("keypress")
-
-      describe "when the search input changes", ->
-
-        it "update the href attribute of the search button link", ->
-          @toolbarView.$el.find("#search_input").val("hello")
-          @toolbarView.$el.find("#search_input").change()
-          expect(@toolbarView.$el.find("a#search_button_link").attr("href")).toEqual "#search/hello"
-
-      describe "when the keypress event fires", ->
-
-        describe "when the keypress event is the enter key", ->
-
-          it "triggers searchClicked", ->
-            spy = sinon.backbone.spy(@toolbarView, "searchClicked")
-            e = $.Event("keypress")
-            e.which = 13
-            @toolbarView.$el.find("#search_input").trigger(e);
-            expect(spy).toHaveBeenCalled()
-            expect(spy).toHaveBeenCalledWith(@toolbarView)
-            #TODO write a test checking for the second argument
-            spy.restore()
-
-        describe "when the keypress event is not the enter key", ->
-
-          it "does not call the searchClicked", ->
-            spy = sinon.backbone.spy(@toolbarView, "searchClicked")
-            e = $.Event("keypress")
-            e.which = 10
-            @toolbarView.$el.find("#search_input").trigger(e);
-            expect(spy).not.toHaveBeenCalled()
-            spy.restore()
-
     describe "#allCheckboxIsChecked", ->
 
       describe "when the all checkbox is checked", ->
@@ -279,24 +235,6 @@ describe "ToolbarView", ->
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith("uncheck")
         spy.restore()
-
-    describe "#updateTitle", ->
-      beforeEach ->
-        @emailFolder = TuringEmailApp.collections.emailFolders.models[0]
-        @toolbarView.updateTitle @emailFolder
-
-      it "updates the label name", ->
-        expect(@toolbarView.$el.find(".label_name").text()).toEqual @emailFolder.get("name")
-
-      it "updates badge count", ->
-        badgeText = @toolbarView.$el.find(".label_count_badge").text()
-        expect(badgeText).toEqual("(" + @emailFolder.get("num_unread_threads") + ")")
-
-      describe "when the email folder's badge string is empty", ->
-        it "sets the badge to empty", ->
-          @toolbarView.updateTitle()
-          badgeText = @toolbarView.$el.find(".label_count_badge").text()
-          expect(badgeText).toEqual ""
 
     describe "#updatePaginationText", ->
       beforeEach ->
@@ -347,11 +285,9 @@ describe "ToolbarView", ->
     
       describe "#currentEmailFolderChanged", ->
         beforeEach ->
-          @updateTitleSpy = sinon.spy(@toolbarView, "updateTitle")
           @updatePaginationTextSpy = sinon.spy(@toolbarView, "updatePaginationText")
   
         afterEach ->
-          @updateTitleSpy.restore()
           @updatePaginationTextSpy.restore()
           
         describe "with an email folder", ->
@@ -367,10 +303,7 @@ describe "ToolbarView", ->
           it "updates the current email folder variables", ->
             expect(@toolbarView.currentEmailFolder).toEqual(@emailFolder)
             expect(@toolbarView.currentEmailFolderPage).toEqual(@emailFolderPage)
-            
-          it "updates the title", ->
-            expect(@updateTitleSpy).toHaveBeenCalledWith(@emailFolder)
-    
+
           it "updates the pagination text", ->
             expect(@updatePaginationTextSpy).toHaveBeenCalledWith(@emailFolder, @emailFolderPage)
             
@@ -387,9 +320,6 @@ describe "ToolbarView", ->
           it "updates the current email folder variables", ->
             expect(@toolbarView.currentEmailFolder).toEqual(@emailFolder)
             expect(@toolbarView.currentEmailFolderPage).toEqual(@emailFolderPage)
-
-          it "updates the title", ->
-            expect(@updateTitleSpy).toHaveBeenCalledWith(@emailFolder)
 
           it "updates the pagination text", ->
             expect(@updatePaginationTextSpy).toHaveBeenCalledWith(@emailFolder, @emailFolderPage)
@@ -408,12 +338,8 @@ describe "ToolbarView", ->
       describe "#emailFolderUnreadCountChanged", ->
         beforeEach ->
           @emailFolder = TuringEmailApp.collections.emailFolders.models[0]
-          @spy = sinon.spy(@toolbarView, "updateTitle")
-          
+
           @toolbarView.emailFolderUnreadCountChanged(TuringEmailApp, @emailFolder)
-          
-        afterEach ->
-          @spy.restore()
-          
-        it "updates the title with the emailFodler", ->
-          expect(@spy).toHaveBeenCalledWith(@emailFolder)
+
+        it "does nothing", ->
+          return

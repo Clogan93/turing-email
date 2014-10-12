@@ -138,6 +138,8 @@ describe "SettingsView", ->
       expect(@userSettings.get("split_pane_mode")).toEqual("horizontal")
 
     it "displays a success alert after the save button is clicked and then hides it", ->
+      @clock = sinon.useFakeTimers()
+
       showSettingsAlertSpy = sinon.spy(@settingsView, "showSettingsAlert")
       removeSettingsAlertSpy = sinon.spy(@settingsView, "removeSettingsAlert")
 
@@ -153,8 +155,11 @@ describe "SettingsView", ->
 
       expect(showSettingsAlertSpy).toHaveBeenCalled()
 
-      waitsFor ->
-        return removeSettingsAlertSpy.callCount == 1
+      @clock.tick(5000)
+
+      expect(removeSettingsAlertSpy).toHaveBeenCalled()
+
+      @clock.restore()
 
   describe "#setupRuleCreation", ->
 
