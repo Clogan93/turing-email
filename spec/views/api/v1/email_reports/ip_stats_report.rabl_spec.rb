@@ -16,10 +16,12 @@ describe 'api/v1/email_reports/ip_stats_report', :type => :view do
 
     render
 
-    email_ip_stats_rendered = JSON.parse(rendered)
+    json = JSON.parse(rendered)
+    expect(json.keys).to eq(["ip_stats"])
+    email_ip_stats_rendered = json
 
-    email_ip_stats.zip(email_ip_stats_rendered).each do |email_ip_stat, email_ip_stat_rendered|
-      expect(email_ip_stat_rendered['num_emails']).to eq(email_ip_stat[:num_emails])
+    email_ip_stats.zip(email_ip_stats_rendered["ip_stats"]).each do |email_ip_stat, email_ip_stat_rendered|
+      expect(email_ip_stat_rendered['num_emails'].to_i).to eq(email_ip_stat[:num_emails].to_i)
       validate_ip_info(email_ip_stat[:ip_info], email_ip_stat_rendered['ip_info'])
     end
   end

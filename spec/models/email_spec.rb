@@ -77,13 +77,14 @@ describe Email, :type => :model do
     
     it 'creates the email' do
       email_raw, email_in_reply_to = Email.email_raw_from_params('to@to.com', 'cc@cc.com', 'bcc@bcc.com',
-                                                                 'subject', 'body',
+                                                                 'subject', 'html_part', 'text_part',
                                                                  parent_email.email_account, parent_email.uid)
       expect(email_raw.to).to eq(['to@to.com'])
       expect(email_raw.cc).to eq(['cc@cc.com'])
       expect(email_raw.bcc).to eq(['bcc@bcc.com'])
       expect(email_raw.subject).to eq('subject')
-      expect(email_raw.text_part.decoded).to eq('body')
+      expect(email_raw.html_part.decoded).to eq('html_part')
+      expect(email_raw.text_part.decoded).to eq('text_part')
 
       # reply headers
       expect(email_raw.in_reply_to).to eq(parent_email.message_id)

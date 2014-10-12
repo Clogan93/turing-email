@@ -513,8 +513,8 @@ class GmailAccount < ActiveRecord::Base
     self.sync_gmail_ids(gmail_ids)
   end
 
-  def send_email(tos, ccs, bccs, subject, body, email_in_reply_to_uid = nil)
-    email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, body,
+  def send_email(tos, ccs, bccs, subject, html_part, text_part, email_in_reply_to_uid = nil)
+    email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, html_part, text_part,
                                                                self, email_in_reply_to_uid)
 
     if email_in_reply_to
@@ -581,8 +581,8 @@ class GmailAccount < ActiveRecord::Base
     return draft_email
   end
 
-  def create_draft(tos, ccs, bccs, subject, body, email_in_reply_to_uid = nil)
-    email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, body,
+  def create_draft(tos, ccs, bccs, subject, html_part, text_part, email_in_reply_to_uid = nil)
+    email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, html_part, text_part,
                                                                self, email_in_reply_to_uid)
 
     if email_in_reply_to
@@ -594,8 +594,8 @@ class GmailAccount < ActiveRecord::Base
     return sync_draft_data(draft_data)
   end
 
-  def update_draft(draft_id, tos, ccs, bccs, subject, body, email_in_reply_to_uid = nil)
-    email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, body,
+  def update_draft(draft_id, tos, ccs, bccs, subject, html_part, text_part, email_in_reply_to_uid = nil)
+    email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, html_part, text_part,
                                                                self, email_in_reply_to_uid)
 
     if email_in_reply_to

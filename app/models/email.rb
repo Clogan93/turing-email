@@ -36,7 +36,7 @@ class Email < ActiveRecord::Base
     trash_folder.apply_to_emails(email_ids) if trash_folder
   end
   
-  def Email.email_raw_from_params(tos, ccs, bccs, subject, body, email_account = nil, email_in_reply_to_uid = nil)
+  def Email.email_raw_from_params(tos, ccs, bccs, subject, html_part, text_part, email_account = nil, email_in_reply_to_uid = nil)
     email_raw = Mail.new do
       to tos
       cc ccs
@@ -44,8 +44,13 @@ class Email < ActiveRecord::Base
       subject subject
     end
 
+    email_raw.html_part = Mail::Part.new do
+      content_type 'text/html; charset=UTF-8'
+      body html_part
+    end
+    
     email_raw.text_part = Mail::Part.new do
-      body body
+      body text_part
     end
 
     email_in_reply_to = nil
