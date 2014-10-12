@@ -150,6 +150,15 @@ describe "MainView", ->
             emailThreadView = splitPane.children()[1]
             expect(emailThreadView).toContainHtml("<div class='email-thread-view-default-text'>No conversations selected</div>")
 
+        describe "when there are no emails in list view's collection", ->
+          beforeEach ->
+            @mainView.emailThreadsListView.collection = new TuringEmailApp.Collections.EmailThreadsCollection()
+
+          it "should render the empty text", ->
+            spy = sinon.spy(@mainView, "renderEmptyText")
+            @mainView.showEmails(true)
+            expect(spy).toHaveBeenCalled()
+
       describe "#showSettings", ->
         beforeEach ->
           @server.restore()
@@ -224,3 +233,28 @@ describe "MainView", ->
           it "renders the email thread in the primary pane", ->
             emailThreadView = $(@primaryPane.children()[0])
             expect(emailThreadView.html()).toEqual(@emailThreadView.$el.html())
+
+      describe "#showEmailThread", ->
+        beforeEach ->
+          @mainView.emailThreadsListView.collection = new TuringEmailApp.Collections.EmailThreadsCollection()
+
+          @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
+      
+        afterEach ->
+          @selectedEmailFolderIDStub.restore()
+
+        describe "when the currently selected folder is the inbox", ->
+          beforeEach ->
+            @selectedEmailFolderIDStub.returns("INBOX")
+            @mainView.showEmails(true)
+
+          it "renders that there are not conversations with that label.", ->
+            expect(@mainView.emailThreadsListView.$el).toContainHtml("<div class='empty-text'>Congratulations on reaching inbox zero!</div>")
+
+        describe "when the currently selected folder is not the inbox", ->
+          beforeEach ->
+            @selectedEmailFolderIDStub.returns("Label_45")
+            @mainView.showEmails(true)
+          
+          it "renders that there are not conversations with that label.", ->
+            expect(@mainView.emailThreadsListView.$el).toContainHtml("<div class='empty-text'>There are no conversations with this label.</div>")

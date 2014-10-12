@@ -121,10 +121,13 @@ class TuringEmailApp.Views.Main extends Backbone.View
       });
     else
       @primaryPaneDiv.append(emailThreadsListViewDiv)
-    
+
     @emailThreadsListView.$el = @$el.find(".email_threads_list_view_tbody")
     @emailThreadsListView.render()
     
+    if @emailThreadsListView.collection.length is 0
+      @renderEmptyText()
+
     return true
     
   showSettings: ->
@@ -194,3 +197,9 @@ class TuringEmailApp.Views.Main extends Backbone.View
     emailThreadView.render()
   
     return emailThreadView
+
+  renderEmptyText: ->
+    if @app.selectedEmailFolderID() is "INBOX"
+      @emailThreadsListView.$el.append("<div class='empty-text'>Congratulations on reaching inbox zero!</div>")
+    else
+      @emailThreadsListView.$el.append("<div class='empty-text'>There are no conversations with this label.</div>")

@@ -434,8 +434,12 @@ table.table-mail tr td {
 }
 
 .email-thread-view-default-text {
-  padding-left: 42%;
+  text-align: center;
   padding-top: 8%;
   font-size: 16px;
   color: #223;
+}
+
+.empty-text {
+  text-align: center;
 }
