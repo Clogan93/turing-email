@@ -26,12 +26,12 @@ describe "AnalyticsView", ->
     @contactsReportFixture = contactsReportFixtures[0]
 
     @server = sinon.fakeServer.create()
-    @server.respondWith "GET", new TuringEmailApp.Models.AttachmentsReport().url, JSON.stringify(@attachmentsReportFixture)
-    @server.respondWith "GET", new TuringEmailApp.Models.EmailVolumeReport().url, JSON.stringify(@emailVolumeReportFixture)
-    @server.respondWith "GET", new TuringEmailApp.Models.GeoReport().url, JSON.stringify(@geoReportFixture)
-    @server.respondWith "GET", new TuringEmailApp.Models.ThreadsReport().url, JSON.stringify(@threadsFixture)
-    @server.respondWith "GET", new TuringEmailApp.Models.ListsReport().url, JSON.stringify(@listsFixture)
-    @server.respondWith "GET", new TuringEmailApp.Models.ContactsReport().url, JSON.stringify(@contactsReportFixture)
+    @server.respondWith "GET", new TuringEmailApp.Models.Reports.AttachmentsReport().url, JSON.stringify(@attachmentsReportFixture)
+    @server.respondWith "GET", new TuringEmailApp.Models.Reports.EmailVolumeReport().url, JSON.stringify(@emailVolumeReportFixture)
+    @server.respondWith "GET", new TuringEmailApp.Models.Reports.GeoReport().url, JSON.stringify(@geoReportFixture)
+    @server.respondWith "GET", new TuringEmailApp.Models.Reports.ThreadsReport().url, JSON.stringify(@threadsFixture)
+    @server.respondWith "GET", new TuringEmailApp.Models.Reports.ListsReport().url, JSON.stringify(@listsFixture)
+    @server.respondWith "GET", new TuringEmailApp.Models.Reports.ContactsReport().url, JSON.stringify(@contactsReportFixture)
 
   afterEach ->
     @server.restore()

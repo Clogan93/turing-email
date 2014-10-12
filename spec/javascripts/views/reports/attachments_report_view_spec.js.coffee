@@ -2,7 +2,7 @@ describe "AttachmentsReportView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    @attachmentsReport = new TuringEmailApp.Models.AttachmentsReport()
+    @attachmentsReport = new TuringEmailApp.Models.Reports.AttachmentsReport()
 
     @attachmentsReportDiv = $("<div />", {id: "attachments_report"}).appendTo("body")
     @attachmentsReportView = new TuringEmailApp.Views.Reports.AttachmentsReportView(
@@ -14,7 +14,7 @@ describe "AttachmentsReportView", ->
     @attachmentsReportFixture = attachmentsReportFixtures[0]
 
     @server = sinon.fakeServer.create()
-    @server.respondWith "GET", new TuringEmailApp.Models.AttachmentsReport().url, JSON.stringify(@attachmentsReportFixture)
+    @server.respondWith "GET", new TuringEmailApp.Models.Reports.AttachmentsReport().url, JSON.stringify(@attachmentsReportFixture)
 
   afterEach ->
     @server.restore()

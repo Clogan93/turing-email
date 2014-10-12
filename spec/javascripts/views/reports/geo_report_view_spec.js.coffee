@@ -2,7 +2,7 @@ describe "GeoReportView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    @geoReport = new TuringEmailApp.Models.GeoReport()
+    @geoReport = new TuringEmailApp.Models.Reports.GeoReport()
 
     @geoReportDiv = $("<div />", {id: "geo_report"}).appendTo("body")
     @geoReportView = new TuringEmailApp.Views.Reports.GeoReportView(
@@ -14,7 +14,7 @@ describe "GeoReportView", ->
     @geoReportFixture = geoReportFixtures[0]
 
     @server = sinon.fakeServer.create()
-    @server.respondWith "GET", new TuringEmailApp.Models.GeoReport().url, JSON.stringify(@geoReportFixture)
+    @server.respondWith "GET", new TuringEmailApp.Models.Reports.GeoReport().url, JSON.stringify(@geoReportFixture)
 
   afterEach ->
     @server.restore()

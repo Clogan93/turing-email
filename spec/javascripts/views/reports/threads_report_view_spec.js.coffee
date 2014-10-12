@@ -2,7 +2,7 @@ describe "ThreadsReportView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    @threadsReport = new TuringEmailApp.Models.ThreadsReport()
+    @threadsReport = new TuringEmailApp.Models.Reports.ThreadsReport()
 
     @threadsReportDiv = $("<div />", {id: "threads_report"}).appendTo("body")
     @threadsReportView = new TuringEmailApp.Views.Reports.ThreadsReportView(
@@ -14,7 +14,7 @@ describe "ThreadsReportView", ->
     @threadsReportFixture = threadsReportFixtures[0]
 
     @server = sinon.fakeServer.create()
-    @server.respondWith "GET", new TuringEmailApp.Models.ThreadsReport().url, JSON.stringify(@threadsReportFixture)
+    @server.respondWith "GET", new TuringEmailApp.Models.Reports.ThreadsReport().url, JSON.stringify(@threadsReportFixture)
 
   afterEach ->
     @server.restore()

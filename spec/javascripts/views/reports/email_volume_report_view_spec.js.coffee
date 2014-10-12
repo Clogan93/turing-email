@@ -2,7 +2,7 @@ describe "EmailVolumeReportView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    @emailVolumeReport = new TuringEmailApp.Models.EmailVolumeReport()
+    @emailVolumeReport = new TuringEmailApp.Models.Reports.EmailVolumeReport()
 
     @emailVolumeReportDiv = $("<div />", {id: "email_volume_report"}).appendTo("body")
     @emailVolumeReportView = new TuringEmailApp.Views.Reports.EmailVolumeReportView(
@@ -14,7 +14,7 @@ describe "EmailVolumeReportView", ->
     @emailVolumeReportFixture = emailVolumeReportFixtures[0]
 
     @server = sinon.fakeServer.create()
-    @server.respondWith "GET", new TuringEmailApp.Models.EmailVolumeReport().url, JSON.stringify(@emailVolumeReportFixture)
+    @server.respondWith "GET", new TuringEmailApp.Models.Reports.EmailVolumeReport().url, JSON.stringify(@emailVolumeReportFixture)
 
   afterEach ->
     @server.restore()

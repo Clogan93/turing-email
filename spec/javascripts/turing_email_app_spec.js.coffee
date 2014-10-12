@@ -1812,7 +1812,7 @@ describe "TuringEmailApp", ->
       beforeEach ->
         @showReportSpy = sinon.spy(TuringEmailApp.views.mainView, "showReport")
 
-        TuringEmailApp.showReport(undefined, TuringEmailApp.Models.AttachmentsReport,
+        TuringEmailApp.showReport(undefined, TuringEmailApp.Models.Reports.AttachmentsReport,
                                   TuringEmailApp.Views.Reports.AttachmentsReportView)
 
       afterEach ->

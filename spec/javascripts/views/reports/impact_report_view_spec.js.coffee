@@ -2,7 +2,7 @@ describe "ImpactReportView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    @impactReport = new TuringEmailApp.Models.ImpactReport()
+    @impactReport = new TuringEmailApp.Models.Reports.ImpactReport()
 
     @impactReportDiv = $("<div />", {id: "impact_report"}).appendTo("body")
     @impactReportView = new TuringEmailApp.Views.Reports.ImpactReportView(
@@ -14,7 +14,7 @@ describe "ImpactReportView", ->
     @impactReportFixture = impactReportFixtures[0]
 
     @server = sinon.fakeServer.create()
-    @server.respondWith "GET", new TuringEmailApp.Models.ImpactReport().url, JSON.stringify(@impactReportFixture)
+    @server.respondWith "GET", new TuringEmailApp.Models.Reports.ImpactReport().url, JSON.stringify(@impactReportFixture)
 
   afterEach ->
     @server.restore()

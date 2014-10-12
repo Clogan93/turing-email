@@ -2,7 +2,7 @@ describe "RecommendedRulesReportView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    @recommendedRulesReport = new TuringEmailApp.Models.RecommendedRulesReport()
+    @recommendedRulesReport = new TuringEmailApp.Models.Reports.RecommendedRulesReport()
 
     @recommendedRulesReportDiv = $("<div />", {id: "recommended_rules_report"}).appendTo("body")
     @recommendedRulesReportView = new TuringEmailApp.Views.Reports.RecommendedRulesReportView(
@@ -14,7 +14,7 @@ describe "RecommendedRulesReportView", ->
     @recommendedRulesReportFixture = recommendedRulesReportFixtures[0]
 
     @server = sinon.fakeServer.create()
-    @server.respondWith "GET", new TuringEmailApp.Models.RecommendedRulesReport().url, JSON.stringify(@recommendedRulesReportFixture)
+    @server.respondWith "GET", new TuringEmailApp.Models.Reports.RecommendedRulesReport().url, JSON.stringify(@recommendedRulesReportFixture)
 
   afterEach ->
     @server.restore()

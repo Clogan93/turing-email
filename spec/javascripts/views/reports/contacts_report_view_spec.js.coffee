@@ -2,7 +2,7 @@ describe "ContactsReportView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    @contactsReport = new TuringEmailApp.Models.ContactsReport()
+    @contactsReport = new TuringEmailApp.Models.Reports.ContactsReport()
 
     @contactsReportDiv = $("<div />", {id: "contacts_report"}).appendTo("body")
     @contactsReportView = new TuringEmailApp.Views.Reports.ContactsReportView(
@@ -14,7 +14,7 @@ describe "ContactsReportView", ->
     @contactsReportFixture = contactsReportFixtures[0]
 
     @server = sinon.fakeServer.create()
-    @server.respondWith "GET", new TuringEmailApp.Models.ContactsReport().url, JSON.stringify(@contactsReportFixture)
+    @server.respondWith "GET", new TuringEmailApp.Models.Reports.ContactsReport().url, JSON.stringify(@contactsReportFixture)
 
   afterEach ->
     @server.restore()

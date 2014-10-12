@@ -190,7 +190,7 @@ describe "MainView", ->
   
       describe "#showReport", ->
         beforeEach ->
-          @reportView = @mainView.showReport(undefined, TuringEmailApp.Models.AttachmentsReport,
+          @reportView = @mainView.showReport(undefined, TuringEmailApp.Models.Reports.AttachmentsReport,
                                              TuringEmailApp.Views.Reports.AttachmentsReportView)
   
         it "shows the report view", ->

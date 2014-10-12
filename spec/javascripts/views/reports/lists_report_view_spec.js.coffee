@@ -2,7 +2,7 @@ describe "ListsReportView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    @listsReport = new TuringEmailApp.Models.ListsReport()
+    @listsReport = new TuringEmailApp.Models.Reports.ListsReport()
 
     @listsReportDiv = $("<div />", {id: "lists_report"}).appendTo("body")
 
@@ -27,7 +27,7 @@ describe "ListsReportView", ->
 
   describe "#render", ->
     beforeEach ->
-      @server.respondWith "GET", new TuringEmailApp.Models.ListsReport().url, JSON.stringify(@listsReportFixture)
+      @server.respondWith "GET", new TuringEmailApp.Models.Reports.ListsReport().url, JSON.stringify(@listsReportFixture)
       @listsReport.fetch()
       @server.respond()
 
@@ -47,7 +47,7 @@ describe "ListsReportView", ->
 
   describe "when the first item in the list stats is null", ->
     beforeEach ->
-      @server.respondWith "GET", new TuringEmailApp.Models.ListsReport().url, JSON.stringify(@listsReportFixture)
+      @server.respondWith "GET", new TuringEmailApp.Models.Reports.ListsReport().url, JSON.stringify(@listsReportFixture)
       @listsReport.fetch()
       @server.respond()
 

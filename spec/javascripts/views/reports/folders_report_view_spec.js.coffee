@@ -2,7 +2,7 @@ describe "FoldersReportView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    @foldersReport = new TuringEmailApp.Models.FoldersReport()
+    @foldersReport = new TuringEmailApp.Models.Reports.FoldersReport()
 
     @foldersReportDiv = $("<div />", {id: "folders_report"}).appendTo("body")
     @foldersReportView = new TuringEmailApp.Views.Reports.FoldersReportView(
@@ -14,7 +14,7 @@ describe "FoldersReportView", ->
     @foldersReportFixture = foldersReportFixtures[0]
 
     @server = sinon.fakeServer.create()
-    @server.respondWith "GET", new TuringEmailApp.Models.FoldersReport().url, JSON.stringify(@foldersReportFixture)
+    @server.respondWith "GET", new TuringEmailApp.Models.Reports.FoldersReport().url, JSON.stringify(@foldersReportFixture)
 
   afterEach ->
     @server.restore()
