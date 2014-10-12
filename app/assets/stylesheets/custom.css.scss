@@ -443,3 +443,17 @@ table.table-mail tr td {
 .empty-text {
   text-align: center;
 }
+
+.contain-from {
+  overflow-x: hidden;
+  white-space: nowrap;
+  max-width: 250px;
+  text-overflow: ellipsis;
+}
+
+.contain-subject {
+  overflow-x: hidden;
+  white-space: nowrap;
+  max-width: 775px;
+  text-overflow: ellipsis;
+}
