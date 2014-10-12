@@ -9,7 +9,7 @@ describe Api::V1::EmailsController, :type => :request do
 
       it 'should return email sender IP statistics' do
         get '/api/v1/email_reports/ip_stats_report'
-        email_ip_stats = JSON.parse(response.body)
+        email_ip_stats = JSON.parse(response.body)["ip_stats"]
         expect(email_ip_stats.length).to eq(0)
       end
     end
@@ -28,7 +28,7 @@ describe Api::V1::EmailsController, :type => :request do
       
       it 'should return email sender IP statistics' do
         get '/api/v1/email_reports/ip_stats_report'
-        email_ip_stats = JSON.parse(response.body)
+        email_ip_stats = JSON.parse(response.body)["ip_stats"]
         expect(email_ip_stats.length).to eq(2)
   
         if (email_ip_stats[0]['ip_info']['ip'] == ip_infos[0].ip.to_s)

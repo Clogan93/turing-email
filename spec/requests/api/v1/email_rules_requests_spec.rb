@@ -47,11 +47,13 @@ describe Api::V1::EmailRulesController, :type => :request do
     
     it 'should recommend rules' do
       get '/api/v1/email_rules/recommended_rules'
-      recommended_rules = JSON.parse(response.body)
-      
-      expect(recommended_rules.length).to eq(1)
-      expect(recommended_rules[0]['list_id']).to eq('test.list.com')
-      expect(recommended_rules[0]['destination_folder_name']).to eq("List Emails/test.list.com")
+      json = JSON.parse(response.body)
+      expect(json.keys).to eq(["rules_recommended"])
+
+      rules_recommended = json["rules_recommended"]
+      expect(rules_recommended.length).to eq(1)
+      expect(rules_recommended[0]['list_id']).to eq('test.list.com')
+      expect(rules_recommended[0]['destination_folder_name']).to eq("List Emails/test.list.com")
     end
   end
 
