@@ -98,7 +98,7 @@ describe "CreateRuleView", ->
           clock.tick(2999);
           expect(spy).not.toHaveBeenCalled()
 
-          clock.tick(3000);
+          clock.tick(1);
           expect(spy).toHaveBeenCalled()
           
           spy.restore()
