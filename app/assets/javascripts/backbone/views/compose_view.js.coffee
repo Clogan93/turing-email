@@ -142,7 +142,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
         console.log error
         htmlFailed = true
 
-    if htmlFailed || not emailJSON.html_part?
+    if htmlFailed
       bodyText = ""
       
       text = ""
@@ -159,13 +159,11 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     return [body, !htmlFailed]
     
   formatEmailReplyBody: (emailJSON) ->
-    headerText = "\r\n\r\n"
-
     tDate = new TDate()
     tDate.initializeWithISO8601(emailJSON.date)
 
-    dateFromHeading = tDate.longFormDateString() + ", " + emailJSON.from_address + " wrote:"
-    headerText += dateFromHeading
+    headerText = "\r\n\r\n"
+    headerText += tDate.longFormDateString() + ", " + emailJSON.from_address + " wrote:"
     headerText += "\r\n\r\n"
 
     [body, html] = @parseEmail(emailJSON)
@@ -188,6 +186,8 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
       body = $.parseHTML(body) if not html
 
     @$el.find("#compose_form #compose_email_body").html(body)
+    
+    return body
 
   subjectWithPrefixFromEmail: (emailJSON, subjectPrefix="") ->
     console.log("ComposeView subjectWithPrefixFromEmail")
