@@ -75,13 +75,19 @@ describe "ComposeView", ->
       describe "when the compose modal is hidden", ->
         beforeEach ->
           TuringEmailApp.views.composeView.show()
+          @clock = sinon.useFakeTimers()
+
+        afterEach ->
+          @clock.restore()
 
         it "saves the draft", ->
           @spy = sinon.spy(TuringEmailApp.views.composeView, "updateDraft")
           TuringEmailApp.views.composeView.hide()
 
-          waitsFor ->
-            return @spy.callCount == 1
+          @clock.tick(1000)
+
+          expect(@spy).toHaveBeenCalled()
+          @spy.restore()
 
     describe "#show", ->
 
@@ -526,13 +532,18 @@ describe "ComposeView", ->
         describe "when saving the draft", ->
           beforeEach ->
             TuringEmailApp.views.composeView.savingDraft = true
+            @clock = sinon.useFakeTimers()
+
+          afterEach ->
+            @clock.restore()
 
           it "sends the email after a timeout", ->
             @spy = sinon.spy(TuringEmailApp.views.composeView, "sendEmail")
             TuringEmailApp.views.composeView.sendEmail()
 
-            waitsFor ->
-              return @spy.callCount == 2
+            @clock.tick(500)
+
+            expect(@spy).toHaveBeenCalledTwice()
 
             TuringEmailApp.views.composeView.savingDraft = false
 
@@ -587,64 +598,71 @@ describe "ComposeView", ->
         expect(spy).toHaveBeenCalledWith(@email.toJSON())
 
       it "removes the email sent alert", ->
+        @clock = sinon.useFakeTimers()
         @spy = sinon.spy(TuringEmailApp.views.composeView, "removeEmailSentAlert")
         TuringEmailApp.views.composeView.sendEmailDelayed @email
 
-        waitsFor ->
-          return @spy.callCount == 1
+        @clock.tick(5000)
+
+        expect(@spy).toHaveBeenCalled()
+        @clock.restore()
 
       describe "when send draft is defined", ->
         beforeEach ->
           @server = sinon.fakeServer.create()
           @server.respondWith "POST", "/api/v1/email_accounts/send_draft", JSON.stringify({})
+          @clock = sinon.useFakeTimers()
+
+        afterEach ->
+          @clock.restore()
 
         it "should send the draft", ->
           @spy = sinon.spy(@email, "sendDraft")
           TuringEmailApp.views.composeView.sendEmailDelayed @email
           @server.respond()
 
-          waitsFor ->
-            return @spy.callCount == 1
+          @clock.tick(5000)
+
+          expect(@spy).toHaveBeenCalled()
 
         it "triggers change:draft upon being done", ->
           @spySendDraft = sinon.spy(@email, "sendDraft")
           @spyChangeDraft = sinon.backbone.spy(TuringEmailApp.views.composeView, "change:draft")
           TuringEmailApp.views.composeView.sendEmailDelayed @email
 
-          waitsFor ->
-            return false if not @spySendDraft.called
-            
-            @server.respond()
-            expect(@spyChangeDraft).toHaveBeenCalled()
-
-            return true
-          , undefined, 10000
+          @clock.tick(5000)
+          
+          expect(@spySendDraft).toHaveBeenCalled()
+          @server.respond()
+          expect(@spyChangeDraft).toHaveBeenCalled()
 
       describe "when send draft is not defined", ->
         beforeEach ->
           @server = sinon.fakeServer.create()
           @email.sendDraft = null
+          @clock = sinon.useFakeTimers()
+
+        afterEach ->
+          @clock.restore()
 
         it "should send the email", ->
           @spy = sinon.spy(@email, "sendEmail")
           TuringEmailApp.views.composeView.sendEmailDelayed @email
 
-          waitsFor ->
-            return @spy.called
+          @clock.tick(5000)
+
+          expect(@spy).toHaveBeenCalled()
 
         it "should should send the email after a delay if the initial sending doesn't work", ->
           @spySendEmail = sinon.spy(@email, "sendEmail")
           @spySendEmailDelayedError = sinon.spy(TuringEmailApp.views.composeView, "sendEmailDelayedError")
           TuringEmailApp.views.composeView.sendEmailDelayed @email
 
-          waitsFor ->
-            return false if not @spySendEmail.called
-            
-            @server.respond()
-            expect(@spySendEmailDelayedError).toHaveBeenCalled()
+          @clock.tick(5000)
 
-            return true
-          , undefined, 10000
+          expect(@spySendEmail).toHaveBeenCalled()
+          @server.respond()
+          expect(@spySendEmailDelayedError).toHaveBeenCalled()
 
     describe "#sendEmailDelayedError", ->
 

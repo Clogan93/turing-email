@@ -95,10 +95,10 @@ describe "CreateRuleView", ->
           spy = sinon.spy(TuringEmailApp, "removeAlert")
           @createRuleView.$el.find(".create-rule-form").submit()
 
-          clock.tick(2999);
+          clock.tick(2999)
           expect(spy).not.toHaveBeenCalled()
 
-          clock.tick(3000);
+          clock.tick(3000)
           expect(spy).toHaveBeenCalled()
           
           spy.restore()
