@@ -144,10 +144,10 @@ class TuringEmailApp.Views.Main extends Backbone.View
   showAnalytics: ->
     return false if not @primaryPaneDiv?
 
-    analyticsView = new TuringEmailApp.Views.AnalyticsView()
+    analyticsView = new TuringEmailApp.Views.AnalyticsView(
+      el: @primaryPaneDiv
+    )
     analyticsView.render()
-
-    @primaryPaneDiv.html(analyticsView.$el)
     
     return analyticsView
 
