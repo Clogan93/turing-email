@@ -15,7 +15,8 @@ class Api::V1::EmailAccountsController < ApiController
     param :form, :bccs, :string, false, 'Array of recipient email addresses'
     
     param :form, :subject, :string, false, 'Subject'
-    param :form, :email_body, :string, false, 'Body'
+    param :form, :html_part, :string, false, 'HTML Part'
+    param :form, :text_part, :string, false, 'Text Part'
 
     param :form, :email_in_reply_to_uid, :string, false, 'Email UID being replied to.'
 
@@ -25,7 +26,7 @@ class Api::V1::EmailAccountsController < ApiController
   # TODO write tests
   def send_email
     @email = @email_account.send_email(params[:tos], params[:ccs], params[:bccs],
-                                       params[:subject], params[:email_body],
+                                       params[:subject], params[:html_part], params[:text_part],
                                        params[:email_in_reply_to_uid])
     render 'api/v1/emails/show'
   end
@@ -70,7 +71,8 @@ class Api::V1::EmailAccountsController < ApiController
     param :form, :bccs, :string, false, 'Array of recipient email addresses'
 
     param :form, :subject, :string, false, 'Subject'
-    param :form, :email_body, :string, false, 'Body'
+    param :form, :html_part, :string, false, 'HTML Part'
+    param :form, :text_part, :string, false, 'Text Part'
 
     param :form, :email_in_reply_to_uid, :string, false, 'Email UID being replied to.'
 
@@ -80,7 +82,7 @@ class Api::V1::EmailAccountsController < ApiController
   # TODO write tests
   def create_draft
     @email = @email_account.create_draft(params[:tos], params[:ccs], params[:bccs],
-                                         params[:subject], params[:email_body],
+                                         params[:subject], params[:html_part], params[:text_part],
                                          params[:email_in_reply_to_uid])
     render 'api/v1/emails/show'
   end
@@ -97,7 +99,8 @@ class Api::V1::EmailAccountsController < ApiController
     param :form, :email_in_reply_to_uid, :string, false, 'Email UID being replied to.'
 
     param :form, :subject, :string, false, 'Subject'
-    param :form, :email_body, :string, false, 'Body'
+    param :form, :html_part, :string, false, 'HTML Part'
+    param :form, :text_part, :string, false, 'Text Part'
 
     response :ok
   end
@@ -106,7 +109,7 @@ class Api::V1::EmailAccountsController < ApiController
   def update_draft
     @email = @email_account.update_draft(params[:draft_id],
                                          params[:tos], params[:ccs], params[:bccs],
-                                         params[:subject], params[:email_body],
+                                         params[:subject], params[:html_part], params[:text_part],
                                          params[:email_in_reply_to_uid])
     render 'api/v1/emails/show'
   end

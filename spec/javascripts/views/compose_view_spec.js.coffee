@@ -166,22 +166,16 @@ describe "ComposeView", ->
           expect(@composeView.currentAlertToken is null).toBeTruthy()
 
     describe "#resetView", ->
-
-      it "should clear the compose view input fields", ->
+      beforeEach ->
         @composeView.$el.find("#compose_form #to_input").val("This is the to input.")
         @composeView.$el.find("#compose_form #cc_input").val("This is the cc input.")
         @composeView.$el.find("#compose_form #bcc_input").val("This is the bcc input.")
         @composeView.$el.find("#compose_form #subject_input").val("This is the subject input.")
         @composeView.$el.find("#compose_form #compose_email_body").html("This is the compose email body.")
 
-        expect(@composeView.$el.find("#compose_form #to_input").val()).toEqual "This is the to input."
-        expect(@composeView.$el.find("#compose_form #cc_input").val()).toEqual "This is the cc input."
-        expect(@composeView.$el.find("#compose_form #bcc_input").val()).toEqual "This is the bcc input."
-        expect(@composeView.$el.find("#compose_form #subject_input").val()).toEqual "This is the subject input."
-        expect(@composeView.$el.find("#compose_form #compose_email_body").html()).toEqual "This is the compose email body."
-
         @composeView.resetView()
 
+      it "should clear the compose view input fields", ->
         expect(@composeView.$el.find("#compose_form #to_input").val()).toEqual ""
         expect(@composeView.$el.find("#compose_form #cc_input").val()).toEqual ""
         expect(@composeView.$el.find("#compose_form #bcc_input").val()).toEqual ""
@@ -189,8 +183,6 @@ describe "ComposeView", ->
         expect(@composeView.$el.find("#compose_form #compose_email_body").html()).toEqual ""
 
       it "removes the email sent error alert", ->
-        @composeView.resetView()
-
         expect(@composeView.$el).not.toContainHtml('<div id="email_sent_error_alert" class="alert alert-danger" role="alert">There was an error in sending your email!</div>')
 
         spy = sinon.spy(@composeView, "removeEmailSentAlert")
@@ -198,8 +190,6 @@ describe "ComposeView", ->
         expect(spy).toHaveBeenCalled()
 
       it "clears the current email draft and the email in reply to uid variables", ->
-        @composeView.resetView()
-
         expect(@composeView.currentEmailDraft).toEqual null
         expect(@composeView.emailInReplyToUID).toEqual null
 
@@ -547,8 +537,11 @@ describe "ComposeView", ->
       it "updates the email model with the subject input value from the compose form", ->
         expect(@email.get("subject")).toEqual @composeView.$el.find("#compose_form #subject_input").val()
 
-      it "updates the email model with the email body input value from the compose form", ->
-        expect(@email.get("email_body")).toEqual @composeView.$el.find("#compose_form #compose_email_body").html()
+      it "updates the email model with the html input value from the compose form", ->
+        expect(@email.get("html_part")).toEqual @composeView.$el.find("#compose_form #compose_email_body").html()
+
+      it "updates the email model with the text input value from the compose form", ->
+        expect(@email.get("text_part")).toEqual @composeView.$el.find("#compose_form #compose_email_body").text()
 
     describe "sendEmail", ->
 
