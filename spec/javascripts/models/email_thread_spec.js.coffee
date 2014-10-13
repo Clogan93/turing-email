@@ -81,8 +81,30 @@ describe "EmailThread", ->
         for email in @emailThread.get("emails")
           expect(email.seen).toBeFalsy()
 
-  describe "attribute functions", ->
+  describe "#folderIDs", ->
+    beforeEach ->
+      @server.restore()
+      
+      [@server, @emailThread, validEmailThreadFixture] = specPrepareEmailThreadFetch()
+      @emailThread.fetch()
+      @server.respond()
 
+      folderIDsMap = []
+      
+      for email in validEmailThreadFixture["emails"]
+        folderIDsMap[gmailLabel["label_id"]] = null for gmailLabel in email["gmail_labels"] if email["gmail_labels"]?
+        folderIDsMap[imapFolder["folder_id"]] = null for imapFolder in email["imap_folders"] if email["imap_folders"]?
+        
+      @folderIDs = _.keys(folderIDsMap).sort()
+      expect(@folderIDs.length > 0).toBeTruthy()
+
+    afterEach ->
+      @server.restore()
+
+    it "returns the folder IDs", ->
+      expect(@emailThread.folderIDs().sort()).toEqual(@folderIDs)
+
+  describe "Formatters", ->
     beforeEach ->
       specStartTuringEmailApp()
       

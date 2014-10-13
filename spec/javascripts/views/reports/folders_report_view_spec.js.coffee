@@ -4,10 +4,8 @@ describe "FoldersReportView", ->
 
     @foldersReport = new TuringEmailApp.Models.Reports.FoldersReport()
 
-    @foldersReportDiv = $("<div />", {id: "folders_report"}).appendTo("body")
     @foldersReportView = new TuringEmailApp.Views.Reports.FoldersReportView(
       model: @foldersReport
-      el: @foldersReportDiv
     )
 
     foldersReportFixtures = fixture.load("reports/folders_report.fixture.json", true);
@@ -18,7 +16,6 @@ describe "FoldersReportView", ->
 
   afterEach ->
     @server.restore()
-    @foldersReportDiv.remove()
 
     specStopTuringEmailApp()
 
@@ -31,12 +28,11 @@ describe "FoldersReportView", ->
       @server.respond()
 
     it "renders the report", ->
-      expect(@foldersReportDiv).toBeVisible()
-      expect(@foldersReportDiv).toContainHtml("Reports <small>folders</small>")
+      expect(@foldersReportView.$el).toContainHtml("Reports <small>folders</small>")
 
     folderNames = ["draft", "inbox", "sent", "spam", "starred", "trash", "unread"]
     for folderName in folderNames
       it "renders the percent of emails that are in the " + folderName + " folder", ->
-        expect(@foldersReportDiv).toContainHtml("<h4 class='h4'>Percent in the " + folderName + " folder: <small>" +
+        expect(@foldersReportView.$el).toContainHtml("<h4 class='h4'>Percent in the " + folderName + " folder: <small>" +
                                                @foldersReport.get("percent_" + folderName) * 100 +
                                                "%</small></h4>")

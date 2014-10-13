@@ -75,11 +75,14 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
         @insertHtmlIntoIframe email, index
 
   setupEmailExpandAndCollapse: ->
-    @$el.find(".email").click ->
-      $(this).find(".email_body").show()
-      $(this).removeClass("collapsed_email")
+    @$el.find(".email").click (event) =>
+      $(event.target).find(".email_body").show()
+      $(event.target).removeClass("collapsed_email")
 
-      $(this).siblings(".email").each ->
+      iframe = $(event.currentTarget).find("iframe")
+      @updateIframeHeight(iframe)
+
+      $(event.target).siblings(".email").each ->
         $(this).addClass "collapsed_email"
         $(this).find(".email_body").hide()
 
@@ -104,8 +107,15 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
   insertHtmlIntoIframe: (email, index) ->
     iframe = @$el.find("#email_iframe" + index.toString())
     
-    iframe.contents().find("html").html(email.html_part)
-    email_height = iframe.contents().find("html").outerHeight(true)
+    iframeHTML = iframe.contents().find("html")
+    iframeHTML.html("<div>" + email.html_part + "</div>")
+
+    iframeHTML.css("overflow", "hidden")
+    @updateIframeHeight(iframe)
+
+  updateIframeHeight: (iframe) ->
+    body = iframe.contents().find("body")
+    div = $(body.children()[0])
     
-    iframe.contents().find("html").css("overflow", "hidden")
-    iframe.css("height", email_height.toString() + "px")
+    body.height(div.height())
+    iframe.height(body.outerHeight(true))

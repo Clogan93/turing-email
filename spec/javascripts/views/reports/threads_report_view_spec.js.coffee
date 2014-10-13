@@ -4,10 +4,8 @@ describe "ThreadsReportView", ->
 
     @threadsReport = new TuringEmailApp.Models.Reports.ThreadsReport()
 
-    @threadsReportDiv = $("<div />", {id: "threads_report"}).appendTo("body")
     @threadsReportView = new TuringEmailApp.Views.Reports.ThreadsReportView(
       model: @threadsReport
-      el: @threadsReportDiv
     )
 
     threadsReportFixtures = fixture.load("reports/threads_report.fixture.json", true);
@@ -18,7 +16,6 @@ describe "ThreadsReportView", ->
 
   afterEach ->
     @server.restore()
-    @threadsReportDiv.remove()
 
     specStopTuringEmailApp()
 
@@ -31,17 +28,16 @@ describe "ThreadsReportView", ->
       @server.respond()
 
     it "renders the report", ->
-      expect(@threadsReportDiv).toBeVisible()
-      expect(@threadsReportDiv).toContainHtml("Reports <small>threads</small>")
+      expect(@threadsReportView.$el).toContainHtml("Reports <small>threads</small>")
       
     it "renders the average thread length", ->
-      expect(@threadsReportDiv).toContainHtml('<h4 class="h4">Average Thread Length: <small>' +
+      expect(@threadsReportView.$el).toContainHtml('<h4 class="h4">Average Thread Length: <small>' +
                                               @threadsReport.get("average_thread_length") +
                                               '</small></h4>')
       
     it "renders the top email threads", ->
-      expect(@threadsReportDiv).toContainHtml('<h4 class="h4">Top Email Threads</h4>')
+      expect(@threadsReportView.$el).toContainHtml('<h4 class="h4">Top Email Threads</h4>')
       
       for emailThread, index in @threadsReport.get("top_email_threads")
-        expect(@threadsReportDiv).toContainHtml('<li><a href="#email_thread/' + emailThread.uid + '">' +
+        expect(@threadsReportView.$el).toContainHtml('<li><a href="#email_thread/' + emailThread.uid + '">' +
                                                    emailThread.emails[0].subject + '</a></li>')

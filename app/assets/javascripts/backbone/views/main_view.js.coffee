@@ -130,43 +130,39 @@ class TuringEmailApp.Views.Main extends Backbone.View
   showSettings: ->
     return false if not @primaryPaneDiv?
     
-    @settingsView = new TuringEmailApp.Views.SettingsView(
+    settingsView = new TuringEmailApp.Views.SettingsView(
       model: @app.models.userSettings
       emailRules: @app.collections.emailRules
       brainRules: @app.collections.brainRules
     )
-    @settingsView.render()
+    settingsView.render()
 
-    @primaryPaneDiv.html(@settingsView.$el)
+    @primaryPaneDiv.html("")
+    @primaryPaneDiv.append(settingsView.$el)
 
-    return @settingsView
+    return settingsView
 
   showAnalytics: ->
     return false if not @primaryPaneDiv?
 
-    analyticsView = new TuringEmailApp.Views.AnalyticsView(
-      el: @primaryPaneDiv
-    )
+    analyticsView = new TuringEmailApp.Views.AnalyticsView()
     analyticsView.render()
+
+    @primaryPaneDiv.html("")
+    @primaryPaneDiv.append(analyticsView.$el)
     
     return analyticsView
 
-  showReport: (divReportsID, ReportModel, ReportView) ->
+  showReport: (ReportModel, ReportView) ->
     return false if not @primaryPaneDiv?
 
     reportModel = new ReportModel()
-    
-    if divReportsID
-      reportView = new ReportView(
-        model: reportModel
-        el: $("#" + divReportsID)
-      )
-    else
-      reportView = new ReportView(
-        model: reportModel
-      )
+    reportView = new ReportView(
+      model: reportModel
+    )
 
-      @primaryPaneDiv.html(reportView.$el)
+    @primaryPaneDiv.html("")
+    @primaryPaneDiv.append(reportView.$el)
 
     reportModel.fetch()
     

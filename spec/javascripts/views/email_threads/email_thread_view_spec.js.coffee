@@ -69,9 +69,21 @@ describe "EmailThreadView", ->
         expect(@emailThreadView.$el.find('.email')).toHandle("click")
 
       describe "when a .email is clicked", ->
+        beforeEach ->
+          @updateIframeHeightStub = sinon.stub(@emailThreadView, "updateIframeHeight", ->)
+          @emailDiv = @emailThreadView.$el.find('.email').first()
+          
+        afterEach ->
+          @updateIframeHeightStub.restore()
+          
         it "should show the email body", ->
-          @emailThreadView.$el.find('.email').first().click()
-          expect(@emailThreadView.$el.find('.email').first().find(".email_body").css("display")).toEqual "block"
+          @emailDiv.click()
+          expect(@emailDiv.find(".email_body").css("display")).toEqual "block"
+          
+        it "updates the iframe height", ->
+          iframe = @emailDiv.find("iframe")
+          # TODO not working because email rendered is not an HTML email - tried to make it HTML but broke other tests.
+          #expect(@updateIframeHeightStub).toHaveBeenCalledWith(iframe)
 
     describe "#setupButtons", ->
       

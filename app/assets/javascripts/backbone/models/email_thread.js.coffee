@@ -82,7 +82,21 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
   # TODO write tests
   moveToFolder: (folderID, folderName) ->
     TuringEmailApp.Models.EmailThread.moveToFolder([@get("uid")], folderID, folderName)
-    
+
+  folderIDs: ->
+    emails = @get("emails")
+    folderIDs = {}
+
+    for email in emails
+      folderIDs[gmailLabel["label_id"]] = null for gmailLabel in email["gmail_labels"] if email["gmail_labels"]?
+      folderIDs[imapFolder["folder_id"]] = null for imapFolder in email["imap_folders"] if email["imap_folders"]?
+
+    return _.keys(folderIDs)
+
+  ##################
+  ### Formatters ###
+  ##################  
+
   fromPreview: ->
     emails = @get("emails")
     mostRecentEmail = emails[0]

@@ -23,7 +23,19 @@
         "subject" : "Re: [turing-email] clicking thread message to expand it on first load doesnt work (#62)",
         "text_part" : "Assigned #62 to @macgregordennis.↵↵---↵Reply to this email directly or view it on GitHub:↵https://github.com/turinginc/turing-email/issues/62#event-156578199",
         "tos" : "turing-email@noreply.github.com",
-        "uid" : "1480ae36da1ba858"
+        "uid" : "1480ae36da1ba858",
+        "gmail_labels": [
+          {
+            "label_id": "INBOX",
+            "name": "INBOX",
+            "message_list_visibility": "hide",
+            "label_list_visibility": "labelShow",
+            "label_type":"system",
+            "num_threads":2,
+            "num_unread_threads":0
+          }
+        ],
+        "imap_folders": []
       },
       {
         "auto_filed" : false,
@@ -46,7 +58,19 @@
         "subject" : "[turing-email] clicking thread message to expand it on first load doesnt work (#62)",
         "text_part" : "↵↵---↵Reply to this email directly or view it on GitHub:↵https://github.com/turinginc/turing-email/issues/62",
         "tos" : "turing-email@noreply.github.com",
-        "uid" : "1480ae376036d4ff"
+        "uid" : "1480ae376036d4ff",
+        "gmail_labels": [
+          {
+            "label_id": "INBOX",
+            "name": "INBOX",
+            "message_list_visibility": "hide",
+            "label_list_visibility": "labelShow",
+            "label_type":"system",
+            "num_threads":2,
+            "num_unread_threads":0
+          }
+        ],
+        "imap_folders": []
       }
     ]
   }

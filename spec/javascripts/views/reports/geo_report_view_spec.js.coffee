@@ -4,10 +4,8 @@ describe "GeoReportView", ->
 
     @geoReport = new TuringEmailApp.Models.Reports.GeoReport()
 
-    @geoReportDiv = $("<div />", {id: "geo_report"}).appendTo("body")
     @geoReportView = new TuringEmailApp.Views.Reports.GeoReportView(
       model: @geoReport
-      el: @geoReportDiv
     )
 
     geoReportFixtures = fixture.load("reports/geo_report.fixture.json", true);
@@ -18,7 +16,6 @@ describe "GeoReportView", ->
 
   afterEach ->
     @server.restore()
-    @geoReportDiv.remove()
 
     specStopTuringEmailApp()
 
@@ -31,14 +28,7 @@ describe "GeoReportView", ->
       @server.respond()
 
     it "renders the report", ->
-      expect(@geoReportDiv).toBeVisible()
-      expect(@geoReportDiv).toContainHtml("Reports <small>geography</small>")
-
-      divIDs = ["geo_chart_div"]
-
-      for divID in divIDs
-        div = $("#" + divID)
-        expect(div).toBeVisible()
+      expect(@geoReportView.$el).toContainHtml("Reports <small>geography</small>")
 
     it "renders the google chart", ->
       spy = sinon.spy(@geoReportView, "renderGoogleChart")

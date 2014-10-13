@@ -4,10 +4,8 @@ describe "ContactsReportView", ->
 
     @contactsReport = new TuringEmailApp.Models.Reports.ContactsReport()
 
-    @contactsReportDiv = $("<div />", {id: "contacts_report"}).appendTo("body")
     @contactsReportView = new TuringEmailApp.Views.Reports.ContactsReportView(
       model: @contactsReport
-      el: @contactsReportDiv
     )
 
     contactsReportFixtures = fixture.load("reports/contacts_report.fixture.json", true);
@@ -18,7 +16,6 @@ describe "ContactsReportView", ->
 
   afterEach ->
     @server.restore()
-    @contactsReportDiv.remove()
 
     specStopTuringEmailApp()
 
@@ -31,14 +28,13 @@ describe "ContactsReportView", ->
       @server.respond()
 
     it "renders the report", ->
-      expect(@contactsReportDiv).toBeVisible()
-      expect(@contactsReportDiv).toContainHtml("Reports <small>top contacts</small>")
+      expect(@contactsReportView.$el).toContainHtml("Reports <small>top contacts</small>")
 
-      divIDs = ["top_senders", "top_recipients"]
+      divSelectors = [".top_senders", ".top_recipients"]
 
-      for divID in divIDs
-        div = $("#" + divID)
-        expect(div).toBeInDOM()
+      for divSelector in divSelectors
+        div = @contactsReportView.$el.find(divSelector)
+        expect(div.length).toEqual(1)
 
   describe "#getGoogleChartData", ->
     beforeEach ->

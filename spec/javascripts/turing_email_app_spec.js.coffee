@@ -1575,24 +1575,56 @@ describe "TuringEmailApp", ->
       beforeEach ->
         @server.restore()
         [@server] = specPrepareEmailThreadsFetch(TuringEmailApp.collections.emailThreads)
-        [@server] = specPrepareEmailFoldersFetch(TuringEmailApp.collections.emailFolders)
+        specPrepareEmailFoldersFetch(TuringEmailApp.collections.emailFolders, @server)
+        
         TuringEmailApp.collections.emailThreads.fetch(reset: true)
         TuringEmailApp.collections.emailFolders.fetch(reset: true)
+        
         @server.respond()
-        @selectedEmailFolderIDFunction = TuringEmailApp.selectedEmailFolderID
-        TuringEmailApp.selectedEmailFolderID = -> return "INBOX"
+        
+        @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
+        @selectedEmailFolderIDStub.returns("INBOX")
+        
+        @emailThread = TuringEmailApp.collections.emailThreads.models[0]
+
+        folderIDs = @emailThread.folderIDs()
+        expect(folderIDs.length > 0).toBeTruthy()
+
+        @unreadCounts = {}
+        for folderID in @emailThread.folderIDs()
+          folder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
+          @unreadCounts[folderID] = folder.get("num_unread_threads") 
   
       afterEach ->
-        TuringEmailApp.selectedEmailFolderID = @selectedEmailFolderIDFunction
+        @selectedEmailFolderIDStub.restore()
   
       it "triggers a change:emailFolderUnreadCount event", ->
         spy = sinon.backbone.spy(TuringEmailApp, "change:emailFolderUnreadCount")
-  
-        emailThread = TuringEmailApp.collections.emailThreads.models[0]
-        TuringEmailApp.emailThreadSeenChanged emailThread, true
-  
-        expect(spy).toHaveBeenCalled()        
-        
+
+        TuringEmailApp.emailThreadSeenChanged @emailThread, true
+
+        for folderID in @emailThread.folderIDs()
+          folder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
+          expect(spy).toHaveBeenCalledWith(TuringEmailApp, folder)
+          
+      describe "seenValue=true", ->
+        beforeEach ->
+          TuringEmailApp.emailThreadSeenChanged @emailThread, true
+          
+        it "decrements the unread count", ->
+          for folderID in @emailThread.folderIDs()
+            folder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
+            expect(folder.get("num_unread_threads")).toEqual(@unreadCounts[folderID] - 1)
+
+      describe "seenValue=false", ->
+        beforeEach ->
+          TuringEmailApp.emailThreadSeenChanged @emailThread, false
+
+        it "increments the unread count", ->
+          for folderID in @emailThread.folderIDs()
+            folder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
+            expect(folder.get("num_unread_threads")).toEqual(@unreadCounts[folderID] + 1)
+
     describe "#isSplitPaneMode", ->
       beforeEach ->
         [@server] = specPrepareUserSettingsFetch()
@@ -1812,7 +1844,7 @@ describe "TuringEmailApp", ->
       beforeEach ->
         @showReportSpy = sinon.spy(TuringEmailApp.views.mainView, "showReport")
 
-        TuringEmailApp.showReport(undefined, TuringEmailApp.Models.Reports.AttachmentsReport,
+        TuringEmailApp.showReport(TuringEmailApp.Models.Reports.AttachmentsReport,
                                   TuringEmailApp.Views.Reports.AttachmentsReportView)
 
       afterEach ->

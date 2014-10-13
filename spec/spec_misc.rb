@@ -81,11 +81,21 @@ module SpecMisc
                              reply_to_name reply_to_address
                              tos ccs bccs
                              subject
-                             html_part text_part body_text)
-    expected_attributes_to_skip = %w(id date)
+                             html_part text_part body_text
+                             gmail_labels imap_folders)
+    
+    expected_attributes_to_skip = %w(id date gmail_labels imap_folders)
 
     spec_validate_attributes(expected_attributes, email, email_rendered, expected_attributes_to_skip)
     expect(email_rendered['date']).to eq(email.date.as_json)
+    
+    email.gmail_labels.zip(email_rendered["gmail_labels"]) .each do |gmail_label, gmail_label_rendered|
+      validate_gmail_label(gmail_label, gmail_label_rendered)
+    end
+
+    email.imap_folders.zip(email_rendered["imap_folders"]) .each do |imap_folder, imap_folder_rendered|
+      validate_imap_folder(imap_folder, imap_folder_rendered)
+    end
   end
 
   def validate_gmail_label(gmail_label, gmail_label_rendered)
@@ -94,6 +104,11 @@ module SpecMisc
                              label_type
                              num_threads num_unread_threads)
     spec_validate_attributes(expected_attributes, gmail_label, gmail_label_rendered)
+  end
+
+  def validate_imap_folder(imap_folder, imap_folder_rendered)
+    expected_attributes = %w(name)
+    spec_validate_attributes(expected_attributes, imap_folder, imap_folder_rendered)
   end
   
   def validate_ip_info(ip_info, ip_info_rendered)

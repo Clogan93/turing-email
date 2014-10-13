@@ -4,10 +4,8 @@ describe "RecommendedRulesReportView", ->
 
     @recommendedRulesReport = new TuringEmailApp.Models.Reports.RecommendedRulesReport()
 
-    @recommendedRulesReportDiv = $("<div />", {id: "recommended_rules_report"}).appendTo("body")
     @recommendedRulesReportView = new TuringEmailApp.Views.Reports.RecommendedRulesReportView(
       model: @recommendedRulesReport
-      el: @recommendedRulesReportDiv
     )
 
     recommendedRulesReportFixtures = fixture.load("reports/recommended_rules_report.fixture.json", true);
@@ -18,7 +16,6 @@ describe "RecommendedRulesReportView", ->
 
   afterEach ->
     @server.restore()
-    @recommendedRulesReportDiv.remove()
 
     specStopTuringEmailApp()
 
@@ -31,15 +28,14 @@ describe "RecommendedRulesReportView", ->
       @server.respond()
 
     it "renders the report", ->
-      expect(@recommendedRulesReportDiv).toBeVisible()
-      expect(@recommendedRulesReportDiv).toContainHtml("Reports <small>recommended rules</small>")
+      expect(@recommendedRulesReportView.$el).toContainHtml("Reports <small>recommended rules</small>")
 
     it "renders the genie rule explanation text", ->
-      expect(@recommendedRulesReportDiv).toContainHtml("<p>The genie has been working extra hard to keep your inbox clean, and recommends that you make the following rules so that these emails skip your inbox during the day:</p>")
+      expect(@recommendedRulesReportView.$el).toContainHtml("<p>The genie has been working extra hard to keep your inbox clean, and recommends that you make the following rules so that these emails skip your inbox during the day:</p>")
 
     it "renders the email rules", ->
-      expect(@recommendedRulesReportDiv).toContainHtml('Rule: filter emails from ' + @recommendedRulesReport.get("rules_recommended")[0].list_id + " into " + @recommendedRulesReport.get("rules_recommended")[0].destination_folder + '.')
-      expect(@recommendedRulesReportDiv).toContainHtml('<a class="rule_recommendation_link" href="' + @recommendedRulesReport.get("rules_recommended")[0].list_id + '">Create rule.</a>')
+      expect(@recommendedRulesReportView.$el).toContainHtml('Rule: filter emails from ' + @recommendedRulesReport.get("rules_recommended")[0].list_id + " into " + @recommendedRulesReport.get("rules_recommended")[0].destination_folder + '.')
+      expect(@recommendedRulesReportView.$el).toContainHtml('<a class="rule_recommendation_link" href="' + @recommendedRulesReport.get("rules_recommended")[0].list_id + '">Create rule.</a>')
 
     it "sets up the recommended rules links", ->
       spy = sinon.spy(@recommendedRulesReportView, "setupRecommendedRulesLinks")
@@ -64,22 +60,25 @@ describe "RecommendedRulesReportView", ->
 
       it "prevents the default link action", ->
         selector = ".rule_recommendation_link"
-        spyOnEvent(selector, "click")
+        $("body").append(@recommendedRulesReportView.$el)
+        clickSpy = spyOnEvent(selector, "click")
         
-        @recommendedRulesReportView.$el.find(".rule_recommendation_link").click()
+        @recommendedRulesReportView.$el.find(selector).click()
 
-        expect("click").toHaveBeenPreventedOn(selector)
+        expect(clickSpy).toHaveBeenPrevented()
+
+        @recommendedRulesReportView.$el.remove()
 
       it "shows the success alert", ->
         @recommendedRulesReportView.$el.find(".rule_recommendation_link").click()
-        expect(@recommendedRulesReportDiv).toContainHtml('<br />
+        expect(@recommendedRulesReportView.$el).toContainHtml('<br />
                               <div class="col-md-4 alert alert-success" role="alert">
                                 You have successfully created an email rule!
                               </div>')
 
       it "hides the rule recommendation link", ->
         @recommendedRulesReportView.$el.find(".rule_recommendation_link").click()
-        expect(@recommendedRulesReportDiv).not.toContainHtml('<a class="rule_recommendation_link" href="' + @recommendedRulesReport.get("rules_recommended")[0].list_id + '">Create rule.</a>')
+        expect(@recommendedRulesReportView.$el).not.toContainHtml('<a class="rule_recommendation_link" href="' + @recommendedRulesReport.get("rules_recommended")[0].list_id + '">Create rule.</a>')
 
       it "should post the email rule to the server", ->
         @recommendedRulesReportView.$el.find(".rule_recommendation_link").click()

@@ -4,10 +4,8 @@ describe "AttachmentsReportView", ->
 
     @attachmentsReport = new TuringEmailApp.Models.Reports.AttachmentsReport()
 
-    @attachmentsReportDiv = $("<div />", {id: "attachments_report"}).appendTo("body")
     @attachmentsReportView = new TuringEmailApp.Views.Reports.AttachmentsReportView(
       model: @attachmentsReport
-      el: @attachmentsReportDiv
     )
 
     attachmentsReportFixtures = fixture.load("reports/attachments_report.fixture.json", true);
@@ -18,7 +16,6 @@ describe "AttachmentsReportView", ->
 
   afterEach ->
     @server.restore()
-    @attachmentsReportDiv.remove()
 
     specStopTuringEmailApp()
 
@@ -31,14 +28,13 @@ describe "AttachmentsReportView", ->
       @server.respond()
 
     it "renders the report", ->
-      expect(@attachmentsReportDiv).toBeVisible()
-      expect(@attachmentsReportDiv).toContainHtml("Reports <small>attachments</small>")
+      expect(@attachmentsReportView.$el).toContainHtml("Reports <small>attachments</small>")
 
-      divIDs = ["num_attachments_chart_div", "average_file_size_chart_div"]
+      divSelectors = [".num_attachments_chart_div", ".average_file_size_chart_div"]
 
-      for divID in divIDs
-        div = $("#" + divID)
-        expect(div).toBeVisible()
+      for divSelector in divSelectors
+        div = @attachmentsReportView.$el.find(divSelector)
+        expect(div.length).toEqual(1)
 
     it "renders the google chart", ->
       spy = sinon.spy(@attachmentsReportView, "renderGoogleChart")

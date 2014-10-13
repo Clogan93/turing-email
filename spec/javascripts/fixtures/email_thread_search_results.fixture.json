@@ -25,7 +25,19 @@
           "subject" : "Re: [turing-email] clicking thread message to expand it on first load doesnt work (#62)",
           "text_part" : "Assigned #62 to @macgregordennis.↵↵---↵Reply to this email directly or view it on GitHub:↵https://github.com/turinginc/turing-email/issues/62#event-156578199",
           "tos" : "turing-email@noreply.github.com",
-          "uid" : "1480ae36da1ba858"
+          "uid" : "1480ae36da1ba858",
+          "gmail_labels": [
+            {
+              "label_id": "INBOX",
+              "name": "INBOX",
+              "message_list_visibility": "hide",
+              "label_list_visibility": "labelShow",
+              "label_type":"system",
+              "num_threads":2,
+              "num_unread_threads":0
+            }
+          ],
+          "imap_folders": []
         },
         {
           "auto_filed" : false,
@@ -48,7 +60,19 @@
           "subject" : "[turing-email] clicking thread message to expand it on first load doesnt work (#62)",
           "text_part" : "↵↵---↵Reply to this email directly or view it on GitHub:↵https://github.com/turinginc/turing-email/issues/62",
           "tos" : "turing-email@noreply.github.com",
-          "uid" : "1480ae376036d4ff"
+          "uid" : "1480ae376036d4ff",
+          "gmail_labels": [
+            {
+              "label_id": "INBOX",
+              "name": "INBOX",
+              "message_list_visibility": "hide",
+              "label_list_visibility": "labelShow",
+              "label_type":"system",
+              "num_threads":2,
+              "num_unread_threads":0
+            }
+          ],
+          "imap_folders": []
         }]
       },
       {
@@ -75,7 +99,19 @@
             "subject": "ChangeMakers 2014 Retreat - Will you Attend? + Location",
             "text_part": "Thanks for your notes back after we announced October 10th as the weekend↵for the 2014 CM Retreat - we share your excitement!↵↵The retreat will be hosted in *San Diego* this year so we'll be able to↵enjoy some great weather as well as the company of friends.↵↵*Please fill out the following very quick survey so we can get a headcount↵and begin planning appropriately: *https://www.surveymonkey.com/s/L32DWK6↵↵↵We've received a couple of questions regarding the weekend:↵- The retreat will officially kick off Friday, Oct 10 during the day, and↵last until Sunday, mid-day.↵- There will be a cost for attending the event - $150 in order to help↵cover room and food. Once there, we hope to keep any other expenses you'll↵incurr to a minimum, so you can enjoy the weekend to the fullest.↵- Scholarships will be addressed at a later date, once we are able to↵confirm a budget and attendance.↵- Significant others are invited - just make sure to let us know they're↵coming!↵↵Thanks again, and we look forward to seeing you all in October!↵↵↵↵2014 Planning Committee↵↵Sam, Ernestine, Tariq, Joe, Ana, Bethany, Varun, Garrett, and Ansaf↵↵↵↵-- ↵Samantha A. Penabad↵spenabad@gmail.com | (908) 962-7452↵",
             "tos": "abimbola.dairo@gmail.com; mantha.ad@gmail.com; andrea.p.pimentel@gmail.com; anna.hrk@gmail.com; ansaf.kareem@gmail.com; bwoolman@gmail.com; wloundy@gmail.com; dgobaud@gmail.com; eleanor.foote@gmail.com; eechase10@gmail.com; eugene.nho@gmail.com; neiman.garrett@gmail.com; jamiepearltam@gmail.com; jeffgarcia10@gmail.com; jmrkonic@gmail.com; justin.libaw@gmail.com; karenpwarner@gmail.com; christensen.kevan@gmail.com; lilajk@gmail.com; n.m.chapa@gmail.com; rachel.r.romer@gmail.com; rafficm@gmail.com; rsobo@stanford.edu; riah.forbes@gmail.com; yean.ricky@gmail.com; ronaldtisdale@gmail.com; sebheaps@gmail.com; shazad.mohamed@gmail.com; epps.steph@gmail.com; tariqwest@gmail.com; twinhope108@gmail.com; tommytobin@gmail.com; willwbruno@netscape.net; creasmo@gmail.com; ariyer.stanford@gmail.com; alan.jia.guo@gmail.com; abosley0@gmail.com; ana.diaz.hernandez@gmail.com; angelina.m.cardona@gmail.com; acherniss@gmail.com; nile47@gmail.com; BJohnson88@gmail.com; casandraespinoza@gmail.com; devin.banerjee@gmail.com; fatima.sabar@gmail.com; joseph.c.vasquez@gmail.com; joel.jean9@gmail.com; maielsadany@gmail.com; 2uest.love@gmail.com; racquelenad@gmail.com; ryancourtneyrogers@gmail.com; spenabad@gmail.com; sheeltyle@gmail.com; sonali.n.chopra@gmail.com; weiswu@gmail.com; terynnorris@gmail.com; kiefertravis@gmail.com; varun.sivaram@gmail.com; yinnywu@gmail.com; adriepon@gmail.com; aliep221@gmail.com; benpjensen@gmail.com; cecilia.g.corral@gmail.com; cpn585@gmail.com; cle.mentine.s8@gmail.com; dnkravitz@gmail.com; jackierotman@gmail.com; jensta@stanford.edu; jfhaskell@gmail.com; katherine.l.l.chen@gmail.com; kelsei.wharton@gmail.com; kmrkonic@stanford.edu; kylewong47@gmail.com; lsliburd@gmail.com; mattmill90@gmail.com; mmarkham@stanford.edu; mekdiz@stanford.edu; mdtubbs@gmail.com; rabzalov@gmail.com; rbraun@stanford.edu; meviin@gmail.com; sharjam@gmail.com; shruthibaskaran@gmail.com; seldonsft@gmail.com; vaughan.bagley@gmail.com; vineet.com@gmail.com; caoxuwen@gmail.com; amyamada@stanford.edu; angkwok@stanford.edu; aprilg91@stanford.edu; aracely6@stanford.edu; bkpang@stanford.edu; deepak2@stanford.edu; eliseg@stanford.edu; febegay@stanford.edu; hfetter@stanford.edu; imanif@stanford.edu; irenejor@stanford.edu; torres.juany@gmail.com; jthlam@stanford.edu; kevinx@stanford.edu; ktam@stanford.edu; lclamont@stanford.edu; madhawes@gmail.com; mgoodyea@stanford.edu; miltona@stanford.edu; mohitt@stanford.edu; noewalze@stanford.edu; princen@stanford.edu; roobeelee@gmail.com; purtill@stanford.edu; macgregordennis@gmail.com; surils@stanford.edu; trt0413@stanford.edu; wguyman@stanford.edu; agathab1@stanford.edu; sugarman.aj@gmail.com; anna.nti@gmail.com; ayna.agarwal@gmail.com; ayushsood@gmail.com; dhendricks12@gmail.com; daniel.m.ashton@gmail.com; damikell@stanford.edu; jessica.anderson.2014@gmail.com; johnyangsam@gmail.com; kumodzi@gmail.com; kyle.vandenberg10@gmail.com; mraddawi17@gmail.com; mcolford1@gmail.com; wheeler.meredith@gmail.com; najla.gomez@gmail.com; thjazz@gmail.com; tinahanaemiller@gmail.com; Tgaffney@stanford.edu",
-            "uid": "147f774efa8eb2e7"
+            "uid": "147f774efa8eb2e7",
+            "gmail_labels": [
+              {
+                "label_id": "Label_119",
+                "name": "Mint",
+                "message_list_visibility": "show",
+                "label_list_visibility": "labelShow",
+                "label_type": "user",
+                "num_threads": 52,
+                "num_unread_threads": 52
+              }
+            ],
+            "imap_folders": []
           },
           {
             "auto_filed": false,
@@ -98,7 +134,19 @@
             "subject": "Re: ChangeMakers 2014 Retreat - Will you Attend? + Location",
             "text_part": "Thanks, Samantha!↵↵Bit curious about the rationale to host the retreat in San Diego...↵↵Personally, I think it's a great city with lots to do, but I think folks↵might appreciate transparency about the process of selecting the host city.↵:)↵ᐧ↵↵↵On Thu, Aug 21, 2014 at 12:25 AM, Samantha Adriana Penabad <↵spenabad@gmail.com> wrote:↵↵> Thanks for your notes back after we announced October 10th as the weekend↵> for the 2014 CM Retreat - we share your excitement!↵>↵> The retreat will be hosted in *San Diego* this year so we'll be able to↵> enjoy some great weather as well as the company of friends.↵>↵> *Please fill out the following very quick survey so we can get a headcount↵> and begin planning appropriately: *https://www.surveymonkey.com/s/L32DWK6↵>↵>↵> We've received a couple of questions regarding the weekend:↵> - The retreat will officially kick off Friday, Oct 10 during the day, and↵> last until Sunday, mid-day.↵> - There will be a cost for attending the event - $150 in order to help↵> cover room and food. Once there, we hope to keep any other expenses you'll↵> incurr to a minimum, so you can enjoy the weekend to the fullest.↵> - Scholarships will be addressed at a later date, once we are able to↵> confirm a budget and attendance.↵> - Significant others are invited - just make sure to let us know they're↵> coming!↵>↵>  Thanks again, and we look forward to seeing you all in October!↵>↵>↵>↵> 2014 Planning Committee↵>↵> Sam, Ernestine, Tariq, Joe, Ana, Bethany, Varun, Garrett, and Ansaf↵>↵>↵>↵> --↵> Samantha A. Penabad↵> spenabad@gmail.com | (908) 962-7452↵>↵↵↵↵-- ↵*Vineet Singal // M: 650.215.3565 // T: @vineetsingal↵<http://twitter.com/vineetsingal>*↵",
             "tos": "spenabad@gmail.com",
-            "uid": "1480a63373a7006f"
+            "uid": "1480a63373a7006f",
+            "gmail_labels": [
+              {
+                "label_id": "Label_119",
+                "name": "Mint",
+                "message_list_visibility": "show",
+                "label_list_visibility": "labelShow",
+                "label_type": "user",
+                "num_threads": 52,
+                "num_unread_threads": 52
+              }
+            ],
+            "imap_folders": []
           }
         ]
       }
