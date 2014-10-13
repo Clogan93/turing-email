@@ -34,14 +34,16 @@ class TuringEmailApp.Views.Reports.GeoReportView extends Backbone.View
 
   renderGoogleChart: (googleChartData) ->
     google.load('visualization', '1.0',
-                 callback: => @drawGeoChart(googleChartData, "geo_chart_div")
+                 callback: => @drawGeoChart(googleChartData, ".geo_chart_div")
                  packages: ["corechart"])
 
-  drawGeoChart: (googleChartData, divID) ->
+  drawGeoChart: (googleChartData, divSelector) ->
+    return if $(divSelector).length is 0
+    
     options =
       region: "US"
       displayMode: "markers"
 
-    chart = new google.visualization.GeoChart($("#" + divID)[0])
+    chart = new google.visualization.GeoChart($(divSelector)[0])
     dataTable = google.visualization.arrayToDataTable(googleChartData.cityStats)
     chart.draw dataTable, options

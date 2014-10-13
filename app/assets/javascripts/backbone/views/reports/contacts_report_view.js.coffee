@@ -40,6 +40,8 @@ class TuringEmailApp.Views.Reports.ContactsReportView extends Backbone.View
     @drawEmailVolumeChart googleChartData.topRecipients, ".top_recipients", "Outgoing Emails"
 
   drawEmailVolumeChart: (data, divSelector, chartTitle) ->
+    return if $(divSelector).length is 0
+    
     options =
       title: chartTitle
       width: 500

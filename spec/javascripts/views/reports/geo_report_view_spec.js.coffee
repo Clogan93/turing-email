@@ -24,16 +24,19 @@ describe "GeoReportView", ->
 
   describe "#render", ->
     beforeEach ->
+      @renderGoogleChartSpy = sinon.spy(@geoReportView, "renderGoogleChart")
+      
       @geoReport.fetch()
       @server.respond()
+      
+    afterEach ->
+      @renderGoogleChartSpy.restore()
 
     it "renders the report", ->
       expect(@geoReportView.$el).toContainHtml("Reports <small>geography</small>")
 
     it "renders the google chart", ->
-      spy = sinon.spy(@geoReportView, "renderGoogleChart")
-      @geoReportView.render()
-      expect(spy).toHaveBeenCalled()
+      expect(@renderGoogleChartSpy).toHaveBeenCalled()
 
   describe "#getGoogleChartData", ->
     beforeEach ->

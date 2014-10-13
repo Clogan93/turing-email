@@ -79,6 +79,8 @@ class TuringEmailApp.Views.Reports.AttachmentsReportView extends Backbone.View
     @drawChart googleChartData.averageFileSizeGChartData, ".average_file_size_chart_div", "Average File Size", true
 
   drawChart: (data, divSelector, chartTitle, humanizeFileSize=false) ->
+    return if $(divSelector).length is 0
+    
     options =
       title: chartTitle
       legend:

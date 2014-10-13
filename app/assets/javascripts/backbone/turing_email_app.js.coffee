@@ -603,4 +603,3 @@ window.onerror = (message, url, lineNumber, column, errorObj) ->
     TuringEmailApp.tattletale.log(JSON.stringify(errorObj.stack))
 
   TuringEmailApp.tattletale.send()
-  return false

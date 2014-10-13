@@ -11,7 +11,6 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     @listenTo(@model, "destroy", @remove)
 
   render: ->
-    console.log @brainRules.toJSON()
     @$el.html(@template({'userSettings' : @model.toJSON(), 'emailRules' : @emailRules.toJSON(), 'brainRules' : @brainRules.toJSON()}))
 
     @setupEmailBankruptcyButton()

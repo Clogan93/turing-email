@@ -97,6 +97,8 @@ class TuringEmailApp.Views.Reports.EmailVolumeReportView extends Backbone.View
     @drawChart googleChartData.emailsPerMonthGChartData, ".emails_per_month_chart_div", "Monthly Email Volume"
 
   drawChart: (data, divSelector, chartTitle) ->
+    return if $(divSelector).length is 0
+    
     options =
       title: chartTitle
       hAxis:
