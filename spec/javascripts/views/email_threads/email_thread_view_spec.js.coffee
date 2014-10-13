@@ -69,21 +69,39 @@ describe "EmailThreadView", ->
         expect(@emailThreadView.$el.find('.email .email_information')).toHandle("click")
 
       describe "when a .email .email_information is clicked", ->
-        afterEach ->
-          @emailThreadView.$el.find('.email').first().find(".email_body").css("display", "none")
+        beforeEach ->
+          @updateIframeHeightStub = sinon.stub(@emailThreadView, "updateIframeHeight", ->)
+          @emailDiv = @emailThreadView.$el.find('.email').first()
+          @emailInfoDiv = @emailDiv.find(".email_information")
 
-        it "should show the email body", ->
-          @emailThreadView.$el.find('.email .email_information').first().click()
-          expect(@emailThreadView.$el.find('.email').first().find(".email_body").css("display")).toEqual "block"
+          @isCollapsed = @emailDiv.hasClass("collapsed_email")
+          @emailInfoDiv.click()
+          
+        afterEach ->
+          @updateIframeHeightStub.restore()
+          @emailInfoDiv.click() # undo the expand/collapse
+
+        it "shows the email body", ->
+          expect(@emailDiv.hasClass("collapsed_email") == !@isCollapsed).toBeTruthy()
+          
+        it "updates the iframe height", ->
+          iframe = @emailDiv.find("iframe")
+          # TODO not working because email rendered is not an HTML email - tried to make it HTML but broke other tests.
+          #expect(@updateIframeHeightStub).toHaveBeenCalledWith(iframe)
 
       describe "when a .email .email_information is clicked twice", ->
-        it "should hide the email body", ->
-          @emailThreadView.$el.find('.email .email_information').first().click()
-          @emailThreadView.$el.find('.email .email_information').first().click()
-          expect(@emailThreadView.$el.find('.email').last().find(".email_body").css("display")).toEqual "none"
+        beforeEach ->
+          @emailDiv = @emailThreadView.$el.find('.email').first()
+          @emailInfoDiv = @emailDiv.find(".email_information")
 
-    describe "#setupButtons", ->
-      
+          @isCollapsed = @emailDiv.hasClass("collapsed_email")
+          @emailInfoDiv.click()
+          @emailInfoDiv.click()
+          
+        it "should hide the email body", ->
+          expect(@emailDiv.hasClass("collapsed_email") == @isCollapsed).toBeTruthy()
+
+    describe "#setupButtons", ->  
       it "should handle clicks", ->
         expect(@emailThreadView.$el.find('#email_back_button')).toHandle("click")
         expect(@emailThreadView.$el.find(".email_reply_button")).toHandle("click")

@@ -196,15 +196,21 @@ describe "MainView", ->
 
       describe "#showAnalytics", ->
         beforeEach ->
+          @server.restore()
+          @server = specPrepareReportFetches()
+          
           @analyticsView = @mainView.showAnalytics()
+          
+          @server.respond()
   
         it "shows the analytics view", ->
           expect(@primaryPane.children().length).toEqual(1)
           expect($(@primaryPane.children()[0]).html()).toEqual(@analyticsView.$el.html())
+          verifyReportsRendered(@primaryPane)
   
       describe "#showReport", ->
         beforeEach ->
-          @reportView = @mainView.showReport(undefined, TuringEmailApp.Models.Reports.AttachmentsReport,
+          @reportView = @mainView.showReport(TuringEmailApp.Models.Reports.AttachmentsReport,
                                              TuringEmailApp.Views.Reports.AttachmentsReportView)
   
         it "shows the report view", ->

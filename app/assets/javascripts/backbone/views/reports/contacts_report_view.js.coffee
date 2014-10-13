@@ -36,15 +36,17 @@ class TuringEmailApp.Views.Reports.ContactsReportView extends Backbone.View
                  packages: ["corechart"])
 
   drawCharts: (googleChartData) ->
-    @drawEmailVolumeChart googleChartData.topSenders, "top_senders", "Incoming Emails"
-    @drawEmailVolumeChart googleChartData.topRecipients, "top_recipients", "Outgoing Emails"
+    @drawEmailVolumeChart googleChartData.topSenders, ".top_senders", "Incoming Emails"
+    @drawEmailVolumeChart googleChartData.topRecipients, ".top_recipients", "Outgoing Emails"
 
-  drawEmailVolumeChart: (data, divID, chartTitle) ->
+  drawEmailVolumeChart: (data, divSelector, chartTitle) ->
+    return if $(divSelector).length is 0
+    
     options =
       title: chartTitle
       width: 500
       height: 300
 
-    chart = new google.visualization.PieChart($("#" + divID)[0])
+    chart = new google.visualization.PieChart($(divSelector)[0])
     dataTable = google.visualization.arrayToDataTable(data)
     chart.draw dataTable, options

@@ -2,40 +2,11 @@ describe "AnalyticsView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    @reportsDiv = $("<div />", {id: "reports"}).appendTo("body")
-    @analyticsView = new TuringEmailApp.Views.AnalyticsView(
-      el: $("#reports")
-    )
-
-    attachmentsReportFixtures = fixture.load("reports/attachments_report.fixture.json", true);
-    @attachmentsReportFixture = attachmentsReportFixtures[0]
-    
-    emailVolumeReportFixtures = fixture.load("reports/email_volume_report.fixture.json", true);
-    @emailVolumeReportFixture = emailVolumeReportFixtures[0]
-
-    geoReportFixtures = fixture.load("reports/geo_report.fixture.json", true);
-    @geoReportFixture = geoReportFixtures[0]
-    
-    threadsFixtures = fixture.load("reports/threads_report.fixture.json", true);
-    @threadsFixture = threadsFixtures[0]
-    
-    listsFixtures = fixture.load("reports/lists_report.fixture.json", true);
-    @listsFixture = listsFixtures[0]
-    
-    contactsReportFixtures = fixture.load("reports/contacts_report.fixture.json", true);
-    @contactsReportFixture = contactsReportFixtures[0]
-
-    @server = sinon.fakeServer.create()
-    @server.respondWith "GET", new TuringEmailApp.Models.Reports.AttachmentsReport().url, JSON.stringify(@attachmentsReportFixture)
-    @server.respondWith "GET", new TuringEmailApp.Models.Reports.EmailVolumeReport().url, JSON.stringify(@emailVolumeReportFixture)
-    @server.respondWith "GET", new TuringEmailApp.Models.Reports.GeoReport().url, JSON.stringify(@geoReportFixture)
-    @server.respondWith "GET", new TuringEmailApp.Models.Reports.ThreadsReport().url, JSON.stringify(@threadsFixture)
-    @server.respondWith "GET", new TuringEmailApp.Models.Reports.ListsReport().url, JSON.stringify(@listsFixture)
-    @server.respondWith "GET", new TuringEmailApp.Models.Reports.ContactsReport().url, JSON.stringify(@contactsReportFixture)
+    @analyticsView = new TuringEmailApp.Views.AnalyticsView()
+    @server = specPrepareReportFetches() 
 
   afterEach ->
     @server.restore()
-    @reportsDiv.remove()
 
     specStopTuringEmailApp()
     
@@ -48,11 +19,4 @@ describe "AnalyticsView", ->
       @server.respond()
     
     it "renders the reports", ->
-      expect(@reportsDiv).toBeVisible()
-      
-      reportDivIDs = ["attachments_report", "email_volume_report", "geo_report"
-                      "lists_report", "threads_report", "contacts_report"]
-
-      for reportDivID in reportDivIDs
-        reportDiv = $("#" + reportDivID)
-        expect(reportDiv).toBeVisible()
+      verifyReportsRendered(@analyticsView.$el)

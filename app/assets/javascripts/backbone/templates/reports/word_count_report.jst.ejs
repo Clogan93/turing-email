@@ -1,12 +1,16 @@
 <%
-  function drawChart(data, divID, chartTitle) {
+  function drawChart(data, divSelector, chartTitle) {
+    if ($(divSelector).length == 0) {
+      return
+    }
+
     var options = {
       title: chartTitle,
       hAxis: {titleTextStyle: {color: 'black'}},
       vAxis: {titleTextStyle: {color: 'black'}}
     };
   
-    var chart = new google.visualization.ColumnChart($("#" + divID)[0]);
+    var chart = new google.visualization.ColumnChart($(divSelector)[0]);
     var dataTable = google.visualization.arrayToDataTable(data);
   
     chart.draw(dataTable, options);
@@ -14,7 +18,7 @@
 
   google.load("visualization", "1.0", {
     callback: function() {
-      drawCharts(obj.wordCountsGChartData, "word_count_chart_div", "Word Counts")
+      drawChart(obj.wordCountsGChartData, ".word_count_chart_div", "Word Counts")
     },
     packages:["corechart"]
   })
@@ -24,4 +28,4 @@
   <h1 class="h1">Reports <small>word counts</small></h1>
 </div>
 
-<div id="word_count_chart_div" style="width: 900px; height: 500px;"></div>
+<div class="word_count_chart_div" style="width: 900px; height: 500px;"></div>

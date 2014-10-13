@@ -45,6 +45,7 @@ describe Api::V1::EmailThreadsController, :type => :request do
       
       get "/api/v1/email_threads/show/#{email_thread.uid}"
       email_thread_rendered = JSON.parse(response.body)
+      
       validate_email_thread(email_thread, email_thread_rendered)
     end
     

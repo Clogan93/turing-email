@@ -75,10 +75,12 @@ class TuringEmailApp.Views.Reports.AttachmentsReportView extends Backbone.View
                  packages: ["corechart"])
 
   drawCharts: (googleChartData) ->
-    @drawChart googleChartData.numAttachmentsGChartData, "num_attachments_chart_div", "Number of Attachments"
-    @drawChart googleChartData.averageFileSizeGChartData, "average_file_size_chart_div", "Average File Size", true
+    @drawChart googleChartData.numAttachmentsGChartData, ".num_attachments_chart_div", "Number of Attachments"
+    @drawChart googleChartData.averageFileSizeGChartData, ".average_file_size_chart_div", "Average File Size", true
 
-  drawChart: (data, divID, chartTitle, humanizeFileSize=false) ->
+  drawChart: (data, divSelector, chartTitle, humanizeFileSize=false) ->
+    return if $(divSelector).length is 0
+    
     options =
       title: chartTitle
       legend:
@@ -92,7 +94,7 @@ class TuringEmailApp.Views.Reports.AttachmentsReportView extends Backbone.View
         titleTextStyle:
           color: "black"
 
-    chart = new google.visualization.ColumnChart($("#" + divID)[0])
+    chart = new google.visualization.ColumnChart($(divSelector)[0])
     dataTable = google.visualization.arrayToDataTable(data)
     if humanizeFileSize
       @humanizeFileSizeGChartData dataTable

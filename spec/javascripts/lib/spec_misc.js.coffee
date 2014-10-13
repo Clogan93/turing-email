@@ -50,6 +50,40 @@ window.specStartTuringEmailApp = ->
     Backbone.history.start(silent: true)
     specStartedHistory = true
 
+window.specPrepareReportFetches = (server) ->
+  attachmentsReportFixtures = fixture.load("reports/attachments_report.fixture.json", true);
+  attachmentsReportFixture = attachmentsReportFixtures[0]
+
+  emailVolumeReportFixtures = fixture.load("reports/email_volume_report.fixture.json", true);
+  emailVolumeReportFixture = emailVolumeReportFixtures[0]
+
+  foldersReportFixtures = fixture.load("reports/folders_report.fixture.json", true);
+  foldersReportFixture = foldersReportFixtures[0]
+
+  geoReportFixtures = fixture.load("reports/geo_report.fixture.json", true);
+  geoReportFixture = geoReportFixtures[0]
+
+  threadsFixtures = fixture.load("reports/threads_report.fixture.json", true);
+  threadsFixture = threadsFixtures[0]
+
+  listsFixtures = fixture.load("reports/lists_report.fixture.json", true);
+  listsFixture = listsFixtures[0]
+
+  contactsReportFixtures = fixture.load("reports/contacts_report.fixture.json", true);
+  contactsReportFixture = contactsReportFixtures[0]
+
+  server = sinon.fakeServer.create() if not server?
+  
+  server.respondWith "GET", new TuringEmailApp.Models.Reports.AttachmentsReport().url, JSON.stringify(attachmentsReportFixture)
+  server.respondWith "GET", new TuringEmailApp.Models.Reports.EmailVolumeReport().url, JSON.stringify(emailVolumeReportFixture)
+  server.respondWith "GET", new TuringEmailApp.Models.Reports.FoldersReport().url, JSON.stringify(foldersReportFixture)
+  server.respondWith "GET", new TuringEmailApp.Models.Reports.GeoReport().url, JSON.stringify(geoReportFixture)
+  server.respondWith "GET", new TuringEmailApp.Models.Reports.ThreadsReport().url, JSON.stringify(threadsFixture)
+  server.respondWith "GET", new TuringEmailApp.Models.Reports.ListsReport().url, JSON.stringify(listsFixture)
+  server.respondWith "GET", new TuringEmailApp.Models.Reports.ContactsReport().url, JSON.stringify(contactsReportFixture)
+
+  return server
+    
 window.specPrepareSearchResultsFetch = (server) ->
   emailThreadSearchResultsFixtures = fixture.load("email_thread_search_results.fixture.json");
   validEmailThreadSearchResultsFixture = emailThreadSearchResultsFixtures[0]["valid"]
@@ -163,5 +197,15 @@ window.validateEmailAttributes = (emailJSON) ->
                         "reply_to_name", "reply_to_address",
                         "tos", "ccs", "bccs",
                         "subject",
-                        "html_part", "text_part", "body_text"]
+                        "html_part", "text_part", "body_text",
+                        "gmail_labels", "imap_folders"]
   validateAttributes(emailJSON, expectedAttributes)
+
+window.verifyReportsRendered = (parent) ->
+  reportSelectors = [".attachments_report", ".email_volume_report", ".folders_report", ".geo_report",
+                     ".lists_report", ".threads_report", ".contacts_report"]
+
+  for reportSelector in reportSelectors
+    reportDiv = parent.find(reportSelector)
+    expect(reportDiv.length).toEqual(1)
+    expect(reportDiv.html()).not.toEqual("")

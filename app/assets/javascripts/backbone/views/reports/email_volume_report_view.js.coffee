@@ -92,11 +92,13 @@ class TuringEmailApp.Views.Reports.EmailVolumeReportView extends Backbone.View
                  packages: ["corechart"])
 
   drawCharts: (googleChartData) ->
-    @drawChart googleChartData.emailsPerDayGChartData, "emails_per_day_chart_div", "Daily Email Volume"
-    @drawChart googleChartData.emailsPerWeekGChartData, "emails_per_week_chart_div", "Weekly Email Volume"
-    @drawChart googleChartData.emailsPerMonthGChartData, "emails_per_month_chart_div", "Monthly Email Volume"
+    @drawChart googleChartData.emailsPerDayGChartData, ".emails_per_day_chart_div", "Daily Email Volume"
+    @drawChart googleChartData.emailsPerWeekGChartData, ".emails_per_week_chart_div", "Weekly Email Volume"
+    @drawChart googleChartData.emailsPerMonthGChartData, ".emails_per_month_chart_div", "Monthly Email Volume"
 
-  drawChart: (data, divID, chartTitle) ->
+  drawChart: (data, divSelector, chartTitle) ->
+    return if $(divSelector).length is 0
+    
     options =
       title: chartTitle
       hAxis:
@@ -106,6 +108,6 @@ class TuringEmailApp.Views.Reports.EmailVolumeReportView extends Backbone.View
       vAxis:
         minValue: 0
 
-    chart = new google.visualization.AreaChart($("#" + divID)[0])
+    chart = new google.visualization.AreaChart($(divSelector)[0])
     dataTable = google.visualization.arrayToDataTable(data)
     chart.draw dataTable, options

@@ -4,10 +4,8 @@ describe "EmailVolumeReportView", ->
 
     @emailVolumeReport = new TuringEmailApp.Models.Reports.EmailVolumeReport()
 
-    @emailVolumeReportDiv = $("<div />", {id: "email_volume_report"}).appendTo("body")
     @emailVolumeReportView = new TuringEmailApp.Views.Reports.EmailVolumeReportView(
       model: @emailVolumeReport
-      el: @emailVolumeReportDiv
     )
 
     emailVolumeReportFixtures = fixture.load("reports/email_volume_report.fixture.json", true);
@@ -18,7 +16,6 @@ describe "EmailVolumeReportView", ->
 
   afterEach ->
     @server.restore()
-    @emailVolumeReportDiv.remove()
 
     specStopTuringEmailApp()
 
@@ -31,14 +28,13 @@ describe "EmailVolumeReportView", ->
       @server.respond()
 
     it "renders the report", ->
-      expect(@emailVolumeReportDiv).toBeVisible()
-      expect(@emailVolumeReportDiv).toContainHtml("Reports <small>email volume</small>")
+      expect(@emailVolumeReportView.$el).toContainHtml("Reports <small>email volume</small>")
 
-      divIDs = ["emails_per_day_chart_div", "emails_per_week_chart_div", "emails_per_month_chart_div"]
+      divSelectors = [".emails_per_day_chart_div", ".emails_per_week_chart_div", ".emails_per_month_chart_div"]
 
-      for divID in divIDs
-        div = $("#" + divID)
-        expect(div).toBeVisible()
+      for divSelector in divSelectors
+        div = @emailVolumeReportView.$el.find(divSelector)
+        expect(div.length).toEqual(1)
 
     it "renders the google chart", ->
       spy = sinon.spy(@emailVolumeReportView, "renderGoogleChart")

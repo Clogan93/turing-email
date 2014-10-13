@@ -55,7 +55,9 @@ SELECT email_threads.*
 sql
 
     email_threads = EmailThread.find_by_sql(sql)
-    email_threads = EmailThread.joins(:emails).includes(:emails).where(:id => email_threads).order('"emails"."date" DESC, "email_threads"."id" DESC')
+    email_threads = EmailThread.joins(:emails => :gmail_labels).
+                                includes(:emails => :gmail_labels).
+                                where(:id => email_threads).order('"emails"."date" DESC, "email_threads"."id" DESC')
     
     return email_threads
   end

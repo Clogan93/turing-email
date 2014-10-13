@@ -1,22 +1,20 @@
 describe "Email", ->
-  beforeEach ->
-    @sendEmailURL = "/api/v1/email_accounts/send_email"
-
-    @email = new TuringEmailApp.Models.Email()
-
-    @server = sinon.fakeServer.create()
-    @server.respondWith "POST", @sendEmailURL, JSON.stringify({})
-
-  afterEach ->
-    @server.restore()
-
   describe "#sendEmail", ->
     beforeEach ->
-      @email.tos = ["test@turinginc.com"]
+      @sendEmailURL = "/api/v1/email_accounts/send_email"
+  
+      @server = sinon.fakeServer.create()
+      @server.respondWith "POST", @sendEmailURL, JSON.stringify({})
 
-      @email.sendEmail()
+      email = new TuringEmailApp.Models.Email()
+      email.tos = ["test@turinginc.com"]
+      
+      email.sendEmail()
       @server.respond()
 
+    afterEach ->
+      @server.restore()
+      
     it "should send the email", ->
       expect(@server.requests.length).toEqual 1
       request = @server.requests[0]

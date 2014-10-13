@@ -8,6 +8,5 @@ class TuringEmailApp.Views.Reports.FoldersReportView extends Backbone.View
     @listenTo(@model, "destroy", @remove)
 
   render: ->
-    console.log @model.toJSON()
     @$el.html(@template(@model.toJSON()))
     return this

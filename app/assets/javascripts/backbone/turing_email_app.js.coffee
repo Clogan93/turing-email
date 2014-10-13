@@ -494,12 +494,14 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
   # TODO for now assumes the email thred is in the current folder but it might be in a different folder
   emailThreadSeenChanged: (emailThread, seenValue) ->
-    currentFolder = @collections.emailFolders.getEmailFolder(@selectedEmailFolderID())
-    
-    if currentFolder?
-      delta = if seenValue then -1 else 1
-      currentFolder.set("num_unread_threads", currentFolder.get("num_unread_threads") + delta)
-      @trigger("change:emailFolderUnreadCount", this, currentFolder)
+    delta = if seenValue then -1 else 1
+      
+    for folderID in emailThread.folderIDs()
+      folder = @collections.emailFolders.getEmailFolder(folderID)
+      continue if not folder?
+      
+      folder.set("num_unread_threads", folder.get("num_unread_threads") + delta)
+      @trigger("change:emailFolderUnreadCount", this, folder)
 
   ######################
   ### View Functions ###
@@ -579,8 +581,8 @@ window.TuringEmailApp = new(Backbone.View.extend(
   showAnalytics: ->
     @views.mainView.showAnalytics()
 
-  showReport: (divReportsID, ReportModel, ReportView) ->
-    @views.mainView.showReport(divReportsID, ReportModel, ReportView)
+  showReport: (ReportModel, ReportView) ->
+    @views.mainView.showReport(ReportModel, ReportView)
 
 ))(el: document.body)
 
@@ -601,4 +603,3 @@ window.onerror = (message, url, lineNumber, column, errorObj) ->
     TuringEmailApp.tattletale.log(JSON.stringify(errorObj.stack))
 
   TuringEmailApp.tattletale.send()
-  return false

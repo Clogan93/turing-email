@@ -100,34 +100,40 @@ class TuringEmailApp.Views.Main extends Backbone.View
     @primaryPaneDiv.append(@toolbarView.$el)
     @toolbarView.render()
 
-    if @emailThreadsListView.collection.length is 0
-      if @app.selectedEmailFolderID() is "INBOX"
-        @primaryPaneDiv.append("<div class='empty-text'>Congratulations on reaching inbox zero!</div>")
+    if isSplitPaneMode
+      splitPane = $("<div />", {class: "split_pane"}).appendTo(@primaryPaneDiv)
+
+      if @emailThreadsListView.collection.length is 0
+        emptyFolderMessageDiv = $("<div />", {class: "ui-layout-center"}).appendTo(splitPane)
       else
-        @primaryPaneDiv.append("<div class='empty-text'>There are no conversations with this label.</div>")
-    else
-      if isSplitPaneMode
-        splitPane = $("<div />", {class: "split_pane"}).appendTo(@primaryPaneDiv)
-  
         emailThreadsListViewDiv.addClass("ui-layout-center")
         splitPane.append(emailThreadsListViewDiv)
-        
-        emailThreadViewDiv = $("<div class='email_thread_view'><div class='email-thread-view-default-text'>No conversations selected</div></div>").appendTo(splitPane)
-        emailThreadViewDiv.addClass("ui-layout-south")
-  
-        @resizeSplitPane()
-        
-        @splitPaneLayout = splitPane.layout({
-          applyDefaultStyles: true,
-          resizable: true,
-          livePaneResizing: true,
-          showDebugMessages: true
-  
-          south__size: if @splitPaneLayout? then @splitPaneLayout.state.south.size else 0.5
-        });
+      
+      emailThreadViewDiv = $("<div class='email_thread_view'><div class='email-thread-view-default-text'>No conversations selected</div></div>").appendTo(splitPane)
+      emailThreadViewDiv.addClass("ui-layout-south")
+
+      @resizeSplitPane()
+      
+      @splitPaneLayout = splitPane.layout({
+        applyDefaultStyles: true,
+        resizable: true,
+        livePaneResizing: true,
+        showDebugMessages: true
+
+        south__size: if @splitPaneLayout? then @splitPaneLayout.state.south.size else 0.5
+      });
+    else
+      if @emailThreadsListView.collection.length is 0
+        emptyFolderMessageDiv = @primaryPaneDiv
       else
         @primaryPaneDiv.append(emailThreadsListViewDiv)
-  
+
+    if @emailThreadsListView.collection.length is 0
+      if @app.selectedEmailFolderID() is "INBOX"
+        emptyFolderMessageDiv.append("<div class='empty-text'>Congratulations on reaching inbox zero!</div>")
+      else
+        emptyFolderMessageDiv.append("<div class='empty-text'>There are no conversations with this label.</div>")
+    else
       @emailThreadsListView.$el = @$el.find(".email_threads_list_view_tbody")
       @emailThreadsListView.render()
 
@@ -136,43 +142,39 @@ class TuringEmailApp.Views.Main extends Backbone.View
   showSettings: ->
     return false if not @primaryPaneDiv?
     
-    @settingsView = new TuringEmailApp.Views.SettingsView(
+    settingsView = new TuringEmailApp.Views.SettingsView(
       model: @app.models.userSettings
       emailRules: @app.collections.emailRules
       brainRules: @app.collections.brainRules
     )
-    @settingsView.render()
+    settingsView.render()
 
-    @primaryPaneDiv.html(@settingsView.$el)
+    @primaryPaneDiv.html("")
+    @primaryPaneDiv.append(settingsView.$el)
 
-    return @settingsView
+    return settingsView
 
   showAnalytics: ->
     return false if not @primaryPaneDiv?
 
-    analyticsView = new TuringEmailApp.Views.AnalyticsView(
-      el: @primaryPaneDiv
-    )
+    analyticsView = new TuringEmailApp.Views.AnalyticsView()
     analyticsView.render()
+
+    @primaryPaneDiv.html("")
+    @primaryPaneDiv.append(analyticsView.$el)
     
     return analyticsView
 
-  showReport: (divReportsID, ReportModel, ReportView) ->
+  showReport: (ReportModel, ReportView) ->
     return false if not @primaryPaneDiv?
 
     reportModel = new ReportModel()
-    
-    if divReportsID
-      reportView = new ReportView(
-        model: reportModel
-        el: $("#" + divReportsID)
-      )
-    else
-      reportView = new ReportView(
-        model: reportModel
-      )
+    reportView = new ReportView(
+      model: reportModel
+    )
 
-      @primaryPaneDiv.html(reportView.$el)
+    @primaryPaneDiv.html("")
+    @primaryPaneDiv.append(reportView.$el)
 
     reportModel.fetch()
     

@@ -4,11 +4,8 @@ describe "ListsReportView", ->
 
     @listsReport = new TuringEmailApp.Models.Reports.ListsReport()
 
-    @listsReportDiv = $("<div />", {id: "lists_report"}).appendTo("body")
-
     @listsReportView = new TuringEmailApp.Views.Reports.ListsReportView(
       model: @listsReport
-      el: @listsReportDiv
     )
 
     listsReportFixtures = fixture.load("reports/lists_report.fixture.json", true);
@@ -18,7 +15,6 @@ describe "ListsReportView", ->
 
   afterEach ->
     @server.restore()
-    @listsReportDiv.remove()
 
     specStopTuringEmailApp()
 
@@ -32,12 +28,9 @@ describe "ListsReportView", ->
       @server.respond()
 
     it "renders the report", ->
-      expect(@listsReportDiv).toBeVisible()
-      expect(@listsReportDiv).toContainHtml("Reports <small>lists</small>")
+      expect(@listsReportView.$el).toContainHtml("Reports <small>lists</small>")
 
-      listReportStatsDiv = $("#list_report_statistics")
-      expect(listReportStatsDiv).toBeVisible()
-      
+      listReportStatsDiv = @listsReportView.$el.find("#list_report_statistics")
       expect(listReportStatsDiv).toContainHtml('<h4 class="h4">Lists email daily average</h4>')
       expect(listReportStatsDiv).toContainHtml('<h4 class="h4">Emails per list</h4>')
       expect(listReportStatsDiv).toContainHtml('<h4 class="h4">Email threads per list</h4>')
