@@ -54,6 +54,22 @@ describe "TreeView", ->
     afterEach ->
       @selectSpy.restore()
 
+    describe "under any selection conditions", ->
+      beforeEach ->
+        @emailFolder = new TuringEmailApp.Models.EmailFolder()
+
+      it "adds the selected_tree_folder class to the selecte folder's DOM element", ->
+        spy = sinon.spy($.prototype, "addClass")
+
+        @treeView.select(@emailFolder)
+
+        @emailFolders.fetch()
+        @server.respond()
+
+        expect(spy).toHaveBeenCalled()
+        expect(spy).toHaveBeenCalledWith("selected_tree_folder")
+        spy.restore()
+
     describe "without a selected item", ->
       beforeEach ->
         @emailFolders.fetch()
@@ -78,6 +94,14 @@ describe "TreeView", ->
 
       it "selects the item", ->
         expect(@selectSpy).toHaveBeenCalledWith(@emailFolder)
+
+      it "removes a class to the items dom element", ->
+        newEmailFolder = new TuringEmailApp.Models.EmailFolder()
+        spy = sinon.spy($.prototype, "removeClass")
+        @treeView.select(newEmailFolder)
+        expect(spy).toHaveBeenCalled()
+        expect(spy).toHaveBeenCalledWith("selected_tree_folder")
+        spy.restore()
 
     describe "when one of the labels contains no unread emails", ->
       beforeEach ->
