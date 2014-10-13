@@ -75,11 +75,11 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
         @insertHtmlIntoIframe email, index
 
   setupEmailExpandAndCollapse: ->
-    @$el.find(".email").click ->
-      $(this).find(".email_body").show()
-      $(this).removeClass("collapsed_email")
+    @$el.find(".email .email_information").click ->
+      $(this).parent().find(".email_body").toggle()
+      $(this).parent().toggleClass("collapsed_email")
 
-      $(this).siblings(".email").each ->
+      $(this).parent().siblings(".email").each ->
         $(this).addClass "collapsed_email"
         $(this).find(".email_body").hide()
 

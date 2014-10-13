@@ -35,7 +35,7 @@
   <div class="mail-box">
     <div class="mail-body">
       <% _.each(emails.reverse(), function(email, index) { %>
-        <div class="email<%= (emails.length > 1 && index < emails.length - 1) && email.seen ? " collapsed_email" : "" %>">
+        <div class="row email<%= (emails.length > 1 && index < emails.length - 1) && email.seen ? " collapsed_email" : "" %>">
           <div class="email_information">
             <div class="col-md-2">
               <%= fromPreview %>
@@ -47,11 +47,7 @@
               <%= datePreview %>
             </div>
           </div>
-          
-          <br />
-          <br />
-          <br />
-          
+
           <div class="email_body" <%= emails.length > 1 && index < emails.length - 1 ? "style=\"display: none;\"" : "" %>>
             <div class="row">
               <div class="col-md-11">

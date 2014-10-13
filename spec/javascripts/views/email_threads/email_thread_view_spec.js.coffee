@@ -65,13 +65,22 @@ describe "EmailThreadView", ->
 
     describe "#setupEmailExpandAndCollapse", ->
 
-      it "should have .email handle clicks", ->
-        expect(@emailThreadView.$el.find('.email')).toHandle("click")
+      it "should have .email .email_information handle clicks", ->
+        expect(@emailThreadView.$el.find('.email .email_information')).toHandle("click")
 
-      describe "when a .email is clicked", ->
+      describe "when a .email .email_information is clicked", ->
+        afterEach ->
+          @emailThreadView.$el.find('.email').first().find(".email_body").css("display", "none")
+
         it "should show the email body", ->
-          @emailThreadView.$el.find('.email').first().click()
+          @emailThreadView.$el.find('.email .email_information').first().click()
           expect(@emailThreadView.$el.find('.email').first().find(".email_body").css("display")).toEqual "block"
+
+      describe "when a .email .email_information is clicked twice", ->
+        it "should hide the email body", ->
+          @emailThreadView.$el.find('.email .email_information').first().click()
+          @emailThreadView.$el.find('.email .email_information').first().click()
+          expect(@emailThreadView.$el.find('.email').last().find(".email_body").css("display")).toEqual "none"
 
     describe "#setupButtons", ->
       
