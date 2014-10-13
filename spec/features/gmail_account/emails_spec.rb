@@ -11,7 +11,7 @@ describe 'Gmail emails support', :type => :feature, :js => true, :link_gmail_acc
     expect(email.email_recipients.bcc.first.person.email_address).to eq('bcc@bcc.com')
 
     expect(email.subject).to eq('subject')
-    expect(email.html_part).to eq('html_part')
+    verify_premailer_html(email.html_part, 'html_part')
     expect(email.text_part).to eq('text_part')
   end
   

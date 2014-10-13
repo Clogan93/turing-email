@@ -125,3 +125,10 @@ def append_where_condition(where_conditions, comparison, value)
   where_conditions[0] << comparison
   where_conditions[1] << value
 end
+
+def premailer_html(html)
+  premailer = Premailer.new(html, :with_html_string => true, :remove_ids =>true, :remove_scripts => true,
+                            :include_style_tags => false, :include_style_tags => false)
+  
+  return premailer.to_inline_css() 
+end
