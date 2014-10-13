@@ -106,8 +106,8 @@ ActiveRecord::Schema.define(version: 20140916063746) do
     t.boolean  "auto_filed_reported",     default: false
     t.integer  "auto_filed_folder_id"
     t.string   "auto_filed_folder_type"
-    t.text     "uid"
     t.text     "draft_id"
+    t.text     "uid"
     t.text     "message_id"
     t.text     "list_name"
     t.text     "list_id"
@@ -263,8 +263,9 @@ ActiveRecord::Schema.define(version: 20140916063746) do
 
   create_table "user_configurations", force: true do |t|
     t.integer  "user_id"
-    t.boolean  "genie_enabled",   default: true
-    t.text     "split_pane_mode", default: "off"
+    t.boolean  "genie_enabled",              default: true
+    t.text     "split_pane_mode",            default: "off"
+    t.boolean  "keyboard_shortcuts_enabled", default: true
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -5,6 +5,7 @@ class CreateUserConfigurations < ActiveRecord::Migration
 
       t.boolean :genie_enabled, :default => true
       t.text :split_pane_mode, :default => 'off'
+      t.boolean :keyboard_shortcuts_enabled, :default => true
 
       t.timestamps
     end

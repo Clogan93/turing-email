@@ -55,7 +55,7 @@ describe "SettingsView", ->
       expect(@settingsDiv).toContainHtml('<button id="email_bankruptcy_button" type="button" class="btn btn-block btn-danger">Declare Email Bankruptcy</button>')
 
     it "renders the keyboard shortcuts switch", ->
-      keyboardShortcutsSwitch = $("#keyboard_shortcuts_switch")
+      keyboardShortcutsSwitch = $(".keyboard_shortcuts_switch")
       expect(@settingsDiv).toContain(keyboardShortcutsSwitch)
       # TODO check if checked based on user settings value when it is added
 

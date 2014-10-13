@@ -57,7 +57,6 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
   setupKeyboardHandler: ->
     @keyboardHandler = new TuringEmailAppKeyboardHandler(this)
-    @keyboardHandler.start()
   
   setupMainView: ->
     @views.mainView = new TuringEmailApp.Views.Main(
@@ -111,6 +110,13 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @models.userSettings = new TuringEmailApp.Models.UserSettings()
     @models.userSettings.fetch()
     
+    @listenTo(@models.userSettings, "change:keyboard_shortcuts_enabled", =>
+      if @models.userSettings.get("keyboard_shortcuts_enabled")
+        @keyboardHandler.start()
+      else
+        @keyboardHandler.stop()
+    )
+
   setupEmailFolders: ->
     @collections.emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection()
     @views.emailFoldersTreeView = new TuringEmailApp.Views.EmailFolders.TreeView(
