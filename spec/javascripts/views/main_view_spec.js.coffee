@@ -234,7 +234,7 @@ describe "MainView", ->
             emailThreadView = $(@primaryPane.children()[0])
             expect(emailThreadView.html()).toEqual(@emailThreadView.$el.html())
 
-      describe "#showEmailThread", ->
+      describe "#renderEmptyText", ->
         beforeEach ->
           @mainView.emailThreadsListView.collection = new TuringEmailApp.Collections.EmailThreadsCollection()
 

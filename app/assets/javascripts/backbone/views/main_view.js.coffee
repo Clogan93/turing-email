@@ -100,33 +100,36 @@ class TuringEmailApp.Views.Main extends Backbone.View
     @primaryPaneDiv.append(@toolbarView.$el)
     @toolbarView.render()
 
-    if isSplitPaneMode
-      splitPane = $("<div />", {class: "split_pane"}).appendTo(@primaryPaneDiv)
-
-      emailThreadsListViewDiv.addClass("ui-layout-center")
-      splitPane.append(emailThreadsListViewDiv)
-      
-      emailThreadViewDiv = $("<div class='email_thread_view'><div class='email-thread-view-default-text'>No conversations selected</div></div>").appendTo(splitPane)
-      emailThreadViewDiv.addClass("ui-layout-south")
-
-      @resizeSplitPane()
-      
-      @splitPaneLayout = splitPane.layout({
-        applyDefaultStyles: true,
-        resizable: true,
-        livePaneResizing: true,
-        showDebugMessages: true
-
-        south__size: if @splitPaneLayout? then @splitPaneLayout.state.south.size else 0.5
-      });
-    else
-      @primaryPaneDiv.append(emailThreadsListViewDiv)
-
-    @emailThreadsListView.$el = @$el.find(".email_threads_list_view_tbody")
-    @emailThreadsListView.render()
-    
     if @emailThreadsListView.collection.length is 0
-      @renderEmptyText()
+      if @app.selectedEmailFolderID() is "INBOX"
+        @primaryPaneDiv.append("<div class='empty-text'>Congratulations on reaching inbox zero!</div>")
+      else
+        @primaryPaneDiv.append("<div class='empty-text'>There are no conversations with this label.</div>")
+    else
+      if isSplitPaneMode
+        splitPane = $("<div />", {class: "split_pane"}).appendTo(@primaryPaneDiv)
+  
+        emailThreadsListViewDiv.addClass("ui-layout-center")
+        splitPane.append(emailThreadsListViewDiv)
+        
+        emailThreadViewDiv = $("<div class='email_thread_view'><div class='email-thread-view-default-text'>No conversations selected</div></div>").appendTo(splitPane)
+        emailThreadViewDiv.addClass("ui-layout-south")
+  
+        @resizeSplitPane()
+        
+        @splitPaneLayout = splitPane.layout({
+          applyDefaultStyles: true,
+          resizable: true,
+          livePaneResizing: true,
+          showDebugMessages: true
+  
+          south__size: if @splitPaneLayout? then @splitPaneLayout.state.south.size else 0.5
+        });
+      else
+        @primaryPaneDiv.append(emailThreadsListViewDiv)
+  
+      @emailThreadsListView.$el = @$el.find(".email_threads_list_view_tbody")
+      @emailThreadsListView.render()
 
     return true
     
@@ -197,9 +200,3 @@ class TuringEmailApp.Views.Main extends Backbone.View
     emailThreadView.render()
   
     return emailThreadView
-
-  renderEmptyText: ->
-    if @app.selectedEmailFolderID() is "INBOX"
-      @emailThreadsListView.$el.append("<div class='empty-text'>Congratulations on reaching inbox zero!</div>")
-    else
-      @emailThreadsListView.$el.append("<div class='empty-text'>There are no conversations with this label.</div>")
