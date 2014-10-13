@@ -82,7 +82,7 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
       @trigger("emailFolderDeselected", this, @selectedItem())
 
     @selectedEmailFolder = emailFolder
-    @$el.find("#" + emailFolder.get("label_id")).addClass("selected_tree_folder")
+    @$el.find("#" + emailFolder?.get("label_id")).addClass("selected_tree_folder") if emailFolder?
 
     @trigger("emailFolderSelected", this, emailFolder) if (not options?.silent?) || options.silent is false
 
