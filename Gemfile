@@ -102,3 +102,6 @@ group :development, :test do
   gem 'sinon-rails', '~> 1.10.3'
   gem 'jasmine-sinon-rails', '~> 1.3.4'
 end
+
+# premailer
+gem 'premailer', '~> 1.8.2'

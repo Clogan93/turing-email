@@ -125,7 +125,7 @@ describe Email, :type => :model do
       expect(email.subject).to eq('test')
 
       expect(email.text_part).to eq("body\n")
-      expect(email.html_part).to eq("body\n")
+      verify_premailer_html(email.html_part, "body\n")
       expect(email.body_text).to eq(nil)
 
       expect(email.has_calendar_attachment).to eq(true)

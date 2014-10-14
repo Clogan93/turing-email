@@ -16,7 +16,7 @@ describe 'Gmail drafts support', :type => :feature, :js => true, :link_gmail_acc
     expect(email_draft.email_recipients.cc.first.person.email_address).to eq('cc@cc.com')
     expect(email_draft.email_recipients.bcc.first.person.email_address).to eq('bcc@bcc.com')
     expect(email_draft.subject).to eq('subject')
-    expect(email_draft.html_part).to eq('html_part')
+    verify_premailer_html(email_draft.html_part, 'html_part')
     expect(email_draft.text_part).to eq('text_part')
 
     # update draft
@@ -30,7 +30,7 @@ describe 'Gmail drafts support', :type => :feature, :js => true, :link_gmail_acc
     expect(email_draft.email_recipients.cc.count).to eq(0)
     expect(email_draft.email_recipients.bcc.count).to eq(0)
     expect(email_draft.subject).to eq('subject2')
-    expect(email_draft.html_part).to eq('html_part2')
+    verify_premailer_html(email_draft.html_part, 'html_part2')
     expect(email_draft.text_part).to eq('text_part2')
     
     # delete draft
@@ -46,7 +46,7 @@ describe 'Gmail drafts support', :type => :feature, :js => true, :link_gmail_acc
     email_draft = gmail_account.create_draft(SpecMisc::MAILINATOR_TEST_EMAIL, nil, nil, 'test', 'html_part', 'text_part')
     expect(email_draft.email_recipients.to.first.person.email_address).to eq(SpecMisc::MAILINATOR_TEST_EMAIL)
     expect(email_draft.subject).to eq('test')
-    expect(email_draft.html_part).to eq('html_part')
+    verify_premailer_html(email_draft.html_part, 'html_part')
     expect(email_draft.text_part).to eq('text_part')
 
     # send draft
@@ -54,7 +54,7 @@ describe 'Gmail drafts support', :type => :feature, :js => true, :link_gmail_acc
     expect(gmail_account.emails.find_by_draft_id(email_draft.draft_id)).to be(nil)
     expect(email.email_recipients.to.first.person.email_address).to eq(SpecMisc::MAILINATOR_TEST_EMAIL)
     expect(email.subject).to eq('test')
-    expect(email.html_part).to eq('html_part')
+    verify_premailer_html(email.html_part, 'html_part')
     expect(email.text_part).to eq('text_part')
   end
 end

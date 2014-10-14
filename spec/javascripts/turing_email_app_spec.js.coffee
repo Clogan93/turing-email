@@ -175,24 +175,48 @@ describe "TuringEmailApp", ->
         expect(spy).toHaveBeenCalled()
   
     describe "#setupUser", ->
-      beforeEach ->
+      it "loads the user and user settings", ->
         @server.restore()
-        
+
         userFixtures = fixture.load("user.fixture.json");
         @validUserFixture = userFixtures[0]["valid"]
 
         [@server] = specPrepareUserSettingsFetch()
         @server.respondWith "GET", "/api/v1/users/current", JSON.stringify(@validUserFixture)
-        
+
         TuringEmailApp.models.userSettings.fetch()
         TuringEmailApp.setupUser()
-        
+
         @server.respond()
-      
-      it "loads the user and user settings", ->
+        
         validateUserAttributes(TuringEmailApp.models.user.toJSON())
         validateUserSettingsAttributes(TuringEmailApp.models.userSettings.toJSON())
         
+      describe "the userSettings keyboard_shortcuts_enabled attribute changes", ->
+        beforeEach ->
+          @keyboardHandlerStartStub = sinon.stub(TuringEmailApp.keyboardHandler, "start")
+          @keyboardHandlerStopStub = sinon.stub(TuringEmailApp.keyboardHandler, "stop")
+
+        afterEach ->
+          @keyboardHandlerStartStub.restore()
+          @keyboardHandlerStopStub.restore()
+          
+        describe "to true", ->
+          beforeEach ->
+            TuringEmailApp.models.userSettings.set("keyboard_shortcuts_enabled", true)
+            
+          it "starts the keyboard shortcuts handler", ->
+            expect(@keyboardHandlerStartStub).toHaveBeenCalled()
+            expect(@keyboardHandlerStopStub).not.toHaveBeenCalled()
+
+        describe "to false", ->
+          beforeEach ->
+            TuringEmailApp.models.userSettings.set("keyboard_shortcuts_enabled", false)
+            
+          it "stops the keyboard shortcuts handler", ->
+            expect(@keyboardHandlerStartStub).not.toHaveBeenCalled()
+            expect(@keyboardHandlerStopStub).toHaveBeenCalled()
+
     describe "#setupEmailFolders", ->
       it "creates the email folders collection and tree view", ->
         TuringEmailApp.setupEmailFolders()
