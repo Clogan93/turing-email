@@ -60,3 +60,4 @@ describe "Email", ->
           @email.localDateString()
           expect(spy).toHaveBeenCalled()
           expect(spy).toHaveBeenCalledWith "2014-08-22T17:28:16.000Z"
+          spy.restore()

@@ -219,6 +219,7 @@ describe "EmailThread", ->
         @emailThread.removeFromFolder @folderID
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith [@emailThread.get("uid")], @folderID
+        spy.restore()
 
     describe "#trash", ->
       beforeEach ->
@@ -230,6 +231,7 @@ describe "EmailThread", ->
         @emailThread.trash()
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith [@emailThread.get("uid")]
+        spy.restore()
 
     describe "#applyGmailLabel", ->
       beforeEach ->
@@ -245,6 +247,7 @@ describe "EmailThread", ->
         @emailThread.applyGmailLabel @labelID, @labelName
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith [@emailThread.get("uid")], @labelID, @labelName
+        spy.restore()
 
     describe "#moveToFolder", ->
       beforeEach ->
@@ -260,6 +263,7 @@ describe "EmailThread", ->
         @emailThread.moveToFolder @folderID, @folderName
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith [@emailThread.get("uid")], @folderID, @folderName
+        spy.restore()
 
     describe "#folderIDs", ->
       beforeEach ->
