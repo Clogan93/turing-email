@@ -154,10 +154,32 @@ describe "MainView", ->
           beforeEach ->
             @mainView.emailThreadsListView.collection = new TuringEmailApp.Collections.EmailThreadsCollection()
 
-          it "should render the empty text", ->
-            spy = sinon.spy(@mainView, "renderEmptyText")
+            @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
+        
+          afterEach ->
+            @selectedEmailFolderIDStub.restore()
+
+          describe "when the currently selected folder is the inbox", ->
+            beforeEach ->
+              @selectedEmailFolderIDStub.returns("INBOX")
+              @mainView.showEmails(true)
+
+            it "renders that there are not conversations with that label.", ->
+              expect(@mainView.primaryPaneDiv).toContainHtml("<div class='empty-text'>Congratulations on reaching inbox zero!</div>")
+
+          describe "when the currently selected folder is not the inbox", ->
+            beforeEach ->
+              @selectedEmailFolderIDStub.returns("Label_45")
+              @mainView.showEmails(true)
+            
+            it "renders that there are not conversations with that label.", ->
+              expect(@mainView.primaryPaneDiv).toContainHtml("<div class='empty-text'>There are no conversations with this label.</div>")
+
+          it "does not render the email thread list view", ->
+            spy = sinon.spy(@mainView.emailThreadsListView, "render")
             @mainView.showEmails(true)
-            expect(spy).toHaveBeenCalled()
+            expect(spy).not.toHaveBeenCalled()
+            spy.restore()
 
       describe "#showSettings", ->
         beforeEach ->
@@ -239,28 +261,3 @@ describe "MainView", ->
           it "renders the email thread in the primary pane", ->
             emailThreadView = $(@primaryPane.children()[0])
             expect(emailThreadView.html()).toEqual(@emailThreadView.$el.html())
-
-      describe "#renderEmptyText", ->
-        beforeEach ->
-          @mainView.emailThreadsListView.collection = new TuringEmailApp.Collections.EmailThreadsCollection()
-
-          @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
-      
-        afterEach ->
-          @selectedEmailFolderIDStub.restore()
-
-        describe "when the currently selected folder is the inbox", ->
-          beforeEach ->
-            @selectedEmailFolderIDStub.returns("INBOX")
-            @mainView.showEmails(true)
-
-          it "renders that there are not conversations with that label.", ->
-            expect(@mainView.emailThreadsListView.$el).toContainHtml("<div class='empty-text'>Congratulations on reaching inbox zero!</div>")
-
-        describe "when the currently selected folder is not the inbox", ->
-          beforeEach ->
-            @selectedEmailFolderIDStub.returns("Label_45")
-            @mainView.showEmails(true)
-          
-          it "renders that there are not conversations with that label.", ->
-            expect(@mainView.emailThreadsListView.$el).toContainHtml("<div class='empty-text'>There are no conversations with this label.</div>")
