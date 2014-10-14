@@ -35,7 +35,7 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
         ), 3000
 
   setupSwitches: ->
-    @$el.find("#keyboard_shortcuts_switch").bootstrapSwitch()
+    @$el.find(".keyboard_shortcuts_switch").bootstrapSwitch()
     @$el.find("#split_pane_switch").bootstrapSwitch()
     @$el.find("#genie_switch").bootstrapSwitch()
 
@@ -43,10 +43,11 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     @$el.find("#user_settings_save_button").click (event) =>
       event.preventDefault()
       
-      genie_enabled = $("#genie_switch").parent().parent().hasClass("switch-on")
-      split_pane_mode = if $("#split_pane_switch").parent().parent().hasClass("switch-on") then "horizontal" else "off"
+      genie_enabled = @$el.find("#genie_switch").parent().parent().hasClass("switch-on")
+      split_pane_mode = if @$el.find("#split_pane_switch").parent().parent().hasClass("switch-on") then "horizontal" else "off"
+      keyboard_shortcuts_enabled = @$el.find(".keyboard_shortcuts_switch").parent().parent().hasClass("switch-on")
       
-      @model.set(genie_enabled: genie_enabled, split_pane_mode: split_pane_mode)
+      @model.set(genie_enabled: genie_enabled, split_pane_mode: split_pane_mode, keyboard_shortcuts_enabled: keyboard_shortcuts_enabled)
       @model.save(null, {
         patch: true
         success: (model, response) =>

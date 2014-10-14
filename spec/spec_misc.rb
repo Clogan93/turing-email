@@ -162,7 +162,12 @@ module SpecMisc
   end
   
   def verify_email(email, email_expected)
-    email_expected.each { |k, v| expect(email.send(k)).to eq(v) }
+    email_expected.each do |k, v|
+      next if k == "html_part"
+      expect(email.send(k)).to eq(v)
+    end
+    
+    verify_premailer_html(email["html_part"], email_expected["html_part"])
   end
   
   def verify_emails_in_gmail_label(gmail_account, label_id, emails_expected)
@@ -173,6 +178,12 @@ module SpecMisc
     emails.zip(emails_expected).each do |email, email_expected|
       verify_email(email, email_expected)
     end
+  end
+  
+  def verify_premailer_html(rendered_html, expected_html)
+    premailer_expected_html = premailer_html(expected_html)
+
+    expect(rendered_html).to eq(premailer_expected_html)
   end
 
   def capybara_signin_user(user)

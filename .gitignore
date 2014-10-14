@@ -28,3 +28,7 @@
 
 # Ignore Istanbul generated coverage statistics
 /coverage
+
+# Ignore DB Backup
+/db_backup
+
