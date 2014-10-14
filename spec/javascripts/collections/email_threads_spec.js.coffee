@@ -1,6 +1,6 @@
 describe "EmailThreadsCollection", ->
   beforeEach ->
-    emailThreadsFixtures = fixture.load("email_threads.fixture.json");
+    emailThreadsFixtures = fixture.load("email_threads.fixture.json")
     @validEmailThreadsFixture = emailThreadsFixtures[0]["valid"]
     
     @url = "/api/v1/email_threads/in_folder?folder_id=INBOX"

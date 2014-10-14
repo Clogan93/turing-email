@@ -1,5 +1,4 @@
 class TuringEmailApp.Models.EmailThread extends Backbone.Model
-  # TODO write tests
   @removeFromFolder: (emailThreadUIDs, emailFolderID) ->
     postData =
       email_thread_uids:  emailThreadUIDs
@@ -8,7 +7,6 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     # TODO error handling
     $.post "/api/v1/email_threads/remove_from_folder", postData
 
-  # TODO write tests
   @trash: (emailThreadUIDs) ->
     postData =
       email_thread_uids:  emailThreadUIDs
@@ -16,18 +14,16 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     # TODO error handling
     $.post "/api/v1/email_threads/trash", postData
 
-  # TODO write tests
   @applyGmailLabel: (emailThreadUIDs, labelID, labelName) ->
     postData =
       email_thread_uids: emailThreadUIDs
 
     postData.gmail_label_id = labelID if labelID?
-    postData.gmail_label_name = labelName if labelname?
+    postData.gmail_label_name = labelName if labelName?
 
     # TODO error handling
     $.post "/api/v1/email_threads/apply_gmail_label", postData
 
-  # TODO write tests
   @moveToFolder: (emailThreadUIDs, folderID, folderName) ->
     postData =
       email_thread_uids: emailThreadUIDs
