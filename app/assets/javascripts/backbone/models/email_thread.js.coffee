@@ -1,5 +1,4 @@
 class TuringEmailApp.Models.EmailThread extends Backbone.Model
-  # TODO write tests
   @removeFromFolder: (emailThreadUIDs, emailFolderID) ->
     postData =
       email_thread_uids:  emailThreadUIDs
@@ -8,7 +7,6 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     # TODO error handling
     $.post "/api/v1/email_threads/remove_from_folder", postData
 
-  # TODO write tests
   @trash: (emailThreadUIDs) ->
     postData =
       email_thread_uids:  emailThreadUIDs
@@ -16,18 +14,16 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     # TODO error handling
     $.post "/api/v1/email_threads/trash", postData
 
-  # TODO write tests
   @applyGmailLabel: (emailThreadUIDs, labelID, labelName) ->
     postData =
       email_thread_uids: emailThreadUIDs
 
     postData.gmail_label_id = labelID if labelID?
-    postData.gmail_label_name = labelName if labelname?
+    postData.gmail_label_name = labelName if labelName?
 
     # TODO error handling
     $.post "/api/v1/email_threads/apply_gmail_label", postData
 
-  # TODO write tests
   @moveToFolder: (emailThreadUIDs, folderID, folderName) ->
     postData =
       email_thread_uids: emailThreadUIDs
@@ -85,13 +81,13 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
 
   folderIDs: ->
     emails = @get("emails")
-    folderIDs = {}
+    folderIDs = []
 
     for email in emails
-      folderIDs[gmailLabel["label_id"]] = null for gmailLabel in email["gmail_labels"] if email["gmail_labels"]?
-      folderIDs[imapFolder["folder_id"]] = null for imapFolder in email["imap_folders"] if email["imap_folders"]?
+      folderIDs.push gmailLabel["label_id"] for gmailLabel in email["gmail_labels"] if email["gmail_labels"]?
+      folderIDs.push imapFolder["folder_id"] for imapFolder in email["imap_folders"] if email["imap_folders"]?
 
-    return _.keys(folderIDs)
+    return _.uniq(folderIDs)
 
   ##################
   ### Formatters ###
