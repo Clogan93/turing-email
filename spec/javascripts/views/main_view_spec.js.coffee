@@ -159,6 +159,12 @@ describe "MainView", ->
           afterEach ->
             @selectedEmailFolderIDStub.restore()
 
+          it "does not render the email thread list view", ->
+            spy = sinon.spy(@mainView.emailThreadsListView, "render")
+            @mainView.showEmails(true)
+            expect(spy).not.toHaveBeenCalled()
+            spy.restore()
+            
           describe "when the currently selected folder is the inbox", ->
             beforeEach ->
               @selectedEmailFolderIDStub.returns("INBOX")
@@ -174,12 +180,6 @@ describe "MainView", ->
             
             it "renders that there are not conversations with that label.", ->
               expect(@mainView.primaryPaneDiv).toContainHtml("<div class='empty-text'>There are no conversations with this label.</div>")
-
-          it "does not render the email thread list view", ->
-            spy = sinon.spy(@mainView.emailThreadsListView, "render")
-            @mainView.showEmails(true)
-            expect(spy).not.toHaveBeenCalled()
-            spy.restore()
 
       describe "#showSettings", ->
         beforeEach ->
