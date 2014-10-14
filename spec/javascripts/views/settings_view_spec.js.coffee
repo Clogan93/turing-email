@@ -54,11 +54,16 @@ describe "SettingsView", ->
       expect(@settingsDiv).toContainHtml('<h4 class="h4">Email Bankruptcy</h4>')
       expect(@settingsDiv).toContainHtml('<button id="email_bankruptcy_button" type="button" class="btn btn-block btn-danger">Declare Email Bankruptcy</button>')
 
+    it "renders the demo mode switch", ->
+      demoModeSwitch = $(".demo_mode_switch")
+      expect(@settingsDiv).toContain(demoModeSwitch)
+      expect(demoModeSwitch.is(":checked")).toEqual(@userSettings.get("demo_mode_enabled"))
+      
     it "renders the keyboard shortcuts switch", ->
       keyboardShortcutsSwitch = $(".keyboard_shortcuts_switch")
       expect(@settingsDiv).toContain(keyboardShortcutsSwitch)
-      # TODO check if checked based on user settings value when it is added
-
+      expect(keyboardShortcutsSwitch.is(":checked")).toEqual(@userSettings.get("keyboard_shortcuts_enabled"))
+      
     it "renders the email genie switch", ->
       genieSwitch = $("#genie_switch")
       expect(@settingsDiv).toContain(genieSwitch)

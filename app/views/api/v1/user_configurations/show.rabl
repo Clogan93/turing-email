@@ -4,4 +4,4 @@ node(:id) do |user_configuration|
   "id"
 end
 
-attributes :genie_enabled, :split_pane_mode, :keyboard_shortcuts_enabled
+attributes :demo_mode_enabled, :genie_enabled, :split_pane_mode, :keyboard_shortcuts_enabled

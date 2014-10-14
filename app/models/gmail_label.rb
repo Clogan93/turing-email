@@ -41,7 +41,8 @@ WITH RECURSIVE recent_email_threads AS (
             LATERAL (SELECT emails_inner.email_thread_id
                             FROM "emails" AS emails_inner
                             INNER JOIN "email_folder_mappings" AS email_folder_mappings_inner ON emails_inner."id" = email_folder_mappings_inner."email_id"
-                            WHERE email_folder_mappings_inner."email_folder_id" = #{self.id.to_i} AND
+                            WHERE emails_inner.draft_id IS NULL AND
+                                  email_folder_mappings_inner."email_folder_id" = #{self.id.to_i} AND
                                   email_folder_mappings_inner."email_folder_type" = '#{self.class.to_s}' AND
                                   emails_inner.email_thread_id <> ALL (recent_email_threads.seen)
                             ORDER BY emails_inner."date" DESC, emails_inner."id" DESC LIMIT 1) AS emails_lateral
@@ -57,7 +58,7 @@ sql
     email_threads = EmailThread.find_by_sql(sql)
     email_threads = EmailThread.joins(:emails => :gmail_labels).
                                 includes(:emails => :gmail_labels).
-                                where(:id => email_threads).order('"emails"."date" DESC, "email_threads"."id" DESC')
+                                where(:id => email_threads).order('"emails"."draft_id" NULLS FIRST, "emails"."date" DESC, "email_threads"."id" DESC')
     
     return email_threads
   end

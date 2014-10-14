@@ -206,10 +206,10 @@ describe GmailAccount, :type => :model do
   context 'apply_label_to_email' do
     let!(:email) { FactoryGirl.create(:email, :email_account => gmail_account) }
 
-    it 'should apply the label to the email by label_id' do
+    it 'fails when no label ID or name is specified' do
       expect(email.gmail_labels.length).to eq(0)
 
-      expect(gmail_account.apply_label_to_email(email)).to be(false)
+      expect(gmail_account.apply_label_to_email(email)).to be_nil()
 
       email.reload
       expect(email.gmail_labels.length).to eq(0)
@@ -221,7 +221,7 @@ describe GmailAccount, :type => :model do
       it 'should apply the label to the email by label_id' do
         expect(email.gmail_labels.length).to eq(0)
 
-        expect(gmail_account.apply_label_to_email(email, label_id: gmail_label.label_id)).to be(true)
+        expect(gmail_account.apply_label_to_email(email, label_id: gmail_label.label_id)).not_to be_nil()
 
         email.reload
         expect(email.gmail_labels.length).to eq(1)
@@ -231,7 +231,7 @@ describe GmailAccount, :type => :model do
       it 'should apply the label to the email by name' do
         expect(email.gmail_labels.length).to eq(0)
 
-        expect(gmail_account.apply_label_to_email(email, label_name: gmail_label.name)).to be(true)
+        expect(gmail_account.apply_label_to_email(email, label_name: gmail_label.name)).not_to be_nil()
 
         email.reload
         expect(email.gmail_labels.length).to eq(1)
@@ -241,7 +241,7 @@ describe GmailAccount, :type => :model do
       it 'should apply the label to the email by label_id and name' do
         expect(email.gmail_labels.length).to eq(0)
 
-        expect(gmail_account.apply_label_to_email(email, label_id: gmail_label.label_id, label_name: gmail_label.name)).to be(true)
+        expect(gmail_account.apply_label_to_email(email, label_id: gmail_label.label_id, label_name: gmail_label.name)).not_to be_nil()
 
         email.reload
         expect(email.gmail_labels.length).to eq(1)
@@ -256,7 +256,7 @@ describe GmailAccount, :type => :model do
       it 'should apply the label to the email by label_id' do
         expect(email.gmail_labels.length).to eq(0)
 
-        expect(gmail_account.apply_label_to_email(email, label_id: label_id)).to be(true)
+        expect(gmail_account.apply_label_to_email(email, label_id: label_id)).not_to be_nil()
 
         email.reload
         expect(email.gmail_labels.length).to eq(1)
@@ -266,7 +266,7 @@ describe GmailAccount, :type => :model do
       it 'should apply the label to the email by name' do
         expect(email.gmail_labels.length).to eq(0)
 
-        expect(gmail_account.apply_label_to_email(email, label_name: label_name)).to be(true)
+        expect(gmail_account.apply_label_to_email(email, label_name: label_name)).not_to be_nil()
 
         email.reload
         expect(email.gmail_labels.length).to eq(1)
@@ -276,7 +276,7 @@ describe GmailAccount, :type => :model do
       it 'should apply the label to the email by label_id and name' do
         expect(email.gmail_labels.length).to eq(0)
 
-        expect(gmail_account.apply_label_to_email(email, label_id: label_id, label_name: label_name)).to be(true)
+        expect(gmail_account.apply_label_to_email(email, label_id: label_id, label_name: label_name)).not_to be_nil()
 
         email.reload
         expect(email.gmail_labels.length).to eq(1)

@@ -96,6 +96,38 @@ module Google
       return result.data
     end
 
+    def messages_modify_call(userId, id, addLabelIds: nil, removeLabelIds: nil)
+      args = method(__method__).parameters[0...-2].map { |arg| {arg[1] => eval(arg[1].to_s)} }
+      parameters = Google::Misc.get_parameters_from_args(args)
+
+      body_object = {}
+      body_object[:addLabelIds] = addLabelIds if addLabelIds
+      body_object[:removeLabelIds] = removeLabelIds if removeLabelIds
+      
+      return :api_method => self.gmail_api.users.messages.modify,
+             :parameters => parameters, :body_object => body_object
+    end
+
+    def messages_modify(userId, id, addLabelIds: nil, removeLabelIds: nil)
+      call = self.messages_modify_call(userId, id, addLabelIds: addLabelIds, removeLabelIds: removeLabelIds)
+      result = self.api_client.execute!(call)
+      return result.data
+    end
+
+    def messages_trash_call(userId, id)
+      args = method(__method__).parameters.map { |arg| {arg[1] => eval(arg[1].to_s)} }
+      parameters = Google::Misc.get_parameters_from_args(args)
+
+      return :api_method => self.gmail_api.users.messages.trash,
+             :parameters => parameters
+    end
+
+    def messages_trash(userId, id)
+      call = self.messages_trash_call(userId, id)
+      result = self.api_client.execute!(call)
+      return result.data
+    end
+
     def messages_send(userId, threadId: nil, email_raw: nil)
       args = method(__method__).parameters[0...-2].map { |arg| {arg[1] => eval(arg[1].to_s)} }
       parameters = Google::Misc.get_parameters_from_args(args)

@@ -46,7 +46,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     if windowLocationHash is ""
       @routers.emailFoldersRouter.navigate("#email_folder/INBOX", trigger: true)
 
-    #@startEmailSync()
+    @startEmailSync()
 
   startEmailSync: ->
     window.setInterval @syncEmail, 60000

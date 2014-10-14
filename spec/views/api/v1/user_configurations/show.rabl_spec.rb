@@ -10,7 +10,7 @@ describe 'api/v1/user_configurations/show', :type => :view do
 
     user_configuration_rendered = JSON.parse(rendered)
 
-    expected_attributes = %w(id genie_enabled split_pane_mode keyboard_shortcuts_enabled)
+    expected_attributes = %w(id demo_mode_enabled genie_enabled split_pane_mode keyboard_shortcuts_enabled)
     expected_attributes_to_skip = %w(id)
     spec_validate_attributes(expected_attributes, user_configuration, user_configuration_rendered, expected_attributes_to_skip)
   end
