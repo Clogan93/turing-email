@@ -106,8 +106,8 @@ ActiveRecord::Schema.define(version: 20140916063746) do
     t.boolean  "auto_filed_reported",     default: false
     t.integer  "auto_filed_folder_id"
     t.string   "auto_filed_folder_type"
-    t.text     "draft_id"
     t.text     "uid"
+    t.text     "draft_id"
     t.text     "message_id"
     t.text     "list_name"
     t.text     "list_id"
