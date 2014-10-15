@@ -319,7 +319,7 @@ class GmailAccount < ActiveRecord::Base
       end
     end
 
-    return call
+    return [gmail_label, call]
   end
 
   def apply_label_to_emails(emails, label_id: nil, label_name: nil,

@@ -66,14 +66,14 @@ describe GmailAccount, :type => :model do
         expect(label_ids).to eq([gmail_label.label_id])
         expect(email.auto_filed_folder).to be(nil)
 
-        expect(gmail_account.move_email_to_folder(email, folder_id: gmail_label.label_id)).to be_nil()
+        expect(gmail_account.move_email_to_folder(email, folder_id: gmail_label.label_id)).not_to be_nil()
 
         email.reload
         label_ids = email.gmail_labels.pluck(:label_id)
         expect(label_ids).to eq([gmail_label.label_id])
         expect(email.auto_filed_folder).to be(nil)
 
-        expect(gmail_account.move_email_to_folder(email, folder_id: gmail_label.label_id, set_auto_filed_folder: true)).to be_nil()
+        expect(gmail_account.move_email_to_folder(email, folder_id: gmail_label.label_id, set_auto_filed_folder: true)).not_to be_nil()
 
         email.reload
         label_ids = email.gmail_labels.pluck(:label_id)
@@ -88,7 +88,7 @@ describe GmailAccount, :type => :model do
           label_ids = email.gmail_labels.pluck(:label_id)
           expect(label_ids).to eq([gmail_label.label_id])
 
-          expect(gmail_account.move_email_to_folder(email, folder_id: gmail_label_other.label_id)).to be_nil()
+          expect(gmail_account.move_email_to_folder(email, folder_id: gmail_label_other.label_id)).not_to be_nil()
   
           email.reload
           label_ids = email.gmail_labels.pluck(:label_id)
@@ -99,7 +99,7 @@ describe GmailAccount, :type => :model do
           label_ids = email.gmail_labels.pluck(:label_id)
           expect(label_ids).to eq([gmail_label.label_id])
 
-          expect(gmail_account.move_email_to_folder(email, folder_name: gmail_label_other.name)).to be_nil()
+          expect(gmail_account.move_email_to_folder(email, folder_name: gmail_label_other.name)).not_to be_nil()
   
           email.reload
           label_ids = email.gmail_labels.pluck(:label_id)
@@ -111,7 +111,7 @@ describe GmailAccount, :type => :model do
           expect(label_ids).to eq([gmail_label.label_id])
 
           expect(gmail_account.move_email_to_folder(email, folder_id: gmail_label_other.label_id,
-                                                    folder_name: gmail_label_other.name)).to be_nil()
+                                                    folder_name: gmail_label_other.name)).not_to be_nil()
 
           email.reload
           label_ids = email.gmail_labels.pluck(:label_id)
@@ -127,7 +127,7 @@ describe GmailAccount, :type => :model do
           label_ids = email.gmail_labels.pluck(:label_id)
           expect(label_ids).to eq([gmail_label.label_id])
 
-          expect(gmail_account.move_email_to_folder(email, folder_id: label_id)).to be_nil()
+          expect(gmail_account.move_email_to_folder(email, folder_id: label_id)).not_to be_nil()
 
           email.reload
           label_ids = email.gmail_labels.pluck(:label_id)
@@ -138,7 +138,7 @@ describe GmailAccount, :type => :model do
           label_ids = email.gmail_labels.pluck(:label_id)
           expect(label_ids).to eq([gmail_label.label_id])
 
-          expect(gmail_account.move_email_to_folder(email, folder_name: label_name)).to be_nil()
+          expect(gmail_account.move_email_to_folder(email, folder_name: label_name)).not_to be_nil()
 
           email.reload
           label_ids = email.gmail_labels.pluck(:label_id)
@@ -152,7 +152,7 @@ describe GmailAccount, :type => :model do
           label_ids = email.gmail_labels.pluck(:label_id)
           expect(label_ids).to eq([gmail_label.label_id])
 
-          expect(gmail_account.move_email_to_folder(email, folder_id: label_id, folder_name: label_name)).to be_nil()
+          expect(gmail_account.move_email_to_folder(email, folder_id: label_id, folder_name: label_name)).not_to be_nil()
 
           email.reload()
           label_ids = email.gmail_labels.pluck(:label_id)
@@ -172,7 +172,7 @@ describe GmailAccount, :type => :model do
         it 'should move the email to the new folder by label_id' do
           expect(email.gmail_labels.length).to eq(0)
   
-          expect(gmail_account.move_email_to_folder(email, folder_id: label_id)).to be_nil()
+          expect(gmail_account.move_email_to_folder(email, folder_id: label_id)).not_to be_nil()
   
           email.reload
           expect(email.gmail_labels.length).to eq(1)
@@ -182,7 +182,7 @@ describe GmailAccount, :type => :model do
         it 'should move the email to the new folder by name' do
           expect(email.gmail_labels.length).to eq(0)
   
-          expect(gmail_account.move_email_to_folder(email, folder_name: label_name)).to be_nil()
+          expect(gmail_account.move_email_to_folder(email, folder_name: label_name)).not_to be_nil()
   
           email.reload
           expect(email.gmail_labels.length).to eq(1)
@@ -192,7 +192,7 @@ describe GmailAccount, :type => :model do
         it 'should move the email to the new folder by label_id and name' do
           expect(email.gmail_labels.length).to eq(0)
   
-          expect(gmail_account.move_email_to_folder(email, folder_id: label_id, folder_name: label_name)).to be_nil()
+          expect(gmail_account.move_email_to_folder(email, folder_id: label_id, folder_name: label_name)).not_to be_nil()
   
           email.reload()
           expect(email.gmail_labels.length).to eq(1)
@@ -203,7 +203,7 @@ describe GmailAccount, :type => :model do
     end
   end
   
-  context 'apply_label_to_email' do
+  describe '#apply_label_to_email' do
     let!(:email) { FactoryGirl.create(:email, :email_account => gmail_account) }
 
     it 'fails when no label ID or name is specified' do
