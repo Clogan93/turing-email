@@ -20,11 +20,6 @@ class TuringEmailApp.Views.Main extends Backbone.View
     )
     @sidebarView.render()
 
-    # @footerView = new TuringEmailApp.Views.App.FooterView(
-    #   el: @$el.find("#footer")
-    # )
-    # @footerView.render()
-
     @composeView = new TuringEmailApp.Views.ComposeView(
       app: @app
       el: @$el.find("#compose_view")
