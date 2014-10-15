@@ -519,7 +519,14 @@ html, body {
   padding: 0px 0px 6px 10px;
 }
 
-#compose_button
-{
+#compose_button {
   font-variant: small-caps;
+}
+
+#top-search {
+  height: 50px;
+}
+
+.navbar-top-links li a {
+  padding: 18px 10px;
 }
