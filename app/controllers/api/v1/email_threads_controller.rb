@@ -80,7 +80,7 @@ class Api::V1::EmailThreadsController < ApiController
   
   def move_to_folder
     emails = Email.where(:id => @email_ids)
-    @email_account.move_emails_to_folder(current_user, emails, folder_id: params[:email_folder_id],
+    @email_account.move_emails_to_folder(emails, folder_id: params[:email_folder_id],
                                          folder_name: params[:email_folder_name])
     
     render :json => {}
@@ -99,7 +99,7 @@ class Api::V1::EmailThreadsController < ApiController
   
   def apply_gmail_label
     emails = Email.where(:id => @email_ids)
-    @email_account.apply_label_to_emails(current_user, emails, label_id: params[:gmail_label_id],
+    @email_account.apply_label_to_emails(emails, label_id: params[:gmail_label_id],
                                          label_name: params[:gmail_label_name])
 
     render :json => {}
@@ -116,7 +116,7 @@ class Api::V1::EmailThreadsController < ApiController
 
   def remove_from_folder
     emails = Email.where(:id => @email_ids)
-    @email_account.remove_emails_from_folder(current_user, emails, folder_id: params[:email_folder_id])
+    @email_account.remove_emails_from_folder(emails, folder_id: params[:email_folder_id])
 
     render :json => {}
   end
@@ -131,7 +131,7 @@ class Api::V1::EmailThreadsController < ApiController
 
   def trash
     emails = Email.where(:id => @email_ids)
-    @email_account.trash_emails(current_user, emails)
+    @email_account.trash_emails(emails)
 
     render :json => {}
   end
