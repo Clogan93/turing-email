@@ -115,7 +115,7 @@ describe "MainView", ->
       @server.respond()
 
       @mainView.createEmailThreadsListView(@emailThreads)
-      
+
       @primaryPane = @mainView.$el.find(".primary_pane")
     
     describe "View Functions", ->
