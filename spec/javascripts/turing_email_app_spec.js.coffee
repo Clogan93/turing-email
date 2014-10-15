@@ -180,6 +180,7 @@ describe "TuringEmailApp", ->
 
         userFixtures = fixture.load("user.fixture.json");
         @validUserFixture = userFixtures[0]["valid"]
+        
 
         [@server] = specPrepareUserSettingsFetch()
         @server.respondWith "GET", "/api/v1/users/current", JSON.stringify(@validUserFixture)
@@ -203,6 +204,7 @@ describe "TuringEmailApp", ->
           
         describe "to true", ->
           beforeEach ->
+            TuringEmailApp.models.userSettings.set("keyboard_shortcuts_enabled", false, silent: true)
             TuringEmailApp.models.userSettings.set("keyboard_shortcuts_enabled", true)
             
           it "starts the keyboard shortcuts handler", ->
@@ -211,6 +213,7 @@ describe "TuringEmailApp", ->
 
         describe "to false", ->
           beforeEach ->
+            TuringEmailApp.models.userSettings.set("keyboard_shortcuts_enabled", true, silent: true)
             TuringEmailApp.models.userSettings.set("keyboard_shortcuts_enabled", false)
             
           it "stops the keyboard shortcuts handler", ->
