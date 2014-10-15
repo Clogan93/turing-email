@@ -81,14 +81,16 @@ describe "MainView", ->
         @sidebarResizeSpy = sinon.stub(@mainView, "resizeSidebar", ->)
         @resizePrimaryPaneSpy = sinon.stub(@mainView, "resizePrimaryPane", ->)
         @resizeSplitPaneSpy = sinon.stub(@mainView, "resizeSplitPane", ->)
+        @resizeEmailThreadsListViewSpy = sinon.stub(@mainView, "resizeEmailThreadsListView", ->)
 
         @mainView.resize()
-        
+
       afterEach ->
         @sidebarResizeSpy.restore()
         @resizePrimaryPaneSpy.restore()
         @resizeSplitPaneSpy.restore()
-      
+        @resizeEmailThreadsListViewSpy.restore()
+
       it "resizes the sidebar", ->
         expect(@sidebarResizeSpy).toHaveBeenCalled()
 
@@ -97,7 +99,10 @@ describe "MainView", ->
 
       it "resizes the split pane", ->
         expect(@resizeSplitPaneSpy).toHaveBeenCalled()
-      
+
+      it "resizes the email threads list view pane", ->
+        expect(@resizeEmailThreadsListViewSpy).toHaveBeenCalled()
+
   describe "after render and createEmailThreadsListView", ->
     beforeEach ->
       @mainView.render()
@@ -115,6 +120,11 @@ describe "MainView", ->
     
     describe "View Functions", ->
       describe "#showEmails", ->
+        it "resizes the email threads live view", ->
+          @resizeEmailThreadsListViewSpy = sinon.stub(@mainView, "resizeEmailThreadsListView", ->)
+          @mainView.showEmails(true)
+          @resizeEmailThreadsListViewSpy.restore()
+
         describe "without split pane", ->
           beforeEach ->
             @resizeSplitPaneSpy = sinon.spy(@mainView, "resizeSplitPane")

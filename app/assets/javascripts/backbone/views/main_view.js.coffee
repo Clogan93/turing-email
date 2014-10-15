@@ -57,6 +57,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
     @resizeSidebar()
     @resizePrimaryPane()
     @resizeSplitPane()
+    @resizeEmailThreadsListView()
     
   resizeSidebar: ->
     return if not @sidebarView?
@@ -81,6 +82,15 @@ class TuringEmailApp.Views.Main extends Backbone.View
     height = 1 if height <= 0
     
     splitPaneDiv.height(height)
+
+  resizeEmailThreadsListView: ->
+    return if not @emailThreadsListView?
+
+    subjectOffset = @emailThreadsListView.$el.find(".mail-subject.contain-subject").first().offset()
+    subjectLeftPosition = if subjectOffset? then Math.ceil(subjectOffset.left) else 775
+    datePreviewWidth = @emailThreadsListView.$el.find(".text-right.mail-date").first().outerWidth()
+    newWidth = $(window).width() - subjectLeftPosition - datePreviewWidth - 2
+    @emailThreadsListView.$el.find(".mail-subject.contain-subject").css("max-width", newWidth)
 
   ######################
   ### View Functions ###
@@ -136,6 +146,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
     else
       @emailThreadsListView.$el = @$el.find(".email_threads_list_view_tbody")
       @emailThreadsListView.render()
+      @resizeEmailThreadsListView()
 
     return true
     
