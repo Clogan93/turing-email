@@ -130,6 +130,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
       @splitPaneLayout = splitPane.layout({
         applyDefaultStyles: true,
         resizable: true,
+        closable: false,
         livePaneResizing: true,
         showDebugMessages: true
 

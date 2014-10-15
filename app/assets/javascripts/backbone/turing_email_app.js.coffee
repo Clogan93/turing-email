@@ -53,6 +53,8 @@ window.TuringEmailApp = new(Backbone.View.extend(
       @syncEmail()
     60000)
 
+    @syncEmail()
+
   #######################
   ### Setup Functions ###
   #######################

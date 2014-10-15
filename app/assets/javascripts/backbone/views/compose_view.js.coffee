@@ -136,7 +136,14 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     
     if emailJSON.html_part?
       try
-        body = $($.parseHTML(emailJSON.html_part))
+        emailHTML = $($.parseHTML(emailJSON.html_part))
+        
+        if emailHTML.length is 0 || not emailHTML[0].nodeName.match(/body/i)?
+          body = $("<div />")
+          body.html(emailHTML)
+        else
+          body = emailHTML
+
         htmlFailed = false
       catch error
         console.log error
@@ -170,7 +177,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
 
     if html
       headerText = headerText.replace(/\r\n/g, "<br />")  
-      body.prepend(headerText)
+      $(body[0]).prepend(headerText)
     else
       body = $($.parseHTML(headerText + body))
 
