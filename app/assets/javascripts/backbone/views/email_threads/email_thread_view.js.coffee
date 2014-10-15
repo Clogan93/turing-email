@@ -11,9 +11,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
   render: ->
     if @model
       modelJSON = @model.toJSON()
-      modelJSON["fromPreview"] = @model.fromPreview()
-      modelJSON["subjectPreview"] = @model.subjectPreview()
-      modelJSON["datePreview"] = @model.datePreview()
+      @addPreviewDataToTheModelJSON modelJSON
       @$el.html(@template(modelJSON))
   
       @model.seenIs(true)
@@ -27,6 +25,17 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
       @$el.empty()
     
     return this
+
+  addPreviewDataToTheModelJSON: (modelJSON) ->
+    modelJSON["fromPreview"] = @model.fromPreview()
+    modelJSON["subjectPreview"] = @model.subjectPreview()
+    modelJSON["datePreview"] = @model.datePreview()
+    for email in modelJSON.emails
+      email["datePreview"] = TuringEmailApp.Models.Email.localDateString(email["date"])
+      if email.from_name?
+        email["fromPreview"] = email.from_name
+      else
+        email["fromPreview"] = email.from_address
 
   # TODO refactor
   # TODO write tests
