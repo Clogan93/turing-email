@@ -264,9 +264,9 @@ ActiveRecord::Schema.define(version: 20140916063746) do
   create_table "user_configurations", force: true do |t|
     t.integer  "user_id"
     t.boolean  "demo_mode_enabled",          default: true
-    t.boolean  "genie_enabled",              default: true
-    t.text     "split_pane_mode",            default: "off"
     t.boolean  "keyboard_shortcuts_enabled", default: true
+    t.boolean  "genie_enabled",              default: true
+    t.text     "split_pane_mode",            default: "horizontal"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
