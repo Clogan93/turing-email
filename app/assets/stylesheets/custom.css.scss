@@ -237,7 +237,7 @@ body {
 
   #email_folders {
     li {
-      padding: 4px 0px;
+      padding: 0px;
     }
     ul ul {
       padding-left: 20px;
@@ -464,4 +464,58 @@ table.table-mail tr td {
 {
   font-weight: bold !important;
   color: #1ab394 !important;
+}
+
+/* Fixed sidebar CSS */
+
+.fixed {
+  width: 200px;
+  float: left;
+  overflow: auto;
+}
+
+.fixed + div {
+   margin-left: 200px;
+   overflow: hidden;
+}
+
+html, body {
+  height: 100%;
+}
+
+.fill { 
+  min-height: 100%;
+  position: relative;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.filler {
+  padding: 0px;
+  margin: 0px;
+  overflow: auto;
+}
+
+.filler:after{
+  background-color:inherit;
+  bottom: 0;
+  content: "";
+  height: auto;
+  min-height: 100%;
+  left: 0;
+  margin:inherit;
+  right: 0;
+  position: absolute;
+  top: 0;
+  width: inherit;
+  z-index: -1;  
+}
+
+.mailbox-content {
+  padding: 10px 20px 10px 0px;
+}
+
+.wrapper-content {
+  padding-top: 0px;
+  padding-right: 0px;
 }

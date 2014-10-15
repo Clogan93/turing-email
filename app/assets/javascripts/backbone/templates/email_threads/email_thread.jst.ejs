@@ -38,13 +38,13 @@
         <div class="row email<%= (emails.length > 1 && index < emails.length - 1) && email.seen ? " collapsed_email" : "" %>">
           <div class="email_information">
             <div class="col-md-2">
-              <%= fromPreview %>
+              <%= email.fromPreview %>
             </div>
             <div class="col-md-8">
               <%= email.subject.trim() == "" ? "(no subject)" : email.subject %>
             </div>
             <div class="col-md-2">
-              <%= datePreview %>
+              <%= email.datePreview %>
             </div>
           </div>
 
