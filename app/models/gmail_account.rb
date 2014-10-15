@@ -141,6 +141,43 @@ class GmailAccount < ActiveRecord::Base
     self.save! if do_save
   end
 
+  def find_or_create_label(label_id: nil, label_name: nil)
+    gmail_label = GmailLabel.find_by(:gmail_account => self, :label_id => label_id) if label_id
+    gmail_label = GmailLabel.find_by(:gmail_account => self,
+                                     :name => label_name) if gmail_label.nil? && label_name
+
+    if gmail_label.nil?
+      log_console("LABEL DNE! Creating!!")
+
+      if not self.user.user_configuration.demo_mode_enabled
+        label_data = self.gmail_client.labels_create('me', label_name || 'New Label')
+        log_console label_data
+
+        gmail_label = sync_label_data(label_data)
+      else
+        gmail_label = GmailLabel.create!(
+          :gmail_account => self,
+          :label_id => label_id || SecureRandom.uuid(),
+          :name => label_name || 'New Label',
+          :label_type => 'user'
+        )
+      end
+    end
+    
+    return gmail_label
+  end
+
+  # polymorphic call 
+  def emails_set_seen(emails, seen)
+    if seen
+      self.remove_emails_from_folder(emails, folder_id: 'UNREAD')
+    else
+      self.apply_label_to_emails(emails, label_id: 'UNREAD')
+    end
+    
+    Email.where(:email_account => self, :uid => emails.pluck(:uid)).update_all(:seen => seen)
+  end
+  
   # polymorphic call
   def trash_emails(emails)
     if not self.user.user_configuration.demo_mode_enabled
@@ -208,11 +245,6 @@ class GmailAccount < ActiveRecord::Base
     end
 
     log_console("REMOVING #{email.uid} FROM folder_id=#{folder_id}")
-
-    if sync_gmail
-      removeLabelIds = email.gmail_labels.pluck(:label_id)
-      removeLabelIds.delete(folder_id)
-    end
 
     email_folder = GmailLabel.find_by(:gmail_account => self, :label_id => folder_id)
     EmailFolderMapping.where(:email => email.id, :email_folder => email_folder).destroy_all if email_folder
@@ -320,31 +352,24 @@ class GmailAccount < ActiveRecord::Base
       return nil
     end
 
-    gmail_label = GmailLabel.find_by(:gmail_account => self, :label_id => label_id) if label_id
-    gmail_label = GmailLabel.find_by(:gmail_account => self,
-                                     :name => label_name) if gmail_label.nil? && label_name
+    if label_id != 'UNREAD'
+      gmail_label = self.find_or_create_label(label_id: label_id, label_name: label_name)
+      gmail_label.apply_to_emails([email])
 
-    if gmail_label.nil?
-      log_console("LABEL DNE! Creating!!")
-
-      gmail_label = GmailLabel.create!(
-          :gmail_account => email.email_account,
-          :label_id => label_id || SecureRandom.uuid(),
-          :name => label_name || 'New Label',
-          :label_type => 'user'
-      )
+      label_id_final = gmail_label.label_id
+    else
+      gmail_label = nil
+      label_id_final = label_id
     end
-
-    gmail_label.apply_to_emails([email])
 
     call = nil
     if sync_gmail
       gmail_client = self.gmail_client if gmail_client.nil?
       
       if batch_request
-        call = gmail_client.messages_modify_call('me', email.uid, addLabelIds: [gmail_label.label_id])
+        call = gmail_client.messages_modify_call('me', email.uid, addLabelIds: [label_id_final])
       else
-        gmail_client.messages_modify('me', email.uid, addLabelIds: [gmail_label.label_id])
+        gmail_client.messages_modify('me', email.uid, addLabelIds: [label_id_final])
       end
     end
 
@@ -376,6 +401,7 @@ class GmailAccount < ActiveRecord::Base
     log_console("process_sync_failed_emails #{self.sync_failed_emails.count} emails!")
 
     gmail_ids = self.sync_failed_emails.pluck(:email_uid)
+    self.sync_failed_emails.where(:email_uid => gmail_ids).destroy_all()
     self.sync_gmail_ids(gmail_ids)
   end
 
@@ -423,7 +449,7 @@ class GmailAccount < ActiveRecord::Base
         gmail_label.name = label_data['name']
         gmail_label.message_list_visibility = label_data['messageListVisibility']
         gmail_label.label_list_visibility = label_data['labelListVisibility']
-        gmail_label.label_type = label_data['type']
+        gmail_label.label_type = label_data['type'] || 'user'
   
         gmail_label.save!
       end
@@ -505,7 +531,7 @@ class GmailAccount < ActiveRecord::Base
       
       sleep(1)
       
-      break if nextPageToken.nil?
+      break if nextPageToken.blank?
     end
 
     self.set_last_history_id_synced(last_history_id_synced)
@@ -557,7 +583,7 @@ class GmailAccount < ActiveRecord::Base
 
       sleep(1)
       
-      break if nextPageToken.nil?
+      break if nextPageToken.blank?
     end
     
     return num_emails_synced > 0
@@ -625,7 +651,7 @@ class GmailAccount < ActiveRecord::Base
       end
 
       gmail_data = result.data
-      #log_console("SYNC PROCESSING message.id = #{gmail_data['id']}")
+      log_console("SYNC PROCESSING message.id = #{gmail_data['id']}")
 
       begin
         if gmail_data['raw']

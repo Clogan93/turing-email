@@ -120,7 +120,7 @@ class Email < ActiveRecord::Base
     email.subject = email_raw.subject.nil? ? '' : email_raw.subject
 
     email.text_part = email_raw.text_part.decoded.force_utf8(true) if email_raw.text_part
-    email.html_part = premailer_html(email_raw.html_part.decoded.force_utf8(true)) if email_raw.html_part
+    email.html_part = premailer_html(email_raw.html_part.decoded).force_utf8(true) if email_raw.html_part
     
     email.body_text = email_raw.decoded.force_utf8(true) if !email_raw.multipart? && email_raw.content_type =~ /text/i
 

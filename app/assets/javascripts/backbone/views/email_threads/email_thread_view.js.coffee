@@ -113,13 +113,17 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     iframeHTML.css("overflow", "hidden")
     @updateIframeHeight(iframe)
 
+    iframe.contents().find("img").load(=>
+      @updateIframeHeight(iframe)
+    )
+
   updateIframeHeight: (iframe) ->
     body = iframe.contents().find("body")
 
     if body.length > 0
-      div = $(body.children()[0])  
-      body.height(div.height())
-      iframe.height(body.outerHeight(true))
+      div = $(body.children()[0])
+      iframe.height(div.outerHeight(true))
+      body.height(div.outerHeight(true))
     else
       html = iframe.contents().find("html")
       iframe.height(html.outerHeight(true))

@@ -27,7 +27,19 @@ module Google
     end
 
     # labels
+    
+    def labels_create(userId, name, labelListVisibility: "labelShow", messageListVisibility: "show")
+      args = method(__method__).parameters[0...-3].map { |arg| {arg[1] => eval(arg[1].to_s)} }
+      parameters = Google::Misc.get_parameters_from_args(args)
 
+      body_object = { :name => name, :labelListVisibility => labelListVisibility,
+                      :messageListVisibility => messageListVisibility }
+      
+      result = self.api_client.execute!(:api_method => self.gmail_api.users.labels.create,
+                                        :parameters => parameters, :body_object => body_object)
+      return result.data
+    end
+      
     def labels_list(userId, fields: nil)
       args = method(__method__).parameters.map { |arg| {arg[1] => eval(arg[1].to_s)} }
       parameters = Google::Misc.get_parameters_from_args(args)

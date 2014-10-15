@@ -5,7 +5,7 @@ class Api::V1::EmailsController < ApiController
 
   before_action :correct_user, :except => [:set_seen, :move_to_folder, :apply_gmail_label, :remove_from_folder, :trash]
   before_action :correct_email_account, :except => [:show]
-  before_action :filter_email_uids, :only => [:move_to_folder, :apply_gmail_label, :remove_from_folder, :trash]
+  before_action :filter_email_uids, :only => [:set_seen, :move_to_folder, :apply_gmail_label, :remove_from_folder, :trash]
 
   swagger_controller :emails, 'Emails Controller'
 
@@ -31,7 +31,8 @@ class Api::V1::EmailsController < ApiController
   end
   
   def set_seen
-    Email.where(:email_account => @email_account, :uid => params[:email_uids]).update_all(:seen => params[:seen])
+    emails = Email.where(:id => @email_ids)
+    @email_account.emails_set_seen(emails, params[:seen] == "true")
     
     render :json => {}
   end
@@ -41,6 +42,7 @@ class Api::V1::EmailsController < ApiController
     notes 'If the folder name does not exist it is created.'
 
     param :form, :email_thread_uids, :string, :required, 'Email UIDs'
+    param :form, :email_folder_id, :string, :required, 'Email Folder ID'
     param :form, :email_folder_name, :string, :required, 'Email Folder Name'
 
     response :ok
@@ -48,9 +50,8 @@ class Api::V1::EmailsController < ApiController
 
   def move_to_folder
     emails = Email.where(:id => @email_ids)
-    emails.each do |email|
-      @email_account.move_email_to_folder(email, folder_name: params[:email_folder_name])
-    end
+    @email_account.move_emails_to_folder(emails, folder_id: params[:email_folder_id],
+                                         folder_name: params[:email_folder_name])
 
     render :json => {}
   end
@@ -60,6 +61,7 @@ class Api::V1::EmailsController < ApiController
     notes 'If the Gmail Label does not exist it is created.'
 
     param :form, :email_thread_uids, :string, :required, 'Email UIDs'
+    param :form, :gmail_label_id, :string, :required, 'Gmail Label ID'
     param :form, :gmail_label_name, :string, :required, 'Gmail Label Name'
 
     response :ok
@@ -67,9 +69,8 @@ class Api::V1::EmailsController < ApiController
 
   def apply_gmail_label
     emails = Email.where(:id => @email_ids)
-    emails.each do |email|
-      @email_account.apply_label_to_email(email, label_name: params[:gmail_label_name])
-    end
+    @email_account.apply_label_to_emails(emails, label_id: params[:gmail_label_id],
+                                         label_name: params[:gmail_label_name])
 
     render :json => {}
   end
@@ -84,9 +85,8 @@ class Api::V1::EmailsController < ApiController
   end
 
   def remove_from_folder
-    email_folder = GmailLabel.find_by(:gmail_account => @email_account, :label_id => params[:email_folder_id])
-    
-    EmailFolderMapping.where(:email => @email_ids, :email_folder => email_folder).destroy_all if email_folder
+    emails = Email.where(:id => @email_ids)
+    @email_account.remove_emails_from_folder(emails, folder_id: params[:email_folder_id])
 
     render :json => {}
   end
@@ -100,8 +100,8 @@ class Api::V1::EmailsController < ApiController
   end
 
   def trash
-    trash_folder = @email_account.trash_folder
-    Email.trash_emails(@email_ids, trash_folder)
+    emails = Email.where(:id => @email_ids)
+    @email_account.trash_emails(emails)
     
     render :json => {}
   end

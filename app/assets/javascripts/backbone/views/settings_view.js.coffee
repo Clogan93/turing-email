@@ -35,7 +35,7 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
         ), 3000
 
   setupSwitches: ->
-    @$el.find("#demo_mode_switch").bootstrapSwitch()
+    @$el.find(".demo_mode_switch").bootstrapSwitch()
     @$el.find(".keyboard_shortcuts_switch").bootstrapSwitch()
     @$el.find("#genie_switch").bootstrapSwitch()
     @$el.find("#split_pane_switch").bootstrapSwitch()

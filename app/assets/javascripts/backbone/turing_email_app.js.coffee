@@ -49,7 +49,9 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @startEmailSync()
 
   startEmailSync: ->
-    window.setInterval @syncEmail, 60000
+    window.setInterval(=>
+      @syncEmail()
+    60000)
 
   #######################
   ### Setup Functions ###
@@ -197,8 +199,6 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
     @reloadEmailThreads(
       success: (collection, response, options) =>
-        @moveTuringEmailReportToTop(@views.emailThreadsListView)
-
         emailFolder = @collections.emailFolders.getEmailFolder(emailFolderID)
         @views.emailFoldersTreeView.select(emailFolder, silent: true)
         @trigger("change:currentEmailFolder", this, emailFolder, parseInt(@collections.emailThreads.page))
@@ -292,6 +292,8 @@ window.TuringEmailApp = new(Backbone.View.extend(
         @stopListening(emailThread) for emailThread in options.previousModels
         @listenTo(emailThread, "change:seen", @emailThreadSeenChanged) for emailThread in collection.models
 
+        @moveTuringEmailReportToTop(@views.emailThreadsListView)
+        
         myOptions.success(collection, response, options) if myOptions?.success?
         
       error: myOptions?.error

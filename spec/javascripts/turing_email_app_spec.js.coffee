@@ -46,7 +46,7 @@ describe "TuringEmailApp", ->
       @spy.restore()
     
     it "creates the sync email interval", ->
-      expect(@spy).toHaveBeenCalledWith(TuringEmailApp.syncEmail, 60000)
+      expect(@spy).toHaveBeenCalled()
 
   describe "setup functions", ->
     describe "#setupKeyboardHandler", ->
@@ -453,7 +453,6 @@ describe "TuringEmailApp", ->
           [@server, @validEmailThreadsFixture] = specPrepareEmailThreadsFetch(TuringEmailApp.collections.emailThreads)
 
           @reloadEmailThreadsSpy = sinon.spy(TuringEmailApp, "reloadEmailThreads")
-          @moveTuringEmailReportToTopSpy = sinon.spy(TuringEmailApp, "moveTuringEmailReportToTop")
           @emailFoldersTreeViewSelectSpy = sinon.spy(TuringEmailApp.views.emailFoldersTreeView, "select")
 
           @changecurrentEmailFolderSpy = sinon.backbone.spy(TuringEmailApp, "change:currentEmailFolder")
@@ -462,7 +461,6 @@ describe "TuringEmailApp", ->
           
         afterEach ->
           @reloadEmailThreadsSpy.restore()
-          @moveTuringEmailReportToTopSpy.restore()
           @emailFoldersTreeViewSelectSpy.restore()
 
           @changecurrentEmailFolderSpy.restore()
@@ -476,9 +474,6 @@ describe "TuringEmailApp", ->
           
           it "reloads the email threads", ->
             expect(@reloadEmailThreadsSpy).toHaveBeenCalled()
-            
-          it "moves the Turing email report to the top", ->
-            expect(@moveTuringEmailReportToTopSpy).toHaveBeenCalled()
             
           it "selects the email folder on the tree view", ->
             expect(@emailFoldersTreeViewSelectSpy).toHaveBeenCalledWith(@emailFolder, silent: true)
@@ -735,7 +730,7 @@ describe "TuringEmailApp", ->
           
           @success = sinon.spy()
           @error = sinon.spy()
-
+          
         afterEach ->
           @searchSpy.restore()
           @fetchSpy.restore()
@@ -761,13 +756,15 @@ describe "TuringEmailApp", ->
 
             @stopListeningSpy = sinon.spy(TuringEmailApp, "stopListening")
             @listenToSpy = sinon.spy(TuringEmailApp, "listenTo")
-
+            @moveTuringEmailReportToTopSpy = sinon.spy(TuringEmailApp, "moveTuringEmailReportToTop")
+            
             TuringEmailApp.reloadEmailThreads(success: @success, error: @error)
             @server.respond()
 
           afterEach ->
             @stopListeningSpy.restore()
             @listenToSpy.restore()
+            @moveTuringEmailReportToTopSpy.restore()
 
           it "stops listening on the old models", ->
             expect(@stopListeningSpy).toHaveBeenCalledWith(oldEmailThread) for oldEmailThread in @oldEmailThreads
@@ -776,6 +773,9 @@ describe "TuringEmailApp", ->
             for emailThread in TuringEmailApp.collections.emailThreads.models
               expect(@listenToSpy).toHaveBeenCalledWith(emailThread, "change:seen", TuringEmailApp.emailThreadSeenChanged)
 
+          it "moves the Turing email report to the top", ->
+            expect(@moveTuringEmailReportToTopSpy).toHaveBeenCalled()
+              
           it "calls the success callback", ->
             expect(@success).toHaveBeenCalled()
 
@@ -1762,18 +1762,14 @@ describe "TuringEmailApp", ->
           TuringEmailApp.showEmailEditorWithEmailThread emailThread.get("uid"), "reply"
           expect(spy).toHaveBeenCalled()
           expect(spy).toHaveBeenCalledWith(emailThread.get("emails")[0])
-          
-    describe "#moveTuringEmailReportToTop", ->
-      beforeEach ->
-        @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
-                
+
+
     describe "#moveTuringEmailReportToTop", ->
       beforeEach ->
         @server.restore()
   
         [@listViewDiv, emailThreadsListView, emailThreads, @server] = specCreateEmailThreadsListView()
         TuringEmailApp.views.emailThreadsListView = emailThreadsListView
-  
   
       afterEach ->
         @server.restore()
