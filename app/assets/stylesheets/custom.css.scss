@@ -508,7 +508,7 @@ html, body {
   position: absolute;
   top: 0;
   width: inherit;
-  z-index: -1;  
+  z-index: -1;
 }
 
 .mailbox-content {
@@ -516,6 +516,5 @@ html, body {
 }
 
 .wrapper-content {
-  padding-top: 0px;
-  padding-right: 0px;
+  padding: 0px 0px 6px 10px;
 }
