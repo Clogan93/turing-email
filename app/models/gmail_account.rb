@@ -175,7 +175,7 @@ class GmailAccount < ActiveRecord::Base
       self.apply_label_to_emails(emails, label_id: 'UNREAD')
     end
     
-    Email.where(:email_account => self, :uid => emails.pluck(:uid)).update_all(:seen => seen)
+    emails.update_all(:seen => seen)
   end
   
   # polymorphic call

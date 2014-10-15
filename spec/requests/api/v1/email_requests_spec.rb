@@ -63,7 +63,7 @@ describe Api::V1::EmailsController, :type => :request do
   context 'set_seen' do
     let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
     let!(:emails_not_seen) { FactoryGirl.create_list(:email, SpecMisc::TINY_LIST_SIZE, :email_account => gmail_account) }
-    let!(:emails_seen) { FactoryGirl.create_list(:email, SpecMisc::TINY_LIST_SIZE, :email_account => gmail_account, :seen => true) }
+    let!(:emails_seen) { FactoryGirl.create_list(:email, SpecMisc::TINY_LIST_SIZE, :email_account => gmail_account, :seen => "true") }
     let!(:emails_not_seen_uids) { Email.where(:id => emails_not_seen).pluck(:uid) }
     let!(:emails_seen_uids) { Email.where(:id => emails_seen).pluck(:uid) }
 
@@ -72,13 +72,13 @@ describe Api::V1::EmailsController, :type => :request do
       
       it 'should set seen to true' do
         emails_not_seen.each { |email| expect(email.seen).to be(false) }
-        post '/api/v1/emails/set_seen', :email_uids => emails_not_seen_uids, :seen => true
+        post '/api/v1/emails/set_seen', :email_uids => emails_not_seen_uids, :seen => "true"
         emails_not_seen.each { |email| expect(email.reload.seen).to be(true) }
       end
   
       it 'should set seen to false' do
         emails_seen.each { |email| expect(email.seen).to be(true) }
-        post '/api/v1/emails/set_seen', :email_uids => emails_seen_uids, :seen => false
+        post '/api/v1/emails/set_seen', :email_uids => emails_seen_uids, :seen => "false"
         emails_seen.each { |email| expect(email.reload.seen).to be(false) }
       end
     end
@@ -89,7 +89,7 @@ describe Api::V1::EmailsController, :type => :request do
 
       context 'when the other user has no email account' do
         it 'should return an error' do
-          post '/api/v1/emails/set_seen', :email_uids => emails_not_seen_uids, :seen => false
+          post '/api/v1/emails/set_seen', :email_uids => emails_not_seen_uids, :seen => "false"
           expect(response).to have_http_status($config.http_errors[:email_account_not_found][:status_code])
         end
       end
@@ -99,7 +99,7 @@ describe Api::V1::EmailsController, :type => :request do
 
         it 'should NOT set seen to true' do
           emails_not_seen.each { |email| expect(email.seen).to be(false) }
-          post '/api/v1/emails/set_seen', :email_uids => emails_not_seen_uids, :seen => true
+          post '/api/v1/emails/set_seen', :email_uids => emails_not_seen_uids, :seen => "true"
           emails_not_seen.each { |email| expect(email.reload.seen).to be(false) }
         end
       end
