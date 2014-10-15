@@ -123,6 +123,7 @@ describe "MainView", ->
         it "resizes the email threads live view", ->
           @resizeEmailThreadsListViewSpy = sinon.stub(@mainView, "resizeEmailThreadsListView", ->)
           @mainView.showEmails(true)
+          expect(@resizeEmailThreadsListViewSpy).toHaveBeenCalled()
           @resizeEmailThreadsListViewSpy.restore()
 
         describe "without split pane", ->
