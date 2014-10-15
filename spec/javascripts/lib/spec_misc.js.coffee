@@ -166,7 +166,7 @@ window.validateUserAttributes = (userJSON) ->
   validateAttributes(userJSON, expectedAttributes)
   
 window.validateUserSettingsAttributes = (userSettingsJSON) ->
-  expectedAttributes = ["id", "genie_enabled", "split_pane_mode"]
+  expectedAttributes = ["id", "demo_mode_enabled", "keyboard_shortcuts_enabled", "genie_enabled", "split_pane_mode"]
   validateAttributes(userSettingsJSON, expectedAttributes)
 
 window.validateBrainRulesAttributes = (brainRulesJSON) ->
