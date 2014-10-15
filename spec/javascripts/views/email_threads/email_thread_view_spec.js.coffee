@@ -49,9 +49,6 @@ describe "EmailThreadView", ->
           expect(fromNames[index]).toEqual email.from_name
           expect(textParts[index]).toEqual email.text_part
 
-      # it "should render the subject attribute", ->
-      #   expect(@emailThreadView.$el.find('#email_subject').text().trim()).toEqual @emailThread.get("emails")[0].subject
-
       describe " when there is a no html or text parts of the email yet there is a body part", ->
 
         it "should render the body part", ->
@@ -62,6 +59,29 @@ describe "EmailThreadView", ->
           @emailThread.get("emails")[0].body_text = randomBodyText
           @emailThreadView.render()
           expect(@emailThreadView.$el.find("pre[name='body_text']")).toContainHtml(randomBodyText)
+
+    describe "addPreviewDataToTheModelJSON", ->
+      beforeEach ->
+        @modelJSON = @emailThread.toJSON()
+        @emailThreadView.addPreviewDataToTheModelJSON @modelJSON
+        console.log @modelJSON
+
+      it "adds the fromPreview data to the model JSON", ->
+        expect(@modelJSON["fromPreview"]).toEqual @emailThread.get("emails")[0].from_name
+
+      it "adds the subjectPreview data to the model JSON", ->
+        expect(@modelJSON["subjectPreview"]).toEqual @emailThread.get("emails")[0].subject
+
+      it "adds the datePreview data to the model JSON", ->
+        expect(@modelJSON["datePreview"]).toEqual TuringEmailApp.Models.Email.localDateString(@emailThread.get("emails")[0].date)
+
+      it "adds the fromPreview data to each of the emails", ->
+        for email in @modelJSON.emails
+          expect(email["fromPreview"]).toEqual email.from_name
+
+      it "adds the datePreview data to each of the emails", ->
+        for email in @modelJSON.emails
+          expect(email["datePreview"]).toEqual TuringEmailApp.Models.Email.localDateString(email.date)
 
     describe "#setupEmailExpandAndCollapse", ->
 
