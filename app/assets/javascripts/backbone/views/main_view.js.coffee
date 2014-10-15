@@ -91,7 +91,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
     
     subjectOffset = subject.first().offset()
     subjectLeftPosition = Math.ceil(subjectOffset.left)
-    datePreviewWidth = @emailThreadsListView.$el.find(".text-right.mail-date").first().outerWidth()
+    datePreviewWidth = @emailThreadsListView.$el.find(".text-right.mail-date").first().outerWidth(true)
     newWidth = $(window).width() - subjectLeftPosition - datePreviewWidth - 2
     @emailThreadsListView.$el.find(".mail-subject.contain-subject").css("max-width", newWidth)
 
@@ -104,7 +104,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
 
     @primaryPaneDiv.html("")
 
-    emailThreadsListViewDiv = $('<div class="mail-box email_threads_list_view" style="border: none; margin: 0px;">
+    emailThreadsListViewDiv = $('<div class="mail-box email_threads_list_view">
                                    <table class="table table-hover table-mail">
                                      <tbody class="email_threads_list_view_tbody"></tbody>
                                    </table>
