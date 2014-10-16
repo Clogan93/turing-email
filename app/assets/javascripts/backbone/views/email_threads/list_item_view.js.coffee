@@ -17,7 +17,14 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     modelJSON["datePreview"] = @model.datePreview()
     @$el.html(@template(modelJSON))
 
-    if @model.get("emails")[0].seen
+    seen = true
+    
+    for email in @model.get("emails")
+      if !email.seen
+        seen = false
+        break
+    
+    if seen
       @markRead(silent: true)
     else
       @markUnread(silent: true)
