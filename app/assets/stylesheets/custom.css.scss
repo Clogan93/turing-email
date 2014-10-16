@@ -369,10 +369,11 @@ a#refresh_link {
 #bulk_action_checkbox_dropdown {
   button {
     background-color: white;
-    border: 1px solid #d2d2d2;
+    border: 1px solid #e7eaec;
     float: left;
-    margin-right: 10px;
-    margin-top: -3px;
+    margin-right: 4px;
+    margin-top: 0px;
+    padding: 3px 12px;
   }
   ul {
     margin-top: 34px;
@@ -530,4 +531,9 @@ html, body {
 
 .navbar-top-links li a {
   padding: 18px 10px;
+}
+
+.toolbar-buttons
+{
+  padding-left: 0px;
 }
