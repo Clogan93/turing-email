@@ -305,15 +305,23 @@ describe "EmailThread", ->
       afterEach ->
         specStopTuringEmailApp()
 
+      describe "#numEmailsText", ->
+
+        it "returns an empty string when there is only one email", ->
+          expect(@emailThread.numEmailsText([0])).toEqual ""
+
+        it "returns the correct response under default conditions", ->
+          expect(@emailThread.numEmailsText(@emailThread.get("emails"))).toEqual " (2)"
+
       describe "#fromPreview", ->
 
         it "returns the correct response under default conditions", ->
-          expect(@emailThread.fromPreview()).toEqual("David Gobaud")
+          expect(@emailThread.fromPreview()).toEqual("David Gobaud (2)")
 
         it "returns the correct response when the most recent email sent from the user", ->
           @emailThread.get("emails")[0]["from_address"] = TuringEmailApp.models.user.get("email")
           @emailThread.get("emails")[1]["from_name"] = "Joe Blogs"
-          expect(@emailThread.fromPreview()).toEqual("Joe Blogs, me")
+          expect(@emailThread.fromPreview()).toEqual("Joe Blogs, me (2)")
 
         it "returns the correct response when the most recent email sent from the user and there is only one email", ->
           @emailThread.get("emails")[0]["from_address"] = TuringEmailApp.models.user.get("email")

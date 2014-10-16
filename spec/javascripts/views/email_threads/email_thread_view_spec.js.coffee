@@ -67,7 +67,7 @@ describe "EmailThreadView", ->
         console.log @modelJSON
 
       it "adds the fromPreview data to the model JSON", ->
-        expect(@modelJSON["fromPreview"]).toEqual @emailThread.get("emails")[0].from_name
+        expect(@modelJSON["fromPreview"]).toEqual @emailThread.get("emails")[0].from_name + " (2)"
 
       it "adds the subjectPreview data to the model JSON", ->
         expect(@modelJSON["subjectPreview"]).toEqual @emailThread.get("emails")[0].subject
