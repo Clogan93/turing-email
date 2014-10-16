@@ -145,10 +145,6 @@ body {
     cursor: pointer;
   }
 
-  .bullet_span:hover {
-    background-color: rgb(238, 238, 238);
-  }
-
   li.contains_unread_emails {
     font-weight: bold;
   }
@@ -172,7 +168,7 @@ body {
   }
 
   a.label_link:hover {
-    background-color: rgb(238, 238, 238);
+    background-color: #DFDFDF;
   }
 
   /* Send Email Dialog Styling */
