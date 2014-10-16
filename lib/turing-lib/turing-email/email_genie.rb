@@ -59,6 +59,15 @@ class EmailGenie
     auto_filed_emails.update_all(:auto_filed_reported => true)
   end
 
+  def EmailGenie.new_gmail_batch_request()
+    Google::APIClient::BatchRequest.new() do |result|
+      if result.error?
+        log_console("AHHHHHHHH batch error #{result.response.status}")
+        log_console(result.to_yaml())
+      end
+    end
+  end
+  
   def EmailGenie.process_gmail_account(gmail_account, demo = false)
     inbox_label = gmail_account.inbox_folder
     return if inbox_label.nil?
@@ -69,10 +78,9 @@ class EmailGenie
     top_lists_email_daily_average = Email.lists_email_daily_average(gmail_account.user, limit: 10).transpose()[0]
 
     if !gmail_account.user.user_configuration.demo_mode_enabled
-      batch_request = Google::APIClient::BatchRequest.new()
+      batch_request = EmailGenie.new_gmail_batch_request()
       gmail_client = gmail_account.gmail_client
     end
-    
     
     emails.each do |email|
       log_console("PROCESSING #{email.uid}")
@@ -87,9 +95,10 @@ class EmailGenie
         if !gmail_account.user.user_configuration.demo_mode_enabled
           batch_request.add(call)
           
-          if batch_request.calls.length == 100
+          if batch_request.calls.length == 5
             gmail_account.google_o_auth2_token.api_client.execute!(batch_request)
-            batch_request = Google::APIClient::BatchRequest.new()
+            batch_request = EmailGenie.new_gmail_batch_request()
+            sleep(1)
           end
         end
       end 

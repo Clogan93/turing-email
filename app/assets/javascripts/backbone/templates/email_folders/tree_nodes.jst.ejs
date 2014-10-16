@@ -4,10 +4,13 @@ var template = JST["backbone/templates/email_folders/tree_nodes"];
 var renderChildren, emailFolder, haveChildren, style;
 
 renderChildren = function() {
-  var childName;
+  var childNames, childIndex, childName;
 
-  for (childName in node.children) {
-    child = node.children[childName] %>
+  childNames = _.keys(node.children).sort();
+
+  for (childIndex in childNames) {
+    childName = childNames[childIndex];
+    child = node.children[childName]; %>
     <%= template({nodeName: childName, node: child}) %><%
   }
 }

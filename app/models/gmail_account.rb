@@ -154,8 +154,6 @@ class GmailAccount < ActiveRecord::Base
   
         if label_id != 'TRASH' && !self.user.user_configuration.demo_mode_enabled
           label_data = self.gmail_client.labels_create('me', label_name || 'New Label')
-          log_console label_data
-  
           gmail_label = sync_label_data(label_data)
         else
           gmail_label = GmailLabel.create!(
@@ -171,6 +169,8 @@ class GmailAccount < ActiveRecord::Base
         self.sync_labels()
   
         attempts += 1
+        
+        retry
       else
         raise ex
       end
