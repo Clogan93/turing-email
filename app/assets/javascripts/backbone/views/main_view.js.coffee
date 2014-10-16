@@ -77,9 +77,12 @@ class TuringEmailApp.Views.Main extends Backbone.View
 
   resizeEmailThreadsListView: ->
     return if not @emailThreadsListView?
-
-    subjectOffset = @emailThreadsListView.$el.find(".mail-subject.contain-subject").first().offset()
-    subjectLeftPosition = if subjectOffset? then Math.ceil(subjectOffset.left) else 775
+    
+    subject = @emailThreadsListView.$el.find(".mail-subject.contain-subject")
+    return if subject.length is 0
+    
+    subjectOffset = subject.first().offset()
+    subjectLeftPosition = Math.ceil(subjectOffset.left)
     datePreviewWidth = @emailThreadsListView.$el.find(".text-right.mail-date").first().outerWidth()
     newWidth = $(window).width() - subjectLeftPosition - datePreviewWidth - 2
     @emailThreadsListView.$el.find(".mail-subject.contain-subject").css("max-width", newWidth)
