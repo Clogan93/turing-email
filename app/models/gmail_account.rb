@@ -149,7 +149,7 @@ class GmailAccount < ActiveRecord::Base
     if gmail_label.nil?
       log_console("LABEL DNE! Creating!!")
 
-      if not self.user.user_configuration.demo_mode_enabled
+      if label_id != 'TRASH' && !self.user.user_configuration.demo_mode_enabled
         label_data = self.gmail_client.labels_create('me', label_name || 'New Label')
         log_console label_data
 
@@ -159,7 +159,7 @@ class GmailAccount < ActiveRecord::Base
           :gmail_account => self,
           :label_id => label_id || SecureRandom.uuid(),
           :name => label_name || 'New Label',
-          :label_type => 'user'
+          :label_type => label_id == 'TRASH' ? 'system' : 'user'
         )
       end
     end
@@ -197,8 +197,8 @@ class GmailAccount < ActiveRecord::Base
   def trash_email(email, sync_gmail: false, batch_request: false, gmail_client: nil)
     log_console("TRASHING #{email.uid}")
 
-    trash_folder = self.trash_folder
-    Email.trash_emails([email.id], trash_folder)
+    EmailFolderMapping.where(:email => email).destroy_all()
+    self.apply_label_to_email(email, label_id: 'TRASH')
 
     call = nil
     if sync_gmail
@@ -276,9 +276,9 @@ class GmailAccount < ActiveRecord::Base
     end
 
     emails.each do |email|
-      call = self.move_email_to_folder(email, folder_id: folder_id, folder_name: folder_name,
-                                       set_auto_filed_folder: set_auto_filed_folder,
-                                       sync_gmail: true, batch_request: true, gmail_client: gmail_client)
+      gmail_label, call = self.move_email_to_folder(email, folder_id: folder_id, folder_name: folder_name,
+                                                    set_auto_filed_folder: set_auto_filed_folder,
+                                                    sync_gmail: true, batch_request: true, gmail_client: gmail_client)
 
       batch_request.add(call) if not self.user.user_configuration.demo_mode_enabled
     end
@@ -303,7 +303,7 @@ class GmailAccount < ActiveRecord::Base
     
     EmailFolderMapping.destroy_all(:email => email)
     gmail_label, ignore = self.apply_label_to_email(email, label_id: folder_id, label_name: folder_name,
-                                                  set_auto_filed_folder: set_auto_filed_folder)
+                                                    set_auto_filed_folder: set_auto_filed_folder)
     call = nil
     if sync_gmail
       gmail_client = self.gmail_client if gmail_client.nil?
@@ -363,7 +363,7 @@ class GmailAccount < ActiveRecord::Base
     end
 
     call = nil
-    if sync_gmail
+    if sync_gmail && label_id_final != 'TRASH'
       gmail_client = self.gmail_client if gmail_client.nil?
       
       if batch_request

@@ -47,28 +47,6 @@ describe Email, :type => :model do
     end
   end
   
-  describe '#Email.trash_emails' do
-    let!(:gmail_account) { FactoryGirl.create(:gmail_account) }
-    let!(:gmail_label) { FactoryGirl.create(:gmail_label, :gmail_account => gmail_account) }
-    let!(:trash_label) { FactoryGirl.create(:gmail_label_trash, :gmail_account => gmail_account) }
-    let!(:emails) { FactoryGirl.create_list(:email, SpecMisc::MEDIUM_LIST_SIZE, :email_account => gmail_account) }
-    
-    before { gmail_label.apply_to_emails(emails) }
-    
-    it 'should move emails to the trash folder' do
-      expect(gmail_label.emails.length).to eq(emails.length)
-      expect(trash_label.emails.length).to eq(0)
-      
-      Email.trash_emails(emails, trash_label)
-      
-      gmail_label.reload
-      trash_label.reload
-
-      expect(gmail_label.emails.length).to eq(0)
-      expect(trash_label.emails.length).to eq(emails.length)
-    end
-  end
-  
   describe '#Email.email_raw_from_params' do
     let!(:email_raw) { Mail.new }
     let!(:parent_email) { FactoryGirl.create(:email) }

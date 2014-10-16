@@ -31,11 +31,6 @@ class Email < ActiveRecord::Base
                 pluck('list_name, list_id, COUNT(*) / (1 + EXTRACT(day FROM now() - MIN(date))) AS daily_average')
   end
   
-  def Email.trash_emails(email_ids, trash_folder = nil)
-    EmailFolderMapping.where(:email => email_ids).destroy_all
-    trash_folder.apply_to_emails(email_ids) if trash_folder
-  end
-  
   def Email.email_raw_from_params(tos, ccs, bccs, subject, html_part, text_part, email_account = nil, email_in_reply_to_uid = nil)
     email_raw = Mail.new do
       to tos
