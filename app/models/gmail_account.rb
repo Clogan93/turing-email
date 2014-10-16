@@ -459,7 +459,8 @@ class GmailAccount < ActiveRecord::Base
         gmail_label = GmailLabel.find_by(:gmail_account => self, :label_id => label_data['id'])
         gmail_label = GmailLabel.find_by(:gmail_account => self, :name => label_data['name']) if gmail_label.nil?
         gmail_label = GmailLabel.new(:gmail_account => self, :label_id => label_data['id']) if gmail_label.nil?
-  
+
+        gmail_label.label_id = label_data['id']
         gmail_label.name = label_data['name']
         gmail_label.message_list_visibility = label_data['messageListVisibility']
         gmail_label.label_list_visibility = label_data['labelListVisibility']
