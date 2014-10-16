@@ -559,3 +559,11 @@ html, body {
   height: 270px;
   overflow-y: scroll;
 }
+
+table.table-mail tr td {
+  padding: 1px !important;
+}
+
+.icheckbox_square-green {
+  transform: scale(0.7, 0.7);
+}
