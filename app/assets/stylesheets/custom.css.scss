@@ -576,3 +576,10 @@ table.table-mail tr td {
 {
   cursor: pointer;
 }
+
+.settings-view
+{
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
