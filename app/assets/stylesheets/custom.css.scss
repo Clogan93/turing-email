@@ -162,9 +162,13 @@ body {
     left: 350px;
   }
 
-  a.label_link, #reports_list a {
+  a.label_link {
     color: #666666;
     font-weight: normal;
+    max-width: 200px;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   a.label_link:hover {

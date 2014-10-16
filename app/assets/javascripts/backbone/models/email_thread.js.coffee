@@ -91,7 +91,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
 
   ##################
   ### Formatters ###
-  ##################  
+  ##################
 
   numEmailsText: (emails) ->
     return "" if emails.length is 1
