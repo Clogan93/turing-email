@@ -38,9 +38,9 @@ if (emailFolder) {
     <ul>
       <li class="<%= style %>">
         <% if (haveChildren) { %>
-          <span class="bullet_span">‣ </span>
+          <span class="bullet_span">► </span>
         <% } %>
-        <a id="<%= emailFolder.label_id %>" class="label_link" href="<%= emailFolder.label_id %>">
+        <a id="<%= emailFolder.label_id %>" class="label_link" href="<%= emailFolder.label_id %>" data-toggle="tooltip" title="<%= nodeName %>">
           <%= nodeName %> <span class="badge"><%= emailFolder.badgeString %></span>
         </a><%
   }

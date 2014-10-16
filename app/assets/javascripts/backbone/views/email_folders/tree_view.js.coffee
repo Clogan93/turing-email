@@ -50,11 +50,15 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
   #############
   ### Setup ###
   #############
-    
+
   setupNodes: ->
     @$el.find(".bullet_span").click (event) =>
       $(event.target).parent().children("ul").children("li").toggle()
-      
+      if $(event.target).text() == "► "
+        $(event.target).text("▼ ")
+      else
+        $(event.target).text("► ")
+
     @$el.find('a').click (event) =>
       event.preventDefault()
 
