@@ -1,5 +1,5 @@
 <div class="mail-tools tooltip-demo toolbar-elements row">
-  <div class="col-md-5 toolbar-buttons">
+  <div class="col-md-7 toolbar-buttons">
     <div class="dropdown" id="bulk_action_checkbox_dropdown">
       <button class="btn" data-toggle="dropdown" type="button">
         <input type="checkbox" class="i-checks">
@@ -18,53 +18,54 @@
     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Mark as unread"><i class="fa fa-eye-slash"></i></button>
     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Archive"><i class="fa fa-archive"></i></button>
     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Move to trash"><i class="fa fa-trash-o"></i></button>
-  </div>
 
-  <div class="dropdown col-md-2">
-    <button class="btn btn-primary dropdown-toggle" type="button" id="labelAsDropdownMenu" data-toggle="dropdown">
-      Label As:
-      <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="labelAsDropdownMenu">
-      <li role="presentation"><a role="menuitem" tabindex="-1" href="#" class="createNewLabel">Create new</a></li>
-      <li role="presentation" class="divider"></li>
-      <%
-      for(var i = 0; i < emailFolders.length; i++) {
-        var labelAsLinkID = _.uniqueId("labelAsLink")%>  
-        <li role="presentation">
-          <a role="menuitem" tabindex="-1" class="label_as_link" href="#"
-             id="<%= labelAsLinkID %>" name="<%= emailFolders[i]["label_id"] %>">
-            <%= emailFolders[i]["name"] %>
-          </a>
-        </li><%
-      } %>
-    </ul>
-  </div>
+    <span class="dropdown label-as">
+      <button class="btn btn-white btn-sm dropdown-toggle" type="button" id="labelAsDropdownMenu" data-toggle="dropdown">
+        Label As:
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="labelAsDropdownMenu">
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="#" class="createNewLabel">Create new</a></li>
+        <li role="presentation" class="divider"></li>
+        <%
+        for(var i = 0; i < emailFolders.length; i++) {
+          var labelAsLinkID = _.uniqueId("labelAsLink")%>  
+          <li role="presentation">
+            <a role="menuitem" tabindex="-1" class="label_as_link" href="#"
+               id="<%= labelAsLinkID %>" name="<%= emailFolders[i]["label_id"] %>">
+              <%= emailFolders[i]["name"] %>
+            </a>
+          </li><%
+        } %>
+      </ul>
+    </span>
 
-  <div class="dropdown col-md-2">
-    <button class="btn btn-primary dropdown-toggle" type="button" id="moveToFolderDropdownMenu" data-toggle="dropdown">
-      Move To Folder:
-      <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="moveToFolderDropdownMenu">
-      <li role="presentation"><a role="menuitem" tabindex="-1" href="#" class="createNewEmailFolder">Create new</a></li>
-      <li role="presentation" class="divider"></li>
-      <%
-      for(var i = 0; i < emailFolders.length; i++) {
-        var moveToFolderLinkID = _.uniqueId("moveToFolderLink")%>
-        <li role="presentation">
-          <a role="menuitem" tabindex="-1" class="move_to_folder_link" href="#"
-             id="<%= moveToFolderLinkID %>" name="<%= emailFolders[i]["label_id"] %>">
-            <%= emailFolders[i]["name"] %>
-          </a>
-        </li><%
-      } %>
+    <span class="dropdown">
+      <button class="btn btn-white btn-sm dropdown-toggle" type="button" id="moveToFolderDropdownMenu" data-toggle="dropdown">
+        Move To Folder:
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="moveToFolderDropdownMenu">
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="#" class="createNewEmailFolder">Create new</a></li>
+        <li role="presentation" class="divider"></li>
+        <%
+        for(var i = 0; i < emailFolders.length; i++) {
+          var moveToFolderLinkID = _.uniqueId("moveToFolderLink")%>
+          <li role="presentation">
+            <a role="menuitem" tabindex="-1" class="move_to_folder_link" href="#"
+               id="<%= moveToFolderLinkID %>" name="<%= emailFolders[i]["label_id"] %>">
+              <%= emailFolders[i]["name"] %>
+            </a>
+          </li><%
+        } %>
 
-    </ul>
-  </div>
+      </ul>
+    </span>
 
-  <div class="col-md-1">
-    <a href="#settings" class="btn btn-white btn-sm settings-button" data-toggle="tooltip" data-placement="top" title="Settings"><i class="fa fa-cog"></i></a>
+    <span>
+      <a href="#settings" class="btn btn-white btn-sm settings-button" data-toggle="tooltip" data-placement="top" title="Settings"><i class="fa fa-cog"></i></a>
+    </span>
+
   </div>
 
   <div class="btn-group pull-right pagination-buttons">

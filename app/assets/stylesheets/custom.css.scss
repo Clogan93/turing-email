@@ -462,8 +462,7 @@ table.table-mail tr td {
   text-overflow: ellipsis;
 }
 
-.selected_tree_folder
-{
+.selected_tree_folder {
   font-weight: bold !important;
   color: #1ab394 !important;
 }
@@ -503,7 +502,7 @@ html, body {
   overflow: auto;
 }
 
-.filler:after{
+.filler:after {
   background-color:inherit;
   bottom: 0;
   content: "";
@@ -539,17 +538,18 @@ html, body {
   padding: 18px 10px;
 }
 
-.toolbar-buttons
-{
+.toolbar-buttons {
   padding-left: 0px;
 }
 
-.email_threads_list_view
-{
+.email_threads_list_view {
   overflow-x: hidden !important;
 }
 
-.settings-button
-{
+.settings-button {
   margin-right: 8px;
+}
+
+.dropdown-menu {
+  margin-top: 10px;
 }
