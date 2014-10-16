@@ -563,9 +563,11 @@ describe "TuringEmailApp", ->
         TuringEmailApp.syncEmail()
 
         @reloadEmailThreadsSpy = sinon.spy(TuringEmailApp, "reloadEmailThreads")
+        @loadEmailFoldersSpy = sinon.spy(TuringEmailApp, "loadEmailFolders")
         
       afterEach ->
         @reloadEmailThreadsSpy.restore()
+        @loadEmailFoldersSpy.restore()
         
       it "posts the sync email request", ->
         expect(@server.requests.length).toEqual 1
@@ -574,19 +576,29 @@ describe "TuringEmailApp", ->
         expect(request.method).toEqual "POST"
         expect(request.url).toEqual "api/v1/email_accounts/sync"
 
-      it "does NOT reload the emails threads when emails have NOT been synced", ->
-        @server.respondWith "POST", "api/v1/email_accounts/sync",
-                            [200, {"Content-Type": "application/json"}, JSON.stringify(synced_emails: false)]
-        @server.respond()
+      describe "when no emails synced", ->
+        beforeEach ->
+          @server.respondWith "POST", "api/v1/email_accounts/sync",
+            [200, {"Content-Type": "application/json"}, JSON.stringify(synced_emails: false)]
+          @server.respond()
+          
+        it "does NOT reload the emails threads", ->
+          expect(@reloadEmailThreadsSpy).not.toHaveBeenCalled()
 
-        expect(@reloadEmailThreadsSpy).not.toHaveBeenCalled()
+        it "does NOT reload the emails folders", ->
+          expect(@loadEmailFoldersSpy).not.toHaveBeenCalled()
         
-      it "reloads the emails threads when emails have been synced", ->
-        @server.respondWith "POST", "api/v1/email_accounts/sync",
-                            [200, {"Content-Type": "application/json"}, JSON.stringify(synced_emails: true)]
-        @server.respond()
+      describe "when emails synced", ->
+        beforeEach ->
+          @server.respondWith "POST", "api/v1/email_accounts/sync",
+            [200, {"Content-Type": "application/json"}, JSON.stringify(synced_emails: true)]
+          @server.respond()
+        
+        it "reloads the emails threads", ->
+          expect(@reloadEmailThreadsSpy).toHaveBeenCalled()
 
-        expect(@reloadEmailThreadsSpy).toHaveBeenCalled()
+        it "reloads the emails folders", ->
+          expect(@reloadEmailThreadsSpy).toHaveBeenCalled()
 
     describe "Alert Functions", ->
       describe "#showAlert", ->

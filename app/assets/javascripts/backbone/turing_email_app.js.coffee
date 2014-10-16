@@ -220,6 +220,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     $.post("api/v1/email_accounts/sync").done((data, status) =>
       if data.synced_emails
         @reloadEmailThreads()
+        @loadEmailFolders()
     )
     
   #######################

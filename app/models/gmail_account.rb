@@ -142,25 +142,37 @@ class GmailAccount < ActiveRecord::Base
   end
 
   def find_or_create_label(label_id: nil, label_name: nil)
-    gmail_label = GmailLabel.find_by(:gmail_account => self, :label_id => label_id) if label_id
-    gmail_label = GmailLabel.find_by(:gmail_account => self,
-                                     :name => label_name) if gmail_label.nil? && label_name
-
-    if gmail_label.nil?
-      log_console("LABEL DNE! Creating!!")
-
-      if label_id != 'TRASH' && !self.user.user_configuration.demo_mode_enabled
-        label_data = self.gmail_client.labels_create('me', label_name || 'New Label')
-        log_console label_data
-
-        gmail_label = sync_label_data(label_data)
+    attempts = 1
+    
+    begin
+      gmail_label = GmailLabel.find_by(:gmail_account => self, :label_id => label_id) if label_id
+      gmail_label = GmailLabel.find_by(:gmail_account => self,
+                                       :name => label_name) if gmail_label.nil? && label_name
+  
+      if gmail_label.nil?
+        log_console("LABEL DNE! Creating!!")
+  
+        if label_id != 'TRASH' && !self.user.user_configuration.demo_mode_enabled
+          label_data = self.gmail_client.labels_create('me', label_name || 'New Label')
+          log_console label_data
+  
+          gmail_label = sync_label_data(label_data)
+        else
+          gmail_label = GmailLabel.create!(
+            :gmail_account => self,
+            :label_id => label_id || SecureRandom.uuid(),
+            :name => label_name || 'New Label',
+            :label_type => label_id == 'TRASH' ? 'system' : 'user'
+          )
+        end
+      end
+    rescue Google::APIClient::ServerError => ex
+      if attempts == 1
+        self.sync_labels()
+  
+        attempts += 1
       else
-        gmail_label = GmailLabel.create!(
-          :gmail_account => self,
-          :label_id => label_id || SecureRandom.uuid(),
-          :name => label_name || 'New Label',
-          :label_type => label_id == 'TRASH' ? 'system' : 'user'
-        )
+        raise ex
       end
     end
     
@@ -180,28 +192,28 @@ class GmailAccount < ActiveRecord::Base
   
   # polymorphic call
   def trash_emails(emails)
-    if not self.user.user_configuration.demo_mode_enabled
+    if !self.user.user_configuration.demo_mode_enabled
       gmail_client = self.gmail_client
       batch_request = Google::APIClient::BatchRequest.new()
     end
 
     emails.each do |email|
-      call = self.trash_email(email, sync_gmail: true, batch_request: true, gmail_client: gmail_client)
-      batch_request.add(call) if not self.user.user_configuration.demo_mode_enabled
+      call = self.trash_email(email, batch_request: true, gmail_client: gmail_client)
+      batch_request.add(call) if !self.user.user_configuration.demo_mode_enabled
     end
 
-    self.google_o_auth2_token.api_client.execute!(batch_request) if not self.user.user_configuration.demo_mode_enabled
+    self.google_o_auth2_token.api_client.execute!(batch_request) if !self.user.user_configuration.demo_mode_enabled
   end
 
   # polymorphic call
-  def trash_email(email, sync_gmail: false, batch_request: false, gmail_client: nil)
+  def trash_email(email, batch_request: false, gmail_client: nil)
     log_console("TRASHING #{email.uid}")
 
     EmailFolderMapping.where(:email => email).destroy_all()
-    self.apply_label_to_email(email, label_id: 'TRASH')
+    self.apply_label_to_email(email, label_id: 'TRASH', batch_request: batch_request, gmail_client: gmail_client)
 
     call = nil
-    if sync_gmail
+    if !email.user.user_configuration.demo_mode_enabled
       gmail_client = self.gmail_client if gmail_client.nil?
 
       if batch_request
@@ -221,24 +233,23 @@ class GmailAccount < ActiveRecord::Base
       return false
     end
 
-    if not self.user.user_configuration.demo_mode_enabled
+    if !self.user.user_configuration.demo_mode_enabled
       gmail_client = self.gmail_client
       batch_request = Google::APIClient::BatchRequest.new()
     end
 
     emails.each do |email|
       call = self.remove_email_from_folder(email, folder_id: folder_id,
-                                      sync_gmail: true, batch_request: true, gmail_client: gmail_client)
+                                           batch_request: true, gmail_client: gmail_client)
 
-      batch_request.add(call) if not self.user.user_configuration.demo_mode_enabled
+      batch_request.add(call) if !self.user.user_configuration.demo_mode_enabled
     end
 
-    self.google_o_auth2_token.api_client.execute!(batch_request) if not self.user.user_configuration.demo_mode_enabled
+    self.google_o_auth2_token.api_client.execute!(batch_request) if !self.user.user_configuration.demo_mode_enabled
   end
 
   # polymorphic call
-  def remove_email_from_folder(email, folder_id: nil,
-                               sync_gmail: false, batch_request: false, gmail_client: nil)
+  def remove_email_from_folder(email, folder_id: nil, batch_request: false, gmail_client: nil)
     if folder_id.nil?
       log_console("REMOVING FAILED #{email.uid} FROM folder_id IS NIL!")
       return false
@@ -250,7 +261,7 @@ class GmailAccount < ActiveRecord::Base
     EmailFolderMapping.where(:email => email.id, :email_folder => email_folder).destroy_all if email_folder
     
     call = nil
-    if sync_gmail
+    if !email.user.user_configuration.demo_mode_enabled
       gmail_client = self.gmail_client if gmail_client.nil?
 
       if batch_request
@@ -270,7 +281,7 @@ class GmailAccount < ActiveRecord::Base
       return false
     end
 
-    if not self.user.user_configuration.demo_mode_enabled
+    if !self.user.user_configuration.demo_mode_enabled
       gmail_client = self.gmail_client
       batch_request = Google::APIClient::BatchRequest.new()
     end
@@ -278,17 +289,17 @@ class GmailAccount < ActiveRecord::Base
     emails.each do |email|
       gmail_label, call = self.move_email_to_folder(email, folder_id: folder_id, folder_name: folder_name,
                                                     set_auto_filed_folder: set_auto_filed_folder,
-                                                    sync_gmail: true, batch_request: true, gmail_client: gmail_client)
+                                                    batch_request: true, gmail_client: gmail_client)
 
-      batch_request.add(call) if not self.user.user_configuration.demo_mode_enabled
+      batch_request.add(call) if !self.user.user_configuration.demo_mode_enabled
     end
 
-    self.google_o_auth2_token.api_client.execute!(batch_request) if not self.user.user_configuration.demo_mode_enabled
+    self.google_o_auth2_token.api_client.execute!(batch_request) if !self.user.user_configuration.demo_mode_enabled
   end
   
   # polymorphic call
   def move_email_to_folder(email, folder_id: nil, folder_name: nil, set_auto_filed_folder: false,
-                           sync_gmail: false, batch_request: false, gmail_client: nil)
+                           batch_request: false, gmail_client: nil)
     if folder_id.nil? && folder_name.nil?
       log_console("MOVING FAILED #{email.uid} TO folder_id AND folder_name are NIL!")
       return false
@@ -296,16 +307,18 @@ class GmailAccount < ActiveRecord::Base
 
     log_console("MOVING #{email.uid} TO folder_id=#{folder_id} folder_name=#{folder_name}")
 
-    if sync_gmail
+    if !email.user.user_configuration.demo_mode_enabled
       removeLabelIds = email.gmail_labels.pluck(:label_id)
       removeLabelIds.delete(folder_id)
+      removeLabelIds.delete('SENT')
     end
     
     EmailFolderMapping.destroy_all(:email => email)
     gmail_label, ignore = self.apply_label_to_email(email, label_id: folder_id, label_name: folder_name,
-                                                    set_auto_filed_folder: set_auto_filed_folder)
+                                                    set_auto_filed_folder: set_auto_filed_folder,
+                                                    batch_request: batch_request, gmail_client: gmail_client)
     call = nil
-    if sync_gmail
+    if !email.user.user_configuration.demo_mode_enabled
       gmail_client = self.gmail_client if gmail_client.nil?
 
       if batch_request
@@ -329,7 +342,7 @@ class GmailAccount < ActiveRecord::Base
       return false
     end
 
-    if not self.user.user_configuration.demo_mode_enabled
+    if !self.user.user_configuration.demo_mode_enabled
       gmail_client = self.gmail_client
       batch_request = Google::APIClient::BatchRequest.new()
     end
@@ -337,16 +350,16 @@ class GmailAccount < ActiveRecord::Base
     emails.each do |email|
       gmail_label, call = self.apply_label_to_email(email, label_id: label_id, label_name: label_name,
                                                       set_auto_filed_folder: set_auto_filed_folder,
-                                                      sync_gmail: true, batch_request: true, gmail_client: gmail_client)
+                                                      batch_request: true, gmail_client: gmail_client)
       
-      batch_request.add(call) if not self.user.user_configuration.demo_mode_enabled
+      batch_request.add(call) if !self.user.user_configuration.demo_mode_enabled
     end
     
-    self.google_o_auth2_token.api_client.execute!(batch_request) if not self.user.user_configuration.demo_mode_enabled
+    self.google_o_auth2_token.api_client.execute!(batch_request) if !self.user.user_configuration.demo_mode_enabled
   end
   
   def apply_label_to_email(email, label_id: nil, label_name: nil, set_auto_filed_folder: false,
-                           sync_gmail: false, batch_request: false, gmail_client: nil)
+                           batch_request: false, gmail_client: nil, gmail_sync: true)
     if label_id.nil? && label_name.nil?
       log_console("APPLY LABEL TO #{email.uid} FAILED label_id=#{label_id} label_name=#{label_name}")
       return nil
@@ -363,7 +376,7 @@ class GmailAccount < ActiveRecord::Base
     end
 
     call = nil
-    if sync_gmail && label_id_final != 'TRASH'
+    if gmail_sync && !email.user.user_configuration.demo_mode_enabled && label_id_final != 'TRASH'
       gmail_client = self.gmail_client if gmail_client.nil?
       
       if batch_request
@@ -490,7 +503,8 @@ class GmailAccount < ActiveRecord::Base
         log_console("created #{gmail_label_id}")
       end
 
-      self.apply_label_to_email(email, label_id: gmail_label.label_id, label_name: gmail_label.name)
+      self.apply_label_to_email(email, label_id: gmail_label.label_id, label_name: gmail_label.name,
+                                gmail_sync: false)
     end
   end
 

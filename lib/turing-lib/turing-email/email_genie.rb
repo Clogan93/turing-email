@@ -67,6 +67,12 @@ class EmailGenie
 
     sent_label = gmail_account.sent_folder
     top_lists_email_daily_average = Email.lists_email_daily_average(gmail_account.user, limit: 10).transpose()[0]
+
+    if !gmail_account.user.user_configuration.demo_mode_enabled
+      batch_request = Google::APIClient::BatchRequest.new()
+      gmail_client = gmail_account.gmail_client
+    end
+    
     
     emails.each do |email|
       log_console("PROCESSING #{email.uid}")
@@ -74,9 +80,22 @@ class EmailGenie
       if EmailGenie.email_is_unimportant(email, sent_label: sent_label)
         log_console("#{email.uid} is UNIMPORTANT!!")
     
-        EmailGenie.auto_file(email, inbox_label, sent_label: sent_label, top_lists_email_daily_average: top_lists_email_daily_average)
-      end
+        gmail_label, call = EmailGenie.auto_file(email, inbox_label, sent_label: sent_label,
+                                                 top_lists_email_daily_average: top_lists_email_daily_average,
+                                                 batch_request: true, gmail_client: gmail_client)
+        
+        if !gmail_account.user.user_configuration.demo_mode_enabled
+          batch_request.add(call)
+          
+          if batch_request.calls.length == 100
+            gmail_account.google_o_auth2_token.api_client.execute!(batch_request)
+            batch_request = Google::APIClient::BatchRequest.new()
+          end
+        end
+      end 
     end
+
+    gmail_account.google_o_auth2_token.api_client.execute!(batch_request) if !gmail_account.user.user_configuration.demo_mode_enabled
   end
 
   def EmailGenie.is_no_reply_address(address)
@@ -162,43 +181,64 @@ class EmailGenie
     return false
   end
 
-  def EmailGenie.auto_file(email, inbox_folder, sent_label: nil, top_lists_email_daily_average: nil)
+  def EmailGenie.auto_file(email, inbox_folder, sent_label: nil, top_lists_email_daily_average: nil,
+                           batch_request: false, gmail_client: nil)
     log_console("AUTO FILING! #{email.uid}")
 
+    folder_name = nil
     if EmailGenie.is_calendar_email(email)
-      email.email_account.move_email_to_folder(email, folder_name: 'Unimportant/Calendar', set_auto_filed_folder: true)
+      folder_name = 'Unimportant/Calendar'
     elsif EmailGenie.is_email_note_to_self(email)
-      email.email_account.move_email_to_folder(email, folder_name: 'Unimportant/Notes to Self', set_auto_filed_folder: true)
+      folder_name = 'Unimportant/Notes to Self'
     elsif EmailGenie.is_automatic_reply_email(email)
-      email.email_account.move_email_to_folder(email, folder_name: 'Unimportant/Automatic Replies', set_auto_filed_folder: true)
+      folder_name = 'Unimportant/Automatic Replies'
     elsif EmailGenie.is_unimportant_list_email(email)
       log_console("Found list_id=#{email.list_id}")
 
-      EmailGenie.auto_file_list_email(email, top_lists_email_daily_average: top_lists_email_daily_average)
+      gmail_label, call = 
+          EmailGenie.auto_file_list_email(email, top_lists_email_daily_average: top_lists_email_daily_average,
+                                          batch_request: batch_request, gmail_client: gmail_client)
     elsif EmailGenie.is_completed_conversation_email(email, sent_label)
-      email.email_account.move_email_to_folder(email, folder_name: 'Unimportant/Completed Conversations', set_auto_filed_folder: true)
+      folder_name = 'Unimportant/Completed Conversations'
     elsif EmailGenie.is_unimportant_group_email(email)
-      email.email_account.move_email_to_folder(email, folder_name: 'Unimportant/Group Conversations', set_auto_filed_folder: true)
+      folder_name =  'Unimportant/Group Conversations'
     else
-      email.email_account.move_email_to_folder(email, folder_name: 'Unimportant', set_auto_filed_folder: true)
+      folder_name = 'Unimportant'
+    end
+
+    if folder_name
+      gmail_label, call =
+          email.email_account.move_email_to_folder(email, folder_name:
+                                                   folder_name, set_auto_filed_folder: true,
+                                                   batch_request: batch_request, gmail_client: gmail_client)
     end
 
     email.auto_filed = true
     email.save!
+    
+    return gmail_label, call
   end
   
-  def EmailGenie.auto_file_list_email(email, top_lists_email_daily_average: nil)
+  def EmailGenie.auto_file_list_email(email, top_lists_email_daily_average: nil,
+                                      batch_request: false, gmail_client: nil)
     subfolder = email.list_name
     subfolder = email.list_id if subfolder.nil?
     
     if EmailGenie::LISTS.keys.include?(email.list_id.downcase)
-      email.email_account.move_email_to_folder(email, folder_name: EmailGenie::LISTS[email.list_id.downcase], set_auto_filed_folder: true)
+      folder_name = EmailGenie::LISTS[email.list_id.downcase]
     elsif email.from_address == 'notifications@github.com'
-      email.email_account.move_email_to_folder(email, folder_name: "GitHub/#{subfolder}", set_auto_filed_folder: true)
+      folder_name = "GitHub/#{subfolder}"
     elsif top_lists_email_daily_average.include?(email.list_id)
-      email.email_account.move_email_to_folder(email, folder_name: "List Emails/#{subfolder}", set_auto_filed_folder: true)
+      folder_name = "List Emails/#{subfolder}"
     else
-      email.email_account.move_email_to_folder(email, folder_name: 'List Emails', set_auto_filed_folder: true)
+      folder_name = 'List Emails'
     end
+
+    gmail_label, call =
+        email.email_account.move_email_to_folder(email, folder_name: folder_name,
+                                                 set_auto_filed_folder: true,
+                                                 batch_request: batch_request, gmail_client: gmail_client)
+
+    return gmail_label, call
   end
 end
