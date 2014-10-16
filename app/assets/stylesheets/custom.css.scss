@@ -472,7 +472,12 @@ table.table-mail tr td {
 .fixed {
   width: 200px;
   float: left;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.fixed:hover {
+  overflow-y: scroll;
 }
 
 .fixed + div {
