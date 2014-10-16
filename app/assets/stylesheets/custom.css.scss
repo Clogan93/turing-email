@@ -394,7 +394,7 @@ a#refresh_link {
 }
 
 #lowerEmailPane {
-  margin-right: -10px;
+  margin-right: 0px;
 }
 
 .settingsSaveAlert {
@@ -536,4 +536,9 @@ html, body {
 .toolbar-buttons
 {
   padding-left: 0px;
+}
+
+.email_threads_list_view
+{
+  overflow-x: hidden !important;
 }
