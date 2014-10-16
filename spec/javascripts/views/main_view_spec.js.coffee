@@ -37,9 +37,6 @@ describe "MainView", ->
     it "creates the sidebar view", ->
       expect(@mainView.sidebarView).toBeDefined()
 
-    it "creates the footer view", ->
-      expect(@mainView.footerView).toBeDefined()
-
     it "creates the compose view", ->
       expect(@mainView.composeView).toBeDefined()
       

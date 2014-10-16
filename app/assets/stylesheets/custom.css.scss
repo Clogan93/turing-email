@@ -118,9 +118,9 @@ body {
   .bullet_span {
     cursor: pointer;
     float: left;
-    padding-top: 2px;
+    padding-top: 4px;
     padding-right: 7px;
-    font-size: 22px;
+    font-size: 14px;
   }
 
   .label_without_children {
@@ -145,10 +145,6 @@ body {
     cursor: pointer;
   }
 
-  .bullet_span:hover {
-    background-color: rgb(238, 238, 238);
-  }
-
   li.contains_unread_emails {
     font-weight: bold;
   }
@@ -162,13 +158,17 @@ body {
     left: 350px;
   }
 
-  a.label_link, #reports_list a {
+  a.label_link {
     color: #666666;
     font-weight: normal;
+    max-width: 200px;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   a.label_link:hover {
-    background-color: rgb(238, 238, 238);
+    background-color: #DFDFDF;
   }
 
   /* Send Email Dialog Styling */
@@ -240,7 +240,7 @@ body {
       padding: 0px;
     }
     ul ul {
-      padding-left: 20px;
+      padding-left: 30px;
     }
   }
 
@@ -269,6 +269,7 @@ body {
 .table-mail .mail-date {
   font-size: 12px;
   min-width: 75px;
+  padding-right: 20px !important;
 }
 
 a#refresh_link {
@@ -369,10 +370,11 @@ a#refresh_link {
 #bulk_action_checkbox_dropdown {
   button {
     background-color: white;
-    border: 1px solid #d2d2d2;
+    border: 1px solid #e7eaec;
     float: left;
-    margin-right: 10px;
-    margin-top: -3px;
+    margin-right: 4px;
+    margin-top: 0px;
+    padding: 3px 12px;
   }
   ul {
     margin-top: 34px;
@@ -393,7 +395,7 @@ a#refresh_link {
 }
 
 #lowerEmailPane {
-  margin-right: -10px;
+  margin-right: 0px;
 }
 
 .settingsSaveAlert {
@@ -425,6 +427,7 @@ table.table-mail tr td {
 
 .mail-box-header {
   padding: 0px 20px 12px 20px !important;
+  min-width: 800px;
 }
 
 .pagination-buttons {
@@ -460,8 +463,7 @@ table.table-mail tr td {
   text-overflow: ellipsis;
 }
 
-.selected_tree_folder
-{
+.selected_tree_folder {
   font-weight: bold !important;
   color: #1ab394 !important;
 }
@@ -471,12 +473,16 @@ table.table-mail tr td {
 .fixed {
   width: 200px;
   float: left;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.fixed:hover {
+  overflow-y: scroll;
 }
 
 .fixed + div {
    margin-left: 200px;
-   overflow: hidden;
 }
 
 html, body {
@@ -496,7 +502,7 @@ html, body {
   overflow: auto;
 }
 
-.filler:after{
+.filler:after {
   background-color:inherit;
   bottom: 0;
   content: "";
@@ -508,7 +514,7 @@ html, body {
   position: absolute;
   top: 0;
   width: inherit;
-  z-index: -1;  
+  z-index: -1;
 }
 
 .mailbox-content {
@@ -516,12 +522,40 @@ html, body {
 }
 
 .wrapper-content {
-  padding-top: 0px;
-  padding-right: 0px;
+  padding: 0px 0px 6px 10px;
+}
+
+#compose_button {
+  font-variant: small-caps;
+}
+
+#top-search {
+  height: 50px;
+  width: 800px;
+}
+
+.navbar-top-links li a {
+  padding: 18px 10px;
+}
+
+.toolbar-buttons {
+  padding-left: 0px;
 }
 
 .email_threads_list_view {
   border: none !important;
   margin: 0px !important;
   padding: 0px !important;
+
+  overflow-x: hidden !important;
+}
+
+.settings-button {
+  margin-right: 8px;
+}
+
+.dropdown-menu {
+  margin-top: 10px;
+  height: 270px;
+  overflow-y: scroll;
 }

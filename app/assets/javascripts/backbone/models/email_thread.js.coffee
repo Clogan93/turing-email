@@ -91,14 +91,18 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
 
   ##################
   ### Formatters ###
-  ##################  
+  ##################
+
+  numEmailsText: (emails) ->
+    return "" if emails.length is 1
+    return " (" + emails.length.toString() + ")"
 
   fromPreview: ->
     emails = @get("emails")
     mostRecentEmail = emails[0]
     
     if mostRecentEmail.from_address isnt TuringEmailApp.models.user.get("email")
-      return if mostRecentEmail.from_name? then mostRecentEmail.from_name else mostRecentEmail.from_address
+      return if mostRecentEmail.from_name? then mostRecentEmail.from_name + @numEmailsText(emails) else mostRecentEmail.from_address + @numEmailsText(emails)
     
     if emails.length is 1
       return "me"
@@ -107,7 +111,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
       continue if index is 0
 
       if email.from_address isnt TuringEmailApp.models.user.get("email")
-        return if email.from_name? then email.from_name + ", me" else email.from_address + ", me"
+        return if email.from_name? then email.from_name + ", me" + @numEmailsText(emails) else email.from_address + ", me" + @numEmailsText(emails)
 
     return "me"
 

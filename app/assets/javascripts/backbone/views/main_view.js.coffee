@@ -20,11 +20,6 @@ class TuringEmailApp.Views.Main extends Backbone.View
     )
     @sidebarView.render()
 
-    @footerView = new TuringEmailApp.Views.App.FooterView(
-      el: @$el.find("#footer")
-    )
-    @footerView.render()
-
     @composeView = new TuringEmailApp.Views.ComposeView(
       app: @app
       el: @$el.find("#compose_view")
@@ -63,14 +58,12 @@ class TuringEmailApp.Views.Main extends Backbone.View
     return if not @sidebarView?
 
     height = $(window).height() - @sidebarView.$el.offset().top - 6
-    height -= @footerView.$el.outerHeight(true) if @footerView?
     @sidebarView.$el.height(height)
     
   resizePrimaryPane: ->
     return if not @primaryPaneDiv?
     
     height = $(window).height() - @primaryPaneDiv.offset().top - 6
-    height -= @footerView.$el.outerHeight(true) if @footerView?
     @primaryPaneDiv.height(height)
     
   resizeSplitPane: ->
@@ -78,7 +71,6 @@ class TuringEmailApp.Views.Main extends Backbone.View
     return if splitPaneDiv.length is 0
 
     height = $(window).height() - splitPaneDiv.offset().top - 6
-    height -= @footerView.$el.outerHeight(true) if @footerView?
     height = 1 if height <= 0
     
     splitPaneDiv.height(height)
