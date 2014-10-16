@@ -567,3 +567,12 @@ table.table-mail tr td {
 .icheckbox_square-green {
   transform: scale(0.7, 0.7);
 }
+
+.unread .icheckbox_square-green {
+  left: 1px;
+}
+
+.email_threads_list_view_tbody tr
+{
+  cursor: pointer;
+}
