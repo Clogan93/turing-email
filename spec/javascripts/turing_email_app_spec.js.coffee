@@ -769,6 +769,9 @@ describe "TuringEmailApp", ->
             @stopListeningSpy = sinon.spy(TuringEmailApp, "stopListening")
             @listenToSpy = sinon.spy(TuringEmailApp, "listenTo")
             @moveTuringEmailReportToTopSpy = sinon.spy(TuringEmailApp, "moveTuringEmailReportToTop")
+
+            TuringEmailApp.views.emailThreadsListView.select(@oldEmailThreads[0])
+            @emailThreadsListViewSelectStub = sinon.stub(TuringEmailApp.views.emailThreadsListView, "select", ->)
             
             TuringEmailApp.reloadEmailThreads(success: @success, error: @error)
             @server.respond()
@@ -777,6 +780,7 @@ describe "TuringEmailApp", ->
             @stopListeningSpy.restore()
             @listenToSpy.restore()
             @moveTuringEmailReportToTopSpy.restore()
+            @emailThreadsListViewSelectStub.restore()
 
           it "stops listening on the old models", ->
             expect(@stopListeningSpy).toHaveBeenCalledWith(oldEmailThread) for oldEmailThread in @oldEmailThreads
@@ -787,6 +791,10 @@ describe "TuringEmailApp", ->
 
           it "moves the Turing email report to the top", ->
             expect(@moveTuringEmailReportToTopSpy).toHaveBeenCalled()
+            
+          it "selects the previously selected email thread", ->
+            emailThreadToSelect = TuringEmailApp.collections.emailThreads.getEmailThread(@oldEmailThreads[0].get("uid"))
+            expect(@emailThreadsListViewSelectStub).toHaveBeenCalledWith(emailThreadToSelect)
               
           it "calls the success callback", ->
             expect(@success).toHaveBeenCalled()
