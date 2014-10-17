@@ -80,6 +80,10 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @$el.find("#refresh_button").click =>
       @trigger("refreshClicked", this)
 
+    @$el.find(".toolbar-elements, .pagination-buttons").tooltip
+      selector: "[data-toggle=tooltip]"
+      container: "body"
+
   setupBulkActionButtons: ->
     @$el.find("#all_bulk_action").click =>
       @divAllCheckbox.iCheck("check")
