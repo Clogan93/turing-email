@@ -1420,6 +1420,8 @@ describe "TuringEmailApp", ->
         TuringEmailApp.collections.emailThreads = @emailThreads
   
         @listItemView = _.values(@listView.listItemViews)[0]
+
+        @emailUID = @listItemView.model.sortedEmails()[0]["uid"]
   
       afterEach ->
         @listViewDiv.remove()
@@ -1429,8 +1431,9 @@ describe "TuringEmailApp", ->
           it "navigates to the email thread", ->
             spy = sinon.spy(TuringEmailApp.routers.emailThreadsRouter, "navigate")
             TuringEmailApp.listItemSelected @listView, @listItemView
-            expect(spy).toHaveBeenCalled()
-            expect(spy).toHaveBeenCalledWith("#email_thread/" + @listItemView.model.get("uid"))
+
+            
+            expect(spy).toHaveBeenCalledWith("#email_draft/" + @emailUID)
             spy.restore()
 
         describe "when the current folder IS the drafts folder", ->
@@ -1450,19 +1453,19 @@ describe "TuringEmailApp", ->
           it "navigates to the email draft", ->
             spy = sinon.spy(TuringEmailApp.routers.emailThreadsRouter, "navigate")
             TuringEmailApp.listItemSelected @listView, @listItemView
-            expect(spy).toHaveBeenCalled()
-            expect(spy).toHaveBeenCalledWith("#email_draft/" + @listItemView.model.get("uid"))
+            
+            expect(spy).toHaveBeenCalledWith("#email_draft/" +  @emailUID)
             spy.restore()
   
       describe "when the email is not draft", ->
         beforeEach ->
-          @listView.listItemViews[@listItemView.model.get("uid")].model.get("emails")[0].draft_id = null
+          email.draft_id = null for email in @listView.listItemViews[@listItemView.model.get("uid")].model.get("emails")
   
         it "navigates to the email thread", ->
           spy = sinon.spy(TuringEmailApp.routers.emailThreadsRouter, "navigate")
           TuringEmailApp.listItemSelected @listView, @listItemView
-          expect(spy).toHaveBeenCalled()
-          expect(spy).toHaveBeenCalledWith("#email_thread/" + @listItemView.model.get("uid"))
+
+          expect(spy).toHaveBeenCalledWith("#email_thread/" +  @emailUID)
           spy.restore()
   
     describe "#listItemDeselected", ->
@@ -1558,34 +1561,25 @@ describe "TuringEmailApp", ->
             spy.restore()
   
     describe "#draftChanged", ->
-  
-      describe "when the selected email folder is DRAFT", ->
-        beforeEach ->
-          @selectedEmailFolderIDFunction = TuringEmailApp.selectedEmailFolderID
-          TuringEmailApp.selectedEmailFolderID = -> return "DRAFT"
-  
-        afterEach ->
-          TuringEmailApp.selectedEmailFolderID = @selectedEmailFolderIDFunction
-  
-        it "reloads the email thread if the selected email folder is DRAFT", ->
-          spy = sinon.spy(TuringEmailApp, "reloadEmailThreads")
-          TuringEmailApp.draftChanged()
-          expect(spy).toHaveBeenCalled()
-          spy.restore()
-  
-      describe "when the selected email folder is not DRAFT", ->
-        beforeEach ->
-          @selectedEmailFolderIDFunction = TuringEmailApp.selectedEmailFolderID
-          TuringEmailApp.selectedEmailFolderID = -> return "INBOX"
-  
-        afterEach ->
-          TuringEmailApp.selectedEmailFolderID = @selectedEmailFolderIDFunction
-  
-        it "does not reloads the email thread if the selected email folder is DRAFT", ->
-          spy = sinon.spy(TuringEmailApp, "reloadEmailThreads")
-          TuringEmailApp.draftChanged()
-          expect(spy).not.toHaveBeenCalled()
-          spy.restore()
+      beforeEach ->
+        @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
+        @selectedEmailFolderIDStub.returns("INBOX")
+        
+        @reloadEmailThreadsStub = sinon.stub(TuringEmailApp, "reloadEmailThreads")
+        @loadEmailFoldersStub = sinon.stub(TuringEmailApp, "loadEmailFolders")
+
+        TuringEmailApp.draftChanged()
+      
+      afterEach ->
+        @selectedEmailFolderIDStub.restore()
+        @reloadEmailThreadsStub.restore()
+        @loadEmailFoldersStub.restore()
+      
+      it "reloads the email threads", ->
+        expect(@reloadEmailThreadsStub).toHaveBeenCalled()
+
+      it "reloads the email folders", ->
+        expect(@loadEmailFoldersStub).toHaveBeenCalled()
 
     describe "#createFolderFormSubmitted", ->
       beforeEach ->
@@ -1734,47 +1728,40 @@ describe "TuringEmailApp", ->
         [@server] = specPrepareEmailThreadsFetch(TuringEmailApp.collections.emailThreads)
         TuringEmailApp.collections.emailThreads.fetch(reset: true)
         @server.respond()
+
+        @emailThread = TuringEmailApp.collections.emailThreads.models[0]
+        @email = _.last(@emailThread.sortedEmails())
     
       it "loads the email thread", ->
         spy = sinon.spy(TuringEmailApp, "loadEmailThread")
-        emailThread = TuringEmailApp.collections.emailThreads.models[0]
-        TuringEmailApp.showEmailEditorWithEmailThread emailThread.get("uid")
-        expect(spy).toHaveBeenCalled()
-        expect(spy).toHaveBeenCalledWith(emailThread.get("uid"))
+        TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid")
+        expect(spy).toHaveBeenCalledWith(@emailThread.get("uid"))
     
       it "shows the compose view", ->
         spy = sinon.spy(TuringEmailApp.views.composeView, "show")
-        emailThread = TuringEmailApp.collections.emailThreads.models[0]
-        TuringEmailApp.showEmailEditorWithEmailThread emailThread.get("uid")
+        TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid")
         expect(spy).toHaveBeenCalled()
     
       describe "when in draft mode", ->
     
         it "loads the email draft", ->
           spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailDraft")
-          emailThread = TuringEmailApp.collections.emailThreads.models[0]
-          TuringEmailApp.showEmailEditorWithEmailThread emailThread.get("uid")
-          expect(spy).toHaveBeenCalled()
-          expect(spy).toHaveBeenCalledWith(emailThread.get("emails")[0])
+          TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid")
+          expect(spy).toHaveBeenCalledWith(@email, @emailThread)
     
       describe "when in forward mode", ->
     
         it "loads the email as a forward", ->
           spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailAsForward")
-          emailThread = TuringEmailApp.collections.emailThreads.models[0]
-          TuringEmailApp.showEmailEditorWithEmailThread emailThread.get("uid"), "forward"
-          expect(spy).toHaveBeenCalled()
-          expect(spy).toHaveBeenCalledWith(emailThread.get("emails")[0])
+          TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid"), "forward"
+          expect(spy).toHaveBeenCalledWith(@email, @emailThread)
     
       describe "when in reply mode", ->
     
         it "loads the email as a reply", ->
           spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailAsReply")
-          emailThread = TuringEmailApp.collections.emailThreads.models[0]
-          TuringEmailApp.showEmailEditorWithEmailThread emailThread.get("uid"), "reply"
-          expect(spy).toHaveBeenCalled()
-          expect(spy).toHaveBeenCalledWith(emailThread.get("emails")[0])
-
+          TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid"), "reply"
+          expect(spy).toHaveBeenCalledWith(@email, @emailThread)
 
     describe "#moveTuringEmailReportToTop", ->
       beforeEach ->
