@@ -492,7 +492,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @reloadEmailThreads()
     @loadEmailFolders()
 
-###############################
+  ###############################
   ### CreateFolderView Events ###
   ###############################
     
