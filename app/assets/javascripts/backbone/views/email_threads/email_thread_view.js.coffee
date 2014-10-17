@@ -30,6 +30,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     modelJSON["fromPreview"] = @model.fromPreview()
     modelJSON["subjectPreview"] = @model.subjectPreview()
     modelJSON["datePreview"] = @model.datePreview()
+    
     for email in modelJSON.emails
       email["datePreview"] = TuringEmailApp.Models.Email.localDateString(email["date"])
       if email.from_name?

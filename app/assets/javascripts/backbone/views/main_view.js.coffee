@@ -143,7 +143,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
       @emailThreadsListView.$el = @$el.find(".email_threads_list_view_tbody")
       @emailThreadsListView.render()
       @resizeEmailThreadsListView()
-
+      
     return true
     
   showSettings: ->
