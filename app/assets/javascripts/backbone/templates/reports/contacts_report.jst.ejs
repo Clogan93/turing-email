@@ -2,44 +2,12 @@
   <h1 class="h1">Top Contacts</h1>
 </div>
 
+
 <div class="row">
-  <div class="col-lg-6">
-    <div class="ibox float-e-margins">
-      <div class="ibox-title">
-        <h5>Top Senders <small class="m-l-sm">contacts report</small></h5>
-        <div class="ibox-tools">
-          <a class="collapse-link">
-            <i class="fa fa-chevron-up"></i>
-          </a>
-          <a class="close-link">
-            <i class="fa fa-times"></i>
-          </a>
-        </div>
-      </div>
 
-      <div class="ibox-content">
-        <div class="top_senders"></div>
-      </div>
-    </div>
-  </div>
+  <% var template = JST["backbone/templates/reports/report_container"]; %>
+  <%= template({chartDivClassName: 'top_senders', chartWidth: '', chartHeight: '', columnNumber: 'col-lg-6', containerTitle: 'Top Senders <small class="m-l-sm">contacts report</small>'}) %>
 
-  <div class="col-lg-6">
-    <div class="ibox float-e-margins">
-      <div class="ibox-title">
-        <h5>Top Recipients <small class="m-l-sm">contacts report</small></h5>
-        <div class="ibox-tools">
-          <a class="collapse-link">
-            <i class="fa fa-chevron-up"></i>
-          </a>
-          <a class="close-link">
-            <i class="fa fa-times"></i>
-          </a>
-        </div>
-      </div>
+  <%= template({chartDivClassName: 'top_recipients', chartWidth: '', chartHeight: '', columnNumber: 'col-lg-6', containerTitle: 'Top Recipients <small class="m-l-sm">contacts report</small>'}) %>
 
-      <div class="ibox-content">
-        <div class="top_recipients"></div>
-      </div>
-    </div>
-  </div>
 </div>

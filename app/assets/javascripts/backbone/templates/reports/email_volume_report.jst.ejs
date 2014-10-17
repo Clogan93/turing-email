@@ -3,67 +3,14 @@
 </div>
 
 <div class="row">
-  <div class="col-lg-11">
-    <div class="ibox float-e-margins">
-      <div class="ibox-title">
-        <h5>Emails Per Day <small class="m-l-sm">email volume report</small></h5>
-        <div class="ibox-tools">
-          <a class="collapse-link">
-            <i class="fa fa-chevron-up"></i>
-          </a>
-          <a class="close-link">
-            <i class="fa fa-times"></i>
-          </a>
-        </div>
-      </div>
-
-      <div class="ibox-content">
-        <div class="emails_per_day_chart_div" style="width: 900px; height: 500px;"></div>
-      </div>
-    </div>
-  </div>
+  <% var template = JST["backbone/templates/reports/report_container"]; %>
+  <%= template({chartDivClassName: 'emails_per_day_chart_div', chartWidth: 'width: 900px;', chartHeight: 'height: 500px;', columnNumber: 'col-lg-11', containerTitle: 'Emails Per Day <small class="m-l-sm">email volume report</small>'}) %>
 </div>
 
 <div class="row">
-  <div class="col-lg-11">
-    <div class="ibox float-e-margins">
-      <div class="ibox-title">
-        <h5>Emails Per Week <small class="m-l-sm">email volume report</small></h5>
-        <div class="ibox-tools">
-          <a class="collapse-link">
-            <i class="fa fa-chevron-up"></i>
-          </a>
-          <a class="close-link">
-            <i class="fa fa-times"></i>
-          </a>
-        </div>
-      </div>
-
-      <div class="ibox-content">
-        <div class="emails_per_week_chart_div" style="width: 900px; height: 500px;"></div>
-      </div>
-    </div>
-  </div>
+  <%= template({chartDivClassName: 'emails_per_week_chart_div', chartWidth: 'width: 900px;', chartHeight: 'height: 500px;', columnNumber: 'col-lg-11', containerTitle: 'Emails Per Week <small class="m-l-sm">email volume report</small>'}) %>
 </div>
 
 <div class="row">
-  <div class="col-lg-11">
-    <div class="ibox float-e-margins">
-      <div class="ibox-title">
-        <h5>Emails Per Month <small class="m-l-sm">email volume report</small></h5>
-        <div class="ibox-tools">
-          <a class="collapse-link">
-            <i class="fa fa-chevron-up"></i>
-          </a>
-          <a class="close-link">
-            <i class="fa fa-times"></i>
-          </a>
-        </div>
-      </div>
-
-      <div class="ibox-content">
-        <div class="emails_per_month_chart_div" style="width: 900px; height: 500px;"></div>
-      </div>
-    </div>
-  </div>
+  <%= template({chartDivClassName: 'emails_per_month_chart_div', chartWidth: 'width: 900px;', chartHeight: 'height: 500px;', columnNumber: 'col-lg-11', containerTitle: 'Emails Per Month <small class="m-l-sm">email volume report</small>'}) %>
 </div>

@@ -3,23 +3,6 @@
 </div>
 
 <div class="row">
-  <div class="col-lg-11">
-    <div class="ibox float-e-margins">
-      <div class="ibox-title">
-        <h5>Geography <small class="m-l-sm">geo report</small></h5>
-        <div class="ibox-tools">
-          <a class="collapse-link">
-            <i class="fa fa-chevron-up"></i>
-          </a>
-          <a class="close-link">
-            <i class="fa fa-times"></i>
-          </a>
-        </div>
-      </div>
-
-      <div class="ibox-content">
-        <div class="geo_chart_div" style="width: 900px; height: 500px;"></div>
-      </div>
-    </div>
-  </div>
+  <% var template = JST["backbone/templates/reports/report_container"]; %>
+  <%= template({chartDivClassName: 'geo_chart_div', chartWidth: '900px', chartHeight: '500px', columnNumber: 'col-lg-11', containerTitle: 'Geography <small class="m-l-sm">geo report</small>'}) %>
 </div>
