@@ -105,3 +105,6 @@ end
 
 # premailer
 gem 'premailer', '~> 1.8.2'
+
+# delayed job
+gem 'delayed_job', '~> 4.0.4'
