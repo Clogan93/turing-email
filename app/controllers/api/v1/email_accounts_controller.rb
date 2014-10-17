@@ -96,8 +96,6 @@ class Api::V1::EmailAccountsController < ApiController
     param :form, :ccs, :string, false, 'Array of recipient email addresses'
     param :form, :bccs, :string, false, 'Array of recipient email addresses'
 
-    param :form, :email_in_reply_to_uid, :string, false, 'Email UID being replied to.'
-
     param :form, :subject, :string, false, 'Subject'
     param :form, :html_part, :string, false, 'HTML Part'
     param :form, :text_part, :string, false, 'Text Part'
@@ -109,8 +107,7 @@ class Api::V1::EmailAccountsController < ApiController
   def update_draft
     @email = @email_account.update_draft(params[:draft_id],
                                          params[:tos], params[:ccs], params[:bccs],
-                                         params[:subject], params[:html_part], params[:text_part],
-                                         params[:email_in_reply_to_uid])
+                                         params[:subject], params[:html_part], params[:text_part])
     render 'api/v1/emails/show'
   end
 

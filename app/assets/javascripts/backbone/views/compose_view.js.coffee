@@ -96,7 +96,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     @loadEmailHeaders(emailJSON)
     @loadEmailBody(emailJSON)
 
-  loadEmailDraft: (emailDraftJSON, emailInReplyToUID=null) ->
+  loadEmailDraft: (emailDraftJSON) ->
     console.log("ComposeView loadEmailDraft!!")
     @resetView()
     
@@ -104,7 +104,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     @loadEmailBody(emailDraftJSON)
 
     @currentEmailDraft = new TuringEmailApp.Models.EmailDraft(emailDraftJSON)
-    @emailInReplyToUID = emailInReplyToUID
+    @emailInReplyToUID = nil
 
   loadEmailAsReply: (emailJSON) ->
     console.log("ComposeView loadEmailAsReply!!")
