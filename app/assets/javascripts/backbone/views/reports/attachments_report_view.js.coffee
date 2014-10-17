@@ -3,19 +3,24 @@ TuringEmailApp.Views.Reports ||= {}
 class TuringEmailApp.Views.Reports.AttachmentsReportView extends Backbone.View
   template: JST["backbone/templates/reports/attachments_report"]
 
+  className: "report-view"
+
   initialize: ->
     @listenTo(@model, "change", @render)
     @listenTo(@model, "destroy", @remove)
 
   render: ->
     googleChartData = @getGoogleChartData()
-      
+
     @$el.html(@template(googleChartData))
 
     @renderGoogleChart googleChartData
 
+    report = new Report(@)
+    report.setupContainers()
+
     return this
-    
+
   getGoogleChartData: ->
     contentTypeStats = @model.get("content_type_stats")
     reducedContentTypeStats = @getReducedContentTypeStats(contentTypeStats)

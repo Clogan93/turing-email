@@ -1,6 +1,8 @@
 class TuringEmailApp.Views.AnalyticsView extends Backbone.View
   template: JST["backbone/templates/analytics"]
-  
+
+  className: "analytics-view"
+
   initialize: ->
     @reports =
       ".attachments_report":
