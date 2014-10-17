@@ -353,3 +353,10 @@ describe "EmailThread", ->
 
           it "returns a blank string", ->
             expect(@emailThread.datePreview()).toEqual("")
+        
+      describe "#sortedEmails", ->
+        beforeEach ->
+          @sortedEmails = @emailThread.get("emails").sort (a, b) -> a["date"].localeCompare(b["date"])
+          
+        it "returns the emails sorted by date", ->
+          expect(@emailThread.sortedEmails()).toEqual(@sortedEmails)

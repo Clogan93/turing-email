@@ -32,7 +32,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
         success: (model, response, options) =>
           console.log "SAVED! setting draft_id to " + response.draft_id
           model.set("draft_id", response.draft_id)
-          @trigger "change:draft", this
+          @trigger "change:draft", this, model, @emailThreadParent
 
           @savingDraft = false
           
@@ -78,6 +78,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
 
     @currentEmailDraft = null
     @emailInReplyToUID = null
+    @emailThreadParent = null
 
     @$el.find("#compose_form #to_input").val("")
     @$el.find("#compose_form #cc_input").val("")
@@ -89,14 +90,16 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
   loadEmpty: ->
     @resetView()
 
-  loadEmail: (emailJSON) ->
+  loadEmail: (emailJSON, emailThreadParent) ->
     console.log("ComposeView loadEmail!!")
     @resetView()
 
     @loadEmailHeaders(emailJSON)
     @loadEmailBody(emailJSON)
+    
+    @emailThreadParent = emailThreadParent
 
-  loadEmailDraft: (emailDraftJSON) ->
+  loadEmailDraft: (emailDraftJSON, emailThreadParent) ->
     console.log("ComposeView loadEmailDraft!!")
     @resetView()
     
@@ -104,9 +107,9 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     @loadEmailBody(emailDraftJSON)
 
     @currentEmailDraft = new TuringEmailApp.Models.EmailDraft(emailDraftJSON)
-    @emailInReplyToUID = nil
+    @emailThreadParent = emailThreadParent
 
-  loadEmailAsReply: (emailJSON) ->
+  loadEmailAsReply: (emailJSON, emailThreadParent) ->
     console.log("ComposeView loadEmailAsReply!!")
     @resetView()
 
@@ -115,13 +118,16 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     @loadEmailBody(emailJSON, true)
 
     @emailInReplyToUID = emailJSON.uid
+    @emailThreadParent = emailThreadParent
 
-  loadEmailAsForward: (emailJSON) ->
+  loadEmailAsForward: (emailJSON, emailThreadParent) ->
     console.log("ComposeView loadEmailAsForward!!")
     @resetView()
 
     @$el.find("#compose_form #subject_input").val(@subjectWithPrefixFromEmail(emailJSON, "Fwd: "))
     @loadEmailBody(emailJSON, true)
+    
+    @emailThreadParent = emailThreadParent
 
   loadEmailHeaders: (emailJSON) ->
     console.log("ComposeView loadEmailHeaders!!")
@@ -250,7 +256,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
           success: (model, response, options) =>
             console.log "SAVED! setting draft_id to " + response.draft_id
             draftToSend.set("draft_id", response.draft_id)
-            @trigger "change:draft", this
+            @trigger "change:draft", this, model, @emailThreadParent
             
             @sendEmailDelayed(draftToSend)
         })
@@ -275,11 +281,15 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
       if emailToSend.sendDraft?
         console.log "sendDraft!"
         emailToSend.sendDraft().done(=>
-          @trigger "change:draft", this
+          @trigger "change:draft", this, emailToSend, @emailThreadParent
+        ).fail(=>
+          @sendEmailDelayedError(emailToSend.toJSON())
         )
       else
         console.log "send email!"
-        emailToSend.sendEmail().fail(=>
+        emailToSend.sendEmail().done(=>
+          @trigger "change:draft", this, emailToSend, @emailThreadParent
+        ).fail(=>
           @sendEmailDelayedError(emailToSend.toJSON())
         )
     ), 5000
@@ -287,7 +297,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
   sendEmailDelayedError: (emailToSendJSON) ->
     console.log "sendEmailDelayedError!!!"
 
-    @loadEmail(emailToSendJSON)
+    @loadEmail(emailToSendJSON, @emailThreadParent)
     @show()
 
     @$el.find("#compose_form").prepend('<div id="email_sent_error_alert" class="alert alert-danger" role="alert">

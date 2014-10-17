@@ -488,10 +488,11 @@ window.TuringEmailApp = new(Backbone.View.extend(
   ### ComposeView Events ###
   ##########################
     
-  draftChanged: ->
-    @reloadEmailThreads() if @selectedEmailFolderID() is "DRAFT"
+  draftChanged: (composeView, email, emailThreadParent) ->
+    @reloadEmailThreads()
+    @loadEmailFolders()
 
-  ###############################
+###############################
   ### CreateFolderView Events ###
   ###############################
     
@@ -549,11 +550,11 @@ window.TuringEmailApp = new(Backbone.View.extend(
       
       switch mode
         when "forward"
-          @views.composeView.loadEmailAsForward(_.last(sortedEmails))
+          @views.composeView.loadEmailAsForward(_.last(sortedEmails), emailThread)
         when "reply"
-          @views.composeView.loadEmailAsReply(_.last(sortedEmails))
+          @views.composeView.loadEmailAsReply(_.last(sortedEmails), emailThread)
         else
-          @views.composeView.loadEmailDraft(_.last(sortedEmails))
+          @views.composeView.loadEmailDraft(_.last(sortedEmails), emailThread)
 
       @views.composeView.show()
     )
