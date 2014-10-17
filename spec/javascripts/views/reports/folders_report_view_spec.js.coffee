@@ -28,7 +28,7 @@ describe "FoldersReportView", ->
       @server.respond()
 
     it "renders the report", ->
-      expect(@foldersReportView.$el).toContainHtml("Reports <small>folders</small>")
+      expect(@foldersReportView.$el).toContainHtml("Folders")
 
     folderNames = ["draft", "inbox", "sent", "spam", "starred", "trash", "unread"]
     for folderName in folderNames

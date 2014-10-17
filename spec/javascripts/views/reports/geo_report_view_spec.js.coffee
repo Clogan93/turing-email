@@ -33,7 +33,7 @@ describe "GeoReportView", ->
       @renderGoogleChartSpy.restore()
 
     it "renders the report", ->
-      expect(@geoReportView.$el).toContainHtml("Reports <small>geography</small>")
+      expect(@geoReportView.$el).toContainHtml("Geography")
 
     it "renders the google chart", ->
       expect(@renderGoogleChartSpy).toHaveBeenCalled()

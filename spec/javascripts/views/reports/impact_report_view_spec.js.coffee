@@ -28,7 +28,7 @@ describe "ImpactReportView", ->
       @server.respond()
 
     it "renders the report", ->
-      expect(@impactReportView.$el).toContainHtml("Reports <small>impact</small>")
+      expect(@impactReportView.$el).toContainHtml("Impact")
 
     it "renders the percent of sent emails replied to", ->
       expect(@impactReportView.$el).toContainHtml('<h4 class="h4">Percent of sent emails replied to: <small>' +

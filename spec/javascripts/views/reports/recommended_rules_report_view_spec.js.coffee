@@ -28,7 +28,7 @@ describe "RecommendedRulesReportView", ->
       @server.respond()
 
     it "renders the report", ->
-      expect(@recommendedRulesReportView.$el).toContainHtml("Reports <small>recommended rules</small>")
+      expect(@recommendedRulesReportView.$el).toContainHtml("Recommended Rules")
 
     it "renders the genie rule explanation text", ->
       expect(@recommendedRulesReportView.$el).toContainHtml("<p>The genie has been working extra hard to keep your inbox clean, and recommends that you make the following rules so that these emails skip your inbox during the day:</p>")
