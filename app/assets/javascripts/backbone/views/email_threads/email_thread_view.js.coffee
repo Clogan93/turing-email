@@ -11,7 +11,9 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
   render: ->
     if @model
       modelJSON = @model.toJSON()
+      modelJSON["sortedEmails"] = @model.sortedEmails()
       @addPreviewDataToTheModelJSON modelJSON
+      
       @$el.html(@template(modelJSON))
   
       @model.seenIs(true)

@@ -449,8 +449,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
   listItemSelected: (listView, listItemView) ->
     emailThread = listItemView.model
-    isDraft = emailThread.get("emails")[0].draft_id? && @selectedEmailFolder()?.get("label_id") is "DRAFT"
     emailThreadUID = emailThread.get("uid")
+
+    sortedEmails = emailThread.sortedEmails()
+    isDraft = _.last(sortedEmails).draft_id?
 
     if isDraft
       @routers.emailThreadsRouter.navigate("#email_draft/" + emailThreadUID, trigger: true)
@@ -543,13 +545,15 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @loadEmailThread(emailThreadUID, (emailThread) =>
       @currentEmailThreadIs emailThread.get("uid")
 
+      sortedEmails = emailThread.sortedEmails()
+      
       switch mode
         when "forward"
-          @views.composeView.loadEmailAsForward(emailThread.get("emails")[0])
+          @views.composeView.loadEmailAsForward(_.last(sortedEmails))
         when "reply"
-          @views.composeView.loadEmailAsReply(emailThread.get("emails")[0])
+          @views.composeView.loadEmailAsReply(_.last(sortedEmails))
         else
-          @views.composeView.loadEmailDraft emailThread.get("emails")[0]
+          @views.composeView.loadEmailDraft(_.last(sortedEmails))
 
       @views.composeView.show()
     )

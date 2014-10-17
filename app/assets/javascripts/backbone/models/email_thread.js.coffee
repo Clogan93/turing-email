@@ -136,3 +136,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     
     dateString = emails[0]["date"]
     return TuringEmailApp.Models.Email.localDateString(dateString)
+
+  sortedEmails: ->
+    emails = @get("emails")
+    return emails.sort (a, b) -> a["date"].localeCompare(b["date"])

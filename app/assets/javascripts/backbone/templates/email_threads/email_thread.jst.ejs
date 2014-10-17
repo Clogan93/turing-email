@@ -34,8 +34,7 @@
 
   <div class="mail-box">
     <div class="mail-body">
-      <% var emailsSorted = emails.sort(function(a,b) { return a["date"].localeCompare(b["date"]) }) %>
-      <% _.each(emailsSorted, function(email, index) { %>
+      <% _.each(sortedEmails, function(email, index) { %>
         <div class="row email<%= (emails.length > 1 && index < emails.length - 1) && email.seen ? " collapsed_email" : "" %>">
           <div class="email_information">
             <div class="col-md-2">
