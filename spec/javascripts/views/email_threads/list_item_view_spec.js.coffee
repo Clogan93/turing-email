@@ -29,7 +29,6 @@ describe "ListItemView", ->
     describe "#render", ->
       it "renders the list item", ->
         expect(@listItemView.el.nodeName).toEqual "TR"
-        expect(@listItemView.el).toHaveCss({cursor: "pointer"})
 
         expect(@listItemView.el).toContain("td.check-mail")
         expect(@listItemView.$el.find('td.mail-contact').text().trim()).toEqual @emailThread.fromPreview()
