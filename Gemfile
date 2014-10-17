@@ -45,6 +45,7 @@ gem 'unicorn', '~> 4.8.3'
 
 # heroku
 gem 'rails_12factor', '~> 0.0.2', group: [:production, :beta] if ENV['NOT_HEROKU'].nil? # must use NOT_HEROKU because env not available in heroku compile
+gem 'heroku-api', '~> 0.3.19'
 
 # deflater
 gem 'heroku-deflater', '~> 0.5.3'
@@ -108,3 +109,4 @@ gem 'premailer', '~> 1.8.2'
 
 # delayed job
 gem 'delayed_job', '~> 4.0.4'
+gem 'delayed_job_active_record', '~> 4.0.2'

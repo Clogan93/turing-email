@@ -6,6 +6,7 @@ require 'google/api_client'
 require 'turing-lib/misc'
 require 'turing-lib/misc_email'
 require 'turing-lib/logging'
+require 'turing-lib/heroku-tools'
 
 require 'turing-lib/google/misc'
 require 'turing-lib/google/o_auth2_client'

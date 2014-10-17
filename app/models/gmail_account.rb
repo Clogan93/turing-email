@@ -418,6 +418,14 @@ class GmailAccount < ActiveRecord::Base
     self.sync_gmail_ids(gmail_ids)
   end
 
+  def sync_reset
+    self.emails.destroy_all()
+    self.gmail_labels.destroy_all()
+    self.sync_failed_emails.destroy_all()
+    self.last_history_id_synced = nil
+    self.save!
+  end
+
   def sync_email(labelIds: nil)
     log_console("SYNCING Gmail #{self.email}")
     
@@ -640,6 +648,8 @@ class GmailAccount < ActiveRecord::Base
 
       self.sync_email_labels(email, gmail_data['labelIds'])
     end
+  rescue Exception => ex
+    SyncFailedEmail.create_retry(self, gmail_data['id'], ex: ex)
   end
 
   def update_email_from_gmail_data(gmail_data)
@@ -671,10 +681,10 @@ class GmailAccount < ActiveRecord::Base
 
       begin
         if gmail_data['raw']
-          self.create_email_from_gmail_data(gmail_data)
+          self.delay(heroku_scale: false).create_email_from_gmail_data(JSON.parse(gmail_data.to_json))
         else
           #log_console('EXISTS - minimal update!')
-          self.update_email_from_gmail_data(gmail_data)
+          self.delay(heroku_scale: false).update_email_from_gmail_data(JSON.parse(gmail_data.to_json))
         end
       rescue Exception => ex
         SyncFailedEmail.create_retry(self, gmail_data['id'], ex: ex)
@@ -706,6 +716,8 @@ class GmailAccount < ActiveRecord::Base
         gmail_id_index += GmailAccount::MESSAGE_BATCH_SIZE
       end
     end
+
+    HerokuTools::HerokuTools.scale_workers('worker', 1)
   end
 
   def sync_gmail_thread(gmail_thread_id)

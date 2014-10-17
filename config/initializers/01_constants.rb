@@ -17,6 +17,8 @@ $config.mailgun_public_api_key ||= ENV['MAILGUN_PUBLIC_API_KEY']
 $config.mailgun_smtp_username ||= ENV['MAILGUN_SMTP_USERNAME']
 $config.mailgun_smtp_password ||= ENV['MAILGUN_SMTP_PASSWORD']
 
+$config.heroku_api_key ||= ENV['HEROKU_API_KEY']
+
 # http errors
 
 $config.http_errors = {
@@ -76,6 +78,13 @@ $config.recommended_rules_average_daily_list_volume = 5
 $config.mailgun_smtp_server = 'smtp.mailgun.org'
 $config.mailgun_api_url_base = "https://api:#{$config.mailgun_api_key}@api.mailgun.net/v2"
 $config.mailgun_api_url = "#{$config.mailgun_api_url_base}/#{$config.mailgun_domain}"
+
+# Delayed Job
+$config.dj_queues = ['worker']
+$config.dj_queue_alert_size = 100
+
+# Heroku Workers
+$config.heroku_workers = ['worker']
 
 =begin
 $config.s3_key_length = 256

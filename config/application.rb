@@ -30,6 +30,8 @@ module TuringEmail
     config.mailgun_smtp_username = nil
     config.mailgun_smtp_password = nil
 
+    config.heroku_api_key = nil
+
     config.log_tags = [ lambda { |request| request.user_agent },
                         lambda { |request| request.referrer },
                         lambda { |request| request.headers['X-Forwarded-For'] } ]
