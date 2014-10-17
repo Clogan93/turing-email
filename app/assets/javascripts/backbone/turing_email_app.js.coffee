@@ -513,12 +513,6 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
       emails.push(draft.toJSON())
       emailThreadParent.set("emails", emails)
-  
-      ###
-      if @isSplitPaneMode() && @selectedEmailThread()?.get("uid") == emailThreadParent.get("uid")
-        @currentEmailThreadIs(".")
-        @currentEmailThreadIs(emailThreadParent.get("uid"))
-      ###
       
     @reloadEmailThreads()
     @loadEmailFolders()

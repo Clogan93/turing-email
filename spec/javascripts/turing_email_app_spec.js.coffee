@@ -1574,18 +1574,31 @@ describe "TuringEmailApp", ->
         @reloadEmailThreadsStub = sinon.stub(TuringEmailApp, "reloadEmailThreads")
         @loadEmailFoldersStub = sinon.stub(TuringEmailApp, "loadEmailFolders")
 
-        TuringEmailApp.draftChanged()
+        @draft = new TuringEmailApp.Models.EmailDraft()
+
+        @server.restore()
+        [@server] = specPrepareEmailThreadsFetch(TuringEmailApp.collections.emailThreads)
+        TuringEmailApp.collections.emailThreads.fetch(reset: true)
+        @server.respond()
+        @emailThreadParent = TuringEmailApp.collections.emailThreads.models[0]
+        
+        @setStub = sinon.stub(@emailThreadParent, "set", ->)
+        TuringEmailApp.draftChanged(TuringEmailApp.views.composeView, @draft, @emailThreadParent)
       
       afterEach ->
         @selectedEmailFolderIDStub.restore()
         @reloadEmailThreadsStub.restore()
         @loadEmailFoldersStub.restore()
-      
+        @setStub.restore()
+
       it "reloads the email threads", ->
         expect(@reloadEmailThreadsStub).toHaveBeenCalled()
 
       it "reloads the email folders", ->
         expect(@loadEmailFoldersStub).toHaveBeenCalled()
+        
+      it "updates the emailThreadParent", ->
+        expect(@setStub).toHaveBeenCalledWith("emails")
 
     describe "#createFolderFormSubmitted", ->
       beforeEach ->
