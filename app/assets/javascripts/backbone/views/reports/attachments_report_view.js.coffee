@@ -90,14 +90,17 @@ class TuringEmailApp.Views.Reports.AttachmentsReportView extends Backbone.View
       title: chartTitle
       legend:
         position: "none"
+        color: '#676A6C'
 
       hAxis:
         titleTextStyle:
-          color: "black"
+          color: '#676A6C'
 
       vAxis:
         titleTextStyle:
-          color: "black"
+          color: '#676A6C'
+
+      colors: ['#1AB394']
 
     chart = new google.visualization.ColumnChart($(divSelector)[0])
     dataTable = google.visualization.arrayToDataTable(data)
