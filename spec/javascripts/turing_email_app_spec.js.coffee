@@ -1431,8 +1431,6 @@ describe "TuringEmailApp", ->
           it "navigates to the email thread", ->
             spy = sinon.spy(TuringEmailApp.routers.emailThreadsRouter, "navigate")
             TuringEmailApp.listItemSelected @listView, @listItemView
-
-            
             expect(spy).toHaveBeenCalledWith("#email_draft/" + @emailUID)
             spy.restore()
 
