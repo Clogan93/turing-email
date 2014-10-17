@@ -248,12 +248,11 @@ describe "ComposeView", ->
         @composeView.loadEmailDraft emailJSON
         expect(@composeView.currentEmailDraft.attributes).toEqual newEmailDraft.attributes
 
-      it "updates the email in reply to UID", ->
+      it "updates the emailThreadParent", ->
         emailJSON = {}
-        @seededChance = new Chance(1)
-        randomID = @seededChance.integer({min: 1, max: 10000})
-        @composeView.loadEmailDraft emailJSON, randomID
-        expect(@composeView.emailInReplyToUID).toEqual randomID
+        emailThreadParent = {}
+        @composeView.loadEmailDraft(emailJSON, emailThreadParent)
+        expect(@composeView.emailThreadParent).toEqual(emailThreadParent)
 
     describe "#loadEmailAsReply", ->
       beforeEach ->

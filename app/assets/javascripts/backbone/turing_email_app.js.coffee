@@ -286,7 +286,9 @@ window.TuringEmailApp = new(Backbone.View.extend(
       loader = @collections.emailThreads.search
     else
       loader = @collections.emailThreads.fetch
-    
+
+    selectedEmailThread = @selectedEmailThread()
+      
     loader.call(@collections.emailThreads,
       query: myOptions?.query
       reset: true
@@ -296,6 +298,14 @@ window.TuringEmailApp = new(Backbone.View.extend(
         @listenTo(emailThread, "change:seen", @emailThreadSeenChanged) for emailThread in collection.models
 
         @moveTuringEmailReportToTop(@views.emailThreadsListView)
+
+        if selectedEmailThread? && not @selectedEmailThread()?
+          emailThreadToSelect = collection.getEmailThread(selectedEmailThread.get("uid"))
+
+          if emailThreadToSelect?
+            @ignoreListItemSelected = true
+            @views.emailThreadsListView.select(emailThreadToSelect)
+            @ignoreListItemSelected = false
         
         myOptions.success(collection, response, options) if myOptions?.success?
         
@@ -448,6 +458,8 @@ window.TuringEmailApp = new(Backbone.View.extend(
   #############################
 
   listItemSelected: (listView, listItemView) ->
+    return if @ignoreListItemSelected? && @ignoreListItemSelected
+
     emailThread = listItemView.model
     emailThreadUID = emailThread.get("uid")
 
@@ -488,7 +500,26 @@ window.TuringEmailApp = new(Backbone.View.extend(
   ### ComposeView Events ###
   ##########################
     
-  draftChanged: (composeView, email, emailThreadParent) ->
+  draftChanged: (composeView, draft, emailThreadParent) ->
+    if emailThreadParent?
+      emails = _.clone(emailThreadParent.get("emails"))
+      
+      for index in [emails.length-1 .. 0]
+        email = emails[index]
+        
+        if email["draft_id"] == draft.get("draft_id")
+          emails.splice(index, 1)
+          break
+
+      emails.push(draft.toJSON())
+      emailThreadParent.set("emails", emails)
+  
+      ###
+      if @isSplitPaneMode() && @selectedEmailThread()?.get("uid") == emailThreadParent.get("uid")
+        @currentEmailThreadIs(".")
+        @currentEmailThreadIs(emailThreadParent.get("uid"))
+      ###
+      
     @reloadEmailThreads()
     @loadEmailFolders()
 
