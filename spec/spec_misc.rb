@@ -82,20 +82,15 @@ module SpecMisc
                              tos ccs bccs
                              subject
                              html_part text_part body_text
-                             gmail_labels imap_folders)
+                             folder_ids)
     
-    expected_attributes_to_skip = %w(id date gmail_labels imap_folders)
+    expected_attributes_to_skip = %w(id date folder_ids)
 
     spec_validate_attributes(expected_attributes, email, email_rendered, expected_attributes_to_skip)
     expect(email_rendered['date']).to eq(email.date.as_json)
     
-    email.gmail_labels.zip(email_rendered["gmail_labels"]) .each do |gmail_label, gmail_label_rendered|
-      validate_gmail_label(gmail_label, gmail_label_rendered)
-    end
-
-    email.imap_folders.zip(email_rendered["imap_folders"]) .each do |imap_folder, imap_folder_rendered|
-      validate_imap_folder(imap_folder, imap_folder_rendered)
-    end
+    folder_ids = email.gmail_labels.pluck("label_id").concat(email.imap_folders.pluck("name")).sort()
+    expect(email_rendered["folder_ids"].sort()).to eq(folder_ids)
   end
 
   def validate_gmail_label(gmail_label, gmail_label_rendered)
