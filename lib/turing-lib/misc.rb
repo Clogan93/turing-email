@@ -132,3 +132,7 @@ def premailer_html(html)
   
   return premailer.to_inline_css() 
 end
+
+def destroy_all_batch(collection)
+  collection.limit(100).destroy_all while collection.count > 0
+end
