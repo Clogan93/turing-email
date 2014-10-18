@@ -3,131 +3,175 @@
 <div class="page-header">
   <h1 class="h1">Settings</h1>
 </div>
-<h4 class="h4">Email Bankruptcy</h4>
-<div class="row">
-  <div class="col-md-4" id="email_bankruptcy_container">
-    <button id="email_bankruptcy_button" type="button" class="btn btn-block btn-danger">Declare Email Bankruptcy</button>
+
+<div class="col-lg-12">
+  <div class="panel blank-panel">
+
+    <div class="panel-heading">
+      <div class="panel-options">
+        <ul class="nav nav-tabs">
+          <li class="active"><a data-toggle="tab" href="#tab-1">General</a></li>
+          <li class=""><a data-toggle="tab" href="#tab-2">Rules</a></li>
+          <li class=""><a data-toggle="tab" href="#tab-3">Bankruptcy</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="panel-body">
+
+      <div class="tab-content">
+        <div id="tab-1" class="tab-pane active">
+
+          
+          <div class="row">
+            <div class="col-md-3">
+              <h4 class="h4">Demo Mode</h4>
+            </div>
+            <div class="col-md-3 settings-switch">
+              <input type="checkbox" class="demo_mode_switch" <%= userSettings.demo_mode_enabled == true ? "checked" : "" %>>
+            </div>
+          </div>
+
+          <br />
+
+          <div class="row">
+            <div class="col-md-3">
+              <h4 class="h4">Keyboard Shortcuts</h4>
+            </div>
+            <div class="col-md-3 settings-switch">
+              <input type="checkbox" class="keyboard_shortcuts_switch" <%= userSettings.keyboard_shortcuts_enabled == true ? "checked" : "" %>>
+            </div>
+          </div>
+
+          <br />
+
+          <div class="row">
+            <div class="col-md-3">
+              <h4 class="h4">Email Genie</h4>
+            </div>
+            <div class="col-md-3 settings-switch">
+              <input type="checkbox" id="genie_switch" <%= userSettings.genie_enabled == true ? "checked" : "" %>>
+            </div>
+          </div>
+
+          <br />
+
+          <div class="row">
+            <div class="col-md-3">
+              <h4 class="h4">Horizontal Preview Panel</h4>
+            </div>
+            <div class="col-md-3 settings-switch">
+              <input type="checkbox" id="split_pane_switch" <%= userSettings.split_pane_mode == "horizontal" ? "checked" : "" %>>
+            </div>
+          </div>
+
+          <br />
+          <br />
+
+          <button type="button" class="btn btn-success" id="user_settings_save_button">Save</button>
+
+        </div>
+
+        <div id="tab-2" class="tab-pane settings-rules-pane">
+
+          <h4 class="h4">Email Rules</h4>
+          <div class="row">
+            <div class="col-md-12">
+              <table class="table table-striped settings-table email-rules-table">
+                <thead>
+                  <tr>
+                    <th>From Address</th>
+                    <th>To Address</th>
+                    <th>Subject</th>
+                    <th>List ID</th>
+                    <th>Destination Folder</th>
+                    <th>Rule Deletion</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <%
+                    for(var i = 0; i < emailRules.length; i++) {
+                      %>
+                        <tr>
+
+                          <td><%= emailRules[i].from_address %></td>
+                          <td><%= emailRules[i].to_address %></td>
+                          <td><%= emailRules[i].subject %></td>
+                          <td><%= emailRules[i].list_id %></td>
+                          <td><%= emailRules[i].destination_folder_name %></td>
+                          <td><button type="button" data="<%= emailRules[i].uid %>" class="btn btn-danger rule-deletion-button">Delete Rule</button></td>
+
+                        </tr>
+                      <%
+                    } 
+                  %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4" id="email_rules_container">
+              <button id="email_rules_button" type="button" class="btn btn-block btn-primary">Create New Email Rule</button>
+            </div>
+          </div>
+
+          <br />
+          <h4 class="h4">Brain Rules</h4>
+          <div class="row">
+            <div class="col-md-12">
+              <table class="table table-striped settings-table brain-rules-table">
+                <thead>
+                  <tr>
+                    <th>From Address</th>
+                    <th>To Address</th>
+                    <th>Subject</th>
+                    <th>List ID</th>
+                    <th>Rule Deletion</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <%
+                    for(var i = 0; i < brainRules.length; i++) {
+                      %>
+                        <tr>
+
+                          <td><%= brainRules[i].from_address %></td>
+                          <td><%= brainRules[i].to_address %></td>
+                          <td><%= brainRules[i].subject %></td>
+                          <td><%= brainRules[i].list_id %></td>
+                          <td><button type="button" data="<%= brainRules[i].uid %>" class="btn btn-danger rule-deletion-button">Delete Rule</button></td>
+
+                        </tr>
+                      <%
+                    } 
+                  %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4" id="genie_rules_container">
+              <button id="genie_rules_button" type="button" class="btn btn-block btn-primary">Create New Genie Rule</button>
+            </div>
+          </div>
+
+        </div>
+        <div id="tab-3" class="tab-pane">
+
+          <h4 class="h4">Email Bankruptcy</h4>
+          <div class="row">
+            <div class="col-md-4" id="email_bankruptcy_container">
+              <button id="email_bankruptcy_button" type="button" class="btn btn-block btn-danger">Declare Email Bankruptcy</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
   </div>
 </div>
-
-<br />
-<h4 class="h4">Email Rules</h4>
-<div class="row">
-  <div class="col-md-12">
-    <table class="table table-striped settings-table email-rules-table">
-      <thead>
-        <tr>
-          <th>From Address</th>
-          <th>To Address</th>
-          <th>Subject</th>
-          <th>List ID</th>
-          <th>Destination Folder</th>
-          <th>Rule Deletion</th>
-        </tr>
-      </thead>
-      <tbody>
-        <%
-          for(var i = 0; i < emailRules.length; i++) {
-            %>
-              <tr>
-
-                <td><%= emailRules[i].from_address %></td>
-                <td><%= emailRules[i].to_address %></td>
-                <td><%= emailRules[i].subject %></td>
-                <td><%= emailRules[i].list_id %></td>
-                <td><%= emailRules[i].destination_folder_name %></td>
-                <td><button type="button" data="<%= emailRules[i].uid %>" class="btn btn-danger rule-deletion-button">Delete Rule</button></td>
-
-              </tr>
-            <%
-          } 
-        %>
-      </tbody>
-    </table>
-  </div>
-</div>
-<div class="row">
-  <div class="col-md-4" id="email_rules_container">
-    <button id="email_rules_button" type="button" class="btn btn-block btn-primary">Create New Email Rule</button>
-  </div>
-</div>
-
-<br />
-<h4 class="h4">Brain Rules</h4>
-<div class="row">
-  <div class="col-md-12">
-    <table class="table table-striped settings-table brain-rules-table">
-      <thead>
-        <tr>
-          <th>From Address</th>
-          <th>To Address</th>
-          <th>Subject</th>
-          <th>List ID</th>
-          <th>Rule Deletion</th>
-        </tr>
-      </thead>
-      <tbody>
-        <%
-          for(var i = 0; i < brainRules.length; i++) {
-            %>
-              <tr>
-
-                <td><%= brainRules[i].from_address %></td>
-                <td><%= brainRules[i].to_address %></td>
-                <td><%= brainRules[i].subject %></td>
-                <td><%= brainRules[i].list_id %></td>
-                <td><button type="button" data="<%= brainRules[i].uid %>" class="btn btn-danger rule-deletion-button">Delete Rule</button></td>
-
-              </tr>
-            <%
-          } 
-        %>
-      </tbody>
-    </table>
-  </div>
-</div>
-<div class="row">
-  <div class="col-md-4" id="genie_rules_container">
-    <button id="genie_rules_button" type="button" class="btn btn-block btn-primary">Create New Genie Rule</button>
-  </div>
-</div>
-
-<br />
-<h4 class="h4">Demo Mode</h4>
-<div class="row">
-  <div class="col-md-10">
-    <input type="checkbox" class="demo_mode_switch" <%= userSettings.demo_mode_enabled == true ? "checked" : "" %>>
-  </div>
-</div>
-
-<br />
-<h4 class="h4">Keyboard Shortcuts</h4>
-<div class="row">
-  <div class="col-md-10">
-    <input type="checkbox" class="keyboard_shortcuts_switch" <%= userSettings.keyboard_shortcuts_enabled == true ? "checked" : "" %>>
-  </div>
-</div>
-
-<br />
-<h4 class="h4">Email Genie</h4>
-<div class="row">
-  <div class="col-md-10">
-    <input type="checkbox" id="genie_switch" <%= userSettings.genie_enabled == true ? "checked" : "" %>>
-  </div>
-</div>
-
-<br />
-<h4 class="h4">Horizontal Preview Panel</h4>
-<div class="row">
-  <div class="col-md-10">
-    <input type="checkbox" id="split_pane_switch" <%= userSettings.split_pane_mode == "horizontal" ? "checked" : "" %>>
-  </div>
-</div>
-
-<br />
-<br />
-
-<button type="button" class="btn btn-success" id="user_settings_save_button">Save</button>
 
 <!--
 <br />
