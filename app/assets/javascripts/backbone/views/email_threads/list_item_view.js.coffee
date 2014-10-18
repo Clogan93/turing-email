@@ -9,8 +9,6 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     @listenTo(@model, "removedFromCollection destroy", @remove)
 
   render: ->
-    @$el.css({ cursor: "pointer" });
-
     modelJSON = @model.toJSON()
     modelJSON["fromPreview"] = @model.fromPreview()
     modelJSON["subjectPreview"] = @model.subjectPreview()

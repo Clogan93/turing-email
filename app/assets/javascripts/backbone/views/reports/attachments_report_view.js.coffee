@@ -3,19 +3,24 @@ TuringEmailApp.Views.Reports ||= {}
 class TuringEmailApp.Views.Reports.AttachmentsReportView extends Backbone.View
   template: JST["backbone/templates/reports/attachments_report"]
 
+  className: "report-view"
+
   initialize: ->
     @listenTo(@model, "change", @render)
     @listenTo(@model, "destroy", @remove)
 
   render: ->
     googleChartData = @getGoogleChartData()
-      
+
     @$el.html(@template(googleChartData))
 
     @renderGoogleChart googleChartData
 
+    report = new Report(@)
+    report.setupContainers()
+
     return this
-    
+
   getGoogleChartData: ->
     contentTypeStats = @model.get("content_type_stats")
     reducedContentTypeStats = @getReducedContentTypeStats(contentTypeStats)
@@ -85,14 +90,17 @@ class TuringEmailApp.Views.Reports.AttachmentsReportView extends Backbone.View
       title: chartTitle
       legend:
         position: "none"
+        color: '#676A6C'
 
       hAxis:
         titleTextStyle:
-          color: "black"
+          color: '#676A6C'
 
       vAxis:
         titleTextStyle:
-          color: "black"
+          color: '#676A6C'
+
+      colors: ['#1AB394']
 
     chart = new google.visualization.ColumnChart($(divSelector)[0])
     dataTable = google.visualization.arrayToDataTable(data)

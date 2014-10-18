@@ -28,7 +28,7 @@ describe "EmailVolumeReportView", ->
       @server.respond()
 
     it "renders the report", ->
-      expect(@emailVolumeReportView.$el).toContainHtml("Reports <small>email volume</small>")
+      expect(@emailVolumeReportView.$el).toContainHtml("Email Volume")
 
       divSelectors = [".emails_per_day_chart_div", ".emails_per_week_chart_div", ".emails_per_month_chart_div"]
 

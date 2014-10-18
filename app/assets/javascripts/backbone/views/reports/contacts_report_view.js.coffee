@@ -3,6 +3,8 @@ TuringEmailApp.Views.Reports ||= {}
 class TuringEmailApp.Views.Reports.ContactsReportView extends Backbone.View
   template: JST["backbone/templates/reports/contacts_report"]
 
+  className: "report-view"
+
   initialize: ->
     @listenTo(@model, "change", @render)
     @listenTo(@model, "destroy", @remove)
@@ -13,6 +15,9 @@ class TuringEmailApp.Views.Reports.ContactsReportView extends Backbone.View
     @$el.html(@template(googleChartData))
 
     @renderGoogleChart googleChartData
+
+    report = new Report(@)
+    report.setupContainers()
 
     return this
 
@@ -44,7 +49,7 @@ class TuringEmailApp.Views.Reports.ContactsReportView extends Backbone.View
     
     options =
       title: chartTitle
-      width: 500
+      width: 475
       height: 300
 
     chart = new google.visualization.PieChart($(divSelector)[0])

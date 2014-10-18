@@ -3,6 +3,8 @@ TuringEmailApp.Views.Reports ||= {}
 class TuringEmailApp.Views.Reports.RecommendedRulesReportView extends Backbone.View
   template: JST["backbone/templates/reports/recommended_rules_report"]
 
+  className: "report-view"
+
   initialize: ->
     @listenTo(@model, "change", @render)
     @listenTo(@model, "destroy", @remove)

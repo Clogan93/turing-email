@@ -28,7 +28,7 @@ describe "ThreadsReportView", ->
       @server.respond()
 
     it "renders the report", ->
-      expect(@threadsReportView.$el).toContainHtml("Reports <small>threads</small>")
+      expect(@threadsReportView.$el).toContainHtml("Threads")
       
     it "renders the average thread length", ->
       expect(@threadsReportView.$el).toContainHtml('<h4 class="h4">Average Thread Length: <small>' +

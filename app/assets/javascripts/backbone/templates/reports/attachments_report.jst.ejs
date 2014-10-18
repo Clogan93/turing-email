@@ -1,6 +1,12 @@
 <div class="page-header">
-  <h1 class="h1">Reports <small>attachments</small></h1>
+  <h1 class="h1">Attachments</h1>
 </div>
 
-<div class="num_attachments_chart_div" style="width: 900px; height: 500px;"></div>
-<div class="average_file_size_chart_div" style="width: 900px; height: 500px;"></div>
+<div class="row">
+  <% var template = JST["backbone/templates/reports/report_container"]; %>
+  <%= template({chartDivClassName: 'num_attachments_chart_div', chartWidth: 'width: 900px;', chartHeight: 'height: 500px;', numberColumns: 'col-lg-11', containerTitle: 'Number of Attachments <small class="m-l-sm">attachments report</small>'}) %>
+</div>
+
+<div class="row">
+  <%= template({chartDivClassName: 'average_file_size_chart_div', chartWidth: 'width: 900px;', chartHeight: 'height: 500px;', numberColumns: 'col-lg-11', containerTitle: 'Average File Size <small class="m-l-sm">attachments report</small>'}) %>
+</div>

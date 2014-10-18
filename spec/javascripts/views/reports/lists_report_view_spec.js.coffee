@@ -28,7 +28,7 @@ describe "ListsReportView", ->
       @server.respond()
 
     it "renders the report", ->
-      expect(@listsReportView.$el).toContainHtml("Reports <small>lists</small>")
+      expect(@listsReportView.$el).toContainHtml("Lists")
 
       listReportStatsDiv = @listsReportView.$el.find("#list_report_statistics")
       expect(listReportStatsDiv).toContainHtml('<h4 class="h4">Lists email daily average</h4>')

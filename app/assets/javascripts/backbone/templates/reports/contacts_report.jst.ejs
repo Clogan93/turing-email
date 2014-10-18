@@ -1,8 +1,13 @@
 <div class="page-header">
-  <h1 class="h1">Reports <small>top contacts</small></h1>
+  <h1 class="h1">Top Contacts</h1>
 </div>
 
-<div>
-  <div class="top_senders" style="float: left;"></div>
-  <div class="top_recipients" style="float: left;"></div>
+
+<div class="row">
+
+  <% var template = JST["backbone/templates/reports/report_container"]; %>
+  <%= template({chartDivClassName: 'top_senders', chartWidth: '', chartHeight: '', numberColumns: 'col-lg-6', containerTitle: 'Top Senders <small class="m-l-sm">contacts report</small>'}) %>
+
+  <%= template({chartDivClassName: 'top_recipients', chartWidth: '', chartHeight: '', numberColumns: 'col-lg-6', containerTitle: 'Top Recipients <small class="m-l-sm">contacts report</small>'}) %>
+
 </div>

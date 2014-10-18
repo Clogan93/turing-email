@@ -28,7 +28,7 @@ describe "AttachmentsReportView", ->
       @server.respond()
 
     it "renders the report", ->
-      expect(@attachmentsReportView.$el).toContainHtml("Reports <small>attachments</small>")
+      expect(@attachmentsReportView.$el).toContainHtml("Attachments")
 
       divSelectors = [".num_attachments_chart_div", ".average_file_size_chart_div"]
 

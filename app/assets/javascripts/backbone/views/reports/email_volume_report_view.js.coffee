@@ -3,6 +3,8 @@ TuringEmailApp.Views.Reports ||= {}
 class TuringEmailApp.Views.Reports.EmailVolumeReportView extends Backbone.View
   template: JST["backbone/templates/reports/email_volume_report"]
 
+  className: "report-view"
+
   initialize: ->
     @listenTo(@model, "change", @render)
     @listenTo(@model, "destroy", @remove)
@@ -13,6 +15,9 @@ class TuringEmailApp.Views.Reports.EmailVolumeReportView extends Backbone.View
     @$el.html(@template(googleChartData))
 
     @renderGoogleChart googleChartData
+
+    report = new Report(@)
+    report.setupContainers()
 
     return this
 

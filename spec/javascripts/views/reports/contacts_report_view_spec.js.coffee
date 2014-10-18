@@ -28,7 +28,7 @@ describe "ContactsReportView", ->
       @server.respond()
 
     it "renders the report", ->
-      expect(@contactsReportView.$el).toContainHtml("Reports <small>top contacts</small>")
+      expect(@contactsReportView.$el).toContainHtml("Top Contacts")
 
       divSelectors = [".top_senders", ".top_recipients"]
 
