@@ -282,7 +282,7 @@ ActiveRecord::Schema.define(version: 20141017212109) do
     t.boolean  "demo_mode_enabled",          default: true
     t.boolean  "keyboard_shortcuts_enabled", default: true
     t.boolean  "genie_enabled",              default: true
-    t.text     "split_pane_mode",            default: "off"
+    t.text     "split_pane_mode",            default: "horizontal"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
