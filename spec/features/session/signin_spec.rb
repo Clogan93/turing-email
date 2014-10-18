@@ -10,7 +10,7 @@ describe 'the signin page', :type => :feature do
     find_field('Password')
     expect(page).to have_button('Login')
 
-    expect(page).to have_link('Signup now!')
+    expect(page).to have_link('Register')
   end
 
   context 'when the email and passowrd are correct' do
