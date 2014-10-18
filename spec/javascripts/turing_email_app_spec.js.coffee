@@ -36,23 +36,6 @@ describe "TuringEmailApp", ->
     it "starts the backbone history", ->
       TuringEmailApp.start()
       expect(Backbone.History.started).toBeTruthy()
-      
-  describe "#startEmailSync", ->
-    beforeEach ->
-      @syncEmailSpy = sinon.spy(TuringEmailApp, "syncEmail")
-      @setTimeoutSpy = sinon.spy(window, "setTimeout")
-      
-      TuringEmailApp.startEmailSync()
-      
-    afterEach ->
-      @setTimeoutSpy.restore()
-      @syncEmailSpy.restore()
-
-    it "syncs the email", ->
-      expect(@syncEmailSpy).toHaveBeenCalled()
-    
-    it "queues the next email sync", ->
-      expect(@setTimeoutSpy).toHaveBeenCalled()
 
   describe "setup functions", ->
     describe "#setupKeyboardHandler", ->
@@ -570,10 +553,12 @@ describe "TuringEmailApp", ->
 
         @reloadEmailThreadsSpy = sinon.spy(TuringEmailApp, "reloadEmailThreads")
         @loadEmailFoldersSpy = sinon.spy(TuringEmailApp, "loadEmailFolders")
+        @setTimeoutSpy = sinon.spy(window, "setTimeout")
         
       afterEach ->
         @reloadEmailThreadsSpy.restore()
         @loadEmailFoldersSpy.restore()
+        @setTimeoutSpy.restore()
         
       it "posts the sync email request", ->
         expect(@server.requests.length).toEqual 1
@@ -582,6 +567,19 @@ describe "TuringEmailApp", ->
         expect(request.method).toEqual "POST"
         expect(request.url).toEqual "api/v1/email_accounts/sync"
 
+      describe "on error", ->
+        beforeEach ->
+          @server.respond()
+
+        it "does NOT reload the emails threads", ->
+          expect(@reloadEmailThreadsSpy).not.toHaveBeenCalled()
+
+        it "does NOT reload the emails folders", ->
+          expect(@loadEmailFoldersSpy).not.toHaveBeenCalled()
+
+        it "schedules the next sync", ->
+          expect(@setTimeoutSpy).toHaveBeenCalled()
+  
       describe "when no emails synced", ->
         beforeEach ->
           @server.respondWith "POST", "api/v1/email_accounts/sync",
@@ -593,6 +591,9 @@ describe "TuringEmailApp", ->
 
         it "does NOT reload the emails folders", ->
           expect(@loadEmailFoldersSpy).not.toHaveBeenCalled()
+          
+        it "schedules the next sync", ->
+          expect(@setTimeoutSpy).toHaveBeenCalled()
         
       describe "when emails synced", ->
         beforeEach ->
@@ -605,6 +606,9 @@ describe "TuringEmailApp", ->
 
         it "reloads the emails folders", ->
           expect(@reloadEmailThreadsSpy).toHaveBeenCalled()
+
+        it "schedules the next sync", ->
+          expect(@setTimeoutSpy).toHaveBeenCalled()
 
     describe "Alert Functions", ->
       describe "#showAlert", ->
