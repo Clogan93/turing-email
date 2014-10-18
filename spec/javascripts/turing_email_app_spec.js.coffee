@@ -39,14 +39,20 @@ describe "TuringEmailApp", ->
       
   describe "#startEmailSync", ->
     beforeEach ->
-      @spy = sinon.spy(window, "setInterval")
+      @syncEmailSpy = sinon.spy(TuringEmailApp, "syncEmail")
+      @setTimeoutSpy = sinon.spy(window, "setTimeout")
+      
       TuringEmailApp.startEmailSync()
       
     afterEach ->
-      @spy.restore()
+      @setTimeoutSpy.restore()
+      @syncEmailSpy.restore()
+
+    it "syncs the email", ->
+      expect(@syncEmailSpy).toHaveBeenCalled()
     
-    it "creates the sync email interval", ->
-      expect(@spy).toHaveBeenCalled()
+    it "queues the next email sync", ->
+      expect(@setTimeoutSpy).toHaveBeenCalled()
 
   describe "setup functions", ->
     describe "#setupKeyboardHandler", ->

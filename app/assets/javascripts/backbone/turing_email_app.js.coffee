@@ -49,11 +49,11 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @startEmailSync()
 
   startEmailSync: ->
-    window.setInterval(=>
-      @syncEmail()
-    60000)
-
     @syncEmail()
+    
+    window.setTimeout(=>
+      @startEmailSync()
+    60000)
 
   #######################
   ### Setup Functions ###
