@@ -39,7 +39,7 @@ describe "EmailThreadView", ->
 
         #Collect Attributes from the rendered DOM.
         @emailThreadView.$el.find(".email_information").each ->
-          fromNames.push $($(this).find(".col-md-2")[0]).text().trim()
+          fromNames.push $($(this).find(".email-from")[0]).text().trim()
           
         @emailThreadView.$el.find(".email_body .col-md-11").each ->
           textParts.push $(this).text().trim()
