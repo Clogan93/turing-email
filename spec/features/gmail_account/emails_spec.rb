@@ -16,7 +16,7 @@ describe 'Gmail emails support', :type => :feature, :js => true, :link_gmail_acc
   end
   
   it 'should sync emails' do
-    gmail_account.sync_email()
+    gmail_account.sync_email(delay: false)
 
     inbox_emails = [
         { 'from_name' => 'David Gobaud',
@@ -73,7 +73,7 @@ describe 'Gmail emails support', :type => :feature, :js => true, :link_gmail_acc
 
     # make sure partial sync works
     num_emails = user.emails.count
-    gmail_account.sync_email()
+    gmail_account.sync_email(delay: false)
     expect(user.emails.count).to eq(num_emails)
   end
   

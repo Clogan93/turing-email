@@ -7,15 +7,15 @@ describe Api::V1::UserConfigurationsController, :type => :request do
   
   it 'updates the user configuration' do
     expect(user_configuration.genie_enabled).to be(true)
-    expect(user_configuration.split_pane_mode).to eq(UserConfiguration.split_pane_modes[:off])
+    expect(user_configuration.split_pane_mode).to eq(UserConfiguration.split_pane_modes[:horizontal])
     
     patch '/api/v1/user_configurations', :genie_enabled => false,
-          :split_pane_mode => UserConfiguration.split_pane_modes[:horizontal]
+          :split_pane_mode => UserConfiguration.split_pane_modes[:off]
     expect(response).to have_http_status(:ok)
     
     user_configuration.reload
     expect(user_configuration.genie_enabled).to be(false)
-    expect(user_configuration.split_pane_mode).to eq(UserConfiguration.split_pane_modes[:horizontal])
+    expect(user_configuration.split_pane_mode).to eq(UserConfiguration.split_pane_modes[:off])
 
     patch '/api/v1/user_configurations', :genie_enabled => true,
           :split_pane_mode => UserConfiguration.split_pane_modes[:vertical]
