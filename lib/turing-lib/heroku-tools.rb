@@ -20,8 +20,8 @@ module HerokuTools
       result = heroku.get_ps($config.heroku_app_name)
       
       num_dynos = 0
-      result.body.each do |dyno|
-        parts = dyno["process"].split(".")
+      result.body.each do |dyno_info|
+        parts = dyno_info["process"].split(".")
         
         num_dynos += 1 if parts[0] == dyno
       end
