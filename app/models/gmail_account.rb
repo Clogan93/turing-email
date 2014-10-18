@@ -5,6 +5,7 @@ class GmailAccount < ActiveRecord::Base
   DRAFTS_BATCH_SIZE = 100
   HISTORY_BATCH_SIZE = 100
   SEARCH_RESULTS_PER_PAGE = 50
+  NUM_SYNC_DYNOS = 2
 
   belongs_to :user
 
@@ -717,7 +718,7 @@ class GmailAccount < ActiveRecord::Base
       end
     end
 
-    HerokuTools::HerokuTools.scale_dynos('worker', 2)
+    HerokuTools::HerokuTools.scale_dynos('worker', GmailAccount::NUM_SYNC_DYNOS)
   end
 
   def sync_gmail_thread(gmail_thread_id)
