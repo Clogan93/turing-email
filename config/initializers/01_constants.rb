@@ -79,12 +79,15 @@ $config.mailgun_smtp_server = 'smtp.mailgun.org'
 $config.mailgun_api_url_base = "https://api:#{$config.mailgun_api_key}@api.mailgun.net/v2"
 $config.mailgun_api_url = "#{$config.mailgun_api_url_base}/#{$config.mailgun_domain}"
 
+# Heroku Dynos
+$config.heroku_dynos = ['worker']
+
 # Delayed Job
 $config.dj_queues = ['worker']
 $config.dj_queue_alert_size = 100
-
-# Heroku Workers
-$config.heroku_workers = ['worker']
+$config.dj_queues_heroku_dynos = {
+    'worker' => 'worker'
+}
 
 =begin
 $config.s3_key_length = 256

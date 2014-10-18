@@ -23,7 +23,7 @@ Delayed::MessageSending
 module Delayed
   module DelayMail
     def delay(options = {}, heroku_scale: true)
-      HerokuTools::HerokuTools.scale_workers('worker', 1) if heroku_scale
+      HerokuTools::HerokuTools.scale_dynos('worker', 1) if heroku_scale
 
       DelayProxy.new(PerformableMailer, self, options)
     end
@@ -31,7 +31,7 @@ module Delayed
 
   module MessageSending
     def delay(options = {}, heroku_scale: true)
-      HerokuTools::HerokuTools.scale_workers('worker', 1) if heroku_scale
+      HerokuTools::HerokuTools.scale_dynos('worker', 1) if heroku_scale
 
       DelayProxy.new(PerformableMethod, self, options)
     end

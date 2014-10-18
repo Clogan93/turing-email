@@ -717,7 +717,7 @@ class GmailAccount < ActiveRecord::Base
       end
     end
 
-    HerokuTools::HerokuTools.scale_workers('worker', 1)
+    HerokuTools::HerokuTools.scale_dynos('worker', 2)
   end
 
   def sync_gmail_thread(gmail_thread_id)
