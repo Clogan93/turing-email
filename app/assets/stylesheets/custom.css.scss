@@ -137,6 +137,10 @@ body {
   .email_subject {
     padding: 15px 0px;
     color: #222;
+  }
+
+  .email-thread-header #email_subject {
+    font-weight: normal;
     font-size: 18px;
   }
 
@@ -602,7 +606,14 @@ table.table-mail tr td {
   padding: 0px;
 }
 
-.email_body
-{
-  padding: 0px 10px;
+.email_body {
+  padding: 15px 10px;
+}
+
+.mail-tools {
+  margin-top: 10px;
+
+  .email-thread-date {
+    padding-right: 15px;
+  }
 }
