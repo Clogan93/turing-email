@@ -137,6 +137,10 @@ body {
   .email_subject {
     padding: 15px 0px;
     color: #222;
+  }
+
+  .email-thread-header #email_subject {
+    font-weight: normal;
     font-size: 18px;
   }
 
@@ -531,7 +535,7 @@ html, body {
 
 #top-search {
   height: 50px;
-  width: 800px;
+  width: 500px;
 }
 
 .navbar-top-links li a {
@@ -580,4 +584,54 @@ table.table-mail tr td {
   height: 100%;
   overflow-y: scroll;
   overflow-x: hidden;
+}
+
+.email_information {
+  span {
+    position: relative;
+    top: 10px;
+  }
+
+  .email-from {
+    padding-left: 10px;
+    padding-right: 10px;
+    font-weight: bold;
+  }
+
+  .email-date {
+    float: right;
+    padding-right: 15px;
+  }
+}
+
+.mail-body {
+  padding: 0px;
+}
+
+.email_body {
+  padding: 15px 10px;
+}
+
+.mail-tools {
+  margin-top: 10px;
+
+  .email-thread-date {
+    padding-right: 15px;
+  }
+}
+
+.settings-switch {
+  padding-top: 3px;
+}
+
+.settings-rules-pane {
+  padding-bottom: 50px;
+}
+
+.container-fluid {
+  min-width: 800px !important;
+}
+
+.search_nav_bar {
+  min-width: 825px !important;
 }

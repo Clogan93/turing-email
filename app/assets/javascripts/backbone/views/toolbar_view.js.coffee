@@ -84,6 +84,9 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       selector: "[data-toggle=tooltip]"
       container: "body"
 
+    @$el.find(".settings-button").click ->
+      $(this).tooltip('hide')
+
   setupBulkActionButtons: ->
     @$el.find("#all_bulk_action").click =>
       @divAllCheckbox.iCheck("check")

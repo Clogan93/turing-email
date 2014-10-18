@@ -1,51 +1,41 @@
 <div class="mail-box-header email-thread-header">
-    <div class="pull-right tooltip-demo">
-      <% if(!TuringEmailApp.isSplitPaneMode()) { %>
-        <a class="btn btn-white btn-sm" id="email_back_button" data-toggle="tooltip" data-placement="top" title="Back">
-          <i class="fa fa-arrow-left"></i> Back
-        </a>
-      <% } %>
-
-      <a class="btn btn-white btn-sm email_reply_button" data-toggle="tooltip" data-placement="top" title="Reply">
-        <i class="fa fa-reply"></i> Reply
+  <div class="pull-right tooltip-demo">
+    <% if(!TuringEmailApp.isSplitPaneMode()) { %>
+      <a class="btn btn-white btn-sm" id="email_back_button" data-toggle="tooltip" data-placement="top" title="Back">
+        <i class="fa fa-arrow-left"></i> Back
       </a>
-      <a href="#" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Print email">
-        <i class="fa fa-print"></i>
-      </a>
-      <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Archive">
-        <i class="fa fa-archive"></i>
-      </button>
-      <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Move to trash">
-        <i class="fa fa-trash-o"></i>
-      </button>
-    </div>
+    <% } %>
 
-    <div class="mail-tools tooltip-demo m-t-md">
+    <a class="btn btn-white btn-sm email_reply_button" data-toggle="tooltip" data-placement="top" title="Reply">
+      <i class="fa fa-reply"></i> Reply
+    </a>
+    <a href="#" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Print email">
+      <i class="fa fa-print"></i>
+    </a>
+    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Archive">
+      <i class="fa fa-archive"></i>
+    </button>
+    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Move to trash">
+      <i class="fa fa-trash-o"></i>
+    </button>
+  </div>
 
-        <h3>
-            <span class="font-noraml">Subject: </span><span id="email_subject"><%= subjectPreview %></span>
-        </h3>
-        <h5>
-            <span class="pull-right font-noraml"><%= datePreview %></span>
-            <span class="font-noraml">From: </span><%= fromPreview %>
-        </h5>
-    </div>
+  <div class="mail-tools tooltip-demo row">
+    <span  class="col-md-9" id="email_subject"><%= subjectPreview %></span>
+  </div>
 </div>
 
   <div class="mail-box">
     <div class="mail-body">
       <% _.each(sortedEmails, function(email, index) { %>
-        <div class="row email<%= (emails.length > 1 && index < emails.length - 1) && email.seen ? " collapsed_email" : "" %>">
+        <div class="email<%= (emails.length > 1 && index < emails.length - 1) && email.seen ? " collapsed_email" : "" %>">
           <div class="email_information">
-            <div>
+            <span class="email-from">
               <%= email.fromPreview %>
-            </div>
-            <div class="col-md-8">
-              <%= email.subject.trim() == "" ? "(no subject)" : email.subject %>
-            </div>
-            <div class="col-md-2">
+            </span>
+            <span class="email-date">
               <%= email.datePreview %>
-            </div>
+            </span>
           </div>
 
           <div class="email_body" <%= emails.length > 1 && index < emails.length - 1 ? "style=\"display: none;\"" : "" %>>
