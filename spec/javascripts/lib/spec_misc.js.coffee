@@ -198,7 +198,7 @@ window.validateEmailAttributes = (emailJSON) ->
                         "tos", "ccs", "bccs",
                         "subject",
                         "html_part", "text_part", "body_text",
-                        "gmail_labels", "imap_folders"]
+                        "folder_ids"]
   validateAttributes(emailJSON, expectedAttributes)
 
 window.verifyReportsRendered = (parent) ->

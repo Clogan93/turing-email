@@ -84,8 +84,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     folderIDs = []
 
     for email in emails
-      folderIDs.push gmailLabel["label_id"] for gmailLabel in email["gmail_labels"] if email["gmail_labels"]?
-      folderIDs.push imapFolder["folder_id"] for imapFolder in email["imap_folders"] if email["imap_folders"]?
+      folderIDs = folderIDs.concat email["folder_ids"]
 
     return _.uniq(folderIDs)
 

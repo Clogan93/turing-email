@@ -16,10 +16,20 @@ attributes :tos, :ccs, :bccs
 attributes :subject
 attributes :html_part, :text_part, :body_text
 
-child(:gmail_labels) do |gmail_label|
-  extends('api/v1/gmail_labels/show')
+#child(:gmail_labels, :if => lambda { |email| email.email_account_type == "GmailAccount" }) do |gmail_label|
+#  extends('api/v1/gmail_labels/show', :locals => {:no_counts => true})
+#end
+
+# faster version with less info
+node(:folder_ids, :if => lambda { |email| email.email_account_type == "GmailAccount" }) do |email|
+  email.gmail_labels.map {|gmail_label| gmail_label.label_id}
 end
 
-child(:imap_folders) do |imap_folder|
-  extends('api/v1/imap_folders/show')
+#child(:imap_folders, :if => lambda { |email| email.email_account_type == "ImapFolder" }) do |imap_folder|
+#  extends('api/v1/imap_folders/show')
+#end
+
+# faster version with less info
+node(:folder_ids, :if => lambda { |email| email.email_account_type == "ImapFolder" }) do |email|
+  email.imap_folders.map {|imap_folder| imap_folder.label_id}
 end

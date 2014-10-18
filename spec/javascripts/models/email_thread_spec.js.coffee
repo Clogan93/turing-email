@@ -273,13 +273,12 @@ describe "EmailThread", ->
         @emailThread.fetch()
         @server.respond()
 
-        folderIDsMap = []
+        @folderIDs = []
         
         for email in validEmailThreadFixture["emails"]
-          folderIDsMap[gmailLabel["label_id"]] = null for gmailLabel in email["gmail_labels"] if email["gmail_labels"]?
-          folderIDsMap[imapFolder["folder_id"]] = null for imapFolder in email["imap_folders"] if email["imap_folders"]?
+          @folderIDs = @folderIDs.concat(email["folder_ids"])
           
-        @folderIDs = _.keys(folderIDsMap).sort()
+        @folderIDs = _.uniq(@folderIDs).sort()
         expect(@folderIDs.length > 0).toBeTruthy()
 
       afterEach ->
