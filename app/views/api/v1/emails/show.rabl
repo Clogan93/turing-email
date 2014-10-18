@@ -26,7 +26,7 @@ node(:folder_ids, :if => lambda { |email| email.email_account_type == "GmailAcco
 end
 
 #child(:imap_folders, :if => lambda { |email| email.email_account_type == "ImapFolder" }) do |imap_folder|
-#  extends('api/v1/imap_folders/show')
+#  extends('api/v1/imap_folders/show', :locals => {:no_counts => true})
 #end
 
 # faster version with less info
