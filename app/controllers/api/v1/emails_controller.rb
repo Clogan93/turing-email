@@ -1,6 +1,7 @@
 class Api::V1::EmailsController < ApiController
   before_action do
     signed_in_user(true)
+    correct_user()
   end
 
   before_action :correct_user, :except => [:set_seen, :move_to_folder, :apply_gmail_label, :remove_from_folder, :trash]
