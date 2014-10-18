@@ -1,22 +1,24 @@
-Welcome to Turing!
-<br />
-<br />
-
-<% if !current_user.nil? %>
-  <a href="<%= mail_url %>">Mail</a>
+<div class="text-center col-md-offset-4 col-sm-12 col-md-4" style="padding-top: 17.5%;">
+  <h1>Welcome to Turing!</h1>
   <br />
   <br />
 
-  <% google_o_auth2_token = nil
-     google_o_auth2_token = current_user.gmail_accounts.first.google_o_auth2_token if current_user.gmail_accounts.first %>
+  <% if !current_user.nil? %>
+    <a href="<%= mail_url %>">Mail</a>
+    <br />
+    <br />
 
-  <%= link_to("#{google_o_auth2_token ? 'Change' : 'Link'} Gmail Account", gmail_o_auth2_url(true)) %>
-  <% if google_o_auth2_token %>
-    | <%= link_to('Unlink Gmail Account', gmail_o_auth2_remove_url, method: 'delete') %>
+    <% google_o_auth2_token = nil
+       google_o_auth2_token = current_user.gmail_accounts.first.google_o_auth2_token if current_user.gmail_accounts.first %>
+
+    <%= link_to("#{google_o_auth2_token ? 'Change' : 'Link'} Gmail Account", gmail_o_auth2_url(true)) %>
+    <% if google_o_auth2_token %>
+      | <%= link_to('Unlink Gmail Account', gmail_o_auth2_remove_url, method: 'delete') %>
+    <% end %>
+
+    <br /><br />
+    <%= link_to('Signout', signout_path, :method => :delete, class: 'btn btn-primary block full-width m-b') %>
+  <% else %>
+    <%= link_to('Login', signin_path, class: 'btn btn-primary block full-width m-b') %> <%= link_to('Register', signup_path, class: 'btn btn-sm btn-white btn-block') %>
   <% end %>
-
-  <br /><br />
-  <%= link_to('Signout', signout_path, :method => :delete) %>
-<% else %>
-  <%= link_to('Signin', signin_path) %> | <%= link_to('Signup', signup_path) %>
-<% end %>
+</div>
