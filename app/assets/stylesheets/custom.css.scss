@@ -581,3 +581,28 @@ table.table-mail tr td {
   overflow-y: scroll;
   overflow-x: hidden;
 }
+
+.email_information {
+  span {
+    position: relative;
+    top: 10px;
+  }
+  .email-from {
+    padding-left: 10px;
+    padding-right: 10px;
+    font-weight: bold;
+  }
+  .email-date {
+    float: right;
+    padding-right: 15px;
+  }
+}
+
+.mail-body {
+  padding: 0px;
+}
+
+.email_body
+{
+  padding: 0px 10px;
+}
