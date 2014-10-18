@@ -136,3 +136,13 @@ end
 def destroy_all_batch(collection)
   collection.limit(100).destroy_all while collection.count > 0
 end
+
+def benchmark_time(message)
+  startTime = Time.now()
+  yield
+  endTime = Time.now()
+
+  delta = endTime - startTime
+
+  log_console("benchmark_time: #{message} TOOK #{delta}")
+end
