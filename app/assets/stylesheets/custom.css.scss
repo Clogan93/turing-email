@@ -535,7 +535,7 @@ html, body {
 
 #top-search {
   height: 50px;
-  width: 800px;
+  width: 500px;
 }
 
 .navbar-top-links li a {
@@ -624,4 +624,12 @@ table.table-mail tr td {
 
 .settings-rules-pane {
   padding-bottom: 50px;
+}
+
+.container-fluid {
+  min-width: 800px !important;
+}
+
+.search_nav_bar {
+  min-width: 825px !important;
 }
