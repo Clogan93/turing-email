@@ -489,35 +489,34 @@ class GmailAccount < ActiveRecord::Base
   end
   
   def sync_email_labels(email, gmail_label_ids)
-    #log_console("SYNC LABELS for #{email.uid}")
     email.email_folder_mappings.destroy_all()
 
-    email.seen = !gmail_label_ids.include?('UNREAD')
+    email.seen = gmail_label_ids.nil? || !gmail_label_ids.include?('UNREAD')
     email.save!
 
-    #log_console("seen = #{email.seen}")
-
-    gmail_label_ids.each do |gmail_label_id|
-      #log_console("SYNCING LABEL #{gmail_label_id}!")
-      
-      next if gmail_label_id == 'UNREAD'
-
-      if gmail_label_id == 'INBOX' && email.auto_filed
-        # TODO take out when syncing to Gmail!!
-        log_console('SKIPPING INBOX label because AUTO FILED!')
-        next
+    if gmail_label_ids
+      gmail_label_ids.each do |gmail_label_id|
+        #log_console("SYNCING LABEL #{gmail_label_id}!")
+        
+        next if gmail_label_id == 'UNREAD'
+  
+        if gmail_label_id == 'INBOX' && email.auto_filed
+          # TODO take out when syncing to Gmail!!
+          log_console('SKIPPING INBOX label because AUTO FILED!')
+          next
+        end
+  
+        gmail_label = GmailLabel.find_by(:gmail_account => self, :label_id => gmail_label_id)
+        if gmail_label.nil?
+          label_data = self.gmail_client.labels_get('me', gmail_label_id)
+          gmail_label = self.sync_label_data(label_data)
+  
+          log_console("created #{gmail_label_id}")
+        end
+  
+        self.apply_label_to_email(email, label_id: gmail_label.label_id, label_name: gmail_label.name,
+                                  gmail_sync: false)
       end
-
-      gmail_label = GmailLabel.find_by(:gmail_account => self, :label_id => gmail_label_id)
-      if gmail_label.nil?
-        label_data = self.gmail_client.labels_get('me', gmail_label_id)
-        gmail_label = self.sync_label_data(label_data)
-
-        log_console("created #{gmail_label_id}")
-      end
-
-      self.apply_label_to_email(email, label_id: gmail_label.label_id, label_name: gmail_label.name,
-                                gmail_sync: false)
     end
   end
 
@@ -658,7 +657,7 @@ class GmailAccount < ActiveRecord::Base
   def update_email_from_gmail_data(gmail_data)
     email = Email.find_by_uid(gmail_data['id'])
     if email.nil?
-      log_email('Email GONE!!!')
+      SyncFailedEmail.create_retry(self, gmail_data['id'], 'update_email_from_gmail_data Email GONE!!!')
       return
     end
 
