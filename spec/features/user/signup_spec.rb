@@ -7,7 +7,7 @@ describe 'the signup page', :type => :feature do
     find_field('Email')
     find_field('Password')
     find_field('Confirm Password')
-    expect(page).to have_button('CREATE MY ACCOUNT')
+    expect(page).to have_button('Register')
   end
 
   context 'when the email is invalid' do
@@ -15,7 +15,7 @@ describe 'the signup page', :type => :feature do
       visit '/signup'
 
       fill_in('Email', :with => 'invalid_email')
-      click_button('CREATE MY ACCOUNT')
+      click_button('Register')
 
       expect(page).to have_content('Email is invalid')
     end
@@ -27,7 +27,7 @@ describe 'the signup page', :type => :feature do
 
       fill_in('Password', :with => 'Password')
       fill_in('Confirm Password', :with => 'Password2')
-      click_button('CREATE MY ACCOUNT')
+      click_button('Register')
 
       expect(page).to have_content('Password confirmation doesn\'t match Password')
     end
@@ -42,7 +42,7 @@ describe 'the signup page', :type => :feature do
       fill_in('Email', :with => user.email)
       fill_in('Password', :with => user.password)
       fill_in('Confirm Password', :with => user.password)
-      click_button('CREATE MY ACCOUNT')
+      click_button('Register')
 
       expect(page).to have_content('Error email in use')
     end
@@ -57,7 +57,7 @@ describe 'the signup page', :type => :feature do
       fill_in('Email', :with => user.email)
       fill_in('Password', :with => user.password)
       fill_in('Confirm Password', :with => user.password)
-      click_button('CREATE MY ACCOUNT')
+      click_button('Register')
 
       expect(page).to have_content('Welcome to Turing!')
     end

@@ -7,8 +7,8 @@ describe 'the home page', :type => :feature do
     it 'should have the correct links' do
       visit '/'
 
-      expect(page).to have_link('Signin')
-      expect(page).to have_link('Signup')
+      expect(page).to have_link('Login')
+      expect(page).to have_link('Register')
 
       expect(page).to_not have_link('Signout')
       expect(page).to_not have_link('Mail')
@@ -28,8 +28,8 @@ describe 'the home page', :type => :feature do
       expect(page).to have_link('Signout')
       expect(page).to have_link('Mail')
 
-      expect(page).to_not have_link('Signin')
-      expect(page).to_not have_link('Signup')
+      expect(page).to_not have_link('Login')
+      expect(page).to_not have_link('Register')
     end
 
     context 'when the user does NOT have a Gmail account linked' do

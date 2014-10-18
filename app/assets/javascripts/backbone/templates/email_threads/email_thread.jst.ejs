@@ -37,7 +37,7 @@
       <% _.each(sortedEmails, function(email, index) { %>
         <div class="row email<%= (emails.length > 1 && index < emails.length - 1) && email.seen ? " collapsed_email" : "" %>">
           <div class="email_information">
-            <div class="col-md-2">
+            <div>
               <%= email.fromPreview %>
             </div>
             <div class="col-md-8">
