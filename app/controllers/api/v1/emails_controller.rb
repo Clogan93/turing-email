@@ -9,7 +9,7 @@ class Api::V1::EmailsController < ApiController
   before_action :filter_email_uids, :only => [:set_seen, :move_to_folder, :apply_gmail_label, :remove_from_folder, :trash]
 
   swagger_controller :emails, 'Emails Controller'
-
+  
   swagger_api :show do
     summary 'Return email.'
 
