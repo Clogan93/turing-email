@@ -40,14 +40,10 @@ task :heroku_maintenance => :environment do
       log_console('STARTING heroku_maintenance - scale dynos')
   
       $config.dj_queues_heroku_dynos.each do |queue, dyno|
-        if Delayed::Job.where(:queue => queue, :failed_at => nil).count > 0
-          num_dynos = HerokuTools::HerokuTools.count_dynos(dyno) == 0
-          
-          if num_dynos.nil? || num_dynos == 0
-            HerokuTools::HerokuTools.scale_dynos(dyno, 1)
-          else
-            HerokuTools::HerokuTools.scale_dynos(dyno, 0)
-          end
+        if Delayed::Job.where(:queue => queue, :failed_at => nil).count > 0 
+          HerokuTools::HerokuTools.scale_dynos(dyno, 1) if HerokuTools::HerokuTools.count_dynos(dyno) == 0
+        else
+          HerokuTools::HerokuTools.scale_dynos(dyno, 0)
         end
       end
   

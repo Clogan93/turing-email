@@ -13,7 +13,7 @@ module HerokuTools
     end
     
     def self.count_dynos(dyno)
-      return if (!Rails.env.beta? && !Rails.env.production?) || !$config.heroku_dynos.include?(dyno)
+      return 0 if (!Rails.env.beta? && !Rails.env.production?) || !$config.heroku_dynos.include?(dyno)
 
       heroku = Heroku::API.new(:api_key => $config.heroku_api_key)
 
