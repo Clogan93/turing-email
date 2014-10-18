@@ -420,10 +420,12 @@ class GmailAccount < ActiveRecord::Base
   end
 
   def sync_reset
-    self.emails.destroy_all()
-    self.gmail_labels.destroy_all()
-    self.sync_failed_emails.destroy_all()
+    destroy_all_batch(self.emails)
+    destroy_all_batch(self.gmail_labels)
+    destroy_all_batch(self.sync_failed_emails)
+    
     self.last_history_id_synced = nil
+    
     self.save!
   end
 
