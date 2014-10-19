@@ -862,7 +862,15 @@ describe "TuringEmailApp", ->
       
         afterEach ->
           @listViewDiv.remove()
-      
+
+        describe "when refreshFolders is true", ->
+
+          it "refreshes the email folders.", ->
+            @loadEmailFoldersSpy = sinon.spy(TuringEmailApp, "loadEmailFolders")
+            TuringEmailApp.applyActionToSelectedThreads(@singleAction, @multiAction, true, true, true)
+            expect(@loadEmailFoldersSpy).toHaveBeenCalled()
+            @loadEmailFoldersSpy.restore()
+
         describe "clearSelection", ->
           beforeEach ->
             @origisSplitPaneMode = TuringEmailApp.isSplitPaneMode
