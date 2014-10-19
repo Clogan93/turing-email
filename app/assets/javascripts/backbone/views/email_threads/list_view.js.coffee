@@ -61,6 +61,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   selectedItem: ->
     if @selectedListItemView? then @selectedListItemView.model else null
 
+  # TODO write tests for this function.
   selectedIndex: ->
     return _.indexOf(_.values(@listItemViews), @selectedListItemView)
 
@@ -76,11 +77,12 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   ### Setters ###
   ###############
 
+  # TODO write tests for this function.
   selectedIndexIs: (index) ->
     listItemViews = _.values(@listItemViews)
     if listItemViews.length > index
       listItemView = listItemViews[index]
-      @select(listItemView.model)
+      @select(listItemView.model) if listItemView? and listItemView.model?
 
   ###############
   ### Actions ###
