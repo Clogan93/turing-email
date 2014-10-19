@@ -38,7 +38,7 @@
             </span>
           </div>
 
-          <div class="email_body" <%= emails.length > 1 && index < emails.length - 1 ? "style=\"display: none;\"" : "" %>>
+          <div class="email_body" <%= (emails.length > 1 && index < emails.length - 1) && email.seen ? "style=\"display: none;\"" : "" %>>
             <div class="row">
               <div class="col-md-11">
                 <%
