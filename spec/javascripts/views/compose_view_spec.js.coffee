@@ -171,7 +171,7 @@ describe "ComposeView", ->
         @composeView.$el.find("#compose_form #cc_input").val("This is the cc input.")
         @composeView.$el.find("#compose_form #bcc_input").val("This is the bcc input.")
         @composeView.$el.find("#compose_form #subject_input").val("This is the subject input.")
-        @composeView.$el.find("#compose_form #compose_email_body").html("This is the compose email body.")
+        @composeView.$el.find("#compose_form .note-editable").html("This is the compose email body.")
 
         @composeView.resetView()
 
@@ -180,7 +180,7 @@ describe "ComposeView", ->
         expect(@composeView.$el.find("#compose_form #cc_input").val()).toEqual ""
         expect(@composeView.$el.find("#compose_form #bcc_input").val()).toEqual ""
         expect(@composeView.$el.find("#compose_form #subject_input").val()).toEqual ""
-        expect(@composeView.$el.find("#compose_form #compose_email_body").html()).toEqual ""
+        expect(@composeView.$el.find("#compose_form .note-editable").html()).toEqual ""
 
       it "removes the email sent error alert", ->
         expect(@composeView.$el).not.toContainHtml('<div id="email_sent_error_alert" class="alert alert-danger" role="alert">There was an error in sending your email!</div>')
@@ -537,10 +537,10 @@ describe "ComposeView", ->
         expect(@email.get("subject")).toEqual @composeView.$el.find("#compose_form #subject_input").val()
 
       it "updates the email model with the html input value from the compose form", ->
-        expect(@email.get("html_part")).toEqual @composeView.$el.find("#compose_form #compose_email_body").html()
+        expect(@email.get("html_part")).toEqual @composeView.$el.find("#compose_form .note-editable").html()
 
       it "updates the email model with the text input value from the compose form", ->
-        expect(@email.get("text_part")).toEqual @composeView.$el.find("#compose_form #compose_email_body").text()
+        expect(@email.get("text_part")).toEqual @composeView.$el.find("#compose_form .note-editable").text()
 
     describe "sendEmail", ->
 
