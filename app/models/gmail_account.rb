@@ -287,6 +287,7 @@ class GmailAccount < ActiveRecord::Base
       batch_request = Google::APIClient::BatchRequest.new()
     end
 
+    gmail_label = nil
     emails.each do |email|
       gmail_label, call = self.move_email_to_folder(email, folder_id: folder_id, folder_name: folder_name,
                                                     set_auto_filed_folder: set_auto_filed_folder,
@@ -296,6 +297,8 @@ class GmailAccount < ActiveRecord::Base
     end
 
     self.google_o_auth2_token.api_client.execute!(batch_request) if !self.user.user_configuration.demo_mode_enabled
+    
+    return gmail_label
   end
   
   # polymorphic call
@@ -347,7 +350,8 @@ class GmailAccount < ActiveRecord::Base
       gmail_client = self.gmail_client
       batch_request = Google::APIClient::BatchRequest.new()
     end
-    
+
+    gmail_label = nil
     emails.each do |email|
       gmail_label, call = self.apply_label_to_email(email, label_id: label_id, label_name: label_name,
                                                       set_auto_filed_folder: set_auto_filed_folder,
@@ -357,6 +361,8 @@ class GmailAccount < ActiveRecord::Base
     end
     
     self.google_o_auth2_token.api_client.execute!(batch_request) if !self.user.user_configuration.demo_mode_enabled
+    
+    return gmail_label
   end
   
   def apply_label_to_email(email, label_id: nil, label_name: nil, set_auto_filed_folder: false,

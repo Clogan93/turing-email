@@ -292,7 +292,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
       
       success: (collection, response, options) =>
         @stopListening(emailThread) for emailThread in options.previousModels
-        @listenTo(emailThread, "change:seen", @emailThreadSeenChanged) for emailThread in collection.models
+
+        for emailThread in collection.models
+          @listenTo(emailThread, "change:seen", @emailThreadSeenChanged)
+          @listenTo(emailThread, "change:folder", @emailThreadFolderChanged)
 
         @moveTuringEmailReportToTop(@views.emailThreadsListView)
 
@@ -539,6 +542,11 @@ window.TuringEmailApp = new(Backbone.View.extend(
       folder.set("num_unread_threads", folder.get("num_unread_threads") + delta)
       @trigger("change:emailFolderUnreadCount", this, folder)
 
+  emailThreadFolderChanged: (emailThread, newFolder) ->
+    folder = @collections.emailFolders.getEmailFolder(newFolder["label_id"])
+
+    @loadEmailFolders() if not folder?
+      
   ######################
   ### View Functions ###
   ######################

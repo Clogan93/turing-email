@@ -80,10 +80,9 @@ class Api::V1::EmailThreadsController < ApiController
   
   def move_to_folder
     emails = Email.where(:id => @email_ids)
-    @email_account.move_emails_to_folder(emails, folder_id: params[:email_folder_id],
-                                         folder_name: params[:email_folder_name])
-    
-    render :json => {}
+    @gmail_label = @email_account.move_emails_to_folder(emails, folder_id: params[:email_folder_id],
+                                                        folder_name: params[:email_folder_name])
+    render 'api/v1/gmail_labels/show'
   end
 
   swagger_api :apply_gmail_label do
@@ -99,10 +98,9 @@ class Api::V1::EmailThreadsController < ApiController
   
   def apply_gmail_label
     emails = Email.where(:id => @email_ids)
-    @email_account.apply_label_to_emails(emails, label_id: params[:gmail_label_id],
-                                         label_name: params[:gmail_label_name])
-
-    render :json => {}
+    @gmail_label = @email_account.apply_label_to_emails(emails, label_id: params[:gmail_label_id],
+                                                       label_name: params[:gmail_label_name])
+    render 'api/v1/gmail_labels/show'
   end
 
   swagger_api :remove_from_folder do
