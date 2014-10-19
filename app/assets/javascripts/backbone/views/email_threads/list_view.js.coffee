@@ -61,6 +61,9 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   selectedItem: ->
     if @selectedListItemView? then @selectedListItemView.model else null
 
+  selectedIndex: ->
+    return _.indexOf(_.values(@listItemViews), @selectedListItemView)
+
   getCheckedListItemViews: ->
     checkedListItemViews = []
 
@@ -68,6 +71,16 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
       checkedListItemViews.push(listItemView) if listItemView.isChecked()
 
     return checkedListItemViews
+
+  ###############
+  ### Setters ###
+  ###############
+
+  selectedIndexIs: (index) ->
+    listItemViews = _.values(@listItemViews)
+    if listItemViews.length > index
+      listItemView = listItemViews[index]
+      @select(listItemView.model)
 
   ###############
   ### Actions ###
@@ -147,7 +160,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     @scrollListItemIntoView(listItemView, "top")
     
     return listItemView
-      
+
   moveSelectionDown: ->
     return false if not @selectedListItemView?
 
