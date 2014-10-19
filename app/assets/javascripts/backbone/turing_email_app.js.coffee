@@ -517,7 +517,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   ###############################
   ### CreateFolderView Events ###
   ###############################
-    
+
   createFolderFormSubmitted: (mode, folderName) ->
     if mode == "label"
       @labelAsClicked undefined, folderName
