@@ -17,7 +17,6 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
 
     @setupEmailBankruptcyButton()
     @setupSwitches()
-    @setupSaveButton()
     @setupRuleCreation()
     @setupRuleDeletion()
 
@@ -42,26 +41,28 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     @$el.find("#genie_switch").bootstrapSwitch()
     @$el.find("#split_pane_switch").bootstrapSwitch()
 
-  setupSaveButton: ->
-    @$el.find("#user_settings_save_button").click (event) =>
-      event.preventDefault()
+    @$el.find(".demo_mode_switch, .keyboard_shortcuts_switch, #genie_switch, #split_pane_switch").on "switch-change", (event, state) =>
+      @saveSettings()
 
-      demo_mode_enabled = @$el.find(".demo_mode_switch").parent().parent().hasClass("switch-on")
-      keyboard_shortcuts_enabled = @$el.find(".keyboard_shortcuts_switch").parent().parent().hasClass("switch-on")
-      genie_enabled = @$el.find("#genie_switch").parent().parent().hasClass("switch-on")
-      split_pane_mode = if @$el.find("#split_pane_switch").parent().parent().hasClass("switch-on") then "horizontal" else "off"
-      
-      @model.set(demo_mode_enabled: demo_mode_enabled, genie_enabled: genie_enabled, split_pane_mode: split_pane_mode, keyboard_shortcuts_enabled: keyboard_shortcuts_enabled)
-      @model.save(null, {
-        patch: true
-        success: (model, response) =>
-          @showSettingsAlert('You have successfully saved your settings!')
+  saveSettings: ->
+    event.preventDefault()
 
-          setTimeout (=>
-            @removeSettingsAlert()
-          ), 3000
-        }
-      )
+    demo_mode_enabled = @$el.find(".demo_mode_switch").parent().parent().hasClass("switch-on")
+    keyboard_shortcuts_enabled = @$el.find(".keyboard_shortcuts_switch").parent().parent().hasClass("switch-on")
+    genie_enabled = @$el.find("#genie_switch").parent().parent().hasClass("switch-on")
+    split_pane_mode = if @$el.find("#split_pane_switch").parent().parent().hasClass("switch-on") then "horizontal" else "off"
+    
+    @model.set(demo_mode_enabled: demo_mode_enabled, genie_enabled: genie_enabled, split_pane_mode: split_pane_mode, keyboard_shortcuts_enabled: keyboard_shortcuts_enabled)
+    @model.save(null, {
+      patch: true
+      success: (model, response) =>
+        @showSettingsAlert('You have successfully saved your settings!')
+
+        setTimeout (=>
+          @removeSettingsAlert()
+        ), 3000
+      }
+    )
 
   setupRuleCreation: ->
     @createRulesView = new TuringEmailApp.Views.App.CreateRuleView(
