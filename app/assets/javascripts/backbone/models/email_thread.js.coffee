@@ -22,7 +22,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     postData.gmail_label_name = labelName if labelName?
 
     # TODO error handling
-    $.post "/api/v1/email_threads/apply_gmail_label", postData
+    return $.post("/api/v1/email_threads/apply_gmail_label", postData)
 
   @moveToFolder: (emailThreadUIDs, folderID, folderName) ->
     postData =
@@ -32,7 +32,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     postData.email_folder_name = folderName if folderName?
 
     # TODO error handling
-    $.post "/api/v1/email_threads/move_to_folder", postData
+    return $.post("/api/v1/email_threads/move_to_folder", postData)
     
   validation:
     uid:
@@ -73,11 +73,17 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
 
   # TODO write tests
   applyGmailLabel: (labelID, labelName) ->
-    TuringEmailApp.Models.EmailThread.applyGmailLabel([@get("uid")], labelID, labelName)
+    TuringEmailApp.Models.EmailThread.applyGmailLabel([@get("uid")], labelID, labelName).done(
+      (data, status) =>
+        @trigger("change:folder", this, data)
+    )
 
   # TODO write tests
   moveToFolder: (folderID, folderName) ->
-    TuringEmailApp.Models.EmailThread.moveToFolder([@get("uid")], folderID, folderName)
+    TuringEmailApp.Models.EmailThread.moveToFolder([@get("uid")], folderID, folderName).done(
+      (data, status) =>
+        @trigger("change:folder", this, data)
+    )
 
   folderIDs: ->
     emails = @get("emails")

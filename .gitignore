@@ -32,3 +32,5 @@
 # Ignore DB Backup
 /db_backup
 
+beta-heroku-console
+prod-heroku-console
