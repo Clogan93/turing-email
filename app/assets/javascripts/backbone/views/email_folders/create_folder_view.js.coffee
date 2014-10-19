@@ -23,9 +23,16 @@ class TuringEmailApp.Views.EmailFolders.CreateFolderView extends Backbone.View
 
       return false
 
+    @$el.find(".create-folder-modal").on "hidden.bs.modal", (event) =>
+      @resetView()
+
   show: (mode) ->
     @mode = mode
     @$el.find(".create-folder-modal").modal "show"
     
   hide: ->
     @$el.find(".create-folder-modal").modal "hide"
+    @resetView()
+
+  resetView: ->
+    $(".create-folder-form .create-folder-input").val("")
