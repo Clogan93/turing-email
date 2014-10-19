@@ -74,9 +74,6 @@ describe "SettingsView", ->
       splitPaneSwitch = $("#split_pane_switch")
       expect(@settingsDiv).toContain(splitPaneSwitch)
       expect(splitPaneSwitch.is(":checked")).toEqual(@userSettings.get("split_pane_mode") == "horizontal")
-      
-    it "renders the Save button", ->
-      expect(@settingsDiv).toContainHtml('<button type="button" class="btn btn-success" id="user_settings_save_button">Save</button>')
 
   describe "email bankruptcy button", ->
     describe "the user cancels the action", ->
@@ -115,12 +112,11 @@ describe "SettingsView", ->
         expect(spy).toHaveBeenCalled()
         spy.restore()
 
-  describe "save button", ->
+  describe "saving of the settings", ->
     it "saves the model to the server", ->
       spyOnEvent("#user_settings_save_button", "click")
-      saveButton = @settingsDiv.find("#user_settings_save_button")
-      saveButton.click()
-      expect("click").toHaveBeenPreventedOn("#user_settings_save_button")
+      genieSwitch = $("#genie_switch")
+      genieSwitch.click()
 
       expect(@server.requests.length).toEqual 4
       request = @server.requests[3]
@@ -130,17 +126,14 @@ describe "SettingsView", ->
     it "updates the user settings model with the correct values", ->
       expect(@userSettings.get("genie_enabled")).toEqual(true)
       expect(@userSettings.get("split_pane_mode")).toEqual("off")
-       
-      genieSwitch = $("#genie_switch")
-      splitPaneSwitch = $("#split_pane_switch")
 
-      genieSwitch.click()
+      splitPaneSwitch = $("#split_pane_switch")
       splitPaneSwitch.click()
-      
+
       saveButton = @settingsDiv.find("#user_settings_save_button")
       saveButton.click()
   
-      expect(@userSettings.get("genie_enabled")).toEqual(false)
+      expect(@userSettings.get("genie_enabled")).toEqual(true)
       expect(@userSettings.get("split_pane_mode")).toEqual("horizontal")
 
     it "displays a success alert after the save button is clicked and then hides it", ->
@@ -153,8 +146,6 @@ describe "SettingsView", ->
       expect(@userSettings.get("genie_enabled")).toEqual(true)
       genieSwitch = $("#genie_switch")
       genieSwitch.click()
-      saveButton = @settingsDiv.find("#user_settings_save_button")
-      saveButton.click()
 
       @server.respondWith "PATCH", @userSettings.url, JSON.stringify(@userSettings)
       @server.respond()

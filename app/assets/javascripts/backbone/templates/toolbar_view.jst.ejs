@@ -29,13 +29,17 @@
         <li role="presentation" class="divider"></li>
         <%
         for(var i = 0; i < emailFolders.length; i++) {
-          var labelAsLinkID = _.uniqueId("labelAsLink")%>  
-          <li role="presentation">
-            <a role="menuitem" tabindex="-1" class="label_as_link" href="#"
-               id="<%= labelAsLinkID %>" name="<%= emailFolders[i]["label_id"] %>">
-              <%= emailFolders[i]["name"] %>
-            </a>
-          </li><%
+          var labelAsLinkID = _.uniqueId("labelAsLink")
+          if(!(emailFolders[i].label_type == "system" && emailFolders[i].label_id != "INBOX")) {
+            %>
+            <li role="presentation">
+              <a role="menuitem" tabindex="-1" class="label_as_link" href="#"
+                 id="<%= labelAsLinkID %>" name="<%= emailFolders[i]["label_id"] %>">
+                <%= emailFolders[i]["name"] %>
+              </a>
+            </li>
+            <%
+          }
         } %>
       </ul>
     </span>
@@ -50,13 +54,17 @@
         <li role="presentation" class="divider"></li>
         <%
         for(var i = 0; i < emailFolders.length; i++) {
-          var moveToFolderLinkID = _.uniqueId("moveToFolderLink")%>
-          <li role="presentation">
-            <a role="menuitem" tabindex="-1" class="move_to_folder_link" href="#"
-               id="<%= moveToFolderLinkID %>" name="<%= emailFolders[i]["label_id"] %>">
-              <%= emailFolders[i]["name"] %>
-            </a>
-          </li><%
+          var moveToFolderLinkID = _.uniqueId("moveToFolderLink")
+          if(!(emailFolders[i].label_type == "system" && emailFolders[i].label_id != "INBOX")) {
+            %>
+            <li role="presentation">
+              <a role="menuitem" tabindex="-1" class="move_to_folder_link" href="#"
+                 id="<%= moveToFolderLinkID %>" name="<%= emailFolders[i]["label_id"] %>">
+                <%= emailFolders[i]["name"] %>
+              </a>
+            </li>
+            <%
+          }
         } %>
 
       </ul>
