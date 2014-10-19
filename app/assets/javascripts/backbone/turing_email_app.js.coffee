@@ -546,7 +546,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     folder = @collections.emailFolders.getEmailFolder(newFolder["label_id"])
 
     @loadEmailFolders() if not folder?
-      
+
   ######################
   ### View Functions ###
   ######################
