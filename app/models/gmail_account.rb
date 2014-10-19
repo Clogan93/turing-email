@@ -7,6 +7,11 @@ class GmailAccount < ActiveRecord::Base
   SEARCH_RESULTS_PER_PAGE = 50
   NUM_SYNC_DYNOS = 2
 
+  SCOPES = %w(https://www.googleapis.com/auth/userinfo.email
+              https://www.googleapis.com/auth/gmail.readonly
+              https://www.googleapis.com/auth/gmail.compose
+              https://www.googleapis.com/auth/gmail.modify)
+
   belongs_to :user
 
   has_one :google_o_auth2_token,

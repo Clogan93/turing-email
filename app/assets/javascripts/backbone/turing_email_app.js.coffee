@@ -7,7 +7,16 @@
 #= require ./views/email_threads/list_view
 #= require_tree ./views
 #= require_tree ./routers
-  
+
+window.backboneWrapError = (model, options) ->
+  error = options.error
+  options.error = (resp) ->
+    error model, resp, options  if error
+    model.trigger "error", model, resp, options
+    return
+
+  return
+
 window.TuringEmailApp = new(Backbone.View.extend(
   Models: {}
   Views: {}
@@ -19,6 +28,8 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @views = {}
     @collections = {}
     @routers = {}
+    
+    @setupGmailAPI()
     
     @setupKeyboardHandler()
     
@@ -51,6 +62,17 @@ window.TuringEmailApp = new(Backbone.View.extend(
   #######################
   ### Setup Functions ###
   #######################
+
+  setupGmailAPI: ->
+    @gmailAPIReady = false
+
+    gapi.client.load("gmail", "v1").then(=>
+      $.get("/api/v1/gmail_accounts/get_token").done(
+        (data, status) =>
+          gapi.auth.setToken(data)
+          @gmailAPIReady = true
+      )
+    )
 
   setupKeyboardHandler: ->
     @keyboardHandler = new TuringEmailAppKeyboardHandler(this)
@@ -277,6 +299,13 @@ window.TuringEmailApp = new(Backbone.View.extend(
       )
       
   reloadEmailThreads: (myOptions) ->
+    if not @gmailAPIReady
+      setTimeout(
+        => @reloadEmailThreads(myOptions)
+        100)
+      
+      return
+      
     loader = null
     
     if myOptions?.query?

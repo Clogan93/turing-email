@@ -9,7 +9,7 @@ class TuringEmailApp.Collections.EmailThreadsSearchResultsCollection extends Tur
       @nextPageToken = response.next_page_token
       return response.email_threads
     else
-      return response
+      return super(response, options)
     
   search: (options) ->
     @fetch(
