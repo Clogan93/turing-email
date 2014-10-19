@@ -126,8 +126,6 @@ describe "EmailThreadView", ->
         expect(@emailThreadView.$el.find('#email_back_button')).toHandle("click")
         expect(@emailThreadView.$el.find(".email_reply_button")).toHandle("click")
         expect(@emailThreadView.$el.find(".email_forward_button")).toHandle("click")
-        expect(@emailThreadView.$el.find("i.fa-archive").parent()).toHandle("click")
-        expect(@emailThreadView.$el.find("i.fa-trash-o").parent()).toHandle("click")
 
       describe "when email_reply_button is clicked", ->
         it "triggers replyClicked", ->
@@ -140,20 +138,6 @@ describe "EmailThreadView", ->
         it "triggers forwardClicked", ->
           spy = sinon.backbone.spy(@emailThreadView, "forwardClicked")
           @emailThreadView.$el.find(".email_forward_button").click()
-          expect(spy).toHaveBeenCalled()
-          spy.restore()
-
-      describe "when the archive button is clicked", ->
-        it "triggers archiveClicked", ->
-          spy = sinon.backbone.spy(@emailThreadView, "archiveClicked")
-          @emailThreadView.$el.find("i.fa-archive").parent().click()
-          expect(spy).toHaveBeenCalled()
-          spy.restore()
-
-      describe "when trash button is clicked", ->
-        it "triggers trashClicked", ->
-          spy = sinon.backbone.spy(@emailThreadView, "trashClicked")
-          @emailThreadView.$el.find("i.fa-trash-o").parent().click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 

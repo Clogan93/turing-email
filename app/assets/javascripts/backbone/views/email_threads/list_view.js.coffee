@@ -76,7 +76,6 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   ### Setters ###
   ###############
 
-  # TODO write tests for this function.
   selectedIndexIs: (index) ->
     listItemViews = _.values(@listItemViews)
     if listItemViews.length > index
