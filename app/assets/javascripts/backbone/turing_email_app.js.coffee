@@ -320,7 +320,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
         @showEmails()
     )
 
-  applyActionToSelectedThreads: (singleAction, multiAction, remove=false, clearSelection=false) ->
+  applyActionToSelectedThreads: (singleAction, multiAction, remove=false, clearSelection=false, refreshFolders=false) ->
     checkedListItemViews = @views.emailThreadsListView.getCheckedListItemViews()
 
     if checkedListItemViews.length == 0
@@ -339,6 +339,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
       @collections.emailThreads.remove selectedEmailThreads if remove
 
     (if @isSplitPaneMode() then @currentEmailThreadIs(null) else @goBackClicked()) if clearSelection
+    @loadEmailFolders() if refreshFolders
 
   ######################
   ### General Events ###
@@ -405,7 +406,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
         @selectedEmailThread()?.moveToFolder(folderID, folderName)
       (checkedListItemViews, selectedEmailThreadUIDs) =>
         TuringEmailApp.Models.EmailThread.moveToFolder(selectedEmailThreadUIDs, folderID, folderName)
-      true, true
+      true, true, true
     )
 
   refreshClicked: ->
@@ -435,7 +436,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
         @selectedEmailThread()?.removeFromFolder(@selectedEmailFolderID())
       (checkedListItemViews, selectedEmailThreadUIDs) =>
         TuringEmailApp.Models.EmailThread.removeFromFolder(selectedEmailThreadUIDs, @selectedEmailFolderID())
-      true, true
+      true, true, true
     )
 
   trashClicked: ->
@@ -444,7 +445,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
         @selectedEmailThread()?.trash()
       (checkedListItemViews, selectedEmailThreadUIDs) =>
         TuringEmailApp.Models.EmailThread.trash(selectedEmailThreadUIDs)
-      true, true
+      true, true, true
     )
 
   createNewLabelClicked: ->
