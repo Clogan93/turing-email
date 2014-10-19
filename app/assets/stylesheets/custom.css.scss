@@ -415,11 +415,6 @@ a#refresh_link {
   text-decoration: underline;
   cursor: pointer;
 }
-  
-#compose_email_body {
-  height: 250px;
-  overflow: scroll;
-}
 
 .settings-table thead th {
   font-weight: bold;
@@ -634,4 +629,13 @@ table.table-mail tr td {
 
 .search_nav_bar {
   min-width: 825px !important;
+}
+
+.compose-modal-dialog {
+  width: 840px !important;
+}
+
+#compose_email_body, #compose_form .note-editable {
+  height: 250px !important;
+  overflow: scroll;
 }

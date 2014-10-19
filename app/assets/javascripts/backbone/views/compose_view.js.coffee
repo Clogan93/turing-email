@@ -10,6 +10,40 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     return this
 
   setupComposeView: ->
+    @$el.find(".summernote").summernote toolbar: [
+      [
+        "style"
+        [
+          "bold"
+          "italic"
+          "underline"
+          "clear"
+        ]
+      ]
+      [
+        "fontname"
+        ["fontname"]
+      ]
+      [
+        "fontsize"
+        ["fontsize"]
+      ]
+      [
+        "color"
+        ["color"]
+      ]
+      [
+        "para"
+        [
+          "paragraph"
+        ]
+      ]
+      [
+        "height"
+        ["height"]
+      ]
+    ]
+
     @$el.find("#compose_form").submit =>
       console.log "SEND clicked! Sending..."
       @sendEmail()
@@ -85,7 +119,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     @$el.find("#compose_form #bcc_input").val("")
 
     @$el.find("#compose_form #subject_input").val("")
-    @$el.find("#compose_form #compose_email_body").html("")
+    @$el.find("#compose_form .note-editable").html("")
 
   loadEmpty: ->
     @resetView()
@@ -198,7 +232,7 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
       [body, html] = @parseEmail(emailJSON)
       body = $.parseHTML(body) if not html
 
-    @$el.find("#compose_form #compose_email_body").html(body)
+    @$el.find("#compose_form .note-editable").html(body)
     
     return body
 
@@ -224,8 +258,8 @@ class TuringEmailApp.Views.ComposeView extends Backbone.View
     email.set("bccs",  @$el.find("#compose_form").find("#bcc_input").val().split(","))
 
     email.set("subject", @$el.find("#compose_form").find("#subject_input").val())
-    email.set("html_part", @$el.find("#compose_form").find("#compose_email_body").html())
-    email.set("text_part", @$el.find("#compose_form").find("#compose_email_body").text())
+    email.set("html_part", @$el.find("#compose_form").find(".note-editable").html())
+    email.set("text_part", @$el.find("#compose_form").find(".note-editable").text())
 
   sendEmail: (draftToSend=null) ->
     console.log "ComposeView sendEmail!"
