@@ -1,6 +1,6 @@
 describe "EmailThreadsSearchResultsCollection", ->
   beforeEach ->
-    @emailThreadsSearchResults = new TuringEmailApp.Collections.EmailThreadsSearchResultsCollection()
+    @emailThreadsSearchResults = new TuringEmailApp.Collections.EmailThreadsSearchResultsCollection(undefined, app: TuringEmailApp)
     
   it "should use the EmailThread model", ->
     expect(@emailThreadsSearchResults.model).toEqual TuringEmailApp.Models.EmailThread

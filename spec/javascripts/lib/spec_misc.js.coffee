@@ -36,7 +36,7 @@ window.specStartTuringEmailApp = ->
 
   TuringEmailApp.views.createFolderView = TuringEmailApp.views.mainView.createFolderView
 
-  TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
+  TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
   TuringEmailApp.views.emailThreadsListView = TuringEmailApp.views.mainView.createEmailThreadsListView(TuringEmailApp.collections.emailThreads)
 
   TuringEmailApp.routers.emailFoldersRouter = new TuringEmailApp.Routers.EmailFoldersRouter()
@@ -121,7 +121,7 @@ window.specPrepareEmailThreadsFetch = (emailThreads, server) ->
   emailThreadsFixtures = fixture.load("email_threads.fixture.json");
   validEmailThreadsFixture = emailThreadsFixtures[0]["valid"]
 
-  emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection() if not emailThreads?
+  emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp) if not emailThreads?
 
   server = sinon.fakeServer.create() if not server?
   server.respondWith "GET", emailThreads.url, JSON.stringify(validEmailThreadsFixture)
@@ -140,7 +140,7 @@ window.specPrepareEmailThreadFetch = (server) ->
   return [server, emailThread, validEmailThreadFixture]
   
 window.specCreateEmailThreadsListView = (server) ->
-  emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
+  emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
 
   emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView(
     collection: emailThreads

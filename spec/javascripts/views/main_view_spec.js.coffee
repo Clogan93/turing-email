@@ -51,7 +51,7 @@ describe "MainView", ->
       @server.restore()
       
       [@server] = specPrepareEmailThreadsFetch()
-      @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
+      @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
       @emailThreads.fetch()
       @server.respond()
       
@@ -107,7 +107,7 @@ describe "MainView", ->
       @server.restore()
 
       [@server] = specPrepareEmailThreadsFetch()
-      @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
+      @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
       @emailThreads.fetch()
       @server.respond()
 
@@ -160,7 +160,7 @@ describe "MainView", ->
 
         describe "when there are no emails in list view's collection", ->
           beforeEach ->
-            @mainView.emailThreadsListView.collection = new TuringEmailApp.Collections.EmailThreadsCollection()
+            @mainView.emailThreadsListView.collection = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
 
             @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
         

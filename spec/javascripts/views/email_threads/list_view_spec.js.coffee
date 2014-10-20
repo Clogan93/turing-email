@@ -2,7 +2,7 @@ describe "ListView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
+    @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
 
     @listView = new TuringEmailApp.Views.EmailThreads.ListView(
       collection: @emailThreads

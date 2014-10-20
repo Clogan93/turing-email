@@ -4,7 +4,7 @@ describe "EmailThreadsCollection", ->
     @validEmailThreadsFixture = emailThreadsFixtures[0]["valid"]
     
     @url = "/api/v1/email_threads/in_folder?folder_id=INBOX"
-    @emailThreadsCollection = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, folderID: "INBOX")
+    @emailThreadsCollection = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp, folderID: "INBOX")
 
     @server = sinon.fakeServer.create()
     @server.respondWith "GET", @url, JSON.stringify(@validEmailThreadsFixture)

@@ -3,21 +3,60 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
   url: "/api/v1/email_threads/in_folder?folder_id=INBOX"
 
   initialize: (models, options) ->
+    @app = options.app
     @listenTo(this, "remove", @modelRemoved)
     @listenTo(this, "reset", @modelsReset)
 
-    @setupURL(options?.folderID, options?.page)
-    
-  # TODO write tests
-  setupURL: (folderID, page) ->
-    @url = "/api/v1/email_threads/in_folder?folder_id=" + folderID if folderID
-    
-    if page
-      @page = parseInt(page)
-      @url += "&page=" + @page
-    else
-      @page = 1
+    @clearPageTokens()
+    @folderIDIs(options?.folderID) if options?.folderID?
+  
+  modelRemoved: (model) ->
+    model.trigger("removedFromCollection", this)
 
+  modelsReset: (models, options) ->
+    options.previousModels.forEach(@modelRemoved, this)
+
+  ###############
+  ### Getters ###
+  ###############
+
+  getEmailThread: (emailThreadUID) ->
+    emailThreads = @filter((emailThread) ->
+      emailThread.get("uid") is emailThreadUID
+    )
+
+    return if emailThreads.length > 0 then emailThreads[0] else null
+
+  hasNextPage: ->
+    return @pageTokenIndex < @pageTokens.length - 1
+
+  hasPreviousPage: ->
+    return @pageTokenIndex > 0
+      
+  ###############
+  ### Setters ###
+  ###############
+  
+  clearPageTokens: ->
+    @pageTokens = [null]
+    @pageTokenIndex = 0
+  
+  folderIDIs: (folderID) ->
+    @clearPageTokens() if @folderID != folderID
+    
+    @folderID = folderID
+    @trigger("change:folderID", this, @folderID)
+
+  pageTokenIndexIs: (pageTokenIndex) ->
+    @pageTokenIndex = parseInt(pageTokenIndex)
+    @pageTokenIndex = Math.min(@pageTokens.length - 1, @pageTokenIndex)
+    
+    @trigger("change:pageTokenIndex", this, @pageTokenIndex)
+
+  ###############
+  ### Network ###
+  ###############
+  
   parseHeaders: (emailParsed, headers) ->
     headersMap =
       "message-id": "message_id"
@@ -107,46 +146,45 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
       super(method, model, options)
       Backbone.sync
     else
-      [folder_id, page] = @url.split(/folder_id=/)[1].split(/&page=/)
-      request = gapi.client.gmail.users.threads.list(userId: "me", labelIds: [folder_id])
+      params =
+        userId: "me"
+        maxResults: TuringEmailApp.Models.UserSettings.EmailThreadsPerPage
 
-      request.then(
-        (response) ->
+      params["labelIds"] = @folderID if @folderID?
+      params["pageToken"] = @pageTokens[@pageTokenIndex] if @pageTokens[@pageTokenIndex]?
+      request = gapi.client.gmail.users.threads.list(params)
+
+      google_execute_request(
+        request
+        
+        (response) =>
+          @pageTokens[@pageTokenIndex + 1] = response.result.nextPageToken if response.result.nextPageToken?
+          @pageTokens = @pageTokens.slice(0, @pageTokenIndex + 2)
+          
           if response.result.threads?
             batch = gapi.client.newBatch();
             
             for thread in response.result.threads
               request = gapi.client.gmail.users.threads.get(userId: "me", id: thread.id)
               batch.add(request)
-              
-            batch.then(
+
+            google_execute_request(
+              batch
+            
               (response) ->
                 threadResults = _.values(response.result)
                 threads = _.pluck(threadResults, "result")
                 options.success?(threads)
                 
-              (reason) ->
-                options.error?(reason)
-  
+              (reason) -> options.error?(reason)
               this
+              => @app.refreshGmailAPIToken().done(=> @sync(method, model, options))
             )
           else
             options.success?([])
-        (reason) ->
-          options.error?(reason)
-          
+            
+        (reason) -> options.error?(reason)
         this
+        => @app.refreshGmailAPIToken().done(=> @sync(method, model, options))
       )
       
-  modelRemoved: (model) ->
-    model.trigger("removedFromCollection", this)
-
-  modelsReset: (models, options) ->
-    options.previousModels.forEach(@modelRemoved, this)
-
-  getEmailThread: (emailThreadUID) ->
-    emailThreads = @filter((emailThread) ->
-      emailThread.get("uid") is emailThreadUID
-    )
-
-    return if emailThreads.length > 0 then emailThreads[0] else null

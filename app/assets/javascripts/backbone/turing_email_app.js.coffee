@@ -67,11 +67,15 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @gmailAPIReady = false
 
     gapi.client.load("gmail", "v1").then(=>
-      $.get("/api/v1/gmail_accounts/get_token").done(
-        (data, status) =>
-          gapi.auth.setToken(data)
-          @gmailAPIReady = true
+      @refreshGmailAPIToken().done(=>
+        @gmailAPIReady = true
       )
+    )
+    
+  refreshGmailAPIToken: ->
+    $.get("/api/v1/gmail_accounts/get_token").done(
+      (data, status) =>
+        gapi.auth.setToken(data)
     )
 
   setupKeyboardHandler: ->
@@ -157,7 +161,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @listenTo(@views.createFolderView, "createFolderFormSubmitted", (createFolderView, mode, folderName) => @createFolderFormSubmitted(mode, folderName))
 
   setupEmailThreads: ->
-    @collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsSearchResultsCollection()
+    @collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsSearchResultsCollection(undefined, app: this)
     @views.emailThreadsListView = @views.mainView.createEmailThreadsListView(@collections.emailThreads)
 
     @listenTo(@views.emailThreadsListView, "listItemSelected", @listItemSelected)
@@ -211,14 +215,15 @@ window.TuringEmailApp = new(Backbone.View.extend(
       @trigger "change:selectedEmailThread", this, null
 
   # TODO write tests (page param)
-  currentEmailFolderIs: (emailFolderID, page) ->
-    @collections.emailThreads.setupURL(emailFolderID, page)
+  currentEmailFolderIs: (emailFolderID, pageTokenIndex) ->
+    @collections.emailThreads.folderIDIs(emailFolderID)
+    @collections.emailThreads.pageTokenIndexIs(parseInt(pageTokenIndex)) if pageTokenIndex?
 
     @reloadEmailThreads(
       success: (collection, response, options) =>
         emailFolder = @collections.emailFolders.getEmailFolder(emailFolderID)
         @views.emailFoldersTreeView.select(emailFolder, silent: true)
-        @trigger("change:currentEmailFolder", this, emailFolder, parseInt(@collections.emailThreads.page))
+        @trigger("change:currentEmailFolder", this, emailFolder, @collections.emailThreads.pageTokenIndex + 1)
   
         @showEmails()
 
@@ -408,15 +413,15 @@ window.TuringEmailApp = new(Backbone.View.extend(
     )
 
   leftArrowClicked: ->
-    if @collections.emailThreads.page > 1
+    if @collections.emailThreads.hasPreviousPage()
       @routers.emailFoldersRouter.navigate("#email_folder/" + @selectedEmailFolderID() + "/" +
-                                           (@collections.emailThreads.page - 1),
+                                           (@collections.emailThreads.pageTokenIndex - 1),
                                            trigger: true)
 
   rightArrowClicked: ->
-    if @collections.emailThreads.length is TuringEmailApp.Models.UserSettings.EmailThreadsPerPage
+    if @collections.emailThreads.hasNextPage()
       @routers.emailFoldersRouter.navigate("#email_folder/" + @selectedEmailFolderID() + "/" +
-                                           (@collections.emailThreads.page + 1),
+                                           (@collections.emailThreads.pageTokenIndex + 1),
                                            trigger: true)
 
   labelAsClicked: (labelID, labelName) ->

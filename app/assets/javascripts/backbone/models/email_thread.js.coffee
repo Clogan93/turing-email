@@ -54,12 +54,27 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
         emailUIDs.push email.uid
     
     return if emailUIDs.length is 0
-        
-    postData.email_uids = emailUIDs
-    postData.seen = seenValue
 
-    url = "/api/v1/emails/set_seen"
-    $.post url, postData
+    makeRequest = =>
+      if seenValue
+        body = removeLabelIds: ["UNREAD"]
+      else
+        body = addLabelIds: ["UNREAD"]
+        
+      request = gapi.client.gmail.users.threads.modify(
+        {userId: "me", id: @get("uid")},
+        body
+      )
+      
+      google_execute_request(
+        request
+        undefined
+        undefined
+        undefined
+        => makeRequest()
+      )
+
+    makeRequest()
     
     @trigger("change:seen", this, seenValue)
 
