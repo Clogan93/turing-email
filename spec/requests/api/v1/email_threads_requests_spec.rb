@@ -157,11 +157,14 @@ describe Api::V1::EmailThreadsController, :type => :request do
         
         post '/api/v1/email_threads/move_to_folder', :email_thread_uids => email_thread_uids,
                                                      :email_folder_name => gmail_label_other.name
+        gmail_label_rendered = JSON.parse(response.body)
         
         gmail_label.reload
         gmail_label_other.reload
         expect(gmail_label.emails.length).to eq(0)
         expect(gmail_label_other.emails.length).to eq(gmail_account.emails.length)
+
+        validate_gmail_label(gmail_label_other, gmail_label_rendered)
       end
     end
 
@@ -215,11 +218,14 @@ describe Api::V1::EmailThreadsController, :type => :request do
 
         post '/api/v1/email_threads/apply_gmail_label', :email_thread_uids => email_thread_uids,
                                                         :gmail_label_name => gmail_label_other.name
+        gmail_label_rendered = JSON.parse(response.body)
         
         gmail_label.reload
         gmail_label_other.reload
         expect(gmail_label.emails.length).to eq(gmail_account.emails.length)
         expect(gmail_label_other.emails.length).to eq(gmail_account.emails.length)
+        
+        validate_gmail_label(gmail_label_other, gmail_label_rendered)
       end
     end
 

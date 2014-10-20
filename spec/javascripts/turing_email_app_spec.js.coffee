@@ -799,6 +799,10 @@ describe "TuringEmailApp", ->
             for emailThread in TuringEmailApp.collections.emailThreads.models
               expect(@listenToSpy).toHaveBeenCalledWith(emailThread, "change:seen", TuringEmailApp.emailThreadSeenChanged)
 
+          it "listens for change:folder on the new models", ->
+            for emailThread in TuringEmailApp.collections.emailThreads.models
+              expect(@listenToSpy).toHaveBeenCalledWith(emailThread, "change:folder", TuringEmailApp.emailThreadFolderChanged)
+
           it "moves the Turing email report to the top", ->
             expect(@moveTuringEmailReportToTopSpy).toHaveBeenCalled()
             
@@ -858,7 +862,15 @@ describe "TuringEmailApp", ->
       
         afterEach ->
           @listViewDiv.remove()
-      
+
+        describe "when refreshFolders is true", ->
+
+          it "refreshes the email folders.", ->
+            @loadEmailFoldersSpy = sinon.spy(TuringEmailApp, "loadEmailFolders")
+            TuringEmailApp.applyActionToSelectedThreads(@singleAction, @multiAction, true, true, true)
+            expect(@loadEmailFoldersSpy).toHaveBeenCalled()
+            @loadEmailFoldersSpy.restore()
+
         describe "clearSelection", ->
           beforeEach ->
             @origisSplitPaneMode = TuringEmailApp.isSplitPaneMode
@@ -1686,6 +1698,36 @@ describe "TuringEmailApp", ->
           for folderID in @emailThread.folderIDs()
             folder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
             expect(folder.get("num_unread_threads")).toEqual(@unreadCounts[folderID] + 1)
+
+    describe "#emailThreadFolderChanged", ->
+
+      describe "when the folder is not already in the collection", ->
+        beforeEach ->
+          @getEmailFolderStub = sinon.stub(TuringEmailApp.collections.emailFolders, "getEmailFolder")
+          @getEmailFolderStub.returns(null)
+
+        afterEach ->
+          @getEmailFolderStub.restore()
+
+        it "it reloads the email folders", ->
+          spy = sinon.spy(TuringEmailApp, "loadEmailFolders")
+          TuringEmailApp.emailThreadFolderChanged undefined, {"label_id" : "INBOX"}
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+
+      describe "when the folder is already in the collection", ->
+        beforeEach ->
+          @getEmailFolderStub = sinon.stub(TuringEmailApp.collections.emailFolders, "getEmailFolder")
+          @getEmailFolderStub.returns({})
+
+        afterEach ->
+          @getEmailFolderStub.restore()
+
+        it "it reloads the email folders", ->
+          spy = sinon.spy(TuringEmailApp, "loadEmailFolders")
+          TuringEmailApp.emailThreadFolderChanged undefined, {"label_id" : "INBOX"}
+          expect(spy).not.toHaveBeenCalled()
+          spy.restore()
 
     describe "#isSplitPaneMode", ->
       beforeEach ->

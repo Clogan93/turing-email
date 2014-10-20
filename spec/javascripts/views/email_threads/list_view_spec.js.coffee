@@ -154,10 +154,17 @@ describe "ListView", ->
           beforeEach ->
             @listItemView = _.values(@listView.listItemViews)[0]
             @listView.select(@listItemView.model)
-            
+
           it "returns the list item", ->
             expect(@listView.selectedItem()).toEqual(@listItemView.model)
       
+      describe "#selectedIndex", ->
+
+        it "correctly gets the selected index of each list item", ->
+          for listItemView, index in _.values(@listView.listItemViews)
+            @listView.select(listItemView.model)
+            expect(@listView.selectedIndex()).toEqual index
+
       describe "#getCheckedListItemViews", ->
         beforeEach ->
           _.values(@listView.listItemViews)[0].check()
@@ -172,6 +179,14 @@ describe "ListView", ->
               expect(checkedListItemViews).toContain listItemView
               
           expect(checkedListItemViews.length).toEqual(numListItemsChecked)
+
+    describe "Setters", ->
+      describe "#selectedIndexIs", ->
+
+        it "correctly sets the selected index of each list item", ->
+          for listItemView, index in _.values(@listView.listItemViews)
+            @listView.selectedIndexIs index
+            expect(@listView.selectedIndex()).toEqual index
 
     describe "Actions", ->
       describe "#checkAll", ->
