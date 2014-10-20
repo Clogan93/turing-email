@@ -21,6 +21,8 @@ Rails.application.configure do
 
   config.heroku_api_key = ''
 
+  config.google_analytics_key = 'UA-55892559-2'
+
   config.log_level = :info if !ENV.has_key?('SQL_DEBUG')
 
   # Settings specified here will take precedence over those in config/application.rb.

@@ -19,6 +19,10 @@ Rails.application.configure do
   config.mailgun_smtp_username = 'postmaster@dev.turingemail.com'
   config.mailgun_smtp_password = '5ced9285272c96d6e49ec2105e087bcf'
 
+  config.heroku_api_key = ''
+
+  config.google_analytics_key = ''
+
   config.log_level = :info
 
   # Speed up tests by lowering bcrypt's cost function.

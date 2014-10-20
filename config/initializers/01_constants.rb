@@ -19,6 +19,8 @@ $config.mailgun_smtp_password ||= ENV['MAILGUN_SMTP_PASSWORD']
 
 $config.heroku_api_key ||= ENV['HEROKU_API_KEY']
 
+$config.google_analytics_key ||= ENV['GOOGLE_ANALYTICS_KEY']
+
 # http errors
 
 $config.http_errors = {
