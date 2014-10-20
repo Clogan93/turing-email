@@ -93,7 +93,7 @@ describe "TuringEmailApp", ->
         expect(@divComposeButton).toHandle("click")
   
       it "loads an empty compose view on click", ->
-        @spy = sinon.spy(TuringEmailApp.Views.App.ComposeView, "loadEmpty")
+        @spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmpty")
   
         @divComposeButton.click()
   
@@ -101,7 +101,7 @@ describe "TuringEmailApp", ->
         @spy.restore()
 
       it "shows the compose view on click", ->
-        @spy = sinon.spy(TuringEmailApp.Views.App.ComposeView, "show")
+        @spy = sinon.spy(TuringEmailApp.views.composeView, "show")
 
         @divComposeButton.click()
 
@@ -233,8 +233,8 @@ describe "TuringEmailApp", ->
       it "creates the compose view", ->
         TuringEmailApp.setupComposeView()
 
-        expect(TuringEmailApp.Views.App.ComposeView).toBeDefined()
-        expect(TuringEmailApp.Views.App.ComposeView.app).toEqual(TuringEmailApp)
+        expect(TuringEmailApp.views.composeView).toBeDefined()
+        expect(TuringEmailApp.views.composeView.app).toEqual(TuringEmailApp)
 
       it "renders the compose view", ->
         # TODO figure out how to test render
@@ -244,7 +244,7 @@ describe "TuringEmailApp", ->
         spy = sinon.spy(TuringEmailApp, "draftChanged")
   
         TuringEmailApp.setupComposeView()
-        TuringEmailApp.Views.App.ComposeView.trigger("change:draft")
+        TuringEmailApp.views.composeView.trigger("change:draft")
   
         expect(spy).toHaveBeenCalled()
         spy.restore()
@@ -1605,7 +1605,7 @@ describe "TuringEmailApp", ->
         @emailThreadParent = TuringEmailApp.collections.emailThreads.models[0]
         
         @setStub = sinon.stub(@emailThreadParent, "set", ->)
-        TuringEmailApp.draftChanged(TuringEmailApp.Views.App.ComposeView, @draft, @emailThreadParent)
+        TuringEmailApp.draftChanged(TuringEmailApp.views.composeView, @draft, @emailThreadParent)
       
       afterEach ->
         @selectedEmailFolderIDStub.restore()
@@ -1809,28 +1809,28 @@ describe "TuringEmailApp", ->
         expect(spy).toHaveBeenCalledWith(@emailThread.get("uid"))
     
       it "shows the compose view", ->
-        spy = sinon.spy(TuringEmailApp.Views.App.ComposeView, "show")
+        spy = sinon.spy(TuringEmailApp.views.composeView, "show")
         TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid")
         expect(spy).toHaveBeenCalled()
     
       describe "when in draft mode", ->
     
         it "loads the email draft", ->
-          spy = sinon.spy(TuringEmailApp.Views.App.ComposeView, "loadEmailDraft")
+          spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailDraft")
           TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid")
           expect(spy).toHaveBeenCalledWith(@email, @emailThread)
     
       describe "when in forward mode", ->
     
         it "loads the email as a forward", ->
-          spy = sinon.spy(TuringEmailApp.Views.App.ComposeView, "loadEmailAsForward")
+          spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailAsForward")
           TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid"), "forward"
           expect(spy).toHaveBeenCalledWith(@email, @emailThread)
     
       describe "when in reply mode", ->
     
         it "loads the email as a reply", ->
-          spy = sinon.spy(TuringEmailApp.Views.App.ComposeView, "loadEmailAsReply")
+          spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailAsReply")
           TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid"), "reply"
           expect(spy).toHaveBeenCalledWith(@email, @emailThread)
 

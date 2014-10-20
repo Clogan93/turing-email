@@ -2,7 +2,7 @@ describe "ComposeView", ->
   beforeEach ->
     specStartTuringEmailApp()
     
-    @composeView = TuringEmailApp.Views.App.ComposeView
+    @composeView = TuringEmailApp.views.composeView
 
   afterEach ->
     specStopTuringEmailApp()

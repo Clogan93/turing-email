@@ -31,8 +31,8 @@ window.specStartTuringEmailApp = ->
     collection: TuringEmailApp.collections.emailFolders
   )
 
-  TuringEmailApp.Views.App.ComposeView = TuringEmailApp.views.mainView.composeView
-  TuringEmailApp.listenTo(TuringEmailApp.Views.App.ComposeView, "change:draft", TuringEmailApp.draftChanged)
+  TuringEmailApp.views.composeView = TuringEmailApp.views.mainView.composeView
+  TuringEmailApp.listenTo(TuringEmailApp.views.composeView, "change:draft", TuringEmailApp.draftChanged)
 
   TuringEmailApp.views.createFolderView = TuringEmailApp.views.mainView.createFolderView
 
