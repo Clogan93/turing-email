@@ -32,7 +32,7 @@
         "body_text" : null,
         "ccs" : "macgregordennis@gmail.com",
         "date" : "2014-08-25T01:59:09.000Z",
-        "draft_id" : "2",
+        "draft_id" : null,
         "from_address" : "notifications@github.com",
         "from_name" : "David Gobaud",
         "html_part" : null,
