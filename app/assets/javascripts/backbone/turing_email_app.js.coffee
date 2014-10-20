@@ -57,8 +57,6 @@ window.TuringEmailApp = new(Backbone.View.extend(
     if windowLocationHash is ""
       @routers.emailFoldersRouter.navigate("#email_folder/INBOX", trigger: true)
 
-    @syncEmail()
-
   #######################
   ### Setup Functions ###
   #######################
@@ -230,21 +228,6 @@ window.TuringEmailApp = new(Backbone.View.extend(
         if @isSplitPaneMode() && @collections.emailThreads.length > 0 &&
             not @collections.emailThreads.models[0].get("emails")[0].draft_id?
           @currentEmailThreadIs(@collections.emailThreads.models[0].get("uid"))
-    )
-    
-  ######################
-  ### Sync Functions ###
-  ######################
-
-  syncEmail: ->
-    $.post("api/v1/email_accounts/sync").done((data, status) =>
-      if data.synced_emails
-        @reloadEmailThreads()
-        @loadEmailFolders()
-    ).always(=>
-      window.setTimeout(=>
-        @syncEmail()
-      , 60000)
     )
     
   #######################
