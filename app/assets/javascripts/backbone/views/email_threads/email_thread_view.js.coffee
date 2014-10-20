@@ -13,8 +13,11 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
       modelJSON = @model.toJSON()
       modelJSON["sortedEmails"] = @model.sortedEmails()
       @addPreviewDataToTheModelJSON modelJSON
-      
+
+      console.log modelJSON
       @$el.html(@template(modelJSON))
+
+      @$el.find('.email-draft-editable').summernote({focus: true});
   
       @model.seenIs(true)
   

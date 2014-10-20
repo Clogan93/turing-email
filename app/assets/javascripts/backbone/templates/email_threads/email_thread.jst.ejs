@@ -14,40 +14,59 @@
 
   <div class="mail-box">
     <div class="mail-body">
-      <% _.each(sortedEmails, function(email, index) { %>
-        <div class="email<%= (emails.length > 1 && index < emails.length - 1) && email.seen ? " collapsed_email" : "" %>">
-          <div class="email_information">
-            <span class="email-from">
-              <%= email.fromPreview %>
-            </span>
-            <span class="email-date">
-              <%= email.datePreview %>
-            </span>
-          </div>
+      <% _.each(sortedEmails, function(email, index) { 
+        if(email.draft_id == null) {
+          %>
+          <div class="email<%= (emails.length > 1 && index < emails.length - 1) && email.seen ? " collapsed_email" : "" %>">
+            <div class="email_information">
+              <span class="email-from">
+                <%= email.fromPreview %>
+              </span>
+              <span class="email-date">
+                <%= email.datePreview %>
+              </span>
+            </div>
 
-          <div class="email_body" <%= (emails.length > 1 && index < emails.length - 1) && email.seen ? "style=\"display: none;\"" : "" %>>
-            <a class="btn btn-sm btn-white email_forward_button each-email-forward-button"><i class="fa fa-arrow-right"></i> Forward</a>
-            <a class="btn btn-white btn-sm email_reply_button each-email-reply-button" data-toggle="tooltip" data-placement="top" title="Reply"><i class="fa fa-reply"></i> Reply</a>
-            <div class="row">
-              <div class="col-md-11">
-                <%
-                  if(email.subject.trim() == "Turing Email - Your daily Genie Report!" || email.html_part != null) {
+            <div class="email_body" <%= (emails.length > 1 && index < emails.length - 1) && email.seen ? "style=\"display: none;\"" : "" %>>
+              <a class="btn btn-sm btn-white email_forward_button each-email-forward-button"><i class="fa fa-arrow-right"></i> Forward</a>
+              <a class="btn btn-white btn-sm email_reply_button each-email-reply-button" data-toggle="tooltip" data-placement="top" title="Reply"><i class="fa fa-reply"></i> Reply</a>
+              <div class="row">
+                <div class="col-md-11">
+                  <%
+                    if(email.subject.trim() == "Turing Email - Your daily Genie Report!" || email.html_part != null) {
+                    %>
+                      <iframe id="email_iframe<%= index %>" style="width: 100%;"></iframe>
+                    <%
+                    } else if(email.text_part != null) {%>
+                      <pre><%= email.text_part %></pre>
+                    <%
+                    } else if(email.body_text != null) {%>
+                      <pre name="body_text"><%= email.body_text %></pre>
+                    <%
+                    }
                   %>
-                    <iframe id="email_iframe<%= index %>" style="width: 100%;"></iframe>
-                  <%
-                  } else if(email.text_part != null) {%>
-                    <pre><%= email.text_part %></pre>
-                  <%
-                  } else if(email.body_text != null) {%>
-                    <pre name="body_text"><%= email.body_text %></pre>
-                  <%
-                  }
-                %>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      <% }); %>
+        <%
+        } else {
+          %>
+            <div class="email">
+              <div class="email_body">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div contenteditable="true" class="summernote email-draft-editable">
+                      <%= email.html_part %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <hr />
+          <%
+        }
+      }); %>
 
     </div>
 
