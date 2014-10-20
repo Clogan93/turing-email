@@ -5,6 +5,7 @@
 #= require_tree ./collections
 #= require ./views/email_threads/list_item_view
 #= require ./views/email_threads/list_view
+#= require ./views/app/compose/compose_view
 #= require_tree ./views
 #= require_tree ./routers
   

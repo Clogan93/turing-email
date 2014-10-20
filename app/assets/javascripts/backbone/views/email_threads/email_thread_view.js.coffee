@@ -15,7 +15,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
       @addPreviewDataToTheModelJSON modelJSON
 
       @$el.html(@template(modelJSON))
-  
+
       @renderDrafts()
 
       @model.seenIs(true)
@@ -63,7 +63,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
           thread_id = thread_elements[thread_elements.length - 1]
           $.get "/api/v1/email_threads/show/" + thread_id, (data) ->
             email_from_email_thread = data.emails[data.emails.length - 1]
-            $('#composeModal #compose_email_body').val("\n\n\n\n" + TuringEmailApp.views.composeView.retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes(email_from_email_thread))
+            $('#composeModal #compose_email_body').val("\n\n\n\n" + TuringEmailApp.Views.App.ComposeView.retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes(email_from_email_thread))
             $('#compose_form #email_in_reply_to_uid_input').val(email_from_email_thread.uid)
 
         iframe.contents().find("body").find('a[href^="#from_address"]').click (event) ->
@@ -89,9 +89,15 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
         @insertHtmlIntoIframe email, index
 
   renderDrafts: ->
-    emailDraftsEditable = @$el.find('.email-draft-editable')
-    if emailDraftsEditable.length > 0
-      emailDraftsEditable.summernote({focus: true})
+    @embeddedComposeViews = {}
+
+    for email in @model.get("emails")
+      if email.draft_id?
+        embeddedComposeView = @embeddedComposeViews[email.uid] = new TuringEmailApp.Views.App.EmbeddedComposeView(app: TuringEmailApp)
+        embeddedComposeView.email = email
+        embeddedComposeView.emailThread = @model
+        embeddedComposeView.render()
+        @$el.find(".embedded_compose_view_" + email.uid).append(embeddedComposeView.$el)
 
   setupEmailExpandAndCollapse: ->
     @$el.find(".email .email_information").click (event) =>

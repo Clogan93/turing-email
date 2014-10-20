@@ -20,7 +20,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
     )
     @sidebarView.render()
 
-    @composeView = new TuringEmailApp.Views.ComposeView(
+    @composeView = new TuringEmailApp.Views.App.ComposeView(
       app: @app
       el: @$el.find("#compose_view")
     )
