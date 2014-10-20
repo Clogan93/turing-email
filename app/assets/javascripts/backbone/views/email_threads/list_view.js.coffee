@@ -80,7 +80,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     listItemViews = _.values(@listItemViews)
     if listItemViews.length > index
       listItemView = listItemViews[index]
-      @select(listItemView.model) if listItemView? and listItemView.model?
+      @select(listItemView.model) if listItemView?.model?
 
   ###############
   ### Actions ###

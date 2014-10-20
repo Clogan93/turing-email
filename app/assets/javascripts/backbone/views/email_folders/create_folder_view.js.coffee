@@ -35,4 +35,4 @@ class TuringEmailApp.Views.EmailFolders.CreateFolderView extends Backbone.View
     @resetView()
 
   resetView: ->
-    $(".create-folder-form .create-folder-input").val("")
+    @$el.find(".create-folder-form .create-folder-input").val("")

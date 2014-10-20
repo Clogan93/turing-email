@@ -1,3 +1,22 @@
+<%
+function outputFolderDropdown(emailFolders, uniqueID, className) {
+  for (var i = 0; i < emailFolders.length; i++) {
+    var labelAsLinkID = _.uniqueId(uniqueID);
+
+    if (emailFolders[i].label_type != "system" || emailFolders[i].label_id == "INBOX") {
+%>
+      <li role="presentation">
+        <a role="menuitem" tabindex="-1" class="<%= className %>" href="#"
+           id="<%= labelAsLinkID %>" name="<%= emailFolders[i]["label_id"] %>">
+          <%= emailFolders[i]["name"] %>
+        </a>
+      </li>
+<%
+    }
+  }
+}
+%>
+
 <div class="mail-tools toolbar-elements row">
   <div class="toolbar-buttons">
     <div class="dropdown" id="bulk_action_checkbox_dropdown">
@@ -27,20 +46,7 @@
       <ul class="dropdown-menu" role="menu" aria-labelledby="labelAsDropdownMenu">
         <li role="presentation"><a role="menuitem" tabindex="-1" href="#" class="createNewLabel">Create new</a></li>
         <li role="presentation" class="divider"></li>
-        <%
-        for(var i = 0; i < emailFolders.length; i++) {
-          var labelAsLinkID = _.uniqueId("labelAsLink")
-          if(!(emailFolders[i].label_type == "system" && emailFolders[i].label_id != "INBOX")) {
-            %>
-            <li role="presentation">
-              <a role="menuitem" tabindex="-1" class="label_as_link" href="#"
-                 id="<%= labelAsLinkID %>" name="<%= emailFolders[i]["label_id"] %>">
-                <%= emailFolders[i]["name"] %>
-              </a>
-            </li>
-            <%
-          }
-        } %>
+        <% outputFolderDropdown(emailFolders, "labelAsLink", "label_as_link"); %>
       </ul>
     </span>
 
@@ -52,21 +58,7 @@
       <ul class="dropdown-menu" role="menu" aria-labelledby="moveToFolderDropdownMenu">
         <li role="presentation"><a role="menuitem" tabindex="-1" href="#" class="createNewEmailFolder">Create new</a></li>
         <li role="presentation" class="divider"></li>
-        <%
-        for(var i = 0; i < emailFolders.length; i++) {
-          var moveToFolderLinkID = _.uniqueId("moveToFolderLink")
-          if(!(emailFolders[i].label_type == "system" && emailFolders[i].label_id != "INBOX")) {
-            %>
-            <li role="presentation">
-              <a role="menuitem" tabindex="-1" class="move_to_folder_link" href="#"
-                 id="<%= moveToFolderLinkID %>" name="<%= emailFolders[i]["label_id"] %>">
-                <%= emailFolders[i]["name"] %>
-              </a>
-            </li>
-            <%
-          }
-        } %>
-
+        <% outputFolderDropdown(emailFolders, "moveToFolderLink", "move_to_folder_link"); %>
       </ul>
     </span>
 
