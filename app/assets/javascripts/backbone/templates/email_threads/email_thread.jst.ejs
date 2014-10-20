@@ -53,6 +53,16 @@
         } else {
           %>
             <div class="email">
+
+              <div class="email_information">
+                <span class="email-from">
+                  <%= email.fromPreview %>
+                </span>
+                <span class="email-date">
+                  <%= email.datePreview %>
+                </span>
+              </div>
+
               <div class="email_body">
                 <div class="row">
                   <div class="col-md-12">

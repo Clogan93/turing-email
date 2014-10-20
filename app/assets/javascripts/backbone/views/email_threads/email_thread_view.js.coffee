@@ -14,11 +14,10 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
       modelJSON["sortedEmails"] = @model.sortedEmails()
       @addPreviewDataToTheModelJSON modelJSON
 
-      console.log modelJSON
       @$el.html(@template(modelJSON))
-
-      @$el.find('.email-draft-editable').summernote({focus: true});
   
+      @renderDrafts()
+
       @model.seenIs(true)
   
       @renderGenieReport()
@@ -88,6 +87,11 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     for email, index in @model.get("emails")
       if email.html_part?
         @insertHtmlIntoIframe email, index
+
+  renderDrafts: ->
+    emailDraftsEditable = @$el.find('.email-draft-editable')
+    if emailDraftsEditable.length > 0
+      emailDraftsEditable.summernote({focus: true})
 
   setupEmailExpandAndCollapse: ->
     @$el.find(".email .email_information").click (event) =>
