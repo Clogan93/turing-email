@@ -29,7 +29,7 @@ class @Report
       return
 
   setupReportsDropdown: ->
-    @view.reportToolbarDropdown = new TuringEmailApp.Views.ReportToolbarDropdown(
+    @view.reportToolbarDropdown = new TuringEmailApp.Views.ReportToolbarDropdownView(
       el: @view.$el.find(".report_toolbar_dropdown")
     )
     @view.reportToolbarDropdown.render()

@@ -472,12 +472,16 @@ window.TuringEmailApp = new(Backbone.View.extend(
     sortedEmails = emailThread.sortedEmails()
     isDraft = _.last(sortedEmails).draft_id?
 
+    @views.mainView.toolbarView.refreshToolbarButtonView.hide()
+
     if isDraft
       @routers.emailThreadsRouter.navigate("#email_draft/" + emailThreadUID, trigger: true)
     else
       @routers.emailThreadsRouter.navigate("#email_thread/" + emailThreadUID, trigger: true)
 
   listItemDeselected: (listView, listItemView) ->
+    @views.mainView.toolbarView.refreshToolbarButtonView.show()
+
     @routers.emailThreadsRouter.navigate("#email_thread/.", trigger: true)
 
   listItemChecked: (listView, listItemView) ->

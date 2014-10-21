@@ -80,6 +80,11 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @$el.find(".createNewEmailFolder").click =>
       @trigger("createNewEmailFolderClicked", this)
 
+    @refreshToolbarButtonView = new TuringEmailApp.Views.RefreshToolbarButtonView(
+      el: @$el.find(".refresh-button-placement")
+    )
+    @refreshToolbarButtonView.render()
+
     @$el.find("#refresh_button").click =>
       @trigger("refreshClicked", this)
 
@@ -110,7 +115,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   #################
 
   renderReportToolbarDropdown: ->
-    @reportToolbarDropdown = new TuringEmailApp.Views.ReportToolbarDropdown(
+    @reportToolbarDropdown = new TuringEmailApp.Views.ReportToolbarDropdownView(
       el: @$el.find(".report_toolbar_dropdown")
     )
     @reportToolbarDropdown.render()
