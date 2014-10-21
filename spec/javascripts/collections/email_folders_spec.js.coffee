@@ -4,7 +4,7 @@ describe "EmailFoldersCollection", ->
     @validEmailFoldersFixture = emailFoldersFixtures[0]["valid"]
 
     @url = "/api/v1/email_folders"
-    @emailFoldersCollection = new TuringEmailApp.Collections.EmailFoldersCollection()
+    @emailFoldersCollection = new TuringEmailApp.Collections.EmailFoldersCollection(undefined, app: TuringEmailApp)
 
     @server = sinon.fakeServer.create()
     @server.respondWith "GET", @url, JSON.stringify(@validEmailFoldersFixture)

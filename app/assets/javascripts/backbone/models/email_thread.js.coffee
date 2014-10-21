@@ -42,20 +42,93 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
       required: true
 
   initialize: (attributes, options) ->
-    @url = "/api/v1/email_threads/show/" + options.emailThreadUID if options?.emailThreadUID
-
-  seenIs: (seenValue=true)->
-    postData = {}
-    emailUIDs = []
-
-    for email in @get("emails")
-      if email.seen != seenValue
-        email.seen = seenValue
-        emailUIDs.push email.uid
+    @app = options.app
+    @emailThreadUID = options.emailThreadUID
     
-    return if emailUIDs.length is 0
+    @listenTo(this, "change:seen", @seenChanged)
 
-    makeRequest = =>
+  load: (options, force=false) ->
+    if @loaded? and not force
+      options.success?()
+    else
+      return if @loading?
+      
+      @loading = true
+      @emailThreadUID = @get("uid")
+      
+      options ?= {}
+      success = options.success
+      options.success = =>
+        @loaded = true
+        @loading = false
+        success?()
+        
+      error = options.error
+      options.error = =>
+        @loading = false
+        error?()
+        
+      @fetch(options)
+
+  ###############
+  ### Network ###
+  ###############
+    
+  parseThreadInfo: (threadInfo, options) ->
+    threadParsed = {}
+
+    threadParsed.uid = threadInfo.id
+    threadParsed.emails = _.map(threadInfo.messages, (message) =>
+      emailParsed = {}
+
+      emailParsed.uid = message.id
+      emailParsed.snippet = message.snippet
+      emailParsed.folder_ids = message.labelIds
+      emailParsed.seen = not message.labelIds? || message.labelIds.indexOf("UNREAD") == -1
+
+      TuringEmailApp.Models.Email.parseHeaders(emailParsed, message.payload.headers)
+
+      emailParsed.body_text_encoded = message.payload.body.data if message.payload.body.size > 0
+      TuringEmailApp.Models.Email.parseBody(emailParsed, message.payload.parts)
+
+      return emailParsed
+    )
+
+    return threadParsed
+
+  sync: (method, model, options) ->
+    if method is not "read"
+      super(method, model, options)
+    else
+      if @app? and not @app.gmailAPIReady
+        setTimeout(
+          =>
+            @sync(method, model, options)
+          100
+        )
+        
+        return
+        
+      request = gapi.client.gmail.users.threads.get(userId: "me", id: @emailThreadUID)
+
+      google_execute_request(
+        request
+
+        (response) =>
+          threadJSON = @parseThreadInfo(response.result)
+          options.success?(threadJSON)
+
+        options.error
+        this
+        => @app.refreshGmailAPIToken().done(=> @sync(method, model, options))
+      )
+    
+  ##############
+  ### Events ###
+  ##############
+
+  seenChanged: (model, seenValue)->
+    makeRequest = (attempt=0) =>
       if seenValue
         body = removeLabelIds: ["UNREAD"]
       else
@@ -71,13 +144,36 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
         undefined
         undefined
         undefined
-        => makeRequest()
+        => makeRequest(attempt + 1)
+        attempt
       )
 
     makeRequest()
-    
-    @trigger("change:seen", this, seenValue)
 
+  ###############
+  ### Getters ###
+  ###############
+
+  folderIDs: ->
+    if not @loaded?
+      return @get("folder_ids")
+    else
+      emails = @get("emails")
+      folderIDs = []
+  
+      for email in emails
+        folderIDs = folderIDs.concat email["folder_ids"]
+  
+      return _.uniq(folderIDs)
+
+  sortedEmails: ->
+    emails = @get("emails")
+    return emails.sort (a, b) => a["date"] - b["date"]
+    
+  ###############
+  ### Actions ###  
+  ###############
+    
   # TODO write tests
   removeFromFolder: (emailFolderID) ->
     TuringEmailApp.Models.EmailThread.removeFromFolder([@get("uid")], emailFolderID)
@@ -100,63 +196,27 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
         @trigger("change:folder", this, data)
     )
 
-  folderIDs: ->
-    emails = @get("emails")
-    folderIDs = []
-
-    for email in emails
-      folderIDs = folderIDs.concat email["folder_ids"]
-
-    return _.uniq(folderIDs)
-
   ##################
   ### Formatters ###
   ##################
 
-  numEmailsText: (emails) ->
-    return "" if emails.length is 1
-    return " (" + emails.length.toString() + ")"
+  numEmailsText: () ->
+    emails = @get("emails")
+    num_messages = if emails? then emails.length else @get("num_messages")
+    return if num_messages is 1 then "" else " (" + num_messages + ")"
 
   fromPreview: ->
-    emails = @get("emails")
-    mostRecentEmail = emails[0]
+    fromAddress = @get("from_address")
+    fromName = @get("from_name")
     
-    if mostRecentEmail.from_address isnt TuringEmailApp.models.user.get("email")
-      return if mostRecentEmail.from_name? then mostRecentEmail.from_name + @numEmailsText(emails) else mostRecentEmail.from_address + @numEmailsText(emails)
-    
-    if emails.length is 1
-      return "me"
-
-    for email, index in emails
-      continue if index is 0
-
-      if email.from_address isnt TuringEmailApp.models.user.get("email")
-        return if email.from_name? then email.from_name + ", me" + @numEmailsText(emails) else email.from_address + ", me" + @numEmailsText(emails)
-
-    return "me"
+    if fromAddress is TuringEmailApp.models.user.get("email")
+      return "me " + @numEmailsText()
+    else
+      return (if fromName? then fromName else fromAddress) + " " + @numEmailsText() 
 
   subjectPreview: ->
-    emails = @get("emails")
-    mostRecentEmail = emails[0]
-
-    if mostRecentEmail.from_address isnt TuringEmailApp.models.user.get("email") or emails.length is 1
-      return if mostRecentEmail.subject isnt "" then mostRecentEmail.subject else "(no subject)"
-
-    for email, index in emails
-      continue if index is 0
-      
-      if email.from_address isnt TuringEmailApp.models.user.get("email")
-        return if email.subject isnt "" then email.subject else "(no subject)"
-
-    return if mostRecentEmail.subject isnt "" then mostRecentEmail.subject else "(no subject)"
+    subject = @get("subject")
+    return if subject is "" then "(no subject)" else subject
 
   datePreview: ->
-    emails = @get("emails")
-    return "" if emails.length is 0
-    
-    dateString = _.last(emails)["date"]
-    return TuringEmailApp.Models.Email.localDateString(dateString)
-
-  sortedEmails: ->
-    emails = @get("emails")
-    return emails.sort (a, b) => a["date"] - b["date"]
+    return TuringEmailApp.Models.Email.localDateString(@get("date"))

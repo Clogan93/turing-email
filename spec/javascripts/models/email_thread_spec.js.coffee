@@ -11,7 +11,10 @@ describe "EmailThread", ->
 
     @userFixtures = fixture.load("user.fixture.json", true)
 
-    @emailThread = new TuringEmailApp.Models.EmailThread(undefined, emailThreadUID: @validEmailThreadFixture["uid"])
+    @emailThread = new TuringEmailApp.Models.EmailThread(undefined,
+      app: TuringEmailApp
+      emailThreadUID: @validEmailThreadFixture["uid"]
+    )
 
     @server = sinon.fakeServer.create()
 
@@ -307,10 +310,10 @@ describe "EmailThread", ->
       describe "#numEmailsText", ->
 
         it "returns an empty string when there is only one email", ->
-          expect(@emailThread.numEmailsText([0])).toEqual ""
+          expect(@emailThread.numEmailsText()).toEqual ""
 
         it "returns the correct response under default conditions", ->
-          expect(@emailThread.numEmailsText(@emailThread.get("emails"))).toEqual " (2)"
+          expect(@emailThread.numEmailsText()).toEqual " (2)"
 
       describe "#fromPreview", ->
 

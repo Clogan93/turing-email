@@ -334,12 +334,3 @@ describe "ToolbarView", ->
           
         it "triggers render", ->
           expect(@renderSpy).toHaveBeenCalled()
-  
-      describe "#emailFolderUnreadCountChanged", ->
-        beforeEach ->
-          @emailFolder = TuringEmailApp.collections.emailFolders.models[0]
-
-          @toolbarView.emailFolderUnreadCountChanged(TuringEmailApp, @emailFolder)
-
-        it "does nothing", ->
-          return

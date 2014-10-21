@@ -2,7 +2,7 @@ describe "TreeView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection()
+    @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(undefined, app: TuringEmailApp)
 
     @treeDiv = $("<div />", {id: "email_folders"}).appendTo("body")
     @treeView = new TuringEmailApp.Views.EmailFolders.TreeView(

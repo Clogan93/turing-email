@@ -323,7 +323,7 @@ describe "TuringEmailApp", ->
       describe "#selectedEmailFolder", ->
         beforeEach ->
           @server.restore()
-          @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection()
+          @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(undefined, app: TuringEmailApp)
           [@server] = specPrepareEmailFoldersFetch()
 
           @emailFolders.fetch()
@@ -337,7 +337,7 @@ describe "TuringEmailApp", ->
       describe "#selectedEmailFolderID", ->
         beforeEach ->
           @server.restore()
-          @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection()
+          @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(undefined, app: TuringEmailApp)
           [@server] = specPrepareEmailFoldersFetch(@emailFolders)
 
           @emailFolders.fetch()
@@ -1047,7 +1047,7 @@ describe "TuringEmailApp", ->
             @markEmailThreadReadSpy = sinon.spy(@listView, "markEmailThreadRead")
             
             @emailThread = @emailThreads.models[0]
-            @emailThread.seenIs(false)
+            @emailThread.set("seen", false)
             @listView.select(@emailThread)
             
             TuringEmailApp.readClicked()
@@ -1066,7 +1066,7 @@ describe "TuringEmailApp", ->
             @markCheckedReadSpy = sinon.spy(@listView, "markCheckedRead")
 
             @emailThread = @emailThreads.models[0]
-            @emailThread.seenIs(false)
+            @emailThread.set("seen", false)
             @listView.check(@emailThread)
 
             TuringEmailApp.readClicked()
@@ -1097,7 +1097,7 @@ describe "TuringEmailApp", ->
           beforeEach ->
             @markEmailThreadUnreadSpy = sinon.spy(@listView, "markEmailThreadUnread")
 
-            @emailThread.seenIs(true)
+            @emailThread.set("seen", true)
             @listView.select(@emailThread)
 
             TuringEmailApp.unreadClicked()
@@ -1115,7 +1115,7 @@ describe "TuringEmailApp", ->
           beforeEach ->
             @markCheckedUnreadSpy = sinon.spy(@listView, "markCheckedUnread")
 
-            @emailThread.seenIs(false)
+            @emailThread.set("seen", false)
             @listView.check(@emailThread)
 
             TuringEmailApp.unreadClicked()

@@ -10,6 +10,10 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
     @clearPageTokens()
     @folderIDIs(options?.folderID) if options?.folderID?
   
+  ##############
+  ### Events ###
+  ##############
+    
   modelRemoved: (model) ->
     model.trigger("removedFromCollection", this)
 
@@ -57,101 +61,112 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
   ### Network ###
   ###############
   
-  parseHeaders: (emailParsed, headers) ->
-    headersMap =
-      "message-id": "message_id"
-      "list-id": "list_id"
-      "date": "date"
-      "subject": "subject"
-      "to": "tos"
-      "cc": "ccs"
-      "bcc": "bccs"
+  threadFromMessageInfo: (threadInfo, lastMessageInfo) ->
+    threadParsed =
+      uid: threadInfo.id
+      snippet: lastMessageInfo.snippet
+      num_messages: threadInfo.messages.length
 
-    emailHeadersMap =
-      "from": "from_"
-      "sender": "sender_"
-      "reply_to": "reply_to_"
+    if lastMessageInfo.payload?.headers?
+      emailParsed = {}
+      TuringEmailApp.Models.Email.parseHeaders(emailParsed, lastMessageInfo.payload.headers)
 
-    for header in headers
-      found = false
+      threadParsed.from_name = emailParsed.from_name
+      threadParsed.from_address = emailParsed.from_address
+      threadParsed.date = emailParsed.date
+      threadParsed.subject = emailParsed.subject
 
-      headerName = header.name.toLowerCase()
-      parsedKey = headersMap[headerName]
-      if parsedKey?
-        if headerName is "date"
-          emailParsed[parsedKey] = new Date(header.value)
-        else
-          emailParsed[parsedKey] = header.value
+    folderIDs = []
 
-        found = true
+    threadParsed.seen = true
+    for message in threadInfo.messages
+      if message.labelIds?
+        folderIDs = folderIDs.concat(message.labelIds)
+        threadParsed.seen = false if message.labelIds.indexOf("UNREAD") != -1
 
-      if not found
-        parsedPrefix = emailHeadersMap[headerName]
-        if parsedPrefix?
-          parsedEmail = EmailAddressParser.parseOneAddress(header.value)
-          emailParsed[parsedPrefix + "name"] = parsedEmail.name
-          emailParsed[parsedPrefix + "address"] = parsedEmail.address
-    
-  parseBody: (emailParsed, parts) ->
-    return if not parts?
-    
-    foundText = false
-    foundHTML = false
-  
-    for part in parts
-      if not foundText and part.mimeType.toLowerCase() == "text/plain" and part.body.size > 0
-        emailParsed.text_part_encoded = part.body.data
-        foundText = true
-
-      if not foundHTML and part.mimeType.toLowerCase() == "text/html" and part.body.size > 0
-        emailParsed.html_part_encoded = part.body.data
-        foundHTML = true
-
-      if not emailParsed.text_part_encoded? or not emailParsed.html_part_encoded?
-        @parseBody(emailParsed, part.parts)
-            
-  parse: (threads, options) ->
-    threadsParsed = _.map(threads, (thread) =>
-      threadParsed = {}
-
-      threadParsed.uid = thread.id
-      threadParsed.emails = _.map(thread.messages, (message) =>
-        emailParsed = {}
-
-        emailParsed.uid = message.id
-        emailParsed.snippet = message.snippet
-        emailParsed.folder_ids = message.labelIds
-        emailParsed.seen = not message.labelIds? || message.labelIds.indexOf("UNREAD") == -1
-
-        @parseHeaders(emailParsed, message.payload.headers)
-
-        emailParsed.body_text_encoded = message.payload.body.data if message.payload.body.size > 0
-        @parseBody(emailParsed, message.payload.parts)
+    threadParsed.folder_ids = _.uniq(folderIDs)
         
-        return emailParsed
+    return threadParsed
+
+  loadThreadsPreview: (threadsInfo, options, retry) ->
+    batch = gapi.client.newBatch();
+    
+    for threadInfo in threadsInfo
+      lastMessage =_.last(threadInfo.messages)
+      
+      request = gapi.client.gmail.users.messages.get(
+        userId: "me"
+        id: lastMessage.id
+        format: "metadata"
+        metadataHeaders: ["date", "from", "subject"]
+        fields: "payload,snippet"
       )
+      batch.add(request, id: lastMessage.id)
 
-      return threadParsed
+    google_execute_request(
+      batch
+
+      (response) =>
+        threads = _.map(threadsInfo, (threadInfo) =>
+          return null if reason?
+
+          lastMessage =_.last(threadInfo.messages)
+          lastMessageResponse = response.result[lastMessage.id]
+          
+          if lastMessageResponse.status == 200
+            return @threadFromMessageInfo(threadInfo, lastMessageResponse.result)
+          else
+            reason = lastMessageResponse.result
+        )
+        
+        if reason?
+          options.error(reason)
+        else
+          threads.sort((a, b) => b.date - a.date)
+          options.success(threads)
+
+      options.error
+      this
+      retry
     )
     
-    threadsParsed.sort((a, b) =>
-      return _.last(b["emails"])["date"] - _.last(a["emails"])["date"]
+  loadThreads: (threadsListInfo, options, retry) ->
+    batch = gapi.client.newBatch();
+
+    for threadInfo in threadsListInfo
+      request = gapi.client.gmail.users.threads.get(
+        userId: "me"
+        id: threadInfo.id
+        fields: "id,historyId,messages(id,labelIds)"
+      )
+      batch.add(request)
+
+    google_execute_request(
+      batch
+
+      (response) =>
+        threadResults = _.values(response.result)
+        threadsInfo = _.pluck(threadResults, "result")
+        @loadThreadsPreview(threadsInfo, options, retry)
+
+      options.error
+      this
+      retry
     )
     
-    return threadsParsed
-
   # does NOT trigger('request', model, xhr, options);
   sync: (method, model, options) ->
     if method is not "read"
       super(method, model, options)
-      Backbone.sync
     else
       params =
         userId: "me"
         maxResults: TuringEmailApp.Models.UserSettings.EmailThreadsPerPage
-
+        fields: "nextPageToken,threads(id)"
+        
       params["labelIds"] = @folderID if @folderID?
       params["pageToken"] = @pageTokens[@pageTokenIndex] if @pageTokens[@pageTokenIndex]?
+      params["q"] = options.query if options?.query
       request = gapi.client.gmail.users.threads.list(params)
 
       google_execute_request(
@@ -160,30 +175,17 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
         (response) =>
           @pageTokens[@pageTokenIndex + 1] = response.result.nextPageToken if response.result.nextPageToken?
           @pageTokens = @pageTokens.slice(0, @pageTokenIndex + 2)
-          
-          if response.result.threads?
-            batch = gapi.client.newBatch();
-            
-            for thread in response.result.threads
-              request = gapi.client.gmail.users.threads.get(userId: "me", id: thread.id)
-              batch.add(request)
 
-            google_execute_request(
-              batch
-            
-              (response) ->
-                threadResults = _.values(response.result)
-                threads = _.pluck(threadResults, "result")
-                options.success?(threads)
-                
-              (reason) -> options.error?(reason)
-              this
+          if response.result.threads?
+            @loadThreads(
+              response.result.threads,
+              options
               => @app.refreshGmailAPIToken().done(=> @sync(method, model, options))
             )
           else
             options.success?([])
             
-        (reason) -> options.error?(reason)
+        options.error
         this
         => @app.refreshGmailAPIToken().done(=> @sync(method, model, options))
       )
