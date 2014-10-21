@@ -1,14 +1,22 @@
-<div class="page-header">
-  <h1 class="h1">Threads</h1>
+<div class="row">
+  <div class="page-header col-lg-11">
+    <h1 class="h1">Threads</h1>
+    <span class="report_toolbar_dropdown in-report-dropdown">
+    </span>
+  </div>
 </div>
 
-<h4 class="h4">Average Thread Length: <small><%= average_thread_length %></small></h4>
+<div class="row">
+  <div class="col-lg-11">
+    <h4 class="h4">Average Thread Length: <small><%= average_thread_length %></small></h4>
 
-<br/>
+    <br/>
 
-<h4 class="h4">Top Email Threads</h4>
-<ul>
-  <% for(var i = 0; i < top_email_threads.length; i++) { %>
-    <li><a href="#email_thread/<%= top_email_threads[i].uid %>"><%= top_email_threads[i].emails[0].subject %></a></li>
-  <% } %>
-</ul>
+    <h4 class="h4">Top Email Threads</h4>
+    <ul>
+      <% for(var i = 0; i < top_email_threads.length; i++) { %>
+        <li><a href="#email_thread/<%= top_email_threads[i].uid %>"><%= top_email_threads[i].emails[0].subject %></a></li>
+      <% } %>
+    </ul>
+  </div>
+</div>

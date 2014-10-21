@@ -18,6 +18,7 @@ class TuringEmailApp.Views.Reports.ContactsReportView extends Backbone.View
 
     report = new Report(@)
     report.setupContainers()
+    report.setupReportsDropdown()
 
     return this
 

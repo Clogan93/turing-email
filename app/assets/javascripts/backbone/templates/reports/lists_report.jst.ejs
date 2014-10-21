@@ -1,75 +1,83 @@
-<div class="page-header">
-  <h1 class="h1">Lists</h1>
+<div class="row">
+  <div class="page-header col-lg-11">
+    <h1 class="h1">Lists</h1>
+    <span class="report_toolbar_dropdown in-report-dropdown">
+    </span>
+  </div>
 </div>
 
-<%
-function printListStatsRows(listStats) {
-  if (listStats[0] != null && listStats[0] != "") { %>
-    <td><%= listStats[0] %></td>
-  <% } else { %>
-    <td><%= listStats[1] %></td>
-<%   } %>
+<div class="row">
+  <div class="col-lg-11">
+    <%
+    function printListStatsRows(listStats) {
+      if (listStats[0] != null && listStats[0] != "") { %>
+        <td><%= listStats[0] %></td>
+      <% } else { %>
+        <td><%= listStats[1] %></td>
+    <%   } %>
 
-    <td><%= listStats[2] %></td>
-<%
-}
-%>
+        <td><%= listStats[2] %></td>
+    <%
+    }
+    %>
 
-<div id="list_report_statistics">
-  <h4 class="h4">Lists email daily average</h4>
-  
-  <table>
-    <% for(var i=0; i < lists_email_daily_average.length; i++) {%>
-      <tr>
-        <% printListStatsRows(lists_email_daily_average[i]) %>
-      </tr>
-    <% } %>
-  </table>
-  
-  <h4 class="h4">Emails per list</h4>
-  <table>
-    <% for(var i=0; i < emails_per_list.length; i++) {%>
-      <tr>
-        <% printListStatsRows(emails_per_list[i]) %>
-      </tr>
-    <% } %>
-  </table>
-  
-  <h4 class="h4">Email threads per list</h4>
-  <table>
-    <% for(var i=0; i < email_threads_per_list.length; i++) {%>
-      <tr>
-        <% printListStatsRows(email_threads_per_list[i]) %>
-      </tr>
-    <% } %>
-  </table>
-  
-  <h4 class="h4">Email threads replied to per list</h4>
-  <table>
-    <% for(var i=0; i < email_threads_replied_to_per_list.length; i++) {%>
-      <tr>
-        <% printListStatsRows(email_threads_replied_to_per_list[i]) %>
-      </tr>
-    <% } %>
-  </table>
-  
-  <h4 class="h4">Sent emails per list</h4>
-  <table>
-    <% for(var i=0; i < sent_emails_per_list.length; i++) {%>
-      <tr>
-        <% printListStatsRows(sent_emails_per_list[i]) %>
-      </tr>
-    <% } %>
-  </table>
-  
-  <h4 class="h4">Sent emails replied to per list</h4>
-  <table>
-    <% for(var i=0; i < sent_emails_replied_to_per_list.length; i++) { %>
-      <% if (sent_emails_replied_to_per_list[i].length > 0) { %>
-        <tr>
-          <% printListStatsRows(sent_emails_replied_to_per_list[i]) %>
-        </tr>
-      <% } %>
-    <% } %>
-  </table>
+    <div id="list_report_statistics">
+      <h4 class="h4">Lists email daily average</h4>
+      
+      <table>
+        <% for(var i=0; i < lists_email_daily_average.length; i++) {%>
+          <tr>
+            <% printListStatsRows(lists_email_daily_average[i]) %>
+          </tr>
+        <% } %>
+      </table>
+      
+      <h4 class="h4">Emails per list</h4>
+      <table>
+        <% for(var i=0; i < emails_per_list.length; i++) {%>
+          <tr>
+            <% printListStatsRows(emails_per_list[i]) %>
+          </tr>
+        <% } %>
+      </table>
+      
+      <h4 class="h4">Email threads per list</h4>
+      <table>
+        <% for(var i=0; i < email_threads_per_list.length; i++) {%>
+          <tr>
+            <% printListStatsRows(email_threads_per_list[i]) %>
+          </tr>
+        <% } %>
+      </table>
+      
+      <h4 class="h4">Email threads replied to per list</h4>
+      <table>
+        <% for(var i=0; i < email_threads_replied_to_per_list.length; i++) {%>
+          <tr>
+            <% printListStatsRows(email_threads_replied_to_per_list[i]) %>
+          </tr>
+        <% } %>
+      </table>
+      
+      <h4 class="h4">Sent emails per list</h4>
+      <table>
+        <% for(var i=0; i < sent_emails_per_list.length; i++) {%>
+          <tr>
+            <% printListStatsRows(sent_emails_per_list[i]) %>
+          </tr>
+        <% } %>
+      </table>
+      
+      <h4 class="h4">Sent emails replied to per list</h4>
+      <table>
+        <% for(var i=0; i < sent_emails_replied_to_per_list.length; i++) { %>
+          <% if (sent_emails_replied_to_per_list[i].length > 0) { %>
+            <tr>
+              <% printListStatsRows(sent_emails_replied_to_per_list[i]) %>
+            </tr>
+          <% } %>
+        <% } %>
+      </table>
+    </div>
+  </div>
 </div>

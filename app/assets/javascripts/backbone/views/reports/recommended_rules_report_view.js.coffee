@@ -15,6 +15,9 @@ class TuringEmailApp.Views.Reports.RecommendedRulesReportView extends Backbone.V
     
     @setupRecommendedRulesLinks()
 
+    report = new Report(@)
+    report.setupReportsDropdown()
+
     return this
 
   setupRecommendedRulesLinks: ->
