@@ -4,6 +4,9 @@ class TuringEmailApp.Views.RefreshToolbarButtonView extends Backbone.View
   render: ->
     @$el.html(@template())
 
+    @$el.find("#refresh_button").click =>
+      @trigger("refreshClicked", this)
+
     return this
 
   show: ->

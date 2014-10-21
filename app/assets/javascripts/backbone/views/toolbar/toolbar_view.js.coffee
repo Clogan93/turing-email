@@ -89,7 +89,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       @trigger("refreshClicked", this)
 
     @$el.find(".toolbar-elements, .pagination-buttons").tooltip
-      selector: "[data-toggle=tooltip]"
+      selector: "[data-toggle=tooltip], .tooltip-button"
       container: "body"
 
     @$el.find(".settings-button").click ->

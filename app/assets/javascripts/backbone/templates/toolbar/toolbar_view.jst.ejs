@@ -38,10 +38,7 @@ function outputFolderDropdown(emailFolders, uniqueID, className) {
     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Move to trash"><i class="fa fa-trash-o"></i></button>
 
     <span class="dropdown label-as">
-      <button class="btn btn-white btn-sm dropdown-toggle" type="button" id="labelAsDropdownMenu" data-toggle="dropdown">
-        Label As
-        <span class="caret"></span>
-      </button>
+      <button type="button" class="btn btn-white btn-sm dropdown-toggle tooltip-button" data-toggle="dropdown" id="labelAsDropdownMenu" title="Label as"><i class="fa fa-tags"></i></button>
       <ul class="dropdown-menu" role="menu" aria-labelledby="labelAsDropdownMenu">
         <li role="presentation"><a role="menuitem" tabindex="-1" href="#" class="createNewLabel">Create new</a></li>
         <li role="presentation" class="divider"></li>
@@ -50,10 +47,9 @@ function outputFolderDropdown(emailFolders, uniqueID, className) {
     </span>
 
     <span class="dropdown">
-      <button class="btn btn-white btn-sm dropdown-toggle" type="button" id="moveToFolderDropdownMenu" data-toggle="dropdown">
-        Move
-        <span class="caret"></span>
-      </button>
+
+      <button type="button" class="btn btn-white btn-sm dropdown-toggle tooltip-button" data-toggle="dropdown" id="moveToFolderDropdownMenu" title="Move to"><i class="fa fa-folder"></i></button>
+
       <ul class="dropdown-menu" role="menu" aria-labelledby="moveToFolderDropdownMenu">
         <li role="presentation"><a role="menuitem" tabindex="-1" href="#" class="createNewEmailFolder">Create new</a></li>
         <li role="presentation" class="divider"></li>
