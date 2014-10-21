@@ -136,6 +136,7 @@ describe "SettingsView", ->
 
       it "updates the user settings model with the correct values", ->
         expect(@userSettings.get("genie_enabled")).toEqual(true)
+        expect(@userSettings.get("split_pane_mode")).toEqual("horizontal")
 
         splitPaneSwitch = $("#split_pane_switch")
         splitPaneSwitch.click()
