@@ -60,9 +60,11 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       @trigger("trashClicked", this)
 
     @$el.find("#paginate_left_link").click =>
+      @$el.find("#paginate_left_link").tooltip('hide')
       @trigger("leftArrowClicked", this)
 
     @$el.find("#paginate_right_link").click =>
+      @$el.find("#paginate_left_link").tooltip('hide')
       @trigger("rightArrowClicked", this)
 
     @$el.find(".label_as_link").click (event) =>
