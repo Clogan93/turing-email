@@ -11,4 +11,8 @@ class TuringEmailApp.Views.Reports.FoldersReportView extends Backbone.View
 
   render: ->
     @$el.html(@template(@model.toJSON()))
+
+    report = new Report(@)
+    report.setupReportsDropdown()
+
     return this

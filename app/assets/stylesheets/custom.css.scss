@@ -604,7 +604,11 @@ table.table-mail tr td {
 }
 
 .email_body {
-  padding: 15px 10px;
+
+  .row {
+    padding: 15px 10px;
+  }
+
 }
 
 .mail-tools {
@@ -638,4 +642,36 @@ table.table-mail tr td {
 #compose_email_body, #compose_form .note-editable {
   height: 250px !important;
   overflow: scroll;
+}
+
+.each-email-reply-button {
+  position: relative;
+  float: right;
+  margin-right: 10px;
+  bottom: 38px;
+}
+
+.each-email-forward-button {
+  position: relative;
+  float: right;
+  bottom: 38px;
+  right: 5px;
+}
+
+.email-date-displayed {
+  width: 85% !important;
+}
+
+.note-editor 
+{
+  height: 100% !important;
+}
+
+div[contenteditable]:focus {
+  border: 1px solid rgb(86, 180, 239);
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.05) inset, 0px 0px 8px rgba(82, 168, 236, 0.6);
+}
+
+.in-report-dropdown {
+  float: right;
 }

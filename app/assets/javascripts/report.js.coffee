@@ -27,3 +27,9 @@ class @Report
       content = $(this).closest("div.ibox")
       content.remove()
       return
+
+  setupReportsDropdown: ->
+    @view.reportToolbarDropdown = new TuringEmailApp.Views.ReportToolbarDropdownView(
+      el: @view.$el.find(".report_toolbar_dropdown")
+    )
+    @view.reportToolbarDropdown.render()

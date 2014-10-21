@@ -14,10 +14,12 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
         success: =>
           modelJSON = @model.toJSON()
           modelJSON["sortedEmails"] = @model.sortedEmails()
-          @addPreviewDataToTheModelJSON modelJSON
-  
+          
+          @addPreviewDataToTheModelJSON(modelJSON)
+          
           @$el.html(@template(modelJSON))
-  
+
+          @renderDrafts()
           @renderGenieReport()
           @renderHTMLEmails()
   
@@ -62,7 +64,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
           thread_id = thread_elements[thread_elements.length - 1]
           $.get "/api/v1/email_threads/show/" + thread_id, (data) ->
             email_from_email_thread = data.emails[data.emails.length - 1]
-            $('#composeModal #compose_email_body').val("\n\n\n\n" + TuringEmailApp.views.composeView.retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes(email_from_email_thread))
+            $('#composeModal #compose_email_body').val("\n\n\n\n" + TuringEmailApp.Views.App.ComposeView.retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes(email_from_email_thread))
             $('#compose_form #email_in_reply_to_uid_input').val(email_from_email_thread.uid)
 
         iframe.contents().find("body").find('a[href^="#from_address"]').click (event) ->
@@ -89,10 +91,22 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
 
     @updateIframeHeight(@$el.find("iframe").last())
 
+  renderDrafts: ->
+    @embeddedComposeViews = {}
+
+    for email in @model.get("emails")
+      if email.draft_id?
+        embeddedComposeView = @embeddedComposeViews[email.uid] = new TuringEmailApp.Views.App.EmbeddedComposeView(app: TuringEmailApp)
+        embeddedComposeView.email = email
+        embeddedComposeView.emailThread = @model
+        embeddedComposeView.render()
+        @$el.find(".embedded_compose_view_" + email.uid).append(embeddedComposeView.$el)
+
   setupEmailExpandAndCollapse: ->
     @$el.find(".email .email_information").click (event) =>
       $(event.currentTarget).parent().find(".email_body").toggle()
       $(event.currentTarget).parent().toggleClass("collapsed_email")
+      $(event.currentTarget).toggleClass("email-date-displayed")
 
       iframe = $(event.currentTarget).parent().find("iframe")
       @updateIframeHeight(iframe)
@@ -111,12 +125,6 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
 
     @$el.find(".email_forward_button").click =>
       @trigger("forwardClicked", this)
-
-    @$el.find("i.fa-archive").parent().click =>
-      @trigger("archiveClicked", this)
-
-    @$el.find("i.fa-trash-o").parent().click =>
-      @trigger("trashClicked", this)
 
   # TODO write tests
   insertHtmlIntoIframe: (email, index) ->

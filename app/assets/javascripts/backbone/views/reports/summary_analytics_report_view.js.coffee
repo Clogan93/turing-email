@@ -11,4 +11,8 @@ class TuringEmailApp.Views.Reports.SummaryAnalyticsReportView extends Backbone.V
 
   render: ->
     @$el.html(@template(@model.toJSON()))
+
+    report = new Report(@)
+    report.setupReportsDropdown()
+
     return this

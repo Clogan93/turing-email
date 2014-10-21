@@ -112,51 +112,58 @@ describe "SettingsView", ->
         expect(spy).toHaveBeenCalled()
         spy.restore()
 
-  describe "saving of the settings", ->
-    it "saves the model to the server", ->
-      spyOnEvent("#user_settings_save_button", "click")
-      genieSwitch = $("#genie_switch")
+  describe "#saveSettings", ->
+
+    it "is called by the switch change event on the switches", ->
+      spy = sinon.spy(@settingsView, "saveSettings")
+      @settingsView.$el.find("#genie_rules_button").click()
+      genieSwitch = @settingsView.$el.find("#genie_switch")
       genieSwitch.click()
+      expect(spy).toHaveBeenCalled()
+      spy.restore()
 
-      expect(@server.requests.length).toEqual 4
-      request = @server.requests[3]
-      expect(request.method).toEqual "PATCH"
-      expect(request.url).toEqual "/api/v1/user_configurations"
+    describe "when saveSettings is called", ->
 
-    it "updates the user settings model with the correct values", ->
-      expect(@userSettings.get("genie_enabled")).toEqual(true)
-      expect(@userSettings.get("split_pane_mode")).toEqual("off")
+      it "patches the server", ->
+        @settingsView.$el.find("#genie_rules_button").click()
+        genieSwitch = @settingsView.$el.find("#genie_switch")
+        genieSwitch.click()
+        expect(@server.requests.length).toEqual 4
+        request = @server.requests[3]
+        expect(request.method).toEqual "PATCH"
+        expect(request.url).toEqual "/api/v1/user_configurations"
+        @server.restore()
 
-      splitPaneSwitch = $("#split_pane_switch")
-      splitPaneSwitch.click()
+      it "updates the user settings model with the correct values", ->
+        expect(@userSettings.get("genie_enabled")).toEqual(true)
+        expect(@userSettings.get("split_pane_mode")).toEqual("horizontal")
 
-      saveButton = @settingsDiv.find("#user_settings_save_button")
-      saveButton.click()
-  
-      expect(@userSettings.get("genie_enabled")).toEqual(true)
-      expect(@userSettings.get("split_pane_mode")).toEqual("horizontal")
+        splitPaneSwitch = $("#split_pane_switch")
+        splitPaneSwitch.click()
 
-    it "displays a success alert after the save button is clicked and then hides it", ->
-      @clock = sinon.useFakeTimers()
+        expect(@userSettings.get("genie_enabled")).toEqual(true)
+        expect(@userSettings.get("split_pane_mode")).toEqual("off")
+        @server.restore()
 
-      showSettingsAlertSpy = sinon.spy(@settingsView, "showSettingsAlert")
-      removeSettingsAlertSpy = sinon.spy(@settingsView, "removeSettingsAlert")
+      it "displays a success alert after the save button is clicked and then hides it", ->
+        @clock = sinon.useFakeTimers()
 
-      #Change one attribute
-      expect(@userSettings.get("genie_enabled")).toEqual(true)
-      genieSwitch = $("#genie_switch")
-      genieSwitch.click()
+        showSettingsAlertSpy = sinon.spy(@settingsView, "showSettingsAlert")
+        removeSettingsAlertSpy = sinon.spy(@settingsView, "removeSettingsAlert")
 
-      @server.respondWith "PATCH", @userSettings.url, JSON.stringify(@userSettings)
-      @server.respond()
+        @settingsView.saveSettings()
 
-      expect(showSettingsAlertSpy).toHaveBeenCalled()
+        @server.respondWith "PATCH", @userSettings.url, JSON.stringify(@userSettings)
+        @server.respond()
 
-      @clock.tick(5000)
+        expect(showSettingsAlertSpy).toHaveBeenCalled()
 
-      expect(removeSettingsAlertSpy).toHaveBeenCalled()
+        @clock.tick(5000)
 
-      @clock.restore()
+        expect(removeSettingsAlertSpy).toHaveBeenCalled()
+
+        @clock.restore()
+        @server.restore()
 
   describe "#setupRuleCreation", ->
 

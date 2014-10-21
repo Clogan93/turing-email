@@ -4,6 +4,6 @@
     "demo_mode_enabled": true,
     "keyboard_shortcuts_enabled": true,
     "genie_enabled": true,
-    "split_pane_mode": "off"
+    "split_pane_mode": "horizontal"
   }
 }

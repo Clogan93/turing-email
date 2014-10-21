@@ -14,7 +14,7 @@ describe "ToolbarView", ->
     specStopTuringEmailApp()
 
   it "has the right template", ->
-    expect(@toolbarView.template).toEqual JST["backbone/templates/toolbar_view"]
+    expect(@toolbarView.template).toEqual JST["backbone/templates/toolbar/toolbar_view"]
 
   describe "#initialize", ->
 

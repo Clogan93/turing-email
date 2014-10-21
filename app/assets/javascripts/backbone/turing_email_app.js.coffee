@@ -5,6 +5,7 @@
 #= require_tree ./collections
 #= require ./views/email_threads/list_item_view
 #= require ./views/email_threads/list_view
+#= require ./views/app/compose/compose_view
 #= require_tree ./views
 #= require_tree ./routers
 
@@ -496,9 +497,13 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
     emailThread = listItemView.model
     emailThreadUID = emailThread.get("uid")
+
+    @views.mainView.toolbarView.refreshToolbarButtonView.hide()
     @routers.emailThreadsRouter.navigate("#email_thread/" + emailThreadUID, trigger: true)
 
   listItemDeselected: (listView, listItemView) ->
+    @views.mainView.toolbarView.refreshToolbarButtonView.show()
+
     @routers.emailThreadsRouter.navigate("#email_thread/.", trigger: true)
 
   listItemChecked: (listView, listItemView) ->

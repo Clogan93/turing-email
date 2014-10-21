@@ -20,7 +20,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
     )
     @sidebarView.render()
 
-    @composeView = new TuringEmailApp.Views.ComposeView(
+    @composeView = new TuringEmailApp.Views.App.ComposeView(
       app: @app
       el: @$el.find("#compose_view")
     )
@@ -139,13 +139,15 @@ class TuringEmailApp.Views.Main extends Backbone.View
         emptyFolderMessageDiv.append("<div class='empty-text'>Congratulations on reaching inbox zero!</div>")
       else
         emptyFolderMessageDiv.append("<div class='empty-text'>There are no conversations with this label.</div>")
+      @toolbarView.refreshToolbarButtonView.show()
     else
       @emailThreadsListView.$el = @$el.find(".email_threads_list_view_tbody")
       @emailThreadsListView.render()
       @resizeEmailThreadsListView()
-      
+      @toolbarView.refreshToolbarButtonView.hide()
+
     return true
-    
+
   showSettings: ->
     return false if not @primaryPaneDiv?
     

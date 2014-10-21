@@ -1,7 +1,7 @@
 class TuringEmailApp.Views.ToolbarView extends Backbone.View
   @MAX_RETRY_ATTEMPTS: 5
 
-  template: JST["backbone/templates/toolbar_view"]
+  template: JST["backbone/templates/toolbar/toolbar_view"]
   tagName: "div"
 
   initialize: (options) ->
@@ -22,6 +22,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @divAllCheckbox = @$el.find("div.icheckbox_square-green")
     
     @setupButtons()
+    @renderReportToolbarDropdown()
 
     if @currentEmailFolder?
       @updatePaginationText(@currentEmailFolder, @currentEmailFolderPage)
@@ -59,9 +60,11 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       @trigger("trashClicked", this)
 
     @$el.find("#paginate_left_link").click =>
+      @$el.find("#paginate_left_link").tooltip('hide')
       @trigger("leftArrowClicked", this)
 
     @$el.find("#paginate_right_link").click =>
+      @$el.find("#paginate_left_link").tooltip('hide')
       @trigger("rightArrowClicked", this)
 
     @$el.find(".label_as_link").click (event) =>
@@ -75,6 +78,11 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
     @$el.find(".createNewEmailFolder").click =>
       @trigger("createNewEmailFolderClicked", this)
+
+    @refreshToolbarButtonView = new TuringEmailApp.Views.RefreshToolbarButtonView(
+      el: @$el.find(".refresh-button-placement")
+    )
+    @refreshToolbarButtonView.render()
 
     @$el.find("#refresh_button").click =>
       @trigger("refreshClicked", this)
@@ -104,6 +112,12 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   #################
   ### Functions ###
   #################
+
+  renderReportToolbarDropdown: ->
+    @reportToolbarDropdown = new TuringEmailApp.Views.ReportToolbarDropdownView(
+      el: @$el.find(".report_toolbar_dropdown")
+    )
+    @reportToolbarDropdown.render()
 
   allCheckboxIsChecked: ->
     return @divAllCheckbox.hasClass "checked"

@@ -35,39 +35,55 @@ describe "EmailThreadView", ->
       it "should have the root element be a div", ->
         expect(@emailThreadView.el.nodeName).toEqual "DIV"
 
-      it "should render the attributes of all the email threads", ->
-        #Set up lists
-        fromNames = []
-        textParts = []
+      describe "when the email is not a draft", ->
 
-        #Collect Attributes from the rendered DOM.
-        @emailThreadView.$el.find(".email_information").each ->
-          fromNames.push $($(this).find(".email-from")[0]).text().trim()
+        it "should render the attributes of all the email threads", ->
+          #Set up lists
+          fromNames = []
+          textParts = []
+
+          @emailThreadView.$el.find(".email"). each ->
+
+            #Collect Attributes from the rendered DOM.
+            emailInformation = $(@).find(".email_information")
+            fromNames.push $(emailInformation.find(".email-from")[0]).text().trim()
+
+            emailBody = $(@).find(".email_body .col-md-11")
+            if emailBody.length is 0 then textParts.push null else textParts.push emailBody.text().trim()
+
+          #Run expectations
+          for email, index in @emailThread.get("emails")
+            if email.draft_id is null
+              expect(fromNames[index]).toEqual email.from_name
+              expect(textParts[index]).toEqual email.text_part
+
+        describe "when there is a no html or text parts of the email yet there is a body part", ->
+
+          it "should render the body part", ->
+            for email, index in @emailThread.get("emails")
+              if email.draft_id is null
+                @seededChance = new Chance(1)
+                randomBodyText = @seededChance.string({length: 150})
+                @emailThread.get("emails")[index].html_part = null
+                @emailThread.get("emails")[index].text_part = null
+                @emailThread.get("emails")[index].body_text = randomBodyText
+                @emailThreadView.render()
+                expect(@emailThreadView.$el.find("pre[name='body_text']")).toContainHtml(randomBodyText)
+
+      describe "when the email is a draft", ->
+
+        it "should render the email drafts", ->
+          @spy = sinon.spy(@emailThreadView, "renderDrafts")
           
-        @emailThreadView.$el.find(".email_body .col-md-11").each ->
-          textParts.push $(this).text().trim()
-
-        #Run expectations
-        for email, index in @emailThread.get("emails")
-          expect(fromNames[index]).toEqual email.from_name
-          expect(textParts[index]).toEqual email.text_part
-
-      describe " when there is a no html or text parts of the email yet there is a body part", ->
-
-        it "should render the body part", ->
-          @seededChance = new Chance(1)
-          randomBodyText = @seededChance.string({length: 150})
-          @emailThread.get("emails")[0].html_part = null
-          @emailThread.get("emails")[0].text_part = null
-          @emailThread.get("emails")[0].body_text = randomBodyText
           @emailThreadView.render()
-          expect(@emailThreadView.$el.find("pre[name='body_text']")).toContainHtml(randomBodyText)
+          
+          expect(@spy).toHaveBeenCalled()
+          @spy.restore()
 
     describe "addPreviewDataToTheModelJSON", ->
       beforeEach ->
         @modelJSON = @emailThread.toJSON()
         @emailThreadView.addPreviewDataToTheModelJSON @modelJSON
-        console.log @modelJSON
 
       it "adds the fromPreview data to the model JSON", ->
         expect(@modelJSON["fromPreview"]).toEqual @emailThread.get("emails")[0].from_name + " (2)"
@@ -85,6 +101,19 @@ describe "EmailThreadView", ->
       it "adds the datePreview data to each of the emails", ->
         for email in @modelJSON.emails
           expect(email["datePreview"]).toEqual TuringEmailApp.Models.Email.localDateString(email.date)
+
+    describe "#renderDrafts", ->
+
+      it "should created embedded compose views", ->
+        @emailThreadView.embeddedComposeViews = {}
+        @emailThreadView.renderDrafts()
+        embeddedComposeViewsLength = _.values(@emailThreadView.embeddedComposeViews).length
+        expect(embeddedComposeViewsLength).toEqual 1
+
+      it "should render the embedded compose view into the email thread view", ->
+        @emailThreadView.renderDrafts()
+        embeddedComposeView = _.values(@emailThreadView.embeddedComposeViews)[0]
+        expect(@emailThreadView.$el).toContainHtml embeddedComposeView.$el
 
     describe "#setupEmailExpandAndCollapse", ->
 
@@ -129,8 +158,6 @@ describe "EmailThreadView", ->
         expect(@emailThreadView.$el.find('#email_back_button')).toHandle("click")
         expect(@emailThreadView.$el.find(".email_reply_button")).toHandle("click")
         expect(@emailThreadView.$el.find(".email_forward_button")).toHandle("click")
-        expect(@emailThreadView.$el.find("i.fa-archive").parent()).toHandle("click")
-        expect(@emailThreadView.$el.find("i.fa-trash-o").parent()).toHandle("click")
 
       describe "when email_reply_button is clicked", ->
         it "triggers replyClicked", ->
@@ -143,20 +170,6 @@ describe "EmailThreadView", ->
         it "triggers forwardClicked", ->
           spy = sinon.backbone.spy(@emailThreadView, "forwardClicked")
           @emailThreadView.$el.find(".email_forward_button").click()
-          expect(spy).toHaveBeenCalled()
-          spy.restore()
-
-      describe "when the archive button is clicked", ->
-        it "triggers archiveClicked", ->
-          spy = sinon.backbone.spy(@emailThreadView, "archiveClicked")
-          @emailThreadView.$el.find("i.fa-archive").parent().click()
-          expect(spy).toHaveBeenCalled()
-          spy.restore()
-
-      describe "when trash button is clicked", ->
-        it "triggers trashClicked", ->
-          spy = sinon.backbone.spy(@emailThreadView, "trashClicked")
-          @emailThreadView.$el.find("i.fa-trash-o").parent().click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 

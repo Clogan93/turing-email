@@ -1750,7 +1750,9 @@ describe "TuringEmailApp", ->
           expect(TuringEmailApp.isSplitPaneMode()).toBeTruthy()
     
       describe "when split pane mode is off in the user settings", ->
-    
+        beforeEach ->
+          TuringEmailApp.models.userSettings.attributes.split_pane_mode = "off"
+
         it "should return false", ->
           expect(TuringEmailApp.isSplitPaneMode()).toBeFalsy()
       
