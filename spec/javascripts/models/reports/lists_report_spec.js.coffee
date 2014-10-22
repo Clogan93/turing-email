@@ -23,6 +23,6 @@ describe "ListsReport", ->
       @server.respond()
 
     it "loads the contacts report", ->
-      validateAttributes(@listsReport.toJSON(), ["lists_email_daily_average", "emails_per_list",
+      validateKeys(@listsReport.toJSON(), ["lists_email_daily_average", "emails_per_list",
                                                  "email_threads_per_list", "email_threads_replied_to_per_list",
                                                  "sent_emails_per_list", "sent_emails_replied_to_per_list"])

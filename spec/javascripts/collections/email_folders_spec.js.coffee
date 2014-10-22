@@ -3,7 +3,6 @@ describe "EmailFoldersCollection", ->
     emailFoldersFixtures = fixture.load("email_folders.fixture.json")
     @validEmailFoldersFixture = emailFoldersFixtures[0]["valid"]
 
-    @url = "/api/v1/email_folders"
     @emailFoldersCollection = new TuringEmailApp.Collections.EmailFoldersCollection(undefined, app: TuringEmailApp)
 
     @server = sinon.fakeServer.create()
@@ -17,9 +16,6 @@ describe "EmailFoldersCollection", ->
 
   it "should use the EmailFolder model", ->
     expect(@emailFoldersCollection.model).toEqual TuringEmailApp.Models.EmailFolder
-
-  it "has the right url", ->
-    expect(@emailFoldersCollection.url).toEqual @url
 
   describe "#fetch", ->
     it "loads the email folders", ->

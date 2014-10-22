@@ -28,4 +28,4 @@ describe "EmailRulesCollection", ->
       expect(@emailRulesCollection.toJSON()).toEqual @validEmailRulesFixture
 
     it "loads the correct attributes in the model", ->
-      validateAttributes(@emailRulesCollection.models[0].toJSON(), ["uid", "from_address", "to_address", "subject", "list_id", "destination_folder_name"])
+      validateKeys(@emailRulesCollection.models[0].toJSON(), ["uid", "from_address", "to_address", "subject", "list_id", "destination_folder_name"])

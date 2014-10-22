@@ -155,41 +155,56 @@ window.specCreateEmailThreadsListView = (server) ->
   server.respond()
   
   return [emailThreadsListView.$el, emailThreadsListView, emailThreads, server, validEmailThreadsFixture]
-  
-window.validateAttributes = (objectJSON, expectedAttributes) ->
+
+window.validateAttributes = (expectedAttributes, model, modelRendered, expectedAttributesToSkip=[]) ->
+  expectedAttributes = expectedAttributes.sort()
+  keys = _.keys(modelRendered).sort()
+  expect(keys).toEqual(expectedAttributes)
+
+  for key, value of modelRendered
+    continue if key == "__name__"
+    continue if expectedAttributesToSkip.indexOf(key) != -1
+
+    expect(value).toEqual(model[key])
+
+window.validateUserSettings = (userSettings, userSettingsRendered) ->
+  expectedAttributes = ["id", "demo_mode_enabled", "keyboard_shortcuts_enabled", "genie_enabled", "split_pane_mode"]
+  validateAttributes(expectedAttributes, userSettings, userSettingsRendered)
+    
+window.validateKeys = (objectJSON, expectedKeys) ->
   keys = (key for key in _.keys(objectJSON))
   keys.sort()
 
-  expectedAttributes = expectedAttributes.slice().sort()
+  expectedKeys = expectedKeys.slice().sort()
   
-  expect(keys).toEqual expectedAttributes
+  expect(keys).toEqual expectedKeys
 
 window.validateUserAttributes = (userJSON) ->
   expectedAttributes = ["email"]
-  validateAttributes(userJSON, expectedAttributes)
+  validateKeys(userJSON, expectedAttributes)
   
 window.validateUserSettingsAttributes = (userSettingsJSON) ->
   expectedAttributes = ["id", "demo_mode_enabled", "keyboard_shortcuts_enabled", "genie_enabled", "split_pane_mode"]
-  validateAttributes(userSettingsJSON, expectedAttributes)
+  validateKeys(userSettingsJSON, expectedAttributes)
 
 window.validateBrainRulesAttributes = (brainRulesJSON) ->
   expectedAttributes = ["uid", "from_address", "to_address", "subject", "list_id"]
-  validateAttributes(brainRulesJSON, expectedAttributes)
+  validateKeys(brainRulesJSON, expectedAttributes)
 
 window.validateEmailRulesAttributes = (emailRulesJSON) ->
   expectedAttributes = ["uid", "from_address", "to_address", "subject", "list_id", "destination_folder_name"]
-  validateAttributes(emailRulesJSON, expectedAttributes)
+  validateKeys(emailRulesJSON, expectedAttributes)
 
 window.validateEmailFolderAttributes = (emailFolderJSON) ->
   expectedAttributes = ["label_id", "name",
                          "message_list_visibility", "label_list_visibility",
                          "label_type",
                          "num_threads", "num_unread_threads"]
-  validateAttributes(emailFolderJSON, expectedAttributes)
+  validateKeys(emailFolderJSON, expectedAttributes)
 
 window.validateEmailThreadAttributes = (emailThreadJSON) ->
   expectedAttributes = ["uid", "emails"]
-  validateAttributes(emailThreadJSON, expectedAttributes)
+  validateKeys(emailThreadJSON, expectedAttributes)
   
 window.validateEmailAttributes = (emailJSON) ->
   expectedAttributes = ["auto_filed",
@@ -202,7 +217,7 @@ window.validateEmailAttributes = (emailJSON) ->
                         "subject",
                         "html_part", "text_part", "body_text",
                         "folder_ids"]
-  validateAttributes(emailJSON, expectedAttributes)
+  validateKeys(emailJSON, expectedAttributes)
 
 window.verifyReportsRendered = (parent) ->
   reportSelectors = [".attachments_report", ".email_volume_report", ".folders_report", ".geo_report",

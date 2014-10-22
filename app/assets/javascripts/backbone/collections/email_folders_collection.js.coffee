@@ -1,7 +1,6 @@
 class TuringEmailApp.Collections.EmailFoldersCollection extends Backbone.Collection
   model: TuringEmailApp.Models.EmailFolder
-  url: '/api/v1/email_folders'
-
+  
   initialize: (models, options) ->
     @app = options.app
     @listenTo(this, "remove", @modelRemoved)
@@ -36,19 +35,23 @@ class TuringEmailApp.Collections.EmailFoldersCollection extends Backbone.Collect
     )
     
     return labelsParsed
-
-  loadLabels: (labelsListInfo, options, retry) ->
+    
+  labelsGetBatch: (labelsListInfo) ->
     batch = gapi.client.newBatch();
 
-    for labelinfo in labelsListInfo
+    for labelInfo in labelsListInfo
       request = gapi.client.gmail.users.labels.get(
         userId: "me"
-        id: labelinfo.id
+        id: labelInfo.id
       )
       batch.add(request)
-  
-    google_execute_request(
-      batch
+
+    return batch
+
+  loadLabels: (labelsListInfo, options) ->
+    googleRequest(
+      @app
+      => @labelsGetBatch(labelsListInfo)
   
       (response) =>
         labelsResults = _.values(response.result)
@@ -56,40 +59,18 @@ class TuringEmailApp.Collections.EmailFoldersCollection extends Backbone.Collect
         options.success(labelsInfo)
   
       options.error
-      this
-      retry
     )
     
   sync: (method, model, options) ->
     if method is not "read"
       super(method, model, options)
     else
-      if @app? and not @app.gmailAPIReady
-        setTimeout(
-          =>
-            @sync(method, model, options)
-          100
-        )
-
-        return
-
-      request = gapi.client.gmail.users.labels.list(userId: "me")
-
-      google_execute_request(
-        request
-
-        (response) =>
-          @loadLabels(
-            response.result.labels,
-            options
-            => @app.refreshGmailAPIToken().done(=> @sync(method, model, options))
-          )
-
+      googleRequest(
+        @app
+        => gapi.client.gmail.users.labels.list(userId: "me")
+        (response) => @loadLabels(response.result.labels, options)
         options.error
-        this
-        => @app.refreshGmailAPIToken().done(=> @sync(method, model, options))
       )
-
 
   ###############
   ### Getters ###

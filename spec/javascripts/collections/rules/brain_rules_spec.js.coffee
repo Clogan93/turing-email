@@ -28,4 +28,4 @@ describe "BrainRulesCollection", ->
       expect(@brainRulesCollection.toJSON()).toEqual @validBrainRulesFixture
 
     it "loads the correct attributes in the model", ->
-      validateAttributes(@brainRulesCollection.models[0].toJSON(), ["uid", "from_address", "to_address", "subject", "list_id"])
+      validateKeys(@brainRulesCollection.models[0].toJSON(), ["uid", "from_address", "to_address", "subject", "list_id"])

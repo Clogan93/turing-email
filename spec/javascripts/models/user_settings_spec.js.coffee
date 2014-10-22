@@ -1,14 +1,12 @@
 describe "UserSettings", ->
   beforeEach ->
-    userSettingsFixtures = fixture.load("user_settings.fixture.json");
-    @validUserSettingsFixture = userSettingsFixtures[0]["valid"]
+    @userSettingsData = FactoryGirl.create("UserSettings")
     
-    @userSettings = new TuringEmailApp.Models.UserSettings()
-
     @server = sinon.fakeServer.create()
-    
     @url = "/api/v1/user_configurations"
-    @server.respondWith "GET", @url, JSON.stringify(@validUserSettingsFixture)
+    @server.respondWith "GET", @url, JSON.stringify(@userSettingsData)
+
+    @userSettings = new TuringEmailApp.Models.UserSettings()
 
   afterEach ->
     @server.restore()
@@ -22,4 +20,4 @@ describe "UserSettings", ->
       @server.respond()
       
     it "loads the user settings", ->
-      validateUserSettingsAttributes(@userSettings.toJSON())
+      validateUserSettings(@userSettingsData, @userSettings.toJSON())

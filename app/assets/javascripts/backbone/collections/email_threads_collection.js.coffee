@@ -88,12 +88,12 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
         
     return threadParsed
 
-  loadThreadsPreview: (threadsInfo, options, retry) ->
+  messagesGetBatch: (threadsInfo) ->
     batch = gapi.client.newBatch();
-    
+
     for threadInfo in threadsInfo
       lastMessage =_.last(threadInfo.messages)
-      
+
       request = gapi.client.gmail.users.messages.get(
         userId: "me"
         id: lastMessage.id
@@ -103,34 +103,36 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
       )
       batch.add(request, id: lastMessage.id)
 
-    google_execute_request(
-      batch
+    return batch
+    
+  processMessagesGetBatch: (response, threadsInfo, options) ->
+    threads = _.map(threadsInfo, (threadInfo) =>
+      return null if reason?
 
-      (response) =>
-        threads = _.map(threadsInfo, (threadInfo) =>
-          return null if reason?
+      lastMessage =_.last(threadInfo.messages)
+      lastMessageResponse = response.result[lastMessage.id]
 
-          lastMessage =_.last(threadInfo.messages)
-          lastMessageResponse = response.result[lastMessage.id]
-          
-          if lastMessageResponse.status == 200
-            return @threadFromMessageInfo(threadInfo, lastMessageResponse.result)
-          else
-            reason = lastMessageResponse.result
-        )
-        
-        if reason?
-          options.error(reason)
-        else
-          threads.sort((a, b) => b.date - a.date)
-          options.success(threads)
+      if lastMessageResponse.status == 200
+        return @threadFromMessageInfo(threadInfo, lastMessageResponse.result)
+      else
+        reason = lastMessageResponse.result
+    )
 
+    if reason?
+      options.error(reason)
+    else
+      threads.sort((a, b) => b.date - a.date)
+      options.success(threads)
+
+  loadThreadsPreview: (threadsInfo, options) ->
+    googleRequest(
+      @app
+      => @messagesGetBatch(threadsInfo)
+      (response) => @processMessagesGetBatch(response, threadsInfo, options)
       options.error
-      this
-      retry
     )
     
-  loadThreads: (threadsListInfo, options, retry) ->
+  threadsGetBatch: (threadsListInfo) ->
     batch = gapi.client.newBatch();
 
     for threadInfo in threadsListInfo
@@ -141,17 +143,18 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
       )
       batch.add(request)
 
-    google_execute_request(
-      batch
+    return batch
 
+  loadThreads: (threadsListInfo, options) ->
+    googleRequest(
+      @app
+      => @threadsGetBatch(threadsListInfo)
       (response) =>
         threadResults = _.values(response.result)
         threadsInfo = _.pluck(threadResults, "result")
-        @loadThreadsPreview(threadsInfo, options, retry)
+        @loadThreadsPreview(threadsInfo, options)
 
       options.error
-      this
-      retry
     )
     
   # does NOT trigger('request', model, xhr, options);
@@ -167,26 +170,19 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
       params["labelIds"] = @folderID if @folderID?
       params["pageToken"] = @pageTokens[@pageTokenIndex] if @pageTokens[@pageTokenIndex]?
       params["q"] = options.query if options?.query
-      request = gapi.client.gmail.users.threads.list(params)
 
-      google_execute_request(
-        request
+      googleRequest(
+        @app
+        => gapi.client.gmail.users.threads.list(params)
         
         (response) =>
           @pageTokens[@pageTokenIndex + 1] = response.result.nextPageToken if response.result.nextPageToken?
           @pageTokens = @pageTokens.slice(0, @pageTokenIndex + 2)
 
           if response.result.threads?
-            @loadThreads(
-              response.result.threads,
-              options
-              => @app.refreshGmailAPIToken().done(=> @sync(method, model, options))
-            )
+            @loadThreads(response.result.threads, options)
           else
             options.success?([])
             
         options.error
-        this
-        => @app.refreshGmailAPIToken().done(=> @sync(method, model, options))
       )
-      

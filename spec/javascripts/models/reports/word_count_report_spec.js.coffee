@@ -23,4 +23,4 @@ describe "WordCountReport", ->
       @server.respond()
 
     it "loads the contacts report", ->
-      validateAttributes(@wordCountsReport.toJSON(), ["word_counts"])
+      validateKeys(@wordCountsReport.toJSON(), ["word_counts"])

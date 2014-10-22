@@ -100,27 +100,15 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     if method is not "read"
       super(method, model, options)
     else
-      if @app? and not @app.gmailAPIReady
-        setTimeout(
-          =>
-            @sync(method, model, options)
-          100
-        )
-        
-        return
-        
-      request = gapi.client.gmail.users.threads.get(userId: "me", id: @emailThreadUID)
-
-      google_execute_request(
-        request
+      googleRequest(
+        @app
+        => gapi.client.gmail.users.threads.get(userId: "me", id: @emailThreadUID)
 
         (response) =>
           threadJSON = @parseThreadInfo(response.result)
           options.success?(threadJSON)
 
         options.error
-        this
-        => @app.refreshGmailAPIToken().done(=> @sync(method, model, options))
       )
     
   ##############
@@ -128,27 +116,19 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
   ##############
 
   seenChanged: (model, seenValue)->
-    makeRequest = (attempt=0) =>
-      if seenValue
-        body = removeLabelIds: ["UNREAD"]
-      else
-        body = addLabelIds: ["UNREAD"]
-        
-      request = gapi.client.gmail.users.threads.modify(
-        {userId: "me", id: @get("uid")},
-        body
-      )
-      
-      google_execute_request(
-        request
-        undefined
-        undefined
-        undefined
-        => makeRequest(attempt + 1)
-        attempt
-      )
+    if seenValue
+      body = removeLabelIds: ["UNREAD"]
+    else
+      body = addLabelIds: ["UNREAD"]
 
-    makeRequest()
+    googleRequest(
+      @app
+      =>
+        gapi.client.gmail.users.threads.modify(
+          {userId: "me", id: @get("uid")},
+          body
+        )
+    )
 
   ###############
   ### Getters ###
