@@ -20,22 +20,31 @@ class TuringEmailApp.Collections.EmailFoldersCollection extends Backbone.Collect
   ### Network ###
   ###############
 
-  parse: (labelsInfo, options) ->
-    labelsParsed = _.map(labelsInfo, (label) =>
-      labelParsed = {}
-      labelParsed.label_id = label.id
-      labelParsed.name = label.name
-      labelParsed.message_list_visibility = label.messageListVisibility
-      labelParsed.label_list_visibility = label.labelListVisibility
-      labelParsed.label_type = label.type
-      labelParsed.num_threads = label.threadsTotal
-      labelParsed.num_unread_threads = label.threadsUnread
-    
-      return labelParsed
+  sync: (method, collection, options) ->
+    if method != "read"
+      super(method, collection, options)
+      Backbone.sync
+    else
+      googleRequest(
+        @app
+        => @labelsListRequest()
+        (response) => @loadLabels(response.result.labels, options)
+        options.error
+      )
+
+      @trigger("request", collection, null, options);
+
+  labelsListRequest: ->
+    gapi.client.gmail.users.labels.list(userId: "me", fields: "labels/id")
+
+  loadLabels: (labelsListInfo, options) ->
+    googleRequest(
+      @app
+      => @labelsGetBatch(labelsListInfo)
+      (response) => @processLabelsGetBatch(response, options)
+      options.error
     )
-    
-    return labelsParsed
-    
+
   labelsGetBatch: (labelsListInfo) ->
     batch = gapi.client.newBatch();
 
@@ -48,29 +57,26 @@ class TuringEmailApp.Collections.EmailFoldersCollection extends Backbone.Collect
 
     return batch
 
-  loadLabels: (labelsListInfo, options) ->
-    googleRequest(
-      @app
-      => @labelsGetBatch(labelsListInfo)
-  
-      (response) =>
-        labelsResults = _.values(response.result)
-        labelsInfo = _.pluck(labelsResults, "result")
-        options.success(labelsInfo)
-  
-      options.error
+  processLabelsGetBatch: (response, options) ->
+    labelsResults = _.values(response.result)
+    labelsInfo = _.pluck(labelsResults, "result")
+    options.success(labelsInfo)
+
+  parse: (labelsInfo, options) ->
+    labelsParsed = _.map(labelsInfo, (label) =>
+      labelParsed = {}
+      labelParsed.label_id = label.id
+      labelParsed.name = label.name
+      labelParsed.message_list_visibility = label.messageListVisibility
+      labelParsed.label_list_visibility = label.labelListVisibility
+      labelParsed.label_type = label.type
+      labelParsed.num_threads = label.threadsTotal
+      labelParsed.num_unread_threads = label.threadsUnread
+
+      return labelParsed
     )
-    
-  sync: (method, model, options) ->
-    if method is not "read"
-      super(method, model, options)
-    else
-      googleRequest(
-        @app
-        => gapi.client.gmail.users.labels.list(userId: "me")
-        (response) => @loadLabels(response.result.labels, options)
-        options.error
-      )
+
+    return labelsParsed
 
   ###############
   ### Getters ###

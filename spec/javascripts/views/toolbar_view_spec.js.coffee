@@ -1,16 +1,11 @@
 describe "ToolbarView", ->
   beforeEach ->
     specStartTuringEmailApp()
-
-    [@server] = specPrepareEmailFoldersFetch()
-    TuringEmailApp.collections.emailFolders.fetch()
-    @server.respond()
     
+    TuringEmailApp.collections.emailFolders.add(FactoryGirl.createLists("EmailFolder", 5))
     @toolbarView = TuringEmailApp.views.toolbarView
     
   afterEach ->
-    @server.restore()
-    
     specStopTuringEmailApp()
 
   it "has the right template", ->

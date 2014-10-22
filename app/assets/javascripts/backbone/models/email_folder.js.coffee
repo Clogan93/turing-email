@@ -1,4 +1,6 @@
 class TuringEmailApp.Models.EmailFolder extends Backbone.Model
+  idAttribute: "label_id"
+
   validation:
     label_id:
       required: true

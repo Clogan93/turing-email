@@ -50,6 +50,9 @@ window.specStartTuringEmailApp = ->
     Backbone.history.start(silent: true)
     specStartedHistory = true
 
+window.specCompareFunctions = (f, fExpected) ->
+  expect(f.toString().replace(/\s/g, "")).toEqual(fExpected.toString().replace(/\s/g, ""))
+    
 window.specPrepareReportFetches = (server) ->
   attachmentsReportFixtures = fixture.load("reports/attachments_report.fixture.json", true);
   attachmentsReportFixture = attachmentsReportFixtures[0]

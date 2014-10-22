@@ -1,5 +1,7 @@
 describe "TuringEmailApp", ->
   beforeEach ->
+    window.gapi = client: load: => return then: =>
+
     @server = sinon.fakeServer.create()
     @mainDiv = $("<div />", id: "main").appendTo($("body"))
 
@@ -336,13 +338,8 @@ describe "TuringEmailApp", ->
 
       describe "#selectedEmailFolderID", ->
         beforeEach ->
-          @server.restore()
-          @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(undefined, app: TuringEmailApp)
-          [@server] = specPrepareEmailFoldersFetch(@emailFolders)
-
-          @emailFolders.fetch()
-          @server.respond()
-
+          @emailFolders = TuringEmailApp.collections.emailFolders
+          @emailFolders.add(FactoryGirl.createLists("EmailFolder", 5))
           TuringEmailApp.views.emailFoldersTreeView.select(@emailFolders.models[0])
 
         it "returns the selected email folder id", ->
@@ -686,29 +683,25 @@ describe "TuringEmailApp", ->
     describe "Email Folder Functions", ->
       describe "#loadEmailFolders", ->
         beforeEach ->
-          @fetchSpy = sinon.spy(TuringEmailApp.collections.emailFolders, "fetch")
-          @resetSpy = sinon.backbone.spy(TuringEmailApp.collections.emailFolders, "reset")
+          @fetchStub = sinon.spy(TuringEmailApp.collections.emailFolders, "fetch")
           @changeEmailFoldersSpy = sinon.backbone.spy(TuringEmailApp, "change:emailFolders")
+
+          TuringEmailApp.loadEmailFolders()
           
         afterEach ->
-          @fetchSpy.restore()
-          @resetSpy.restore()
           @changeEmailFoldersSpy.restore()
+          @fetchStub.restore()
           
         it "fetches the email folders", ->
-          TuringEmailApp.loadEmailFolders()
-          expect(@fetchSpy).toHaveBeenCalled()
+          expect(@fetchStub).toHaveBeenCalled()
+
+        it "sets the reset option to true", ->
+          expect(@fetchStub.args[0][0].reset).toBeTruthy()
           
         describe "after the email folders are fetched", ->
           beforeEach ->
-            @server.restore()
-            [@server] = specPrepareEmailFoldersFetch()
-            
-            TuringEmailApp.loadEmailFolders()
-            @server.respond()
-
-          it "the collection resets", ->
-            expect(@resetSpy).toHaveBeenCalled()
+            options = @fetchStub.args[0][0]
+            options.success(TuringEmailApp.collections.emailFolders, {}, options)
 
           it "triggers the change:emailFolders event", ->
             expect(@changeEmailFoldersSpy).toHaveBeenCalledWith(TuringEmailApp, TuringEmailApp.collections.emailFolders)
@@ -1466,10 +1459,9 @@ describe "TuringEmailApp", ->
 
         describe "when the current folder IS the drafts folder", ->
           beforeEach ->
-            @server.restore()
-            [@server] = specPrepareEmailFoldersFetch(TuringEmailApp.collections.emailFolders)
-            TuringEmailApp.collections.emailFolders.fetch(reset: true)
-            @server.respond()
+            folders = FactoryGirl.createLists("EmailFolder", 5)
+            folders.push(FactoryGirl.create("EmailFolder", {label_id: "DRAFT", type: "system"}))
+            @emailFolders.reset(folders)
             
             @emailFolder = TuringEmailApp.collections.emailFolders.getEmailFolder("DRAFT")
             @stub = sinon.stub(TuringEmailApp, "selectedEmailFolder")

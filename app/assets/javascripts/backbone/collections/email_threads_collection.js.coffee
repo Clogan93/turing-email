@@ -159,7 +159,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
     
   # does NOT trigger('request', model, xhr, options);
   sync: (method, model, options) ->
-    if method is not "read"
+    if method != "read"
       super(method, model, options)
     else
       params =
@@ -186,3 +186,5 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
             
         options.error
       )
+
+      model.trigger("request", model, null, options);

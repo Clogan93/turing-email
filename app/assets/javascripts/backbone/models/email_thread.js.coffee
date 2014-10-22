@@ -97,7 +97,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     return threadParsed
 
   sync: (method, model, options) ->
-    if method is not "read"
+    if method != "read"
       super(method, model, options)
     else
       googleRequest(
@@ -110,6 +110,8 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
 
         options.error
       )
+
+      model.trigger("request", model, null, options);
     
   ##############
   ### Events ###
