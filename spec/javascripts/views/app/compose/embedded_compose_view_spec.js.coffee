@@ -38,6 +38,7 @@ describe "EmbeddedComposeView", ->
         spy = sinon.spy(@embeddedComposeView, "setupComposeView")
         @embeddedComposeView.render()
         expect(spy).toHaveBeenCalled()
+        spy.restore()
 
       it "sets the current email draft", ->
         currentEmailDraft = new TuringEmailApp.Models.EmailDraft(@draftEmail)

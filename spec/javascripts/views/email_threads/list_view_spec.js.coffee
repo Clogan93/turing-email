@@ -65,6 +65,7 @@ describe "ListView", ->
         @spy = sinon.spy(@listView, "render")
         @listView.resetView()
         expect(@spy).toHaveBeenCalled()
+        @spy.restore()
 
       it "calls removeAll if options.previousModels is passed in", ->
         @emailThread.fetch()
@@ -79,6 +80,7 @@ describe "ListView", ->
         @listView.resetView @listView.collection.models, options.previousModels
 
         expect(@spy).toHaveBeenCalled()
+        @spy.restore()
 
     describe "Collection Functions", ->
       describe "#addOne", ->
@@ -127,6 +129,8 @@ describe "ListView", ->
   
           for emailThread in @listView.collection.models
             expect(@spy).toHaveBeenCalledWith(emailThread)
+
+          @spy.restore()
   
       describe "#removeAll", ->
         it "removes all the list item views from the list view", ->
@@ -200,6 +204,7 @@ describe "ListView", ->
           
           for spy in spies
             expect(spy).toHaveBeenCalled()
+            spy.restore()
   
       describe "#checkAllRead", ->
         it "checks read list items and unchecks unread list items", ->
@@ -216,8 +221,12 @@ describe "ListView", ->
   
           @listView.checkAllRead()
   
-          expect(spy).toHaveBeenCalled() for spy in select_spies
-          expect(spy).toHaveBeenCalled() for spy in deselect_spies
+          for spy in select_spies
+            expect(spy).toHaveBeenCalled()
+            spy.restore()
+          for spy in deselect_spies
+            expect(spy).toHaveBeenCalled()
+            spy.restore()
   
       describe "#checkAllUnread", ->
         it "checks unread list items and checks unread list items", ->
@@ -234,8 +243,12 @@ describe "ListView", ->
   
           @listView.checkAllUnread()
   
-          expect(spy).toHaveBeenCalled() for spy in select_spies
-          expect(spy).toHaveBeenCalled() for spy in deselect_spies
+          for spy in select_spies
+            expect(spy).toHaveBeenCalled()
+            spy.restore()
+          for spy in deselect_spies
+            expect(spy).toHaveBeenCalled()
+            spy.restore()
   
       describe "#uncheckAll", ->
         it "unchecks all list items", ->
@@ -248,6 +261,7 @@ describe "ListView", ->
           
           for spy in spies
             expect(spy).toHaveBeenCalled()
+            spy.restore()
   
       describe "#markEmailThreadRead", ->
   
@@ -292,9 +306,11 @@ describe "ListView", ->
   
           for spy in @shouldBeCalledSpies
             expect(spy).toHaveBeenCalled()
+            spy.restore()
   
           for spy in @shouldNotBeCalledSpies
             expect(spy).not.toHaveBeenCalled()
+            spy.restore()
   
       describe "#markCheckedUnread", ->
         beforeEach ->
@@ -319,9 +335,11 @@ describe "ListView", ->
   
           for spy in @shouldBeCalledSpies
             expect(spy).toHaveBeenCalled()
+            spy.restore()
   
           for spy in @shouldNotBeCalledSpies
             expect(spy).not.toHaveBeenCalled()
+            spy.restore()
   
       describe "#moveSelectionUp", ->
         beforeEach ->

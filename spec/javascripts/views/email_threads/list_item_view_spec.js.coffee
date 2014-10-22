@@ -40,6 +40,7 @@ describe "ListItemView", ->
         @spy = sinon.spy(@listItemView, "setupCheckbox")
         @listItemView.addedToDOM()
         expect(@spy).toHaveBeenCalled()
+        @spy.restore()
 
     describe "#setupClick", ->
       beforeEach ->
@@ -142,6 +143,7 @@ describe "ListItemView", ->
           spy = sinon.spy(@listItemView, "uncheck")
           @listItemView.toggleCheck()
           expect(spy).toHaveBeenCalled()
+          spy.restore()
 
       describe "when unchecked", ->
         beforeEach ->
@@ -151,6 +153,7 @@ describe "ListItemView", ->
           spy = sinon.spy(@listItemView, "check")
           @listItemView.toggleCheck()
           expect(spy).toHaveBeenCalled()
+          spy.restore()
 
     describe "#check", ->
       beforeEach ->

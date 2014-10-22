@@ -20,6 +20,7 @@ describe "ComposeView", ->
         spy = sinon.spy(@composeView, "setupComposeView")
         @composeView.render()
         expect(spy).toHaveBeenCalled()
+        spy.restore()
 
     describe "#setupComposeView", ->
 
@@ -30,6 +31,7 @@ describe "ComposeView", ->
         spy = sinon.spy(@composeView, "sendEmail")
         @composeView.$el.find(".compose_form").submit()
         expect(spy).toHaveBeenCalled()
+        spy.restore()
 
       it "binds the click event to save button", ->
         expect(@composeView.$el.find(".compose_form #save_button")).toHandle("click")
@@ -42,6 +44,7 @@ describe "ComposeView", ->
           spy = sinon.spy(@composeView, "updateDraft")
           @composeView.$el.find(".compose_form #save_button").click()
           expect(spy).toHaveBeenCalled()
+          spy.restore()
 
         describe "when the composeView is already saving the draft", ->
 
@@ -50,6 +53,7 @@ describe "ComposeView", ->
             spy = sinon.spy(@composeView, "updateDraft")
             @composeView.$el.find(".compose_form #save_button").click()
             expect(spy).not.toHaveBeenCalled()
+            spy.restore()
 
         describe "when the server responds successfully", ->
           beforeEach ->
@@ -113,6 +117,7 @@ describe "ComposeView", ->
           spy = sinon.spy(@composeView, "removeEmailSentAlert")
           @composeView.showEmailSentAlert()
           expect(spy).toHaveBeenCalled()
+          spy.restore()
 
       it "should show the alert", ->
         spy = sinon.spy(TuringEmailApp, "showAlert")
@@ -138,19 +143,22 @@ describe "ComposeView", ->
           spy = sinon.spy(@composeView, "removeEmailSentAlert")
           $("#undo_email_send").click()
           expect(spy).toHaveBeenCalled()
+          spy.restore()
 
         it "should load the email", ->
           spy = sinon.spy(@composeView, "loadEmail")
           $("#undo_email_send").click()
           expect(spy).toHaveBeenCalled()
+          spy.restore()
 
         it "show the compose modal", ->
           spy = sinon.spy(@composeView, "show")
           $("#undo_email_send").click()
           expect(spy).toHaveBeenCalled()
+          spy.restore()
 
     describe "#removeEmailSentAlert", ->
-      
+
       describe "when the current alert token is defined", ->
         beforeEach ->
           @composeView.currentAlertToken = true
@@ -188,6 +196,7 @@ describe "ComposeView", ->
         spy = sinon.spy(@composeView, "removeEmailSentAlert")
         @composeView.loadEmpty()
         expect(spy).toHaveBeenCalled()
+        spy.restore()
 
       it "clears the current email draft and the email in reply to uid variables", ->
         expect(@composeView.currentEmailDraft).toEqual null
@@ -199,6 +208,7 @@ describe "ComposeView", ->
         spy = sinon.spy(@composeView, "resetView")
         @composeView.loadEmpty()
         expect(spy).toHaveBeenCalled()
+        spy.restore()
 
     describe "#loadEmail", ->
 
@@ -206,6 +216,7 @@ describe "ComposeView", ->
         spy = sinon.spy(@composeView, "resetView")
         @composeView.loadEmail JSON.stringify({})
         expect(spy).toHaveBeenCalled()
+        spy.restore()
 
       it "loads the email headers", ->
         spy = sinon.spy(@composeView, "loadEmailHeaders")
@@ -213,6 +224,7 @@ describe "ComposeView", ->
         @composeView.loadEmail emailJSON
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith(emailJSON)
+        spy.restore()
 
       it "loads the email body", ->
         spy = sinon.spy(@composeView, "loadEmailBody")
@@ -220,6 +232,7 @@ describe "ComposeView", ->
         @composeView.loadEmail emailJSON
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith(emailJSON)
+        spy.restore()
 
     describe "#loadEmailDraft", ->
 
@@ -227,6 +240,7 @@ describe "ComposeView", ->
         spy = sinon.spy(@composeView, "resetView")
         @composeView.loadEmailDraft JSON.stringify({})
         expect(spy).toHaveBeenCalled()
+        spy.restore()
 
       it "loads the email headers", ->
         spy = sinon.spy(@composeView, "loadEmailHeaders")
@@ -234,6 +248,7 @@ describe "ComposeView", ->
         @composeView.loadEmailDraft emailJSON
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith(emailJSON)
+        spy.restore()
 
       it "loads the email body", ->
         spy = sinon.spy(@composeView, "loadEmailBody")
@@ -241,6 +256,7 @@ describe "ComposeView", ->
         @composeView.loadEmailDraft emailJSON
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith(emailJSON)
+        spy.restore()
 
       it "creates a new current draft object with the passed in data", ->
         emailJSON = {}
@@ -262,6 +278,7 @@ describe "ComposeView", ->
         spy = sinon.spy(@composeView, "resetView")
         @composeView.loadEmailAsReply JSON.stringify({})
         expect(spy).toHaveBeenCalled()
+        spy.restore()
 
       it "loads the email body", ->
         spy = sinon.spy(@composeView, "loadEmailBody")
@@ -269,6 +286,7 @@ describe "ComposeView", ->
         @composeView.loadEmailAsReply emailJSON
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith(emailJSON)
+        spy.restore()
 
       describe "when there is a reply to address", ->
 
@@ -307,6 +325,7 @@ describe "ComposeView", ->
         spy = sinon.spy(@composeView, "resetView")
         @composeView.loadEmailAsForward JSON.stringify({})
         expect(spy).toHaveBeenCalled()
+        spy.restore()
 
       it "updates the subject input", ->
         emailJSON = {}
@@ -321,6 +340,7 @@ describe "ComposeView", ->
         @composeView.loadEmailAsForward emailJSON
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith(emailJSON)
+        spy.restore()
 
     describe "#loadEmailHeaders", ->
       beforeEach ->
@@ -498,6 +518,7 @@ describe "ComposeView", ->
         @composeView.updateDraft()
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith(@composeView.currentEmailDraft)
+        spy.restore()
 
       it "creates a new email draft when the current email draft is not defined", ->
         @composeView.currentEmailDraft = null
@@ -552,16 +573,19 @@ describe "ComposeView", ->
           spy = sinon.spy(@composeView, "updateDraft")
           @composeView.$el.find(".compose_form #save_button").click()
           expect(spy).toHaveBeenCalled()
+          spy.restore()
 
         it "resets the view", ->
           spy = sinon.spy(@composeView, "resetView")
           @composeView.sendEmail()
           expect(spy).toHaveBeenCalled()
+          spy.restore()
 
         it "hides the compose modal", ->
           spy = sinon.spy(@composeView, "hide")
           @composeView.sendEmail()
           expect(spy).toHaveBeenCalled()
+          spy.restore()
 
         describe "when saving the draft", ->
           beforeEach ->
@@ -580,6 +604,7 @@ describe "ComposeView", ->
             expect(@spy).toHaveBeenCalledTwice()
 
             @composeView.savingDraft = false
+            @spy.restore()
 
         describe "when not saving the draft", ->
           beforeEach ->
@@ -605,21 +630,25 @@ describe "ComposeView", ->
           spy = sinon.spy(@composeView, "updateEmail")
           @composeView.sendEmail()
           expect(spy).toHaveBeenCalled()
+          spy.restore()
 
         it "resets the view", ->
           spy = sinon.spy(@composeView, "resetView")
           @composeView.sendEmail()
           expect(spy).toHaveBeenCalled()
+          spy.restore()
 
         it "hides the compose modal", ->
           spy = sinon.spy(@composeView, "hide")
           @composeView.sendEmail()
           expect(spy).toHaveBeenCalled()
+          spy.restore()
 
         it "sends the email after a delay", ->
           spy = sinon.spy(@composeView, "sendEmailDelayed")
           @composeView.sendEmail()
           expect(spy).toHaveBeenCalled()
+          spy.restore()
 
     describe "#sendEmailDelayed", ->
       beforeEach ->
@@ -630,6 +659,7 @@ describe "ComposeView", ->
         @composeView.sendEmailDelayed @email
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith(@email.toJSON())
+        spy.restore()
 
       it "removes the email sent alert", ->
         @clock = sinon.useFakeTimers()
@@ -640,6 +670,7 @@ describe "ComposeView", ->
 
         expect(@spy).toHaveBeenCalled()
         @clock.restore()
+        @spy.restore()
 
       describe "when send draft is defined", ->
         beforeEach ->
@@ -658,6 +689,7 @@ describe "ComposeView", ->
           @clock.tick(5000)
 
           expect(@spy).toHaveBeenCalled()
+          @spy.restore()
 
         it "triggers change:draft upon being done", ->
           @spySendDraft = sinon.spy(@email, "sendDraft")
@@ -669,6 +701,9 @@ describe "ComposeView", ->
           expect(@spySendDraft).toHaveBeenCalled()
           @server.respond()
           expect(@spyChangeDraft).toHaveBeenCalled()
+          @spySendDraft.restore()
+          @spyChangeDraft()
+          @spyChangeDraft.restore()
 
       describe "when send draft is not defined", ->
         beforeEach ->
@@ -686,6 +721,7 @@ describe "ComposeView", ->
           @clock.tick(5000)
 
           expect(@spy).toHaveBeenCalled()
+          @spy.restore()
 
         it "should should send the email after a delay if the initial sending doesn't work", ->
           @spySendEmail = sinon.spy(@email, "sendEmail")
@@ -697,6 +733,8 @@ describe "ComposeView", ->
           expect(@spySendEmail).toHaveBeenCalled()
           @server.respond()
           expect(@spySendEmailDelayedError).toHaveBeenCalled()
+          @spySendEmail.restore()
+          @spySendEmailDelayedError.restore()
 
     describe "#sendEmailDelayedError", ->
 
@@ -705,11 +743,13 @@ describe "ComposeView", ->
         emailJSON = {}
         @composeView.sendEmailDelayedError emailJSON
         expect(spy).toHaveBeenCalled()
+        spy.restore()
 
       it "show the compose modal", ->
         spy = sinon.spy(@composeView, "show")
         @composeView.sendEmailDelayedError JSON.stringify({})
         expect(spy).toHaveBeenCalled()
+        spy.restore()
 
       it "alert the user that an error occurred", ->
         @composeView.sendEmailDelayedError JSON.stringify({})

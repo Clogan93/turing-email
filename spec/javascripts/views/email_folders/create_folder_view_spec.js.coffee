@@ -16,6 +16,7 @@ describe "CreateFolderView", ->
       spy = sinon.spy(TuringEmailApp.views.createFolderView, "setupCreateFolderView")
       TuringEmailApp.views.createFolderView.render()
       expect(spy).toHaveBeenCalled()
+      spy.restore()
 
   describe "after render", ->
     beforeEach ->

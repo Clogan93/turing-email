@@ -41,6 +41,7 @@ describe "RecommendedRulesReportView", ->
       spy = sinon.spy(@recommendedRulesReportView, "setupRecommendedRulesLinks")
       @recommendedRulesReportView.render()
       expect(spy).toHaveBeenCalled()
+      spy.restore()
 
   describe "#setupRecommendedRulesLinks", ->
     beforeEach ->

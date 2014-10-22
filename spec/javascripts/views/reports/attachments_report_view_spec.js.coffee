@@ -40,6 +40,7 @@ describe "AttachmentsReportView", ->
       spy = sinon.spy(@attachmentsReportView, "renderGoogleChart")
       @attachmentsReportView.render()
       expect(spy).toHaveBeenCalled()
+      spy.restore()
 
   describe "#getGoogleChartData", ->
     beforeEach ->
@@ -81,9 +82,3 @@ describe "AttachmentsReportView", ->
       @server.respond()
       
       @expectedGoogleChartData = JSON.parse('{"averageFileSize":200280,"numAttachmentsGChartData":[["Attachment Type","Number of Attachments"],["Document",2],["Image",14],["PDF",2]],"averageFileSizeGChartData":[["Attachment Type","Average File Size"],["Document",1068192],["Image",24711],["PDF",561352]]}')
-
-    it "renders the google chart", ->
-      # TODO figure out how to get the google visualization load call to go through.
-      # spy = sinon.spy(@attachmentsReportView, "drawCharts")
-      # @attachmentsReportView.renderGoogleChart(@expectedGoogleChartData)
-      # expect(spy).toHaveBeenCalled()

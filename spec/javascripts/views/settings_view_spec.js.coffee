@@ -165,6 +165,9 @@ describe "SettingsView", ->
         @clock.restore()
         @server.restore()
 
+        showSettingsAlertSpy.restore()
+        removeSettingsAlertSpy.restore()
+
   describe "#setupRuleCreation", ->
 
     it "binds the click event to the email rules button", ->

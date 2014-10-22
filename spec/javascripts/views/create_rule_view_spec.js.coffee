@@ -21,6 +21,7 @@ describe "CreateRuleView", ->
       spy = sinon.spy(@createRuleView, "setupCreateRuleView")
       @createRuleView.render()
       expect(spy).toHaveBeenCalled()
+      spy.restore()
 
   describe "after render", ->
     beforeEach ->

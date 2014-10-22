@@ -165,6 +165,7 @@ describe "TreeView", ->
           firstLink.click()
           expect(spy).toHaveBeenCalled()
           expect(spy).toHaveBeenCalledWith(emailFolder)
+          spy.restore()
 
   describe "#selectedItem", ->
 
@@ -285,3 +286,4 @@ describe "TreeView", ->
       @treeView.emailFolderUnreadCountChanged TuringEmailApp, @emailFolder
       expect(spy).toHaveBeenCalled()
       expect(spy).toHaveBeenCalledWith(@emailFolder)
+      spy.restore()
