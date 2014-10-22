@@ -89,8 +89,8 @@ describe "ToolbarView", ->
     describe "#setupButtons", ->
 
       it "should handle clicks", ->
-        expect(@toolbarView.$el.find("i.fa-eye").parent()).toHandle("click")
-        expect(@toolbarView.$el.find("i.fa-eye-slash").parent()).toHandle("click")
+        expect(@toolbarView.$el.find(".mark_as_read").parent()).toHandle("click")
+        expect(@toolbarView.$el.find(".mark_as_unread").parent()).toHandle("click")
         expect(@toolbarView.$el.find("i.fa-archive").parent()).toHandle("click")
         expect(@toolbarView.$el.find("i.fa-trash-o").parent()).toHandle("click")
         expect(@toolbarView.$el.find("#paginate_left_link")).toHandle("click")
@@ -107,14 +107,14 @@ describe "ToolbarView", ->
       describe "when i.fa-eye is clicked", ->
         it "triggers readClicked", ->
           spy = sinon.backbone.spy(@toolbarView, "readClicked")
-          @toolbarView.$el.find("i.fa-eye").parent().click()
+          @toolbarView.$el.find(".mark_as_read").parent().click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
       describe "when i.fa-eye-slash is clicked", ->
         it "triggers unreadClicked", ->
           spy = sinon.backbone.spy(@toolbarView, "unreadClicked")
-          @toolbarView.$el.find("i.fa-eye-slash").parent().click()
+          @toolbarView.$el.find(".mark_as_unread").parent().click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
@@ -162,6 +162,7 @@ describe "ToolbarView", ->
 
       describe "when #refresh_button is clicked", ->
         it "triggers refreshClicked", ->
+          @toolbarView.$el.find("#refresh_button").show()
           spy = sinon.backbone.spy(@toolbarView, "refreshClicked")
           @toolbarView.$el.find("#refresh_button").click()
           expect(spy).toHaveBeenCalled()

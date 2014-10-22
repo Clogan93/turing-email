@@ -48,10 +48,10 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   setupButtons: ->
     @setupBulkActionButtons()
 
-    @$el.find("i.fa-eye").parent().click =>
+    @$el.find(".mark_as_read").parent().click =>
       @trigger("readClicked", this)
 
-    @$el.find("i.fa-eye-slash").parent().click =>
+    @$el.find(".mark_as_unread").parent().click =>
       @trigger("unreadClicked", this)
 
     @$el.find("i.fa-archive").parent().click =>
@@ -67,6 +67,13 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @$el.find("#paginate_right_link").click =>
       @$el.find("#paginate_left_link").tooltip('hide')
       @trigger("rightArrowClicked", this)
+
+    $(window).resize =>
+      console.log $(".mail-box-header.toolbar").width()
+      if $(".mail-box-header.toolbar").width() < 525
+        $("#current_emails_displayed_counter").hide()
+      else
+        $("#current_emails_displayed_counter").show()
 
     @$el.find(".label_as_link").click (event) =>
       @trigger("labelAsClicked", this, $(event.target).attr("name"))

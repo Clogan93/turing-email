@@ -426,7 +426,7 @@ table.table-mail tr td {
 
 .mail-box-header {
   padding: 0px 20px 12px 20px !important;
-  min-width: 800px;
+  min-width: 450px;
 }
 
 .pagination-buttons {
@@ -549,10 +549,6 @@ html, body {
   overflow-x: hidden !important;
 }
 
-.settings-button {
-  margin-right: 8px;
-}
-
 .dropdown-menu {
   margin-top: 10px;
   height: 270px;
@@ -628,11 +624,11 @@ table.table-mail tr td {
 }
 
 .container-fluid {
-  min-width: 800px !important;
+  min-width: 650px !important;
 }
 
 .search_nav_bar {
-  min-width: 825px !important;
+  min-width: 675px !important;
 }
 
 .compose-modal-dialog {
@@ -674,4 +670,12 @@ div[contenteditable]:focus {
 
 .in-report-dropdown {
   float: right;
+}
+
+.paginate_left_link, .paginate_right_link {
+  border-radius: 3px;
+}
+
+.dropdown-link {
+  cursor: pointer;
 }
