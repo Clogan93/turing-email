@@ -1,13 +1,12 @@
 class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collection
   model: TuringEmailApp.Models.EmailThread
-  url: "/api/v1/email_threads/in_folder?folder_id=INBOX"
 
   initialize: (models, options) ->
     @app = options.app
     @listenTo(this, "remove", @modelRemoved)
     @listenTo(this, "reset", @modelsReset)
 
-    @clearPageTokens()
+    @resetPageTokens()
     @folderIDIs(options?.folderID) if options?.folderID?
   
   ##############
@@ -21,46 +20,9 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
     options.previousModels.forEach(@modelRemoved, this)
 
   ###############
-  ### Getters ###
-  ###############
-
-  getEmailThread: (emailThreadUID) ->
-    emailThreads = @filter((emailThread) ->
-      emailThread.get("uid") is emailThreadUID
-    )
-
-    return if emailThreads.length > 0 then emailThreads[0] else null
-
-  hasNextPage: ->
-    return @pageTokenIndex < @pageTokens.length - 1
-
-  hasPreviousPage: ->
-    return @pageTokenIndex > 0
-      
-  ###############
-  ### Setters ###
-  ###############
-  
-  clearPageTokens: ->
-    @pageTokens = [null]
-    @pageTokenIndex = 0
-  
-  folderIDIs: (folderID) ->
-    @clearPageTokens() if @folderID != folderID
-    
-    @folderID = folderID
-    @trigger("change:folderID", this, @folderID)
-
-  pageTokenIndexIs: (pageTokenIndex) ->
-    @pageTokenIndex = parseInt(pageTokenIndex)
-    @pageTokenIndex = Math.min(@pageTokens.length - 1, @pageTokenIndex)
-    
-    @trigger("change:pageTokenIndex", this, @pageTokenIndex)
-
-  ###############
   ### Network ###
   ###############
-  
+
   threadFromMessageInfo: (threadInfo, lastMessageInfo) ->
     threadParsed =
       uid: threadInfo.id
@@ -85,7 +47,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
         threadParsed.seen = false if message.labelIds.indexOf("UNREAD") != -1
 
     threadParsed.folder_ids = _.uniq(folderIDs)
-        
+
     return threadParsed
 
   messagesGetBatch: (threadsInfo) ->
@@ -104,7 +66,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
       batch.add(request, id: lastMessage.id)
 
     return batch
-    
+
   processMessagesGetBatch: (response, threadsInfo, options) ->
     threads = _.map(threadsInfo, (threadInfo) =>
       return null if reason?
@@ -131,7 +93,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
       (response) => @processMessagesGetBatch(response, threadsInfo, options)
       options.error
     )
-    
+
   threadsGetBatch: (threadsListInfo) ->
     batch = gapi.client.newBatch();
 
@@ -156,7 +118,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
 
       options.error
     )
-    
+
   # does NOT trigger('request', model, xhr, options);
   sync: (method, model, options) ->
     if method != "read"
@@ -166,7 +128,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
         userId: "me"
         maxResults: TuringEmailApp.Models.UserSettings.EmailThreadsPerPage
         fields: "nextPageToken,threads(id)"
-        
+
       params["labelIds"] = @folderID if @folderID?
       params["pageToken"] = @pageTokens[@pageTokenIndex] if @pageTokens[@pageTokenIndex]?
       params["q"] = options.query if options?.query
@@ -174,7 +136,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
       googleRequest(
         @app
         => gapi.client.gmail.users.threads.list(params)
-        
+
         (response) =>
           @pageTokens[@pageTokenIndex + 1] = response.result.nextPageToken if response.result.nextPageToken?
           @pageTokens = @pageTokens.slice(0, @pageTokenIndex + 2)
@@ -183,8 +145,45 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
             @loadThreads(response.result.threads, options)
           else
             options.success?([])
-            
+
         options.error
       )
 
       model.trigger("request", model, null, options);
+
+  ###############
+  ### Setters ###
+  ###############
+
+  resetPageTokens: ->
+    @pageTokens = [null]
+    @pageTokenIndex = 0
+
+  folderIDIs: (folderID) ->
+    @resetPageTokens() if @folderID != folderID
+
+    @folderID = folderID
+    @trigger("change:folderID", this, @folderID)
+
+  pageTokenIndexIs: (pageTokenIndex) ->
+    @pageTokenIndex = parseInt(pageTokenIndex)
+    @pageTokenIndex = Math.min(@pageTokens.length - 1, @pageTokenIndex)
+
+    @trigger("change:pageTokenIndex", this, @pageTokenIndex)
+    
+  ###############
+  ### Getters ###
+  ###############
+
+  getEmailThread: (emailThreadUID) ->
+    emailThreads = @filter((emailThread) ->
+      emailThread.get("uid") is emailThreadUID
+    )
+
+    return if emailThreads.length > 0 then emailThreads[0] else null
+
+  hasNextPage: ->
+    return @pageTokenIndex < @pageTokens.length - 1
+
+  hasPreviousPage: ->
+    return @pageTokenIndex > 0
