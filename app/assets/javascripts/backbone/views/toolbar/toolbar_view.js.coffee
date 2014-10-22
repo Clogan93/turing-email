@@ -49,15 +49,19 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @setupBulkActionButtons()
 
     @$el.find(".mark_as_read").parent().click =>
+      @$el.find(".mark_as_read").tooltip('hide')
       @trigger("readClicked", this)
 
     @$el.find(".mark_as_unread").parent().click =>
+      @$el.find(".mark_as_unread").tooltip('hide')
       @trigger("unreadClicked", this)
 
     @$el.find("i.fa-archive").parent().click =>
+      @$el.find("i.fa-archive").tooltip('hide')
       @trigger("archiveClicked", this)
 
     @$el.find("i.fa-trash-o").parent().click =>
+      @$el.find("i.fa-trash-o").tooltip('hide')
       @trigger("trashClicked", this)
 
     @$el.find("#paginate_left_link").click =>
@@ -76,15 +80,19 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
         $("#current_emails_displayed_counter").show()
 
     @$el.find(".label_as_link").click (event) =>
+      @$el.find(".label_as_link").tooltip('hide')
       @trigger("labelAsClicked", this, $(event.target).attr("name"))
 
     @$el.find(".createNewLabel").click =>
+      @$el.find(".createNewLabel").tooltip('hide')
       @trigger("createNewLabelClicked", this)
 
     @$el.find(".move_to_folder_link").click (event) =>
+      @$el.find(".move_to_folder_link").tooltip('hide')
       @trigger("moveToFolderClicked", this, $(event.target).attr("name"))
 
     @$el.find(".createNewEmailFolder").click =>
+      @$el.find(".createNewEmailFolder").tooltip('hide')
       @trigger("createNewEmailFolderClicked", this)
 
     @refreshToolbarButtonView = new TuringEmailApp.Views.RefreshToolbarButtonView(
@@ -93,6 +101,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @refreshToolbarButtonView.render()
 
     @$el.find("#refresh_button").click =>
+      @$el.find("#refresh_button").tooltip('hide')
       @trigger("refreshClicked", this)
 
     @$el.find(".toolbar-elements, .pagination-buttons").tooltip
