@@ -162,6 +162,7 @@ describe "TuringEmailApp", ->
         spy = sinon.backbone.spy(TuringEmailApp, "change:toolbarView")
         TuringEmailApp.setupToolbar()
         expect(spy).toHaveBeenCalled()
+        spy.restore()
   
     describe "#setupUser", ->
       it "loads the user and user settings", ->
@@ -879,8 +880,8 @@ describe "TuringEmailApp", ->
             @goBackClickedSpy = sinon.spy(TuringEmailApp, "goBackClicked")
       
           afterEach ->
-            @goBackClickedSpy.restore()
             @currentEmailThreadIsSpy.restore()
+            @goBackClickedSpy.restore()
       
             TuringEmailApp.isSplitPaneMode = @origisSplitPaneMode
       
@@ -1680,6 +1681,8 @@ describe "TuringEmailApp", ->
         for folderID in @emailThread.folderIDs()
           folder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
           expect(spy).toHaveBeenCalledWith(TuringEmailApp, folder)
+
+        spy.restore()
           
       describe "seenValue=true", ->
         beforeEach ->
@@ -1769,6 +1772,7 @@ describe "TuringEmailApp", ->
         TuringEmailApp.showEmailThread emailThread
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith(emailThread)
+        spy.restore()
     
       emailThreadViewEvents = ["goBackClicked", "replyClicked", "forwardClicked", "archiveClicked", "trashClicked"]
       for event in emailThreadViewEvents
@@ -1794,6 +1798,8 @@ describe "TuringEmailApp", ->
           TuringEmailApp.showEmailThread emailThread
           expect(appSpy).toHaveBeenCalled()
           expect(viewSpy).toHaveBeenCalled()
+          appSpy.restore()
+          viewSpy.restore()
       
     describe "#showEmailEditorWithEmailThread", ->
       beforeEach ->
@@ -1809,11 +1815,13 @@ describe "TuringEmailApp", ->
         spy = sinon.spy(TuringEmailApp, "loadEmailThread")
         TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid")
         expect(spy).toHaveBeenCalledWith(@emailThread.get("uid"))
+        spy.restore()
     
       it "shows the compose view", ->
         spy = sinon.spy(TuringEmailApp.views.composeView, "show")
         TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid")
         expect(spy).toHaveBeenCalled()
+        spy.restore()
     
       describe "when in draft mode", ->
     
@@ -1821,6 +1829,7 @@ describe "TuringEmailApp", ->
           spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailDraft")
           TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid")
           expect(spy).toHaveBeenCalledWith(@email, @emailThread)
+          spy.restore()
     
       describe "when in forward mode", ->
     
@@ -1828,6 +1837,7 @@ describe "TuringEmailApp", ->
           spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailAsForward")
           TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid"), "forward"
           expect(spy).toHaveBeenCalledWith(@email, @emailThread)
+          spy.restore()
     
       describe "when in reply mode", ->
     
@@ -1835,6 +1845,7 @@ describe "TuringEmailApp", ->
           spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailAsReply")
           TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid"), "reply"
           expect(spy).toHaveBeenCalledWith(@email, @emailThread)
+          spy.restore()
 
     describe "#moveTuringEmailReportToTop", ->
       beforeEach ->
