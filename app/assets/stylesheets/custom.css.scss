@@ -683,4 +683,13 @@ div[contenteditable]:focus {
 .compose_link_preview {
   border: 1px solid #e5e6e7;
   border-radius: 3px;
+  
+  .compose_link_preview_image {
+    width: 100px;
+  }
+
+  .compose_link_preview_title {
+    font-weight: bold;
+  }
+
 }

@@ -349,5 +349,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
 
       if indexOfUrl isnt -1 and linkPreviewIndex is -1
         link = emailHtml.substring(indexOfUrl).split(" ")[0]
-        console.log link
-        $(@).append("<div class='compose_link_preview'><span>Preview image</span><span>Title</span><span>Snippet</span><span>Website link</span></div>")
+        linkImageUrl = "http://images.apple.com/home/images/og.jpg?201410151147"
+        linkTitle = "Apple"
+        linkSnippet = "Apple designs and creates the iPhone, iPad, Mac notebooks and desktop computers, iOS, OS X, iPod and iTunes, and the new Apple Watch."
+        $(@).append("<div class='compose_link_preview'><img class='compose_link_preview_image' src='" + linkImageUrl + "'/><span class='compose_link_preview_title'>" + linkTitle + "</span><br /><span class='compose_link_preview_snippet'>" + linkSnippet + "</span><br /><span class='compose_link_preview_link'><a href='" + link + "'>" + link +  "</a></span></div>")
