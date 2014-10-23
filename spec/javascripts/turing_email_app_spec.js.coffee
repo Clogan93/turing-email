@@ -660,19 +660,23 @@ describe "TuringEmailApp", ->
 
         describe "when the email thread is NOT in the collection", ->
           beforeEach ->
-            @server.restore()
-            [@server, @emailThread] = specPrepareEmailThreadFetch()
-            
-            @emailThread.fetch()
-            @server.respond()
-            
-            TuringEmailApp.loadEmailThread(@emailThread.get("uid"), @callback)
+            @fetchStub = sinon.spy(TuringEmailApp.Models.EmailThread.__super__, "fetch")
+
+            emailThreadAttributes = FactoryGirl.create("EmailThread")
+            @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadAttributes,
+              app: TuringEmailApp
+              emailThreadUID: emailThreadAttributes.uid
+            )
+
+          afterEach ->
+            @fetchStub.restore()
 
           it "fetches the email thread and then calls the callback", ->
             expect(@callback).not.toHaveBeenCalled()
-            @server.respond()
+            TuringEmailApp.loadEmailThread(@emailThread.get("uid"), @callback)
+            @fetchStub.args[0][0].success(@emailThread, {}, null)
             expect(@callback).toHaveBeenCalled()
-          
+
         describe "when the email thread is in the collection", ->
           beforeEach ->
             TuringEmailApp.collections.emailThreads.reset(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE))
@@ -1760,33 +1764,34 @@ describe "TuringEmailApp", ->
   
       describe "if there is not a report email", ->
         it "should leave the emails in the same order", ->
-          emailThreadsBefore = TuringEmailApp.views.emailThreadsListView.collection.clone()
+          emailThreadsBefore = TuringEmailApp.views.emailThreadsListView.collection.toJSON()
           emailTableBodyBefore = TuringEmailApp.views.emailThreadsListView.$el
           
           TuringEmailApp.moveTuringEmailReportToTop TuringEmailApp.views.emailThreadsListView
           
           emailTableBodyAfter = TuringEmailApp.views.emailThreadsListView.$el
-          emailThreadsAfter = TuringEmailApp.views.emailThreadsListView.collection
+          emailThreadsAfter = TuringEmailApp.views.emailThreadsListView.collection.toJSON()
     
           expect(emailThreadsAfter.length).toEqual emailThreadsBefore.length
           expect(emailThreadsAfter.models).toEqual emailThreadsBefore.models
           expect(emailTableBodyBefore).toEqual emailTableBodyAfter
-  
+
       describe "if there is a report email", ->
         beforeEach ->
           turingEmailThread = _.values(TuringEmailApp.views.emailThreadsListView.listItemViews)[0].model
-    
+
           TuringEmailApp.views.emailThreadsListView.collection.remove turingEmailThread
-          turingEmailThread.get("emails")[0].subject = "Turing Email - Your daily Genie Report!"
+          turingEmailThread.set("subject", "Turing Email - Your daily Genie Report!")
           TuringEmailApp.views.emailThreadsListView.collection.add turingEmailThread
-  
+          TuringEmailApp.views.emailThreadsListView.render()
+
         it "should move the email to the top", ->
           expect(TuringEmailApp.views.emailThreadsListView.$el.children()[0]).not.toContainText("Turing Email")
-    
+
           TuringEmailApp.moveTuringEmailReportToTop TuringEmailApp.views.emailThreadsListView
-    
+
           expect(TuringEmailApp.views.emailThreadsListView.$el.children()[0]).toContainText("Turing Email")
-  
+
     describe "#showEmails", ->
       beforeEach ->
         @showEmailsSpy = sinon.spy(TuringEmailApp.views.mainView, "showEmails")
