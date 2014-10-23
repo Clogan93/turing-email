@@ -163,7 +163,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
 
   sortedEmails: ->
     emails = @get("emails")
-    return emails.sort (a, b) => a["date"] - b["date"]
+    return emails.sort (a, b) => a.date - b.date
     
   ###############
   ### Actions ###  
@@ -207,7 +207,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     if fromAddress is TuringEmailApp.models.user.get("email")
       return "me " + @numEmailsText()
     else
-      return (if fromName? then fromName else fromAddress) + " " + @numEmailsText() 
+      return (if fromName?.trim() != "" then fromName else fromAddress) + " " + @numEmailsText() 
 
   subjectPreview: ->
     subject = @get("subject")

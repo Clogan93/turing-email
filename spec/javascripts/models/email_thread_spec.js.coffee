@@ -9,6 +9,11 @@ describe "EmailThread", ->
     @emailThreads = FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE)
     
   describe "Class Methods", ->
+    beforeEach ->
+      @server = sinon.fakeServer.create()
+      
+    afterEach ->
+      @server.restore()
 
     describe "#removeFromFolder", ->
 
@@ -124,189 +129,148 @@ describe "EmailThread", ->
           expect(request.url).toEqual "/api/v1/email_threads/move_to_folder"
           expect(request.requestBody).toEqual "email_thread_uids%5B%5D=1480ae36da1ba858&email_thread_uids%5B%5D=147f774efa8eb2e7&email_folder_id=Label_119"
 
-  describe "Instance Methods", ->
-
-    describe "#seenIs", ->
+  describe "Getters", ->
+    describe "#sortedEmails", ->
       beforeEach ->
-        @emailThread.fetch()
-        @server.respond()
-        
-        @setSeenURL = "/api/v1/emails/set_seen"
-        @server.respondWith "POST", @setSeenURL, JSON.stringify({})
+        @sortedEmails = @emailThread.get("emails").sort (a, b) -> a.date - b.date
 
-        @emailUIDs = (email["uid"] for email in @validEmailThreadFixture["emails"])
-        @emailUIDs.sort()
-
-      describe "seenValue=true", ->
-        beforeEach ->
-          email.seen = false for email in @emailThread.get("emails")
-          
-          @emailThread.seenIs(true)
-          @server.respond()
-
-        it "sets seen to true", ->
-          expect(@server.requests.length).toEqual 2
-          request = @server.requests[1]
-          
-          expect(request.method).toEqual "POST"
-          expect(request.url).toEqual @setSeenURL
-          
-          postData = $.unserialize(request.requestBody)
-          expect(postData["seen"]).toEqual("true")
-          expect(postData["email_uids"].sort()).toEqual(@emailUIDs)
-
-          for email in @emailThread.get("emails")
-            expect(email.seen).toBeTruthy()
-
-      describe "seenValue=false", ->
-        beforeEach ->
-          email.seen = true for email in @emailThread.get("emails")
-          
-          @emailThread.seenIs(false)
-          @server.respond()
-
-        it "sets seen to false", ->
-          expect(@server.requests.length).toEqual 2
-          request = @server.requests[1]
-          
-          expect(request.method).toEqual "POST"
-          expect(request.url).toEqual @setSeenURL
-
-          postData = $.unserialize(request.requestBody)
-          expect(postData["seen"]).toEqual("false")
-          expect(postData["email_uids"].sort()).toEqual(@emailUIDs)
-
-          for email in @emailThread.get("emails")
-            expect(email.seen).toBeFalsy()
-
+      it "returns the emails sorted by date", ->
+        expect(@emailThread.sortedEmails()).toEqual(@sortedEmails)
+  
+  describe "Actions", ->
     describe "#removeFromFolder", ->
       beforeEach ->
-        @emailThread.fetch()
-        @server.respond()
-
         emailFolder = FactoryGirl.create("EmailFolder")
         @folderID = emailFolder.label_id
-
+  
       it "calls the remove from folder class method", ->
         spy = sinon.spy(TuringEmailApp.Models.EmailThread, "removeFromFolder")
         @emailThread.removeFromFolder @folderID
-        expect(spy).toHaveBeenCalled()
+  
         expect(spy).toHaveBeenCalledWith [@emailThread.get("uid")], @folderID
         spy.restore()
-
+  
     describe "#trash", ->
-      beforeEach ->
-        @emailThread.fetch()
-        @server.respond()
-
       it "calls the remove from folder class method", ->
         spy = sinon.spy(TuringEmailApp.Models.EmailThread, "trash")
         @emailThread.trash()
-        expect(spy).toHaveBeenCalled()
+  
         expect(spy).toHaveBeenCalledWith [@emailThread.get("uid")]
         spy.restore()
-
+  
     describe "#applyGmailLabel", ->
       beforeEach ->
-        @emailThread.fetch()
-        @server.respond()
-
         emailFolder = FactoryGirl.create("EmailFolder")
         @labelID = emailFolder.label_id
         @labelName = emailFolder.name
-
+  
       it "calls the apply gmail label class method", ->
         spy = sinon.spy(TuringEmailApp.Models.EmailThread, "applyGmailLabel")
         @emailThread.applyGmailLabel @labelID, @labelName
-        expect(spy).toHaveBeenCalled()
+  
         expect(spy).toHaveBeenCalledWith [@emailThread.get("uid")], @labelID, @labelName
         spy.restore()
-
+  
     describe "#moveToFolder", ->
       beforeEach ->
-        @emailThread.fetch()
-        @server.respond()
-
         emailFolder = FactoryGirl.create("EmailFolder")
         @folderID = emailFolder.label_id
         @folderName = emailFolder.name
-
+  
       it "calls the move to folder class method", ->
         spy = sinon.spy(TuringEmailApp.Models.EmailThread, "moveToFolder")
         @emailThread.moveToFolder @folderID, @folderName
-        expect(spy).toHaveBeenCalled()
+  
         expect(spy).toHaveBeenCalledWith [@emailThread.get("uid")], @folderID, @folderName
         spy.restore()
 
-    describe "Formatters", ->
-      beforeEach ->
-        specStartTuringEmailApp()
-        
-        @validUserFixture = @userFixtures[0]["valid"]
+  describe "Formatters", ->
+    beforeEach ->
+      specStartTuringEmailApp()
 
-        @server.respondWith "GET", TuringEmailApp.models.user.url, JSON.stringify(@validUserFixture)
+      TuringEmailApp.models.user = new TuringEmailApp.Models.User(FactoryGirl.create("User"))
+      
+    afterEach ->
+      specStopTuringEmailApp()
 
-        @emailThread.fetch()
-        @server.respond()
-
-        TuringEmailApp.models.user.fetch()
-        @server.respond()
-        
-      afterEach ->
-        specStopTuringEmailApp()
-
-      describe "#numEmailsText", ->
-
-        it "returns an empty string when there is only one email", ->
-          expect(@emailThread.numEmailsText()).toEqual ""
-
-        it "returns the correct response under default conditions", ->
-          expect(@emailThread.numEmailsText()).toEqual " (2)"
-
-      describe "#fromPreview", ->
-
-        it "returns the correct response under default conditions", ->
-          expect(@emailThread.fromPreview()).toEqual("David Gobaud (2)")
-
-        it "returns the correct response when the most recent email sent from the user", ->
-          @emailThread.get("emails")[0]["from_address"] = TuringEmailApp.models.user.get("email")
-          @emailThread.get("emails")[1]["from_name"] = "Joe Blogs"
-          expect(@emailThread.fromPreview()).toEqual("Joe Blogs, me (2)")
-
-        it "returns the correct response when the most recent email sent from the user and there is only one email", ->
-          @emailThread.get("emails")[0]["from_address"] = TuringEmailApp.models.user.get("email")
-          @emailThread.get("emails").pop()
-          expect(@emailThread.fromPreview()).toEqual("me")
-
-      describe "#subjectPreview", ->
-
-        it "returns the correct response under default conditions", ->
-          expect(@emailThread.subjectPreview()).toEqual("Re: [turing-email] clicking thread message to expand it on first load doesnt work (#62)")
-
-        it "returns the correct response when the most recent email sent from the user", ->
-          @emailThread.get("emails")[0]["from_address"] = TuringEmailApp.models.user.get("email")
-          expect(@emailThread.subjectPreview()).toEqual("[turing-email] clicking thread message to expand it on first load doesnt work (#62)")
-
-        it "returns the correct response when the most recent email sent from the user and there is only one email", ->
-          @emailThread.get("emails")[0]["from_address"] = TuringEmailApp.models.user.get("email")
-          @emailThread.get("emails").pop()
-          expect(@emailThread.subjectPreview()).toEqual("Re: [turing-email] clicking thread message to expand it on first load doesnt work (#62)")
-
-      describe "#datePreview", ->
-
-        it "returns the correct response under default conditions", ->
-          expect(@emailThread.datePreview()).toEqual("Aug 24")
-
-        describe "when there are no emails", ->
+    describe "#numEmailsText", ->
+      describe "with emails", ->
+        describe "with 1 email", ->
           beforeEach ->
-            console.log @emailThread.attributes.emails = []
+            @emailThread.set("emails", [null])
 
-          it "returns a blank string", ->
-            expect(@emailThread.datePreview()).toEqual("")
-        
-      describe "#sortedEmails", ->
+          it "returns an empty string", ->
+            expect(@emailThread.numEmailsText()).toEqual ""
+
+        describe "more than 1 email", ->
+          beforeEach ->
+            @emailThread.set("emails", [null, null])
+
+          it "returns the preview text", ->
+            expect(@emailThread.numEmailsText()).toEqual "(2)"
+
+      describe "without emails", ->
         beforeEach ->
-          @sortedEmails = @emailThread.get("emails").sort (a, b) -> a["date"].localeCompare(b["date"])
+          @emailThread.set("emails", null)
+  
+        describe "with 1 email", ->
+          beforeEach ->
+            @emailThread.set("num_messages", 1)
+            
+          it "returns an empty string", ->
+            expect(@emailThread.numEmailsText()).toEqual ""
+  
+        describe "more than 1 email", ->
+          beforeEach ->
+            @emailThread.set("num_messages", 2)
+            
+          it "returns the preview text", ->
+            expect(@emailThread.numEmailsText()).toEqual "(2)"
+
+    describe "#fromPreview", ->
+      describe "from_address is the user's email", ->
+        beforeEach ->
+          @oldFromAddress = @emailThread.get("from_address")
+          @emailThread.set("from_address", TuringEmailApp.models.user.get("email"))
           
-        it "returns the emails sorted by date", ->
-          expect(@emailThread.sortedEmails()).toEqual(@sortedEmails)
+        afterEach ->
+          @emailThread.set("from_address", @oldFromAddress)
+      
+        it "returns the correct preview", ->
+          expect(@emailThread.fromPreview()).toEqual("me " + @emailThread.numEmailsText())
+      
+      describe "from_address is NOT the user's email", ->
+        describe "with from_name", ->
+          it "returns the correct preview", ->
+            expect(@emailThread.fromPreview()).toEqual(@emailThread.get("from_name") + " " + @emailThread.numEmailsText())
+        
+        describe "without from_name", ->
+          beforeEach ->
+            @oldFromName = @emailThread.get("from_name")
+            @emailThread.set("from_name", "")
+  
+          afterEach ->
+            @emailThread.set("from_name", @oldFromName)
+            
+          it "returns the correct preview", ->
+            expect(@emailThread.fromPreview()).toEqual(@emailThread.get("from_address") + " " + @emailThread.numEmailsText())
+
+    describe "#subjectPreview", ->
+      describe "has a subject", ->
+        it "returns the correct subject preview", ->
+          expect(@emailThread.subjectPreview()).toEqual(@emailThread.get("subject"))
+        
+      describe "no subject", ->
+        beforeEach ->
+          @oldSubject = @emailThread.get("subject")
+          @emailThread.set("subject", "")
+        
+        afterEach ->
+          @emailThread.set("subject", @oldSubject)
+          
+        it "returns the correct subject preview", ->
+          expect(@emailThread.subjectPreview()).toEqual("(no subject)")
+
+    describe "#datePreview", ->
+      it "returns the localized date string", ->
+        expect(@emailThread.datePreview()).toEqual(TuringEmailApp.Models.Email.localDateString(@emailThread.get("date")))
