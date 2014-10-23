@@ -128,29 +128,8 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
       options.success(threads)
 
   threadFromMessageInfo: (threadInfo, lastMessageInfo) ->
-    threadParsed =
-      uid: threadInfo.id
-      snippet: lastMessageInfo.snippet
-      num_messages: threadInfo.messages.length
-
-    if lastMessageInfo.payload?.headers?
-      emailParsed = {}
-      TuringEmailApp.Models.Email.parseHeaders(emailParsed, lastMessageInfo.payload.headers)
-
-      threadParsed.from_name = emailParsed.from_name
-      threadParsed.from_address = emailParsed.from_address
-      threadParsed.date = emailParsed.date
-      threadParsed.subject = emailParsed.subject
-
-    folderIDs = []
-
-    threadParsed.seen = true
-    for message in threadInfo.messages
-      if message.labelIds?
-        folderIDs = folderIDs.concat(message.labelIds)
-        threadParsed.seen = false if message.labelIds.indexOf("UNREAD") != -1
-
-    threadParsed.folder_ids = _.uniq(folderIDs)
+    threadParsed = uid: threadInfo.id
+    TuringEmailApp.Models.EmailThread.setThreadParsedProperties(threadParsed, threadInfo.messages, lastMessageInfo)
 
     return threadParsed
 

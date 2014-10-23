@@ -558,7 +558,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   emailThreadSeenChanged: (emailThread, seenValue) ->
     delta = if seenValue then -1 else 1
       
-    for folderID in emailThread.folderIDs()
+    for folderID in emailThread.get("folder_ids")
       folder = @collections.emailFolders.getEmailFolder(folderID)
       continue if not folder?
       

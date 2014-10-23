@@ -1,14 +1,22 @@
 FactoryGirl.define "EmailThread", ->
-  @sequence("id", "uid") 
-  @emails = FactoryGirl.createLists("Email", FactoryGirl.SMALL_LIST_SIZE)
+  @sequence("id", "uid")
+  
+  @num_messages = FactoryGirl.SMALL_LIST_SIZE
+  @snippet = "Snippet"
 
   @from_name = "Allan"
   @from_address = "allan@turing.com"
   @date = new Date()
   @subject = "Subject"
   
-  @snippet = "snippet"
-  @folder_ids = ["Test"]
-  @seen = false
-
+  @emails = FactoryGirl.createLists("Email", @num_messages)
   @loaded = true
+
+  @folderIDs = []
+
+  @seen = true
+  for email in @emails
+    @folderIDs = @folderIDs.concat(email.folder_ids)
+    @seen = false if not email.seen
+
+  @folder_ids = _.uniq(@folderIDs)

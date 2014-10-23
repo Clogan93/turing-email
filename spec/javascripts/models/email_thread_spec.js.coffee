@@ -238,28 +238,6 @@ describe "EmailThread", ->
         expect(spy).toHaveBeenCalledWith [@emailThread.get("uid")], @folderID, @folderName
         spy.restore()
 
-    describe "#folderIDs", ->
-      beforeEach ->
-        @server.restore()
-        
-        [@server, @emailThread, validEmailThreadFixture] = specPrepareEmailThreadFetch()
-        @emailThread.fetch()
-        @server.respond()
-
-        @folderIDs = []
-        
-        for email in validEmailThreadFixture["emails"]
-          @folderIDs = @folderIDs.concat(email["folder_ids"])
-          
-        @folderIDs = _.uniq(@folderIDs).sort()
-        expect(@folderIDs.length > 0).toBeTruthy()
-
-      afterEach ->
-        @server.restore()
-
-      it "returns the folder IDs", ->
-        expect(@emailThread.folderIDs().sort()).toEqual(@folderIDs)
-
     describe "Formatters", ->
       beforeEach ->
         specStartTuringEmailApp()

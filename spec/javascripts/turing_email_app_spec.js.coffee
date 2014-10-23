@@ -1556,11 +1556,11 @@ describe "TuringEmailApp", ->
         @emailThread = TuringEmailApp.collections.emailThreads.at(0)
         @emailThread.set("folder_ids", [TuringEmailApp.collections.emailFolders.at(0).get("label_id")])
 
-        folderIDs = @emailThread.folderIDs()
+        folderIDs = @emailThread.get("folder_ids")
         expect(folderIDs.length > 0).toBeTruthy()
 
         @unreadCounts = {}
-        for folderID in @emailThread.folderIDs()
+        for folderID in @emailThread.get("folder_ids")
           folder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
           @unreadCounts[folderID] = folder.get("num_unread_threads") 
   
@@ -1572,7 +1572,7 @@ describe "TuringEmailApp", ->
 
         TuringEmailApp.emailThreadSeenChanged @emailThread, true
 
-        for folderID in @emailThread.folderIDs()
+        for folderID in @emailThread.get("folder_ids")
           folder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
           expect(spy).toHaveBeenCalledWith(TuringEmailApp, folder)
           
@@ -1581,7 +1581,7 @@ describe "TuringEmailApp", ->
           TuringEmailApp.emailThreadSeenChanged @emailThread, true
           
         it "decrements the unread count", ->
-          for folderID in @emailThread.folderIDs()
+          for folderID in @emailThread.get("folder_ids")
             folder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
             expect(folder.get("num_unread_threads")).toEqual(@unreadCounts[folderID] - 1)
 
@@ -1590,7 +1590,7 @@ describe "TuringEmailApp", ->
           TuringEmailApp.emailThreadSeenChanged @emailThread, false
 
         it "increments the unread count", ->
-          for folderID in @emailThread.folderIDs()
+          for folderID in @emailThread.get("folder_ids")
             folder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
             expect(folder.get("num_unread_threads")).toEqual(@unreadCounts[folderID] + 1)
 

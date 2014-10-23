@@ -1,4 +1,28 @@
 class TuringEmailApp.Models.EmailThread extends Backbone.Model
+  @setThreadParsedProperties: (threadParsed, messages, messageInfo) ->
+    threadParsed.num_messages = messages.length
+    threadParsed.snippet = messageInfo.snippet
+    
+    emailParsed = {}
+    TuringEmailApp.Models.Email.parseHeaders(emailParsed, messageInfo.payload.headers)
+  
+    threadParsed.from_name = emailParsed.from_name
+    threadParsed.from_address = emailParsed.from_address
+    threadParsed.date = emailParsed.date
+    threadParsed.subject = emailParsed.subject
+    
+    folderIDs = []
+  
+    threadParsed.seen = true
+    for message in messages
+      if message.labelIds?
+        folderIDs = folderIDs.concat(message.labelIds)
+        threadParsed.seen = false if message.labelIds.indexOf("UNREAD") != -1
+  
+    threadParsed.folder_ids = _.uniq(folderIDs)
+    
+    return threadParsed
+  
   @removeFromFolder: (emailThreadUIDs, emailFolderID) ->
     postData =
       email_thread_uids:  emailThreadUIDs
@@ -75,9 +99,10 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
   ###############
     
   parseThreadInfo: (threadInfo, options) ->
-    threadParsed = {}
-
+    lastMessageInfo = _.last(threadInfo.messages)
     threadParsed.uid = threadInfo.id
+    TuringEmailApp.Models.EmailThread.setThreadParsedProperties(threadParsed, threadInfo.messages, lastMessageInfo)
+    
     threadParsed.emails = _.map(threadInfo.messages, (message) =>
       emailParsed = {}
 
@@ -135,18 +160,6 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
   ###############
   ### Getters ###
   ###############
-
-  folderIDs: ->
-    if not @get("loaded")?
-      return @get("folder_ids")
-    else
-      emails = @get("emails")
-      folderIDs = []
-  
-      for email in emails
-        folderIDs = folderIDs.concat email["folder_ids"]
-  
-      return _.uniq(folderIDs)
 
   sortedEmails: ->
     emails = @get("emails")
