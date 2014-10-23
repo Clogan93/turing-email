@@ -23,32 +23,73 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
   ### Network ###
   ###############
 
-  threadFromMessageInfo: (threadInfo, lastMessageInfo) ->
-    threadParsed =
-      uid: threadInfo.id
-      snippet: lastMessageInfo.snippet
-      num_messages: threadInfo.messages.length
+  sync: (method, collection, options) ->
+    if method != "read"
+      super(method, collection, options)
+    else
+      googleRequest(
+        @app
+        => @threadsListRequest(options)
+        (response) => @processThreadsListRequest(response, options)
+        options.error
+      )
 
-    if lastMessageInfo.payload?.headers?
-      emailParsed = {}
-      TuringEmailApp.Models.Email.parseHeaders(emailParsed, lastMessageInfo.payload.headers)
+      @trigger("request", collection, null, options);
 
-      threadParsed.from_name = emailParsed.from_name
-      threadParsed.from_address = emailParsed.from_address
-      threadParsed.date = emailParsed.date
-      threadParsed.subject = emailParsed.subject
+  threadsListRequest: (options) ->
+    params =
+      userId: "me"
+      maxResults: TuringEmailApp.Models.UserSettings.EmailThreadsPerPage
+      fields: "nextPageToken,threads(id)"
 
-    folderIDs = []
+    params["labelIds"] = @folderID if @folderID?
+    params["pageToken"] = @pageTokens[@pageTokenIndex] if @pageTokens[@pageTokenIndex]?
+    params["q"] = options.query if options?.query
 
-    threadParsed.seen = true
-    for message in threadInfo.messages
-      if message.labelIds?
-        folderIDs = folderIDs.concat(message.labelIds)
-        threadParsed.seen = false if message.labelIds.indexOf("UNREAD") != -1
+    gapi.client.gmail.users.threads.list(params)
 
-    threadParsed.folder_ids = _.uniq(folderIDs)
+  processThreadsListRequest: (response, options) ->
+    @pageTokens[@pageTokenIndex + 1] = response.result.nextPageToken if response.result.nextPageToken?
+    @pageTokens = @pageTokens.slice(0, @pageTokenIndex + 2)
 
-    return threadParsed
+    if response.result.threads?
+      @loadThreads(response.result.threads, options)
+    else
+      options.success?([])
+
+  loadThreads: (threadsListInfo, options) ->
+    googleRequest(
+      @app
+      => @threadsGetBatch(threadsListInfo)
+      (response) => @processThreadsGetBatch(response, options)
+      options.error
+    )
+
+  threadsGetBatch: (threadsListInfo) ->
+    batch = gapi.client.newBatch();
+
+    for threadInfo in threadsListInfo
+      request = gapi.client.gmail.users.threads.get(
+        userId: "me"
+        id: threadInfo.id
+        fields: "id,historyId,messages(id,labelIds)"
+      )
+      batch.add(request)
+
+    return batch
+    
+  processThreadsGetBatch: (response, options) ->
+    threadResults = _.values(response.result)
+    threadsInfo = _.pluck(threadResults, "result")
+    @loadThreadsPreview(threadsInfo, options)
+
+  loadThreadsPreview: (threadsInfo, options) ->
+    googleRequest(
+      @app
+      => @messagesGetBatch(threadsInfo)
+      (response) => @processMessagesGetBatch(response, threadsInfo, options)
+      options.error
+    )
 
   messagesGetBatch: (threadsInfo) ->
     batch = gapi.client.newBatch();
@@ -86,70 +127,32 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
       threads.sort((a, b) => b.date - a.date)
       options.success(threads)
 
-  loadThreadsPreview: (threadsInfo, options) ->
-    googleRequest(
-      @app
-      => @messagesGetBatch(threadsInfo)
-      (response) => @processMessagesGetBatch(response, threadsInfo, options)
-      options.error
-    )
+  threadFromMessageInfo: (threadInfo, lastMessageInfo) ->
+    threadParsed =
+      uid: threadInfo.id
+      snippet: lastMessageInfo.snippet
+      num_messages: threadInfo.messages.length
 
-  threadsGetBatch: (threadsListInfo) ->
-    batch = gapi.client.newBatch();
+    if lastMessageInfo.payload?.headers?
+      emailParsed = {}
+      TuringEmailApp.Models.Email.parseHeaders(emailParsed, lastMessageInfo.payload.headers)
 
-    for threadInfo in threadsListInfo
-      request = gapi.client.gmail.users.threads.get(
-        userId: "me"
-        id: threadInfo.id
-        fields: "id,historyId,messages(id,labelIds)"
-      )
-      batch.add(request)
+      threadParsed.from_name = emailParsed.from_name
+      threadParsed.from_address = emailParsed.from_address
+      threadParsed.date = emailParsed.date
+      threadParsed.subject = emailParsed.subject
 
-    return batch
+    folderIDs = []
 
-  loadThreads: (threadsListInfo, options) ->
-    googleRequest(
-      @app
-      => @threadsGetBatch(threadsListInfo)
-      (response) =>
-        threadResults = _.values(response.result)
-        threadsInfo = _.pluck(threadResults, "result")
-        @loadThreadsPreview(threadsInfo, options)
+    threadParsed.seen = true
+    for message in threadInfo.messages
+      if message.labelIds?
+        folderIDs = folderIDs.concat(message.labelIds)
+        threadParsed.seen = false if message.labelIds.indexOf("UNREAD") != -1
 
-      options.error
-    )
+    threadParsed.folder_ids = _.uniq(folderIDs)
 
-  # does NOT trigger('request', model, xhr, options);
-  sync: (method, model, options) ->
-    if method != "read"
-      super(method, model, options)
-    else
-      params =
-        userId: "me"
-        maxResults: TuringEmailApp.Models.UserSettings.EmailThreadsPerPage
-        fields: "nextPageToken,threads(id)"
-
-      params["labelIds"] = @folderID if @folderID?
-      params["pageToken"] = @pageTokens[@pageTokenIndex] if @pageTokens[@pageTokenIndex]?
-      params["q"] = options.query if options?.query
-
-      googleRequest(
-        @app
-        => gapi.client.gmail.users.threads.list(params)
-
-        (response) =>
-          @pageTokens[@pageTokenIndex + 1] = response.result.nextPageToken if response.result.nextPageToken?
-          @pageTokens = @pageTokens.slice(0, @pageTokenIndex + 2)
-
-          if response.result.threads?
-            @loadThreads(response.result.threads, options)
-          else
-            options.success?([])
-
-        options.error
-      )
-
-      model.trigger("request", model, null, options);
+    return threadParsed
 
   ###############
   ### Setters ###

@@ -50,11 +50,8 @@ describe "MainView", ->
     beforeEach ->
       @server.restore()
       
-      [@server] = specPrepareEmailThreadsFetch()
       @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
-      @emailThreads.fetch()
-      @server.respond()
-      
+      @emailThreads.reset(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE))
       @mainView.createEmailThreadsListView(@emailThreads)
     
     it "creates the emailThreadsListView", ->
@@ -106,11 +103,8 @@ describe "MainView", ->
 
       @server.restore()
 
-      [@server] = specPrepareEmailThreadsFetch()
       @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
-      @emailThreads.fetch()
-      @server.respond()
-
+      @emailThreads.reset(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE))
       @mainView.createEmailThreadsListView(@emailThreads)
 
       @primaryPane = @mainView.$el.find(".primary_pane")

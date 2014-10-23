@@ -4,7 +4,7 @@ describe "EmailFoldersCollection", ->
 
   it "should use the EmailFolder model", ->
     expect(@emailFoldersCollection.model).toEqual TuringEmailApp.Models.EmailFolder
-  
+    
   describe "Network", ->
     describe "#sync", ->
       beforeEach ->
@@ -96,8 +96,10 @@ describe "EmailFoldersCollection", ->
         
       it "adds the items to the batch", ->
         for labelInfo in @labelsListInfo
-          expect(@labelsGetStub).toHaveBeenCalledWith(userId: "me", id: labelInfo.id)
-          expect(@addStub).toHaveBeenCalledWith(userId: "me", id: labelInfo.id)
+          params = userId: "me", id: labelInfo.id
+
+          expect(@labelsGetStub).toHaveBeenCalledWith(params)
+          expect(@addStub).toHaveBeenCalledWith(params)
         
       it "returns the batch", ->
         expect(@returned).toEqual(@batch)
@@ -126,7 +128,7 @@ describe "EmailFoldersCollection", ->
         
   describe "with models", ->
     beforeEach ->
-      @emailFoldersCollection.add(FactoryGirl.createLists("EmailFolder", 5))
+      @emailFoldersCollection.add(FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE))
 
     describe "Events", ->
       describe "#modelRemoved", ->
@@ -147,7 +149,7 @@ describe "EmailFoldersCollection", ->
           @modelRemovedStub = sinon.stub(@emailFoldersCollection, "modelRemoved", ->)
           
           @oldEmailFolders = @emailFoldersCollection.models
-          @emailFolders = FactoryGirl.createLists("EmailFolder", 5)
+          @emailFolders = FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE)
           @emailFoldersCollection.reset(@emailFolders)
           
         afterEach ->

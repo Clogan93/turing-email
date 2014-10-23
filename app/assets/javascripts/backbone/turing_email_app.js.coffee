@@ -217,7 +217,6 @@ window.TuringEmailApp = new(Backbone.View.extend(
       
       @trigger "change:selectedEmailThread", this, null
 
-  # TODO write tests (page param)
   currentEmailFolderIs: (emailFolderID, pageTokenIndex) ->
     @collections.emailThreads.folderIDIs(emailFolderID)
     @collections.emailThreads.pageTokenIndexIs(parseInt(pageTokenIndex)) if pageTokenIndex?
@@ -307,13 +306,6 @@ window.TuringEmailApp = new(Backbone.View.extend(
       )
       
   reloadEmailThreads: (myOptions) ->
-    if not @gmailAPIReady
-      setTimeout(
-        => @reloadEmailThreads(myOptions)
-        100)
-      
-      return
-      
     selectedEmailThread = @selectedEmailThread()
 
     @collections.emailThreads.fetch(

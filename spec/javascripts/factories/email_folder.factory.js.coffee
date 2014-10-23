@@ -8,3 +8,7 @@ FactoryGirl.define "EmailFolder", ->
   @name = @label_id + "_name"
   @num_threads = 5
   @num_unread_threads = 3
+
+FactoryGirl.define "EmailFolder.Inbox", inherit: "EmailFolder", ->
+  @label_id = "INBOX"
+  @name = "INBOX"

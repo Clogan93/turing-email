@@ -111,7 +111,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
         options.error
       )
 
-      model.trigger("request", model, null, options);
+      @trigger("request", model, null, options);
     
   ##############
   ### Events ###

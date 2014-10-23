@@ -2,7 +2,7 @@ describe "ToolbarView", ->
   beforeEach ->
     specStartTuringEmailApp()
     
-    TuringEmailApp.collections.emailFolders.add(FactoryGirl.createLists("EmailFolder", 5))
+    TuringEmailApp.collections.emailFolders.add(FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE))
     @toolbarView = TuringEmailApp.views.toolbarView
     
   afterEach ->

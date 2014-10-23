@@ -50,7 +50,7 @@ window.specStartTuringEmailApp = ->
     Backbone.history.start(silent: true)
     specStartedHistory = true
 
-window.specCompareFunctions = (f, fExpected) ->
+window.specCompareFunctions = (fExpected, f) ->
   expect(f.toString().replace(/\s/g, "")).toEqual(fExpected.toString().replace(/\s/g, ""))
     
 window.specPrepareReportFetches = (server) ->
@@ -153,10 +153,10 @@ window.specCreateEmailThreadsListView = (server) ->
   )
   $("body").append(emailThreadsListView)
 
-  [server, validEmailThreadsFixture] = specPrepareEmailThreadsFetch(emailThreads, server)
-  emailThreads.fetch()
-  server.respond()
-  
+  validEmailThreadsFixture = FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE)
+  emailThreads.reset(validEmailThreadsFixture)
+
+  server = sinon.fakeServer.create() if not server?
   return [emailThreadsListView.$el, emailThreadsListView, emailThreads, server, validEmailThreadsFixture]
 
 window.validateAttributes = (expectedAttributes, model, modelRendered, expectedAttributesToSkip=[]) ->

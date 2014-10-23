@@ -23,7 +23,6 @@ class TuringEmailApp.Collections.EmailFoldersCollection extends Backbone.Collect
   sync: (method, collection, options) ->
     if method != "read"
       super(method, collection, options)
-      Backbone.sync
     else
       googleRequest(
         @app

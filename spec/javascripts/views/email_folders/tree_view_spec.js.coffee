@@ -11,14 +11,7 @@ describe "TreeView", ->
       collection: @emailFolders
     )
 
-    emailFoldersFixtures = fixture.load("email_folders.fixture.json")
-    @validEmailFoldersFixture = emailFoldersFixtures[0]["valid"]
-
-    @server = sinon.fakeServer.create()
-    @server.respondWith "GET", @emailFolders.url, JSON.stringify(@validEmailFoldersFixture)
-
   afterEach ->
-    @server.restore()
     @treeDiv.remove()
 
     specStopTuringEmailApp()
@@ -48,65 +41,57 @@ describe "TreeView", ->
           else if labelID is "DRAFT"
             badge = link.find("span.badge")
             expect(badge.text()).toEqual("" + emailFolder.get("num_threads"))
+            
+      @emailFolders.reset(FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE))
       
+      @generateTreeSpy = sinon.spy(@treeView, "generateTree")
+      @setupNodesSpy = sinon.spy(@treeView, "setupNodes")
       @selectSpy = sinon.spy(@treeView, "select")
 
     afterEach ->
       @selectSpy.restore()
-
-    describe "under any selection conditions", ->
-      beforeEach ->
-        @emailFolder = new TuringEmailApp.Models.EmailFolder()
-
-      it "adds the selected_tree_folder class to the selecte folder's DOM element", ->
-        spy = sinon.spy($.prototype, "addClass")
-
-        @treeView.select(@emailFolder)
-
-        @emailFolders.fetch()
-        @server.respond()
-
-        expect(spy).toHaveBeenCalled()
-        expect(spy).toHaveBeenCalledWith("selected_tree_folder")
-        spy.restore()
+      @setupNodesSpy.restore()
+      @generateTreeSpy.restore()
 
     describe "without a selected item", ->
       beforeEach ->
-        @emailFolders.fetch()
-        @server.respond()
+        @emailFolders.reset(FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE))
 
+      it "generates the tree", ->
+        expect(@generateTreeSpy).toHaveBeenCalled()
+        
       it "renders the tree view", ->
         @treeDivTest()
+        
+      it "sets up the nodes", ->
+        expect(@setupNodesSpy).toHaveBeenCalled()
 
       it "does not select the item", ->
         expect(@selectSpy).not.toHaveBeenCalled()
 
     describe "with a selected item", ->
       beforeEach ->
-        @emailFolder = new TuringEmailApp.Models.EmailFolder()
-        @treeView.select(@emailFolder)
+        @selectSpy.restore()
+        @treeView.select(@emailFolders.at(0))
+        @selectSpy = sinon.spy(@treeView, "select")
+        
+        @treeView.render()
 
-        @emailFolders.fetch()
-        @server.respond()
+      it "generates the tree", ->
+        expect(@generateTreeSpy).toHaveBeenCalled()
 
       it "renders the tree view", ->
         @treeDivTest()
 
-      it "selects the item", ->
-        expect(@selectSpy).toHaveBeenCalledWith(@emailFolder)
+      it "sets up the nodes", ->
+        expect(@setupNodesSpy).toHaveBeenCalled()
 
-      it "removes a class to the items dom element", ->
-        newEmailFolder = new TuringEmailApp.Models.EmailFolder()
-        spy = sinon.spy($.prototype, "removeClass")
-        @treeView.select(newEmailFolder)
-        expect(spy).toHaveBeenCalled()
-        expect(spy).toHaveBeenCalledWith("selected_tree_folder")
-        spy.restore()
+      it "selects the item", ->
+        expect(@selectSpy).toHaveBeenCalledWith(@emailFolders.at(0), silent: true)
 
     describe "when one of the labels contains no unread emails", ->
       beforeEach ->
-        @emailFolders.fetch()
-        @server.respond()
+        @emailFolders.reset(FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE))
         @emailFolders.models[4].set("num_unread_threads", 0)
         @treeView.render()
 
@@ -115,13 +100,16 @@ describe "TreeView", ->
 
   describe "#generateTree", ->
     beforeEach ->
-      @emailFolders.fetch()
-      @server.respond()
+      @emailFolders.reset(FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE))
+      @emailFolders.add(FactoryGirl.create("EmailFolder.Inbox"))
+      @emailFolders.add(FactoryGirl.create("EmailFolder", label_id: "Calendar", name: "Calendar"))
+      @emailFolders.add(FactoryGirl.create("EmailFolder", label_id: "Calendar/Google", name: "Calendar/Google"))
+
+      @treeView.generateTree()
 
     it "generates the correct tree", ->
-      @treeView.generateTree()
       expect(@treeView.tree.emailFolder).toEqual null
-      expect(_.values(@treeView.tree.children).length).toEqual 9
+      expect(_.values(@treeView.tree.children).length).toEqual @emailFolders.length - 1
       expect(_.values(@treeView.tree.children["INBOX"].children).length).toEqual 0
 
     it "correctly inserts sub-labels in the tree", ->
@@ -131,25 +119,23 @@ describe "TreeView", ->
   describe "Setup", ->
     describe "#setupNodes", ->
       beforeEach ->
-        @emailFolders.fetch()
-        @server.respond()
+        @emailFolders.reset(FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE))
+        @emailFolders.add(FactoryGirl.create("EmailFolder", name: @emailFolders.at(0).get("name") + "/Test"))
 
       it "binds the click event to the bullet span", ->
         expect(@treeView.$el.find(".bullet_span")).toHandle("click")
 
+      it "binds the click event to the a tags", ->
+        expect(@treeView.$el.find("a")).toHandle("click")
+        
       describe "when the bullet span is clicked", ->
-
         it "toggles the labels dropdown associated with that bullet span", ->
           @treeView.$el.find(".bullet_span").each (index, el) ->
             li = $(el).parent().children("ul").children("li")
             $(el).click()
             expect(li).not.toBeVisible()
 
-      it "binds the click event to the a tags", ->
-        expect(@treeView.$el.find("a")).toHandle("click")
-
       describe "when the a tag is clicked", ->
-
         it "prevents the default link action", ->
           selector = "a"
           spyOnEvent(selector, "click")
@@ -167,35 +153,26 @@ describe "TreeView", ->
           expect(spy).toHaveBeenCalledWith(emailFolder)
 
   describe "#selectedItem", ->
-
     describe "without a selected item", ->
-      beforeEach ->
-        @emailFolders.fetch()
-        @server.respond()
-
       it "should return null", ->
         expect(@treeView.selectedItem()).toEqual null
       
     describe "with a selected item", ->
       beforeEach ->
-        @emailFolder = new TuringEmailApp.Models.EmailFolder()
+        @emailFolders.reset(FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE))
+        @emailFolder = @emailFolders.at(0)
         @treeView.select(@emailFolder)
 
-        @emailFolders.fetch()
-        @server.respond()
-
       it "selects the item", ->
-        expect(@treeView.selectedItem()).toEqual @emailFolder
+        expect(@treeView.selectedItem()).toEqual(@emailFolder)
 
   describe "#select", ->
     beforeEach ->
-      @emailFolders.fetch()
-      @server.respond()
+      @emailFolders.reset(FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE))
 
     describe "with a selected item", ->
       beforeEach ->
-        @emailFolders.fetch()
-        @server.respond()
+        @emailFolders.reset(FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE))
 
         @emailFolder = @emailFolders.models[0]
         @otherEmailFolder = @emailFolders.models[1]
@@ -254,8 +231,8 @@ describe "TreeView", ->
 
   describe "#updateBadgeCount", ->
     beforeEach ->
-      @emailFolders.fetch()
-      @server.respond()
+      @emailFolders.reset(FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE))
+      @emailFolders.add(FactoryGirl.create("EmailFolder.Inbox"))
 
     describe "when the email folder is the inbox", ->
       beforeEach ->
@@ -267,7 +244,7 @@ describe "TreeView", ->
 
     describe "when the email folder is not the inbox", ->
       beforeEach ->
-        @emailFolderID = "Label_119"
+        @emailFolderID = @emailFolders.at(0).get("label_id")
         @nonInboxEmailFolder = @treeView.collection.getEmailFolder @emailFolderID
 
       it "updates the email folder's badge count", ->
@@ -276,8 +253,7 @@ describe "TreeView", ->
 
   describe "#emailFolderUnreadCountChanged", ->
     beforeEach ->
-      @emailFolders.fetch()
-      @server.respond()
+      @emailFolders.reset(FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE))
       @emailFolder = @emailFolders.models[0]
 
     it "updates the badge count", ->

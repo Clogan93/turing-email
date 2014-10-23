@@ -6,9 +6,6 @@ describe "EmailThread", ->
     emailThreadsFixtures = fixture.load("email_threads.fixture.json", true)
     @validEmailThreadsFixture = emailThreadsFixtures[0]["valid"]
 
-    emailFoldersFixtures = fixture.load("email_folders.fixture.json", true)
-    @validEmailFoldersFixture = emailFoldersFixtures[0]["valid"]
-
     @userFixtures = fixture.load("user.fixture.json", true)
 
     @emailThread = new TuringEmailApp.Models.EmailThread(undefined,
@@ -79,7 +76,7 @@ describe "EmailThread", ->
         for emailThread in @validEmailThreadsFixture
           @emailThreadUIDs.push emailThread.uid
 
-        emailFolder = @validEmailFoldersFixture[8]
+        emailFolder = FactoryGirl.create("EmailFolder")
         @labelID = emailFolder.label_id
         @labelName = emailFolder.name
 
@@ -120,7 +117,7 @@ describe "EmailThread", ->
         for emailThread in @validEmailThreadsFixture
           @emailThreadUIDs.push emailThread.uid
 
-        emailFolder = @validEmailFoldersFixture[8]
+        emailFolder = FactoryGirl.create("EmailFolder")
         @folderID = emailFolder.label_id
         @folderName = emailFolder.name
 
@@ -214,7 +211,7 @@ describe "EmailThread", ->
         @emailThread.fetch()
         @server.respond()
 
-        emailFolder = @validEmailFoldersFixture[8]
+        emailFolder = FactoryGirl.create("EmailFolder")
         @folderID = emailFolder.label_id
 
       it "calls the remove from folder class method", ->
@@ -241,7 +238,7 @@ describe "EmailThread", ->
         @emailThread.fetch()
         @server.respond()
 
-        emailFolder = @validEmailFoldersFixture[8]
+        emailFolder = FactoryGirl.create("EmailFolder")
         @labelID = emailFolder.label_id
         @labelName = emailFolder.name
 
@@ -257,7 +254,7 @@ describe "EmailThread", ->
         @emailThread.fetch()
         @server.respond()
 
-        emailFolder = @validEmailFoldersFixture[8]
+        emailFolder = FactoryGirl.create("EmailFolder")
         @folderID = emailFolder.label_id
         @folderName = emailFolder.name
 
