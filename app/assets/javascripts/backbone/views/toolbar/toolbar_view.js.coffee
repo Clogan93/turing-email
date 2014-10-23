@@ -123,7 +123,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     return @divAllCheckbox.hasClass "checked"
     
   uncheckAllCheckbox: ->
-    @divAllCheckbox.iCheck("uncheck")
+    @divAllCheckbox?.iCheck("uncheck")
 
   updatePaginationText: (emailFolder, page) ->
     if emailFolder? && page?

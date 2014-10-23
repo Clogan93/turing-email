@@ -617,7 +617,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     for listItemView in _.values(emailThreadsListView.listItemViews)
       emailThread = listItemView.model
       
-      if emailThread.subject is "Turing Email - Your daily Genie Report!"
+      if emailThread.get("subject") is "Turing Email - Your daily Genie Report!"
         emailThreadsListView.collection.remove(emailThread)
         emailThreadsListView.collection.unshift(emailThread)
 
@@ -626,7 +626,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
         emailThreadsListView.$el.prepend(trReportEmail)
 
         return
-    
+
   showEmails: ->
     @views.mainView.showEmails(@isSplitPaneMode())
 
