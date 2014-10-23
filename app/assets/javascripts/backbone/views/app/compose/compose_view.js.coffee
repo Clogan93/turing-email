@@ -9,6 +9,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
   render: ->
     @$el.html(@template())
     @setupComposeView()
+    @setupLinkPreviews()
     return this
 
   setupComposeView: ->
@@ -338,3 +339,15 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
 
     @$el.find(".compose_form").prepend('<div id="email_sent_error_alert" class="alert alert-danger" role="alert">
                                 There was an error in sending your email!</div>')
+
+  setupLinkPreviews: ->
+    @$el.find(".compose_form .note-editable").bind "keydown", "space return shift+return", ->
+      emailHtml = $(@).html()
+      indexOfUrl = emailHtml.search(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/)
+
+      linkPreviewIndex = emailHtml.search("compose_link_preview")
+
+      if indexOfUrl isnt -1 and linkPreviewIndex is -1
+        link = emailHtml.substring(indexOfUrl).split(" ")[0]
+        console.log link
+        $(@).append("<div class='compose_link_preview'><span>Preview image</span><span>Title</span><span>Snippet</span><span>Website link</span></div>")
