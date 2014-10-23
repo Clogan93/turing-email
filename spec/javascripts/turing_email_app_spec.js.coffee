@@ -1262,11 +1262,14 @@ describe "TuringEmailApp", ->
 
           TuringEmailApp.views.emailThreadsListView.select @emailThread
 
+          @showEmailEditorWithEmailThreadStub = sinon.stub(TuringEmailApp, "showEmailEditorWithEmailThread", ->)
+          
+        afterEach ->
+          @showEmailEditorWithEmailThreadStub.restore()
+
         it "shows the email editor with the selected email thread", ->
-          spy = sinon.spy(TuringEmailApp, "showEmailEditorWithEmailThread")
           TuringEmailApp.replyClicked()
-          expect(spy).toHaveBeenCalledWith(@emailThread.get("uid"), "reply")
-          spy.restore()
+          expect(@showEmailEditorWithEmailThreadStub).toHaveBeenCalledWith(@emailThread.get("uid"), "reply")
 
       describe "#forwardClicked", ->
         beforeEach ->
@@ -1280,12 +1283,14 @@ describe "TuringEmailApp", ->
 
           TuringEmailApp.views.emailThreadsListView.select @emailThread
 
+          @showEmailEditorWithEmailThreadStub = sinon.stub(TuringEmailApp, "showEmailEditorWithEmailThread", ->)
+
+        afterEach ->
+          @showEmailEditorWithEmailThreadStub.restore()
+
         it "shows the email editor with the selected email thread", ->
-          spy = sinon.spy(TuringEmailApp, "showEmailEditorWithEmailThread")
           TuringEmailApp.forwardClicked()
-          expect(spy).toHaveBeenCalled()
-          expect(spy).toHaveBeenCalledWith(@emailThread.get("uid"), "forward")
-          spy.restore()
+          expect(@showEmailEditorWithEmailThreadStub).toHaveBeenCalledWith(@emailThread.get("uid"), "forward")
         
       describe "#archiveClicked", ->
         beforeEach ->
