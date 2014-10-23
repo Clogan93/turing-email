@@ -1423,8 +1423,12 @@ describe "TuringEmailApp", ->
       beforeEach ->
         TuringEmailApp.collections.emailThreads.reset(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE))
         emailThread = TuringEmailApp.collections.emailThreads.at(0)
+        @setStub = sinon.stub(emailThread, "set")
         TuringEmailApp.showEmailThread emailThread
   
+      afterEach ->
+        @setStub.restore()
+        
       it "hides the current email thread view.", ->
         spy = sinon.spy(TuringEmailApp.currentEmailThreadView.$el, "hide")
         TuringEmailApp.listItemChecked null, null
@@ -1437,7 +1441,11 @@ describe "TuringEmailApp", ->
         beforeEach ->
           TuringEmailApp.collections.emailThreads.reset(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE))
           emailThread = TuringEmailApp.collections.emailThreads.at(0)
+          @setStub = sinon.stub(emailThread, "set")
           TuringEmailApp.showEmailThread emailThread
+  
+        afterEach ->
+          @setStub.restore()
   
         describe "when the number of check list items is not 0", ->
   
@@ -1659,39 +1667,40 @@ describe "TuringEmailApp", ->
     describe "#showEmailThread", ->
       beforeEach ->
         TuringEmailApp.collections.emailThreads.reset(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE))
+        
+        @emailThread = TuringEmailApp.collections.emailThreads.at(0)
+        @setStub = sinon.stub(@emailThread, "set")
+
         @eventSpy = null
 
       afterEach ->
+        @setStub.restore()
         @eventSpy.restore() if @eventSpy?
     
       it "marks the email thread as read", ->
         spy = sinon.spy(TuringEmailApp.views.emailThreadsListView, "markEmailThreadRead")
-        emailThread = TuringEmailApp.collections.emailThreads.at(0)
-        TuringEmailApp.showEmailThread emailThread
-        expect(spy).toHaveBeenCalled()
-        expect(spy).toHaveBeenCalledWith(emailThread)
+        TuringEmailApp.showEmailThread(@emailThread)
+        expect(spy).toHaveBeenCalledWith(@emailThread)
     
       emailThreadViewEvents = ["goBackClicked", "replyClicked", "forwardClicked", "archiveClicked", "trashClicked"]
       for event in emailThreadViewEvents
         it "hooks the emailThreadView " + event + " event", ->
           @eventSpy = sinon.spy(TuringEmailApp, event)
     
-          emailThread = TuringEmailApp.collections.emailThreads.at(0)
-          TuringEmailApp.showEmailThread emailThread
+          TuringEmailApp.showEmailThread(@emailThread)
           TuringEmailApp.currentEmailThreadView.trigger(event)
 
           expect(@eventSpy).toHaveBeenCalled()
 
       describe "when the current email Thread is not null", ->
         beforeEach ->
-          emailThread = TuringEmailApp.collections.emailThreads.at(0)
-          TuringEmailApp.showEmailThread(emailThread)
+          TuringEmailApp.showEmailThread(@emailThread)
 
         it "stops listening to the current email thread view", ->
           appSpy = sinon.spy(TuringEmailApp, "stopListening")
           viewSpy = sinon.spy(TuringEmailApp.currentEmailThreadView, "stopListening")
-          emailThread = TuringEmailApp.collections.emailThreads.models[1]
-          TuringEmailApp.showEmailThread emailThread
+          
+          TuringEmailApp.showEmailThread(@emailThread)
           expect(appSpy).toHaveBeenCalled()
           expect(viewSpy).toHaveBeenCalled()
 
@@ -1700,7 +1709,12 @@ describe "TuringEmailApp", ->
         TuringEmailApp.collections.emailThreads.reset(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE))
 
         @emailThread = TuringEmailApp.collections.emailThreads.at(0)
+        @setStub = sinon.stub(@emailThread, "set")
+        
         @email = _.last(@emailThread.sortedEmails())
+        
+      afterEach ->
+        @setStub.restore()
     
       it "loads the email thread", ->
         spy = sinon.spy(TuringEmailApp, "loadEmailThread")
