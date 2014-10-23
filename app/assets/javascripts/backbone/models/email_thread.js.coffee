@@ -48,7 +48,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     @listenTo(this, "change:seen", @seenChanged)
 
   load: (options, force=false) ->
-    if @loaded? and not force
+    if @get("loaded")? and not force
       options.success?()
     else
       return if @loading?
@@ -59,7 +59,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
       options ?= {}
       success = options.success
       options.success = =>
-        @loaded = true
+        @set("loaded", true)
         @loading = false
         success?()
         
@@ -137,7 +137,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
   ###############
 
   folderIDs: ->
-    if not @loaded?
+    if not @get("loaded")?
       return @get("folder_ids")
     else
       emails = @get("emails")
@@ -185,7 +185,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
   numEmailsText: () ->
     emails = @get("emails")
     num_messages = if emails? then emails.length else @get("num_messages")
-    return if num_messages is 1 then "" else " (" + num_messages + ")"
+    return if num_messages is 1 then "" else "(" + num_messages + ")"
 
   fromPreview: ->
     fromAddress = @get("from_address")

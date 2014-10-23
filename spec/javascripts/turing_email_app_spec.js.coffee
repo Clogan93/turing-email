@@ -310,11 +310,11 @@ describe "TuringEmailApp", ->
     describe "getters", ->
       describe "#selectedEmailThread", ->
         beforeEach ->
-          @server.restore()
-          [@server, @emailThread] = window.specPrepareEmailThreadFetch()
-
-          @emailThread.fetch()
-          @server.respond()
+          emailThreadAttributes = FactoryGirl.create("EmailThread")
+          @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadAttributes,
+            app: TuringEmailApp
+            emailThreadUID: emailThreadAttributes.uid
+          )
     
           TuringEmailApp.views.emailThreadsListView.collection.add(@emailThread)
           TuringEmailApp.views.emailThreadsListView.select(@emailThread)
@@ -1117,7 +1117,7 @@ describe "TuringEmailApp", ->
             TuringEmailApp.rightArrowClicked()
 
           it "goes to the next page", ->
-            expect(@navigateSpy).toHaveBeenCalledWith("#email_folder/" + @folderID + "/" +
+            expect(@navigateStub).toHaveBeenCalledWith("#email_folder/" + @folderID + "/" +
               (TuringEmailApp.collections.emailThreads.pageTokenIndex + 1),
               trigger: true
             )
@@ -1265,7 +1265,6 @@ describe "TuringEmailApp", ->
         it "shows the email editor with the selected email thread", ->
           spy = sinon.spy(TuringEmailApp, "showEmailEditorWithEmailThread")
           TuringEmailApp.replyClicked()
-          expect(spy).toHaveBeenCalled()
           expect(spy).toHaveBeenCalledWith(@emailThread.get("uid"), "reply")
           spy.restore()
 
@@ -1393,49 +1392,18 @@ describe "TuringEmailApp", ->
   
         @listItemView = _.values(@listView.listItemViews)[0]
 
-        @emailUID = @listItemView.model.sortedEmails()[0]["uid"]
+        @emailThreadUID = @listItemView.model.get("uid")
+
+        @navigateStub = sinon.stub(TuringEmailApp.routers.emailThreadsRouter, "navigate")
   
       afterEach ->
         @listViewDiv.remove()
-  
-      describe "when the email is a draft", ->
-        describe "when the current folder is NOT the drafts folder", ->
-          it "navigates to the email thread", ->
-            spy = sinon.spy(TuringEmailApp.routers.emailThreadsRouter, "navigate")
-            TuringEmailApp.listItemSelected @listView, @listItemView
-            expect(spy).toHaveBeenCalledWith("#email_draft/" + @emailUID)
-            spy.restore()
+        @navigateStub.restore()
 
-        describe "when the current folder IS the drafts folder", ->
-          beforeEach ->
-            folders = FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE)
-            folders.push(FactoryGirl.create("EmailFolder", {label_id: "DRAFT", type: "system"}))
-            @emailFolders.reset(folders)
-            
-            @emailFolder = TuringEmailApp.collections.emailFolders.getEmailFolder("DRAFT")
-            @stub = sinon.stub(TuringEmailApp, "selectedEmailFolder")
-            @stub.returns(@emailFolder)
-            
-          afterEach ->
-            @stub.restore()
-            
-          it "navigates to the email draft", ->
-            spy = sinon.spy(TuringEmailApp.routers.emailThreadsRouter, "navigate")
-            TuringEmailApp.listItemSelected @listView, @listItemView
-            
-            expect(spy).toHaveBeenCalledWith("#email_draft/" +  @emailUID)
-            spy.restore()
-  
-      describe "when the email is not draft", ->
-        beforeEach ->
-          email.draft_id = null for email in @listView.listItemViews[@listItemView.model.get("uid")].model.get("emails")
-  
-        it "navigates to the email thread", ->
-          spy = sinon.spy(TuringEmailApp.routers.emailThreadsRouter, "navigate")
-          TuringEmailApp.listItemSelected @listView, @listItemView
+      it "navigates to the email thread", ->
+        TuringEmailApp.listItemSelected @listView, @listItemView
 
-          expect(spy).toHaveBeenCalledWith("#email_thread/" +  @emailUID)
-          spy.restore()
+        expect(@navigateStub).toHaveBeenCalledWith("#email_thread/" +  @emailThreadUID)
   
     describe "#listItemDeselected", ->
       it "navigates to the email thread url", ->
@@ -1579,18 +1547,14 @@ describe "TuringEmailApp", ->
 
     describe "#emailThreadSeenChanged", ->
       beforeEach ->
-        @server.restore()
-        specPrepareEmailFoldersFetch(TuringEmailApp.collections.emailFolders, @server)
-
         TuringEmailApp.collections.emailThreads.reset(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE))
-        TuringEmailApp.collections.emailFolders.fetch(reset: true)
-        
-        @server.respond()
+        TuringEmailApp.collections.emailFolders.reset(FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE))
         
         @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
         @selectedEmailFolderIDStub.returns("INBOX")
         
         @emailThread = TuringEmailApp.collections.emailThreads.at(0)
+        @emailThread.set("folder_ids", [TuringEmailApp.collections.emailFolders.at(0).get("label_id")])
 
         folderIDs = @emailThread.folderIDs()
         expect(folderIDs.length > 0).toBeTruthy()

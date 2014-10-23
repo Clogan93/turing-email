@@ -27,6 +27,9 @@ FactoryGirl.define "Email", ->
   @bccs = "bcc@turinginc.com"
   
   @subject = "Subject"
-  @html_part = "HTML body"
-  @text_part = "Text body"
+  @html_part_encoded = base64_encode_urlsafe("HTML body")
+  @text_part_encoded = base64_encode_urlsafe("Text body")
   @body_text = null
+
+  @folder_ids = ["Test"]
+  

@@ -555,7 +555,6 @@ window.TuringEmailApp = new(Backbone.View.extend(
   ### EmailThread Events ###
   ##########################
 
-  # TODO for now assumes the email thred is in the current folder but it might be in a different folder
   emailThreadSeenChanged: (emailThread, seenValue) ->
     delta = if seenValue then -1 else 1
       

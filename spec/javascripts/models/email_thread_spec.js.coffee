@@ -1,47 +1,20 @@
 describe "EmailThread", ->
   beforeEach ->
-    emailThreadFixtures = fixture.load("email_thread.fixture.json")
-    @validEmailThreadFixture = emailThreadFixtures[0]["valid"]
-
-    emailThreadsFixtures = fixture.load("email_threads.fixture.json", true)
-    @validEmailThreadsFixture = emailThreadsFixtures[0]["valid"]
-
-    @userFixtures = fixture.load("user.fixture.json", true)
-
-    @emailThread = new TuringEmailApp.Models.EmailThread(undefined,
+    emailThreadAttributes = FactoryGirl.create("EmailThread")
+    @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadAttributes,
       app: TuringEmailApp
-      emailThreadUID: @validEmailThreadFixture["uid"]
+      emailThreadUID: emailThreadAttributes.uid
     )
-
-    @server = sinon.fakeServer.create()
-
-    @url = "/api/v1/email_threads/show/" + @validEmailThreadFixture["uid"]
-    @server.respondWith "GET", @url, JSON.stringify(@validEmailThreadFixture)
     
-  afterEach ->
-    @server.restore()
-
-  it "has the right url", ->
-    expect(@emailThread.url).toEqual @url
-
-  describe "#fetch", ->
-    beforeEach ->
-      @emailThread.fetch()
-      @server.respond()
-      
-    it "loads the email thread", ->
-      validateEmailThreadAttributes(@emailThread.toJSON())
-  
-      for email in @emailThread.get("emails")
-        validateEmailAttributes(email)
-
+    @emailThreads = FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE)
+    
   describe "Class Methods", ->
 
     describe "#removeFromFolder", ->
 
       beforeEach ->
         @emailThreadUIDs = []
-        for emailThread in @validEmailThreadsFixture
+        for emailThread in @emailThreads
           @emailThreadUIDs.push emailThread.uid
 
         @emailFolderID = "INBOX"
@@ -58,7 +31,7 @@ describe "EmailThread", ->
 
       beforeEach ->
         @emailThreadUIDs = []
-        for emailThread in @validEmailThreadsFixture
+        for emailThread in @emailThreads
           @emailThreadUIDs.push emailThread.uid
 
       it "posts the emailThreadUIDs to the trash API", ->
@@ -73,7 +46,7 @@ describe "EmailThread", ->
 
       beforeEach ->
         @emailThreadUIDs = []
-        for emailThread in @validEmailThreadsFixture
+        for emailThread in @emailThreads
           @emailThreadUIDs.push emailThread.uid
 
         emailFolder = FactoryGirl.create("EmailFolder")
@@ -114,7 +87,7 @@ describe "EmailThread", ->
 
       beforeEach ->
         @emailThreadUIDs = []
-        for emailThread in @validEmailThreadsFixture
+        for emailThread in @emailThreads
           @emailThreadUIDs.push emailThread.uid
 
         emailFolder = FactoryGirl.create("EmailFolder")
