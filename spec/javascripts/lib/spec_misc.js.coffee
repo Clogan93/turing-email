@@ -1,5 +1,19 @@
 specStartedHistory = false
 
+oldPrettyPrinterFormat = jasmine.PrettyPrinter::format
+jasmine.PrettyPrinter::format = (value) ->
+  self = this
+  if value instanceof Backbone.Model
+    @emitObject value.attributes
+  else if value instanceof Backbone.Collection
+    value.each (model) ->
+      self.emitScalar model.cid
+      return
+
+  else
+    oldPrettyPrinterFormat.apply this, arguments
+  return
+
 window.specStopTuringEmailApp = ->
   $("#main").remove()
 
