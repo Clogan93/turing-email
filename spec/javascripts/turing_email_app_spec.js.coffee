@@ -1654,6 +1654,10 @@ describe "TuringEmailApp", ->
     describe "#showEmailThread", ->
       beforeEach ->
         TuringEmailApp.collections.emailThreads.reset(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE))
+        @eventSpy = null
+
+      afterEach ->
+        @eventSpy.restore() if @eventSpy?
     
       it "marks the email thread as read", ->
         spy = sinon.spy(TuringEmailApp.views.emailThreadsListView, "markEmailThreadRead")
@@ -1665,20 +1669,19 @@ describe "TuringEmailApp", ->
       emailThreadViewEvents = ["goBackClicked", "replyClicked", "forwardClicked", "archiveClicked", "trashClicked"]
       for event in emailThreadViewEvents
         it "hooks the emailThreadView " + event + " event", ->
-          spy = sinon.spy(TuringEmailApp, event)
+          @eventSpy = sinon.spy(TuringEmailApp, event)
     
           emailThread = TuringEmailApp.collections.emailThreads.at(0)
           TuringEmailApp.showEmailThread emailThread
           TuringEmailApp.currentEmailThreadView.trigger(event)
-    
-          expect(spy).toHaveBeenCalled()
-          spy.restore()
-    
+
+          expect(@eventSpy).toHaveBeenCalled()
+
       describe "when the current email Thread is not null", ->
         beforeEach ->
           emailThread = TuringEmailApp.collections.emailThreads.at(0)
           TuringEmailApp.showEmailThread(emailThread)
-    
+
         it "stops listening to the current email thread view", ->
           appSpy = sinon.spy(TuringEmailApp, "stopListening")
           viewSpy = sinon.spy(TuringEmailApp.currentEmailThreadView, "stopListening")
@@ -1686,7 +1689,7 @@ describe "TuringEmailApp", ->
           TuringEmailApp.showEmailThread emailThread
           expect(appSpy).toHaveBeenCalled()
           expect(viewSpy).toHaveBeenCalled()
-      
+
     describe "#showEmailEditorWithEmailThread", ->
       beforeEach ->
         TuringEmailApp.collections.emailThreads.reset(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE))
