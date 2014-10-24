@@ -193,8 +193,7 @@ describe "MainView", ->
           emailRulesFixtures = fixture.load("rules/email_rules.fixture.json", true)
           @validEmailRulesFixture = emailRulesFixtures[0]
 
-          [@server] = specPrepareUserSettingsFetch()
-          @server.respond()
+          @server = sinon.fakeServer.create()
 
           @server.respondWith "GET", "/api/v1/genie_rules", JSON.stringify(@validBrainRulesFixture)
           TuringEmailApp.collections.brainRules = new TuringEmailApp.Collections.Rules.BrainRulesCollection()

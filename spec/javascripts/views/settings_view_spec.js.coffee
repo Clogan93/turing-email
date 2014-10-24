@@ -8,9 +8,7 @@ describe "SettingsView", ->
     emailRulesFixtures = fixture.load("rules/email_rules.fixture.json", true)
     @validEmailRulesFixture = emailRulesFixtures[0]
 
-    @userSettings = new TuringEmailApp.Models.UserSettings()
-
-    [@server] = specPrepareUserSettingsFetch()
+    @server = sinon.fakeServer.create()
 
     @server.respondWith "GET", "/api/v1/genie_rules", JSON.stringify(@validBrainRulesFixture)
     TuringEmailApp.collections.brainRules = new TuringEmailApp.Collections.Rules.BrainRulesCollection()
@@ -22,6 +20,8 @@ describe "SettingsView", ->
     TuringEmailApp.collections.emailRules.fetch()
     @server.respond()
 
+    @userSettings = new TuringEmailApp.Models.UserSettings()
+    
     @settingsDiv = $("<div />", {id: "settings"}).appendTo("body")
     @settingsView = new TuringEmailApp.Views.SettingsView(
       el: @settingsDiv
@@ -29,9 +29,8 @@ describe "SettingsView", ->
       emailRules: TuringEmailApp.collections.emailRules
       brainRules: TuringEmailApp.collections.brainRules
     )
-
-    @userSettings.fetch()
-    @server.respond()
+    
+    @userSettings.set(FactoryGirl.create("UserSettings"))
 
   afterEach ->
     @server.restore()
@@ -87,7 +86,7 @@ describe "SettingsView", ->
         emailBankruptcyButton.click()
         expect("click").toHaveBeenPreventedOn("#email_bankruptcy_button")
 
-        expect(@server.requests.length).toEqual 3
+        expect(@server.requests.length).toEqual 2
         
     describe "the user confirms the action", ->
       beforeEach ->
@@ -100,8 +99,8 @@ describe "SettingsView", ->
         emailBankruptcyButton.click()
         expect("click").toHaveBeenPreventedOn("#email_bankruptcy_button")
   
-        expect(@server.requests.length).toEqual 4
-        request = @server.requests[3]
+        expect(@server.requests.length).toEqual 3
+        request = @server.requests[2]
         expect(request.method).toEqual "POST"
         expect(request.url).toEqual "/api/v1/users/declare_email_bankruptcy"
 
@@ -128,8 +127,8 @@ describe "SettingsView", ->
         @settingsView.$el.find("#genie_rules_button").click()
         genieSwitch = @settingsView.$el.find("#genie_switch")
         genieSwitch.click()
-        expect(@server.requests.length).toEqual 4
-        request = @server.requests[3]
+        expect(@server.requests.length).toEqual 3
+        request = @server.requests[2]
         expect(request.method).toEqual "PATCH"
         expect(request.url).toEqual "/api/v1/user_configurations"
         @server.restore()
@@ -207,8 +206,8 @@ describe "SettingsView", ->
         firstDeleteButton = @settingsView.$el.find(".email-rules-table .rule-deletion-button").first()
         firstDeleteButton.click()
 
-        expect(@server.requests.length).toEqual 4
-        request = @server.requests[3]
+        expect(@server.requests.length).toEqual 3
+        request = @server.requests[2]
         expect(request.method).toEqual "DELETE"
         expect(request.url).toEqual "/api/v1/email_rules/" + firstDeleteButton.attr("data") + ".json"
 
@@ -226,8 +225,8 @@ describe "SettingsView", ->
         firstDeleteButton = @settingsView.$el.find(".brain-rules-table .rule-deletion-button").first()
         firstDeleteButton.click()
 
-        expect(@server.requests.length).toEqual 4
-        request = @server.requests[3]
+        expect(@server.requests.length).toEqual 3
+        request = @server.requests[2]
         expect(request.method).toEqual "DELETE"
         expect(request.url).toEqual "/api/v1/genie_rules/" + firstDeleteButton.attr("data") + ".json"
 

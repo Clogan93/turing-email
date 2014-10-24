@@ -318,12 +318,8 @@ describe "TuringEmailApp", ->
           
       describe "#selectedEmailFolder", ->
         beforeEach ->
-          @server.restore()
-          @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(undefined, app: TuringEmailApp)
-          [@server] = specPrepareEmailFoldersFetch()
-
-          @emailFolders.fetch()
-          @server.respond()
+          emailFoldersData = FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE)
+          @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(emailFoldersData, app: TuringEmailApp)
           
           TuringEmailApp.views.emailFoldersTreeView.select(@emailFolders.models[0])
 
@@ -1790,11 +1786,12 @@ describe "TuringEmailApp", ->
         emailRulesFixtures = fixture.load("rules/email_rules.fixture.json", true)
         @validEmailRulesFixture = emailRulesFixtures[0]
 
-        [@server] = specPrepareUserSettingsFetch()
+        @server = sinon.fakeServer.create()
         @server.respondWith "GET", "/api/v1/genie_rules", JSON.stringify(@validBrainRulesFixture)
         @server.respondWith "GET", "/api/v1/email_rules", JSON.stringify(@validEmailRulesFixture)
-        TuringEmailApp.models.userSettings.fetch()
-        @server.respond()
+
+        userSettingsData = FactoryGirl.create("UserSettings")
+        TuringEmailApp.models.userSettings = new TuringEmailApp.Models.UserSettings(userSettingsData)
 
       afterEach ->
         @server.restore()
