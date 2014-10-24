@@ -72,7 +72,6 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       @trigger("rightArrowClicked", this)
 
     $(window).resize =>
-      console.log $(".mail-box-header.toolbar").width()
       if $(".mail-box-header.toolbar").width() < 525
         $("#current_emails_displayed_counter").hide()
       else
