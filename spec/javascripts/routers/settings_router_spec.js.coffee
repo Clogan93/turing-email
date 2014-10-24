@@ -2,22 +2,9 @@ describe "SettingsRouter", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    userSettingsFixtures = fixture.load("user_settings.fixture.json");
-    @validUserSettingsFixture = userSettingsFixtures[0]["valid"]
-
     @settingsRouter = new TuringEmailApp.Routers.SettingsRouter()
 
-    @server = sinon.fakeServer.create()
-
-    @url = "/api/v1/user_configurations"
-    @server.respondWith "GET", @url, JSON.stringify(@validUserSettingsFixture)
-
-    TuringEmailApp.models.userSettings.fetch()
-    @server.respond()
-
   afterEach ->
-    @server.restore()
-
     specStopTuringEmailApp()
 
   it "has the expected routes", ->
@@ -25,11 +12,11 @@ describe "SettingsRouter", ->
 
   describe "settings", ->
     beforeEach ->
-      @showSettingsSpy = sinon.spy(TuringEmailApp, "showSettings")
+      @showSettingsStub = sinon.stub(TuringEmailApp, "showSettings")
       @settingsRouter.navigate "settings", trigger: true
 
     afterEach ->
-      @showSettingsSpy.restore()
+      @showSettingsStub.restore()
 
     it "shows the settings", ->
-      expect(@showSettingsSpy).toHaveBeenCalled()
+      expect(@showSettingsStub).toHaveBeenCalled()
