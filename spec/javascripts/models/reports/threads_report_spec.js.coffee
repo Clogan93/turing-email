@@ -22,4 +22,4 @@ describe "ThreadsReport", ->
       @server.respond()
 
     it "loads the contacts report", ->
-      validateAttributes(@threadssReport.toJSON(), ["average_thread_length", "top_email_threads"])
+      validateKeys(@threadssReport.toJSON(), ["average_thread_length", "top_email_threads"])

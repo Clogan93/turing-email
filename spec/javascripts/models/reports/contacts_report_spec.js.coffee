@@ -22,5 +22,5 @@ describe "ContactsReport", ->
       @server.respond()
 
     it "loads the contacts report", ->
-      validateAttributes(@contactsReport.toJSON(), ["top_senders", "top_recipients",
+      validateKeys(@contactsReport.toJSON(), ["top_senders", "top_recipients",
                                                     "bottom_senders", "bottom_recipients"])

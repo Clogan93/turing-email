@@ -22,6 +22,6 @@ describe "EmailVolumeReport", ->
       @server.respond()
 
     it "loads the contacts report", ->
-      validateAttributes(@emailVolumeReport.toJSON(),
+      validateKeys(@emailVolumeReport.toJSON(),
                          ["received_emails_per_month", "received_emails_per_week", "received_emails_per_day",
                           "sent_emails_per_month", "sent_emails_per_week", "sent_emails_per_day"])

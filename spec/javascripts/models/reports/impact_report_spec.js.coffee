@@ -22,4 +22,4 @@ describe "ImpactReport", ->
       @server.respond()
 
     it "loads the percent sent emails replied to", ->
-      validateAttributes(@impactReport.toJSON(), ["percent_sent_emails_replied_to"])
+      validateKeys(@impactReport.toJSON(), ["percent_sent_emails_replied_to"])

@@ -50,11 +50,8 @@ describe "MainView", ->
     beforeEach ->
       @server.restore()
       
-      [@server] = specPrepareEmailThreadsFetch()
-      @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
-      @emailThreads.fetch()
-      @server.respond()
-      
+      @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
+      @emailThreads.reset(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE))
       @mainView.createEmailThreadsListView(@emailThreads)
     
     it "creates the emailThreadsListView", ->
@@ -106,11 +103,8 @@ describe "MainView", ->
 
       @server.restore()
 
-      [@server] = specPrepareEmailThreadsFetch()
-      @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
-      @emailThreads.fetch()
-      @server.respond()
-
+      @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
+      @emailThreads.reset(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE))
       @mainView.createEmailThreadsListView(@emailThreads)
 
       @primaryPane = @mainView.$el.find(".primary_pane")
@@ -160,7 +154,7 @@ describe "MainView", ->
 
         describe "when there are no emails in list view's collection", ->
           beforeEach ->
-            @mainView.emailThreadsListView.collection = new TuringEmailApp.Collections.EmailThreadsCollection()
+            @mainView.emailThreadsListView.collection = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
 
             @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
         

@@ -1,5 +1,19 @@
 specStartedHistory = false
 
+oldPrettyPrinterFormat = jasmine.PrettyPrinter::format
+jasmine.PrettyPrinter::format = (value) ->
+  self = this
+  if value instanceof Backbone.Model
+    @emitObject value.attributes
+  else if value instanceof Backbone.Collection
+    value.each (model) ->
+      self.emitScalar model.cid
+      return
+
+  else
+    oldPrettyPrinterFormat.apply this, arguments
+  return
+
 window.specStopTuringEmailApp = ->
   $("#main").remove()
 
@@ -24,7 +38,7 @@ window.specStartTuringEmailApp = ->
   TuringEmailApp.models.user = new TuringEmailApp.Models.User()
   TuringEmailApp.models.userSettings = new TuringEmailApp.Models.UserSettings()
   
-  TuringEmailApp.collections.emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection()
+  TuringEmailApp.collections.emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(undefined, app: TuringEmailApp)
   TuringEmailApp.views.emailFoldersTreeView = new TuringEmailApp.Views.EmailFolders.TreeView(
     app: TuringEmailApp
     el: $("#email_folders")
@@ -36,7 +50,7 @@ window.specStartTuringEmailApp = ->
 
   TuringEmailApp.views.createFolderView = TuringEmailApp.views.mainView.createFolderView
 
-  TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
+  TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
   TuringEmailApp.views.emailThreadsListView = TuringEmailApp.views.mainView.createEmailThreadsListView(TuringEmailApp.collections.emailThreads)
 
   TuringEmailApp.routers.emailFoldersRouter = new TuringEmailApp.Routers.EmailFoldersRouter()
@@ -50,6 +64,9 @@ window.specStartTuringEmailApp = ->
     Backbone.history.start(silent: true)
     specStartedHistory = true
 
+window.specCompareFunctions = (fExpected, f) ->
+  expect(f.toString().replace(/\s/g, "")).toEqual(fExpected.toString().replace(/\s/g, ""))
+    
 window.specPrepareReportFetches = (server) ->
   attachmentsReportFixtures = fixture.load("reports/attachments_report.fixture.json", true);
   attachmentsReportFixture = attachmentsReportFixtures[0]
@@ -110,7 +127,7 @@ window.specPrepareEmailFoldersFetch = (emailFolders, server) ->
   emailFoldersFixtures = fixture.load("email_folders.fixture.json")
   validEmailFoldersFixture = emailFoldersFixtures[0]["valid"]
   
-  emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection() if not emailFolders?
+  emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(undefined, app: TuringEmailApp) if not emailFolders?
   
   server = sinon.fakeServer.create() if not server?
   server.respondWith "GET", emailFolders.url, JSON.stringify(validEmailFoldersFixture)
@@ -121,7 +138,7 @@ window.specPrepareEmailThreadsFetch = (emailThreads, server) ->
   emailThreadsFixtures = fixture.load("email_threads.fixture.json");
   validEmailThreadsFixture = emailThreadsFixtures[0]["valid"]
 
-  emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection() if not emailThreads?
+  emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp) if not emailThreads?
 
   server = sinon.fakeServer.create() if not server?
   server.respondWith "GET", emailThreads.url, JSON.stringify(validEmailThreadsFixture)
@@ -132,7 +149,10 @@ window.specPrepareEmailThreadFetch = (server) ->
   emailThreadFixtures = fixture.load("email_thread.fixture.json")
   validEmailThreadFixture = emailThreadFixtures[0]["valid"]
   
-  emailThread = new TuringEmailApp.Models.EmailThread(undefined, emailThreadUID: validEmailThreadFixture["uid"])
+  emailThread = new TuringEmailApp.Models.EmailThread(undefined,
+    app: TuringEmailApp
+    emailThreadUID: validEmailThreadFixture["uid"]
+  )
   
   server = sinon.fakeServer.create() if not server?
   server.respondWith "GET", emailThread.url, JSON.stringify(validEmailThreadFixture)
@@ -140,53 +160,68 @@ window.specPrepareEmailThreadFetch = (server) ->
   return [server, emailThread, validEmailThreadFixture]
   
 window.specCreateEmailThreadsListView = (server) ->
-  emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
+  emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
 
   emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView(
     collection: emailThreads
   )
   $("body").append(emailThreadsListView)
 
-  [server, validEmailThreadsFixture] = specPrepareEmailThreadsFetch(emailThreads, server)
-  emailThreads.fetch()
-  server.respond()
-  
+  validEmailThreadsFixture = FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE)
+  emailThreads.reset(validEmailThreadsFixture)
+
+  server = sinon.fakeServer.create() if not server?
   return [emailThreadsListView.$el, emailThreadsListView, emailThreads, server, validEmailThreadsFixture]
-  
-window.validateAttributes = (objectJSON, expectedAttributes) ->
+
+window.validateAttributes = (expectedAttributes, model, modelRendered, expectedAttributesToSkip=[]) ->
+  expectedAttributes = expectedAttributes.sort()
+  keys = _.keys(modelRendered).sort()
+  expect(keys).toEqual(expectedAttributes)
+
+  for key, value of modelRendered
+    continue if key == "__name__"
+    continue if expectedAttributesToSkip.indexOf(key) != -1
+
+    expect(value).toEqual(model[key])
+
+window.validateUserSettings = (userSettings, userSettingsRendered) ->
+  expectedAttributes = ["id", "demo_mode_enabled", "keyboard_shortcuts_enabled", "genie_enabled", "split_pane_mode"]
+  validateAttributes(expectedAttributes, userSettings, userSettingsRendered)
+    
+window.validateKeys = (objectJSON, expectedKeys) ->
   keys = (key for key in _.keys(objectJSON))
   keys.sort()
 
-  expectedAttributes = expectedAttributes.slice().sort()
+  expectedKeys = expectedKeys.slice().sort()
   
-  expect(keys).toEqual expectedAttributes
+  expect(keys).toEqual expectedKeys
 
 window.validateUserAttributes = (userJSON) ->
   expectedAttributes = ["email"]
-  validateAttributes(userJSON, expectedAttributes)
+  validateKeys(userJSON, expectedAttributes)
   
 window.validateUserSettingsAttributes = (userSettingsJSON) ->
   expectedAttributes = ["id", "demo_mode_enabled", "keyboard_shortcuts_enabled", "genie_enabled", "split_pane_mode"]
-  validateAttributes(userSettingsJSON, expectedAttributes)
+  validateKeys(userSettingsJSON, expectedAttributes)
 
 window.validateBrainRulesAttributes = (brainRulesJSON) ->
   expectedAttributes = ["uid", "from_address", "to_address", "subject", "list_id"]
-  validateAttributes(brainRulesJSON, expectedAttributes)
+  validateKeys(brainRulesJSON, expectedAttributes)
 
 window.validateEmailRulesAttributes = (emailRulesJSON) ->
   expectedAttributes = ["uid", "from_address", "to_address", "subject", "list_id", "destination_folder_name"]
-  validateAttributes(emailRulesJSON, expectedAttributes)
+  validateKeys(emailRulesJSON, expectedAttributes)
 
 window.validateEmailFolderAttributes = (emailFolderJSON) ->
   expectedAttributes = ["label_id", "name",
                          "message_list_visibility", "label_list_visibility",
                          "label_type",
                          "num_threads", "num_unread_threads"]
-  validateAttributes(emailFolderJSON, expectedAttributes)
+  validateKeys(emailFolderJSON, expectedAttributes)
 
 window.validateEmailThreadAttributes = (emailThreadJSON) ->
   expectedAttributes = ["uid", "emails"]
-  validateAttributes(emailThreadJSON, expectedAttributes)
+  validateKeys(emailThreadJSON, expectedAttributes)
   
 window.validateEmailAttributes = (emailJSON) ->
   expectedAttributes = ["auto_filed",
@@ -199,7 +234,7 @@ window.validateEmailAttributes = (emailJSON) ->
                         "subject",
                         "html_part", "text_part", "body_text",
                         "folder_ids"]
-  validateAttributes(emailJSON, expectedAttributes)
+  validateKeys(emailJSON, expectedAttributes)
 
 window.verifyReportsRendered = (parent) ->
   reportSelectors = [".attachments_report", ".email_volume_report", ".folders_report", ".geo_report",

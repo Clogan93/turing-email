@@ -36,5 +36,8 @@
 //
 //= require ./vendors/chance.js
 //= require ./vendors/unserialize.jquery.latest.js
+//= require ./vendors/node.js
 //= require ./lib/backbone_spy
 //= require ./lib/spec_misc
+//= require ./factories/init
+//= require_tree ./factories

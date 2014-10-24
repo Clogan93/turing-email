@@ -8,7 +8,16 @@
 #= require ./views/app/compose/compose_view
 #= require_tree ./views
 #= require_tree ./routers
-  
+
+window.backboneWrapError = (model, options) ->
+  error = options.error
+  options.error = (resp) ->
+    error model, resp, options  if error
+    model.trigger "error", model, resp, options
+    return
+
+  return
+
 window.TuringEmailApp = new(Backbone.View.extend(
   Models: {}
   Views: {}
@@ -20,6 +29,8 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @views = {}
     @collections = {}
     @routers = {}
+    
+    @setupGmailAPI()
     
     @setupKeyboardHandler()
     
@@ -47,11 +58,28 @@ window.TuringEmailApp = new(Backbone.View.extend(
     if windowLocationHash is ""
       @routers.emailFoldersRouter.navigate("#email_folder/INBOX", trigger: true)
 
-    @syncEmail()
+    window.setTimeout(=>
+      @syncEmail()
+    , 60000)
 
   #######################
   ### Setup Functions ###
   #######################
+
+  setupGmailAPI: ->
+    @gmailAPIReady = false
+
+    gapi.client.load("gmail", "v1").then(=>
+      @refreshGmailAPIToken().done(=>
+        @gmailAPIReady = true
+      )
+    )
+    
+  refreshGmailAPIToken: ->
+    $.get("/api/v1/gmail_accounts/get_token").done(
+      (data, status) =>
+        gapi.auth.setToken(data)
+    )
 
   setupKeyboardHandler: ->
     @keyboardHandler = new TuringEmailAppKeyboardHandler(this)
@@ -116,7 +144,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     )
 
   setupEmailFolders: ->
-    @collections.emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection()
+    @collections.emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(undefined, app: TuringEmailApp)
     @views.emailFoldersTreeView = new TuringEmailApp.Views.EmailFolders.TreeView(
       app: this
       el: $("#email_folders")
@@ -136,7 +164,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @listenTo(@views.createFolderView, "createFolderFormSubmitted", (createFolderView, mode, folderName) => @createFolderFormSubmitted(mode, folderName))
 
   setupEmailThreads: ->
-    @collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsSearchResultsCollection()
+    @collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: this)
     @views.emailThreadsListView = @views.mainView.createEmailThreadsListView(@collections.emailThreads)
 
     @listenTo(@views.emailThreadsListView, "listItemSelected", @listItemSelected)
@@ -189,37 +217,34 @@ window.TuringEmailApp = new(Backbone.View.extend(
       
       @trigger "change:selectedEmailThread", this, null
 
-  # TODO write tests (page param)
-  currentEmailFolderIs: (emailFolderID, page) ->
-    @collections.emailThreads.setupURL(emailFolderID, page)
+  currentEmailFolderIs: (emailFolderID, pageTokenIndex) ->
+    @collections.emailThreads.folderIDIs(emailFolderID)
+    @collections.emailThreads.pageTokenIndexIs(parseInt(pageTokenIndex)) if pageTokenIndex?
 
     @reloadEmailThreads(
       success: (collection, response, options) =>
         emailFolder = @collections.emailFolders.getEmailFolder(emailFolderID)
         @views.emailFoldersTreeView.select(emailFolder, silent: true)
-        @trigger("change:currentEmailFolder", this, emailFolder, parseInt(@collections.emailThreads.page))
+        @trigger("change:currentEmailFolder", this, emailFolder, @collections.emailThreads.pageTokenIndex + 1)
   
         @showEmails()
 
         if @isSplitPaneMode() && @collections.emailThreads.length > 0 &&
-            not @collections.emailThreads.models[0].get("emails")[0].draft_id?
+            not @collections.emailThreads.models[0].get("emails")?[0].draft_id?
           @currentEmailThreadIs(@collections.emailThreads.models[0].get("uid"))
     )
-    
+
   ######################
   ### Sync Functions ###
   ######################
 
   syncEmail: ->
-    $.post("api/v1/email_accounts/sync").done((data, status) =>
-      if data.synced_emails
-        @reloadEmailThreads()
-        @loadEmailFolders()
-    ).always(=>
-      window.setTimeout(=>
-        @syncEmail()
-      , 60000)
-    )
+    @reloadEmailThreads()
+    @loadEmailFolders()
+
+    window.setTimeout(=>
+      @syncEmail()
+    , 60000)
     
   #######################
   ### Alert Functions ###
@@ -271,23 +296,19 @@ window.TuringEmailApp = new(Backbone.View.extend(
     if emailThread?
       callback(emailThread)
     else
-      emailThread = new @Models.EmailThread(undefined, emailThreadUID: emailThreadUID)
+      emailThread = new TuringEmailApp.Models.EmailThread(undefined,
+        app: TuringEmailApp
+        emailThreadUID: emailThreadUID
+      )
       emailThread.fetch(
         success: (model, response, options) =>
           callback?(emailThread)
       )
       
   reloadEmailThreads: (myOptions) ->
-    loader = null
-    
-    if myOptions?.query?
-      loader = @collections.emailThreads.search
-    else
-      loader = @collections.emailThreads.fetch
-
     selectedEmailThread = @selectedEmailThread()
-      
-    loader.call(@collections.emailThreads,
+
+    @collections.emailThreads.fetch(
       query: myOptions?.query
       reset: true
       
@@ -328,7 +349,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
       selectedIndex = @views.emailThreadsListView.selectedIndex()
       singleAction()
       @collections.emailThreads.remove @selectedEmailThread() if remove
-      (if @isSplitPaneMode() then @currentEmailThreadIs(null) else @goBackClicked()) if clearSelection and not moveSelection
+      (if @isSplitPaneMode() then @currentEmailThreadIs() else @goBackClicked()) if clearSelection and not moveSelection
       @views.emailThreadsListView.selectedIndexIs selectedIndex if moveSelection
     else
       selectedEmailThreads = []
@@ -342,7 +363,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
       
       @collections.emailThreads.remove selectedEmailThreads if remove
 
-      (if @isSplitPaneMode() then @currentEmailThreadIs(null) else @goBackClicked()) if clearSelection
+      (if @isSplitPaneMode() then @currentEmailThreadIs() else @goBackClicked()) if clearSelection
 
     @loadEmailFolders() if refreshFolders
 
@@ -365,10 +386,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
   readClicked: ->
     @applyActionToSelectedThreads(
       =>
-        @selectedEmailThread()?.seenIs(true)
+        @selectedEmailThread()?.set("seen", true)
         @views.emailThreadsListView.markEmailThreadRead(@selectedEmailThread())
       (checkedListItemViews, selectedEmailThreadUIDs) =>
-        listItemView.model.seenIs(true) for listItemView in checkedListItemViews
+        listItemView.model.set("seen", true) for listItemView in checkedListItemViews
         @views.emailThreadsListView.markCheckedRead()
       false, false
     )
@@ -376,24 +397,24 @@ window.TuringEmailApp = new(Backbone.View.extend(
   unreadClicked: ->
     @applyActionToSelectedThreads(
       =>
-        @selectedEmailThread()?.seenIs(false)
+        @selectedEmailThread()?.set("seen", false)
         @views.emailThreadsListView.markEmailThreadUnread(@selectedEmailThread())
       (checkedListItemViews, selectedEmailThreadUIDs) =>
-        listItemView.model.seenIs(false) for listItemView in checkedListItemViews
+        listItemView.model.set("seen", false) for listItemView in checkedListItemViews
         @views.emailThreadsListView.markCheckedUnread()
       false, false
     )
 
   leftArrowClicked: ->
-    if @collections.emailThreads.page > 1
+    if @collections.emailThreads.hasPreviousPage()
       @routers.emailFoldersRouter.navigate("#email_folder/" + @selectedEmailFolderID() + "/" +
-                                           (@collections.emailThreads.page - 1),
+                                           (@collections.emailThreads.pageTokenIndex - 1),
                                            trigger: true)
 
   rightArrowClicked: ->
-    if @collections.emailThreads.length is TuringEmailApp.Models.UserSettings.EmailThreadsPerPage
+    if @collections.emailThreads.hasNextPage()
       @routers.emailFoldersRouter.navigate("#email_folder/" + @selectedEmailFolderID() + "/" +
-                                           (@collections.emailThreads.page + 1),
+                                           (@collections.emailThreads.pageTokenIndex + 1),
                                            trigger: true)
 
   labelAsClicked: (labelID, labelName) ->
@@ -469,15 +490,8 @@ window.TuringEmailApp = new(Backbone.View.extend(
     emailThread = listItemView.model
     emailThreadUID = emailThread.get("uid")
 
-    sortedEmails = emailThread.sortedEmails()
-    isDraft = _.last(sortedEmails).draft_id?
-
     @views.mainView.toolbarView.refreshToolbarButtonView.hide()
-
-    if isDraft
-      @routers.emailThreadsRouter.navigate("#email_draft/" + emailThreadUID, trigger: true)
-    else
-      @routers.emailThreadsRouter.navigate("#email_thread/" + emailThreadUID, trigger: true)
+    @routers.emailThreadsRouter.navigate("#email_thread/" + emailThreadUID, trigger: true)
 
   listItemDeselected: (listView, listItemView) ->
     @views.mainView.toolbarView.refreshToolbarButtonView.show()
@@ -541,11 +555,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
   ### EmailThread Events ###
   ##########################
 
-  # TODO for now assumes the email thred is in the current folder but it might be in a different folder
   emailThreadSeenChanged: (emailThread, seenValue) ->
     delta = if seenValue then -1 else 1
       
-    for folderID in emailThread.folderIDs()
+    for folderID in emailThread.get("folder_ids")
       folder = @collections.emailFolders.getEmailFolder(folderID)
       continue if not folder?
       
@@ -566,6 +579,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     return splitPaneMode is "horizontal" || splitPaneMode is "vertical"
     
   showEmailThread: (emailThread) ->
+    emailThread?.set("seen", true)
     emailThreadView = @views.mainView.showEmailThread(emailThread, @isSplitPaneMode())
 
     @views.emailThreadsListView.markEmailThreadRead(emailThread) if emailThread
@@ -603,7 +617,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     for listItemView in _.values(emailThreadsListView.listItemViews)
       emailThread = listItemView.model
       
-      if emailThread.get("emails")[0].subject is "Turing Email - Your daily Genie Report!"
+      if emailThread.get("subject") is "Turing Email - Your daily Genie Report!"
         emailThreadsListView.collection.remove(emailThread)
         emailThreadsListView.collection.unshift(emailThread)
 
@@ -612,7 +626,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
         emailThreadsListView.$el.prepend(trReportEmail)
 
         return
-    
+
   showEmails: ->
     @views.mainView.showEmails(@isSplitPaneMode())
 

@@ -22,4 +22,4 @@ describe "GeoReport", ->
       @server.respond()
 
     it "loads the contacts report", ->
-      validateAttributes(@geoReport.toJSON(), ["ip_stats"])
+      validateKeys(@geoReport.toJSON(), ["ip_stats"])

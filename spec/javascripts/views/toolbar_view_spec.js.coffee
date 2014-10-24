@@ -1,16 +1,11 @@
 describe "ToolbarView", ->
   beforeEach ->
     specStartTuringEmailApp()
-
-    [@server] = specPrepareEmailFoldersFetch()
-    TuringEmailApp.collections.emailFolders.fetch()
-    @server.respond()
     
+    TuringEmailApp.collections.emailFolders.add(FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE))
     @toolbarView = TuringEmailApp.views.toolbarView
     
   afterEach ->
-    @server.restore()
-    
     specStopTuringEmailApp()
 
   it "has the right template", ->
@@ -335,12 +330,3 @@ describe "ToolbarView", ->
           
         it "triggers render", ->
           expect(@renderSpy).toHaveBeenCalled()
-  
-      describe "#emailFolderUnreadCountChanged", ->
-        beforeEach ->
-          @emailFolder = TuringEmailApp.collections.emailFolders.models[0]
-
-          @toolbarView.emailFolderUnreadCountChanged(TuringEmailApp, @emailFolder)
-
-        it "does nothing", ->
-          return

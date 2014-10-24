@@ -2,29 +2,20 @@ describe "ListView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection()
+    @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
 
     @listView = new TuringEmailApp.Views.EmailThreads.ListView(
       collection: @emailThreads
     )
     $("body").append(@listView.$el)
 
-    emailThreadsFixtures = fixture.load("email_threads.fixture.json");
-    @validEmailThreadsFixture = emailThreadsFixtures[0]["valid"]
-    emailThreadFixtures = fixture.load("email_thread.fixture.json")
-    @validEmailThreadFixture = emailThreadFixtures[0]["valid"]
-
-    @emailThread = new TuringEmailApp.Models.EmailThread(undefined, emailThreadUID: @validEmailThreadFixture["uid"])
-    
-    @server = sinon.fakeServer.create()
-    @server.respondWith "GET", @emailThreads.url, JSON.stringify(@validEmailThreadsFixture)
-
-    @url = "/api/v1/email_threads/show/" + @validEmailThreadFixture["uid"]
-    @server.respondWith "GET", @url, JSON.stringify(@validEmailThreadFixture)
+    emailThreadAttributes = FactoryGirl.create("EmailThread")
+    @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadAttributes,
+      app: TuringEmailApp
+      emailThreadUID: emailThreadAttributes.uid
+    )
 
   afterEach ->
-    @server.restore()
-
     @listView.$el.remove()
     
     specStopTuringEmailApp()
@@ -32,17 +23,12 @@ describe "ListView", ->
   describe "after fetch", ->
 
     beforeEach ->
-      @emailThreads.fetch(reset: true)
-      @server.respond()
+      @emailThreads.reset(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE))
 
     afterEach ->
       @listView.removeAll()
 
     describe "#initialize", ->
-
-      beforeEach ->
-        @emailThread.fetch()
-        @server.respond()
 
       it "adds a listener for add that calls @addOne", ->
         @listView.collection.add @emailThread
@@ -68,9 +54,6 @@ describe "ListView", ->
         @spy.restore()
 
       it "calls removeAll if options.previousModels is passed in", ->
-        @emailThread.fetch()
-        @server.respond()
-
         @spy = sinon.spy(@listView, "removeAll")
 
         @listView.collection.add @emailThread

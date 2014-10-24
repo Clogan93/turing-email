@@ -27,6 +27,8 @@ Rails.application.routes.draw do
       put '/user_configurations', to: 'user_configurations#update'
       patch '/user_configurations', to: 'user_configurations#update'
 
+      get '/gmail_accounts/get_token', to: 'gmail_accounts#get_token'
+      
       resources :sessions, only: [:create]
       delete '/signout', to: 'sessions#destroy'
 

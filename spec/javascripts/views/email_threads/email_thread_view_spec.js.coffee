@@ -2,21 +2,21 @@ describe "EmailThreadView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    emailThreadFixtures = fixture.load("email_thread.fixture.json")
-    @validEmailThreadFixture = emailThreadFixtures[0]["valid"]
+    emailThreadAttributes = FactoryGirl.create("EmailThread")
+    emailThreadAttributes.emails.push(FactoryGirl.create("Email", draft_id: "draft"))
+    @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadAttributes,
+      app: TuringEmailApp
+      emailThreadUID: emailThreadAttributes.uid
+    )
     
-    @emailThread = new TuringEmailApp.Models.EmailThread(undefined, emailThreadUID: @validEmailThreadFixture["uid"])
     @emailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
       model: @emailThread
     )
-
-    @server = sinon.fakeServer.create()
-
-    @server.respondWith "GET", @emailThread.url, JSON.stringify(@validEmailThreadFixture)
+    $("body").append(@emailThreadView.$el)
 
   afterEach ->
-    @server.restore()
-
+    @emailThreadView.$el.remove()
+    
     specStopTuringEmailApp()
 
   it "has the right template", ->
@@ -24,11 +24,10 @@ describe "EmailThreadView", ->
 
   describe "after fetch", ->
     beforeEach ->
-      @emailThread.fetch()
-      @server.respond()
+      email.html_part_encoded = null for email in @emailThread.get("emails")
+      @emailThreadView.render()
 
     describe "#render", ->
-
       it "should have the root element be a div", ->
         expect(@emailThreadView.el.nodeName).toEqual "DIV"
 
@@ -52,7 +51,7 @@ describe "EmailThreadView", ->
           for email, index in @emailThread.get("emails")
             if email.draft_id is null
               expect(fromNames[index]).toEqual email.from_name
-              expect(textParts[index]).toEqual email.text_part
+              expect(textParts[index]).toEqual base64_decode_urlsafe(email.text_part_encoded)
 
         describe "when there is a no html or text parts of the email yet there is a body part", ->
 
@@ -61,9 +60,9 @@ describe "EmailThreadView", ->
               if email.draft_id is null
                 @seededChance = new Chance(1)
                 randomBodyText = @seededChance.string({length: 150})
-                @emailThread.get("emails")[index].html_part = null
-                @emailThread.get("emails")[index].text_part = null
-                @emailThread.get("emails")[index].body_text = randomBodyText
+                @emailThread.get("emails")[index].html_part_encoded = null
+                @emailThread.get("emails")[index].text_part_encoded = null
+                @emailThread.get("emails")[index].body_text_encoded = base64_encode_urlsafe(randomBodyText)
                 @emailThreadView.render()
                 expect(@emailThreadView.$el.find("pre[name='body_text']")).toContainHtml(randomBodyText)
 
@@ -77,13 +76,14 @@ describe "EmailThreadView", ->
           expect(@spy).toHaveBeenCalled()
           @spy.restore()
 
-    describe "addPreviewDataToTheModelJSON", ->
+    describe "#addPreviewDataToTheModelJSON", ->
       beforeEach ->
         @modelJSON = @emailThread.toJSON()
         @emailThreadView.addPreviewDataToTheModelJSON @modelJSON
 
       it "adds the fromPreview data to the model JSON", ->
-        expect(@modelJSON["fromPreview"]).toEqual @emailThread.get("emails")[0].from_name + " (2)"
+        expect(@modelJSON["fromPreview"]).toEqual(@emailThread.get("emails")[0].from_name +
+                                                  " (" + @emailThread.get("emails").length + ")")
 
       it "adds the subjectPreview data to the model JSON", ->
         expect(@modelJSON["subjectPreview"]).toEqual @emailThread.get("emails")[0].subject
