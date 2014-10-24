@@ -6,5 +6,5 @@ class TuringEmailApp.Routers.EmailFoldersRouter extends Backbone.Router
   showFolder: (emailFolderID) ->
     TuringEmailApp.currentEmailFolderIs(emailFolderID)
 
-  showFolderPage: (emailFolderID, page) ->
-    TuringEmailApp.currentEmailFolderIs(emailFolderID, page)
+  showFolderPage: (emailFolderID, pageTokenIndex) ->
+    TuringEmailApp.currentEmailFolderIs(emailFolderID, pageTokenIndex)

@@ -9,25 +9,24 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     @listenTo(@model, "removedFromCollection destroy", @remove)
 
   render: ->
-    modelJSON = @model.toJSON()
+    checked = @isChecked()
+    
+    modelJSON = {}
     modelJSON["fromPreview"] = @model.fromPreview()
     modelJSON["subjectPreview"] = @model.subjectPreview()
     modelJSON["datePreview"] = @model.datePreview()
+    modelJSON["snippet"] = @model.get("snippet")
     @$el.html(@template(modelJSON))
 
-    seen = true
-    
-    for email in @model.get("emails")
-      if !email.seen
-        seen = false
-        break
-    
-    if seen
+    if @model.get("seen")
       @markRead(silent: true)
     else
       @markUnread(silent: true)
 
     @setupClick()
+    @setupCheckbox()
+    
+    @check(silent: true) if checked
     
     return this
 
@@ -66,7 +65,7 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     return @$el.hasClass "currently_being_read"
 
   isChecked: ->
-    return @diviCheck.hasClass "checked"
+    return @diviCheck?.hasClass "checked"
 
   ###############
   ### Actions ###

@@ -10,21 +10,22 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
 
   render: ->
     if @model
-      modelJSON = @model.toJSON()
-      modelJSON["sortedEmails"] = @model.sortedEmails()
-      @addPreviewDataToTheModelJSON modelJSON
+      @model.load(
+        success: =>
+          modelJSON = @model.toJSON()
+          modelJSON["sortedEmails"] = @model.sortedEmails()
+          
+          @addPreviewDataToTheModelJSON(modelJSON)
+          
+          @$el.html(@template(modelJSON))
 
-      @$el.html(@template(modelJSON))
-
-      @renderDrafts()
-
-      @model.seenIs(true)
+          @renderDrafts()
+          @renderGenieReport()
+          @renderHTMLEmails()
   
-      @renderGenieReport()
-      @renderHTMLEmails()
-  
-      @setupEmailExpandAndCollapse()
-      @setupButtons()
+          @setupEmailExpandAndCollapse()
+          @setupButtons()
+      )
     else
       @$el.empty()
     
@@ -85,8 +86,10 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
   # TODO write tests
   renderHTMLEmails: ->
     for email, index in @model.get("emails")
-      if email.html_part?
+      if email.html_part_encoded?
         @insertHtmlIntoIframe email, index
+
+    @updateIframeHeight(@$el.find("iframe").last())
 
   renderDrafts: ->
     @embeddedComposeViews = {}
@@ -128,13 +131,12 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     iframe = @$el.find("#email_iframe" + index.toString())
     
     iframeHTML = iframe.contents().find("html")
-    iframeHTML.html("<div>" + email.html_part + "</div>")
+    iframeHTML.html("<div>" + base64_decode_urlsafe(email.html_part_encoded) + "</div>")
 
     body = iframe.contents().find("body")
     
     iframeHTML.css("overflow", "hidden")
     body.css("margin", "0px")
-    @updateIframeHeight(iframe)
 
     iframe.contents().find("img").load(=>
       @updateIframeHeight(iframe)

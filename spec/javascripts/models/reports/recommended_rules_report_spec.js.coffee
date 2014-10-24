@@ -22,4 +22,4 @@ describe "RecommendedRulesReport", ->
       @server.respond()
 
     it "loads the contacts report", ->
-      validateAttributes(@recommendedRulesReport.toJSON(), ["rules_recommended"])
+      validateKeys(@recommendedRulesReport.toJSON(), ["rules_recommended"])

@@ -22,4 +22,4 @@ describe "AttachmentsReport", ->
       @server.respond()
 
     it "loads the attachments report", ->
-      validateAttributes(@attachmentsReport.toJSON(), ["average_file_size", "content_type_stats"])
+      validateKeys(@attachmentsReport.toJSON(), ["average_file_size", "content_type_stats"])

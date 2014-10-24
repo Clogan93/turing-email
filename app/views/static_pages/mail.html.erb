@@ -1,7 +1,9 @@
 <div id="main"></div>
 
 <script type="text/javascript">
-  $(function() {
+  function onGoogleAPILoad() {
     TuringEmailApp.start();
-  });
+  }
 </script>
+
+<script src="https://apis.google.com/js/client.js?onload=onGoogleAPILoad"></script>

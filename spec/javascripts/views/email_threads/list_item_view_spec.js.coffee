@@ -2,20 +2,17 @@ describe "ListItemView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    emailThreadFixtures = fixture.load("email_thread.fixture.json");
-    @validEmailThreadFixture = emailThreadFixtures[0]["valid"]
-
-    @emailThread = new TuringEmailApp.Models.EmailThread(undefined, emailThreadUID: @validEmailThreadFixture["uid"])
+    emailThreadAttributes = FactoryGirl.create("EmailThread")
+    @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadAttributes,
+      app: TuringEmailApp
+      emailThreadUID: emailThreadAttributes.uid
+    )
+    
     @listItemView = new TuringEmailApp.Views.EmailThreads.ListItemView(
       model: @emailThread
     )
 
-    @server = sinon.fakeServer.create()
-    @server.respondWith "GET", @emailThread.url, JSON.stringify(@validEmailThreadFixture)
-
   afterEach ->
-    @server.restore()
-
     specStopTuringEmailApp()
 
   it "has the right template", ->
@@ -23,8 +20,7 @@ describe "ListItemView", ->
 
   describe "after fetch", ->
     beforeEach ->
-      @emailThread.fetch()
-      @server.respond()
+      @listItemView.render()
 
     describe "#render", ->
       it "renders the list item", ->
@@ -32,7 +28,7 @@ describe "ListItemView", ->
 
         expect(@listItemView.el).toContain("td.check-mail")
         expect(@listItemView.$el.find('td.mail-contact').text().trim()).toEqual @emailThread.fromPreview()
-        expect(@listItemView.$el.find('td.mail-subject').text().trim()).toEqual @emailThread.subjectPreview()
+        expect(@listItemView.$el.find('td.mail-subject').text().trim()).toEqual @emailThread.subjectPreview() + " - " + @emailThread.get("snippet")
         expect(@listItemView.$el.find('td.mail-date').text().trim()).toEqual @emailThread.datePreview()
 
     describe "#addedToDOM", ->

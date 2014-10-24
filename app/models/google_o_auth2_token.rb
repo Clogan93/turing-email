@@ -33,7 +33,7 @@ class GoogleOAuth2Token < ActiveRecord::Base
     return api_client
   end
 
-  def refresh(o_auth2_base_client, force = false)
+  def refresh(o_auth2_base_client = nil, force = false)
     # guard against simultaneous refreshes
 
     self.with_lock do
@@ -42,6 +42,7 @@ class GoogleOAuth2Token < ActiveRecord::Base
       log_console('REFRESHING TOKEN')
       self.log()
 
+      o_auth2_base_client = self.o_auth2_base_client() if o_auth2_base_client.nil?
       o_auth2_base_client.fetch_access_token!()
       self.update(o_auth2_base_client)
 

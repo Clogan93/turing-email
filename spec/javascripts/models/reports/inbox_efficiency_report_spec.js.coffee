@@ -23,4 +23,4 @@ describe "InboxEfficiencyReport", ->
       @server.respond()
 
     it "loads the contacts report", ->
-      validateAttributes(@inboxEfficiencyReport.toJSON(), ["average_response_time_in_minutes", "percent_archived"])
+      validateKeys(@inboxEfficiencyReport.toJSON(), ["average_response_time_in_minutes", "percent_archived"])

@@ -25,7 +25,7 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
 
     @setupNodes()
 
-    @select(@selectedItem(), silent: true) if @selectedItem()?
+    @select(@collection.getEmailFolder(@selectedItem().get("label_id")), silent: true) if @selectedItem()?
       
     return this
 
