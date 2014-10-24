@@ -73,6 +73,8 @@ Rails.application.routes.draw do
       resources :email_rules, only: [:create, :index]
       delete '/email_rules/:email_rule_uid', :to => 'email_rules#destroy'
       get '/email_rules/recommended_rules', to: 'email_rules#recommended_rules'
+
+      get '/website_previews/proxy', to: 'website_previews#proxy'
     end
   end
 
