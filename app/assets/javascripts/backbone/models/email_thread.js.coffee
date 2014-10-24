@@ -100,7 +100,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     
   parseThreadInfo: (threadInfo, options) ->
     lastMessageInfo = _.last(threadInfo.messages)
-    threadParsed.uid = threadInfo.id
+    threadParsed = uid: threadInfo.id
     TuringEmailApp.Models.EmailThread.setThreadParsedProperties(threadParsed, threadInfo.messages, lastMessageInfo)
     
     threadParsed.emails = _.map(threadInfo.messages, (message) =>
@@ -209,7 +209,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     if fromAddress is TuringEmailApp.models.user.get("email")
       return "me " + @numEmailsText()
     else
-      return (if fromName?.trim() != "" then fromName else fromAddress) + " " + @numEmailsText() 
+      return (if fromName? and fromName.trim() != "" then fromName else fromAddress) + " " + @numEmailsText() 
 
   subjectPreview: ->
     subject = @get("subject")

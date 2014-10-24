@@ -306,7 +306,7 @@ describe "EmailThread", ->
           it "returns the correct preview", ->
             expect(@emailThread.fromPreview()).toEqual(@emailThread.get("from_name") + " " + @emailThread.numEmailsText())
         
-        describe "without from_name", ->
+        describe "with from_name=blank", ->
           beforeEach ->
             @oldFromName = @emailThread.get("from_name")
             @emailThread.set("from_name", "")
@@ -317,6 +317,17 @@ describe "EmailThread", ->
           it "returns the correct preview", ->
             expect(@emailThread.fromPreview()).toEqual(@emailThread.get("from_address") + " " + @emailThread.numEmailsText())
 
+        describe "with from_name=null", ->
+          beforeEach ->
+            @oldFromName = @emailThread.get("from_name")
+            @emailThread.set("from_name", null)
+
+          afterEach ->
+            @emailThread.set("from_name", @oldFromName)
+
+          it "returns the correct preview", ->
+            expect(@emailThread.fromPreview()).toEqual(@emailThread.get("from_address") + " " + @emailThread.numEmailsText())
+            
     describe "#subjectPreview", ->
       describe "has a subject", ->
         it "returns the correct subject preview", ->
