@@ -6,6 +6,7 @@ class TuringEmailApp.Models.WebsitePreview extends Backbone.Model
 
   parse: (response, options) ->
     parsedResponse = []
+    parsedResponse["url"] = response["url"]
     parsedResponse["html"] = response["html"]
     parsedResponse["title"] = response["html"]?.match(/<title>(.*?)<\/title>/)?[0]?.replace("<title>", "")?.replace("</title>", "")
     parsedResponse["snippet"] = response["html"]?.match(/<meta name="Description" content="(.*?)" \/>/)?[0]?.replace('<meta name="Description" content="', "")?.replace('" />', "")

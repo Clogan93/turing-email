@@ -1,13 +1,18 @@
 TuringEmailApp.Views.App ||= {}
 
-class TuringEmailApp.Views.App.WebsitePreviewView extends TuringEmailApp.Views.App.ComposeView
+class TuringEmailApp.Views.App.WebsitePreviewView extends Backbone.View
   template: JST["backbone/templates/app/compose/website_preview"]
 
+  initialize: ->
+    @listenTo(@model, "change", @render)
+
   render: ->
-    @$el.html(@template(@model.toJSON()))
+    @$el.append(@template(@model.toJSON()))
+
+    @$el.find(".compose_link_preview_close_button").click =>
+      @hide()
 
     return this
 
   hide: ->
-    return
-    # @$el.find("#compose_form").hide()
+    @$el.find(".compose_link_preview").remove()
