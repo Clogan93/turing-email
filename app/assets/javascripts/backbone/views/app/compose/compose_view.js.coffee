@@ -9,7 +9,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
   render: ->
     @$el.html(@template())
     @setupComposeView()
-    #@setupLinkPreviews()
+    @setupLinkPreviews()
     return this
 
   setupComposeView: ->
@@ -349,9 +349,13 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
 
       if indexOfUrl isnt -1 and linkPreviewIndex is -1
         link = emailHtml.substring(indexOfUrl).split(" ")[0]
-        linkImageUrl = "http://images.apple.com/home/images/og.jpg?201410151147"
-        linkTitle = "Apple"
-        linkSnippet = "Apple designs and creates the iPhone, iPad, Mac notebooks and desktop computers, iOS, OS X, iPod and iTunes, and the new Apple Watch."
+
+        websitePreview = new WebsitePreview(link)
+
+        linkTitle = websitePreview.title()
+        linkImageUrl = websitePreview.image()
+        linkSnippet = websitePreview.snippet()
+
         $(@).append("<div class='compose_link_preview'><span class='compose_link_preview_close_button ui-icon ui-icon-close'></span><div class='compose_link_preview_left_column'><img class='compose_link_preview_image' src='" + linkImageUrl + "'/><span class='compose_link_preview_title'>" + linkTitle + "</span></div><br /><div class='compose_link_preview_right_column'><span class='compose_link_preview_snippet'>" + linkSnippet + "</span><br /><br /><span class='compose_link_preview_link'><a href='" + link + "'>" + link +  "</a></span></div></div>")
         $(@).find(".compose_link_preview_close_button").click =>
           $(@).find(".compose_link_preview").remove()
