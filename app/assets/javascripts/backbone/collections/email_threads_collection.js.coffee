@@ -34,7 +34,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
         options.error
       )
 
-      @trigger("request", collection, null, options);
+      @trigger("request", collection, null, options)
 
   threadsListRequest: (options) ->
     params =

@@ -23,29 +23,35 @@ describe "EmailThreadsCollection", ->
       beforeEach ->
         @superStub = sinon.stub(TuringEmailApp.Collections.EmailThreadsCollection.__super__, "sync")
         @googleRequestStub = sinon.stub(window, "googleRequest", ->)
+        @triggerStub = sinon.stub(@emailThreadsCollection, "trigger", ->)
 
       afterEach ->
+        @triggerStub.restore()
         @googleRequestStub.restore()
         @superStub.restore()
 
       describe "write", ->
         beforeEach ->
           @method = "write"
-          @model = {}
+          @collection = {}
           @options = {}
 
-          @emailThreadsCollection.sync(@method, @model, @options)
+          @emailThreadsCollection.sync(@method, @collection, @options)
 
         it "calls super", ->
-          expect(@superStub).toHaveBeenCalledWith(@method, @model, @options)
+          expect(@superStub).toHaveBeenCalledWith(@method, @collection, @options)
 
         it "does NOT call googleRequest", ->
           expect(@googleRequestStub).not.toHaveBeenCalled()
 
+        it "does not trigger the request event", ->
+          expect(@triggerStub).not.toHaveBeenCalled()
+
       describe "read", ->
         beforeEach ->
-          @error = sinon.stub()
-          @emailThreadsCollection.sync("read", {}, error: @error)
+          @collection = {}
+          @options = error: sinon.stub()
+          @emailThreadsCollection.sync("read", @collection, @options)
 
         it "does not call super", ->
           expect(@superStub).not.toHaveBeenCalled()
@@ -54,7 +60,10 @@ describe "EmailThreadsCollection", ->
           expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
           specCompareFunctions((=> @threadsListRequest(options)), @googleRequestStub.args[0][1])
           specCompareFunctions(((response) => @processThreadsListRequest(response, options)), @googleRequestStub.args[0][2])
-          expect(@googleRequestStub.args[0][3]).toEqual(@error)
+          expect(@googleRequestStub.args[0][3]).toEqual(@options.error)
+
+        it "triggers the request event", ->
+          expect(@triggerStub).toHaveBeenCalledWith("request", @collection, null, @options)
 
     describe "#threadsListRequest", ->
       beforeEach ->
