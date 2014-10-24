@@ -101,64 +101,16 @@ window.specPrepareReportFetches = (server) ->
 
   return server
     
-window.specPrepareSearchResultsFetch = (server) ->
-  emailThreadSearchResultsFixtures = fixture.load("email_thread_search_results.fixture.json");
-  validEmailThreadSearchResultsFixture = emailThreadSearchResultsFixtures[0]["valid"]
-
-  server = sinon.fakeServer.create() if not server?
-
-  server.respondWith "POST", TuringEmailApp.Collections.EmailThreadsSearchResultsCollection.SEARCH_URL,
-                     JSON.stringify(validEmailThreadSearchResultsFixture)
-  
-  return [server, validEmailThreadSearchResultsFixture]
-
-window.specPrepareEmailThreadFetch = (server) ->
-  emailThreadFixtures = fixture.load("email_thread.fixture.json")
-  validEmailThreadFixture = emailThreadFixtures[0]["valid"]
-  
-  emailThread = new TuringEmailApp.Models.EmailThread(undefined,
-    app: TuringEmailApp
-    emailThreadUID: validEmailThreadFixture["uid"]
-  )
-  
-  server = sinon.fakeServer.create() if not server?
-  server.respondWith "GET", emailThread.url, JSON.stringify(validEmailThreadFixture)
-
-  return [server, emailThread, validEmailThreadFixture]
-  
-window.specCreateEmailThreadsListView = (server) ->
+window.specCreateEmailThreadsListView = () ->
   emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
-
-  emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView(
-    collection: emailThreads
-  )
+  emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView(collection: emailThreads)
   $("body").append(emailThreadsListView)
 
-  validEmailThreadsFixture = FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE)
-  emailThreads.reset(validEmailThreadsFixture)
+  emailThreadsData = FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE)
+  emailThreads.reset(emailThreadsData)
 
-  server = sinon.fakeServer.create() if not server?
-  return [emailThreadsListView.$el, emailThreadsListView, emailThreads, server, validEmailThreadsFixture]
+  return emailThreadsListView
 
-window.validateAttributes = (expectedAttributes, model, modelRendered, expectedAttributesToSkip=[]) ->
-  expectedAttributes = expectedAttributes.sort()
-  keys = _.keys(modelRendered).sort()
-  expect(keys).toEqual(expectedAttributes)
-
-  for key, value of modelRendered
-    continue if key == "__name__"
-    continue if expectedAttributesToSkip.indexOf(key) != -1
-
-    expect(value).toEqual(model[key])
-
-window.validateUser = (user, userRendered) ->
-  expectedAttributes = ["email"]
-  validateAttributes(expectedAttributes, user, userRendered)
-    
-window.validateUserSettings = (userSettings, userSettingsRendered) ->
-  expectedAttributes = ["id", "demo_mode_enabled", "keyboard_shortcuts_enabled", "genie_enabled", "split_pane_mode"]
-  validateAttributes(expectedAttributes, userSettings, userSettingsRendered)
-    
 window.validateKeys = (objectJSON, expectedKeys) ->
   keys = (key for key in _.keys(objectJSON))
   keys.sort()
@@ -174,30 +126,6 @@ window.validateBrainRulesAttributes = (brainRulesJSON) ->
 window.validateEmailRulesAttributes = (emailRulesJSON) ->
   expectedAttributes = ["uid", "from_address", "to_address", "subject", "list_id", "destination_folder_name"]
   validateKeys(emailRulesJSON, expectedAttributes)
-
-window.validateEmailFolderAttributes = (emailFolderJSON) ->
-  expectedAttributes = ["label_id", "name",
-                         "message_list_visibility", "label_list_visibility",
-                         "label_type",
-                         "num_threads", "num_unread_threads"]
-  validateKeys(emailFolderJSON, expectedAttributes)
-
-window.validateEmailThreadAttributes = (emailThreadJSON) ->
-  expectedAttributes = ["uid", "emails"]
-  validateKeys(emailThreadJSON, expectedAttributes)
-  
-window.validateEmailAttributes = (emailJSON) ->
-  expectedAttributes = ["auto_filed",
-                        "uid", "draft_id", "message_id", "list_id",
-                        "seen", "snippet", "date",
-                        "from_name", "from_address",
-                        "sender_name", "sender_address",
-                        "reply_to_name", "reply_to_address",
-                        "tos", "ccs", "bccs",
-                        "subject",
-                        "html_part", "text_part", "body_text",
-                        "folder_ids"]
-  validateKeys(emailJSON, expectedAttributes)
 
 window.verifyReportsRendered = (parent) ->
   reportSelectors = [".attachments_report", ".email_volume_report", ".folders_report", ".geo_report",

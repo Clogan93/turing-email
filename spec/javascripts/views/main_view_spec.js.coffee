@@ -242,10 +242,12 @@ describe "MainView", ->
   
       describe "#showEmailThread", ->
         beforeEach ->
-          @server.restore()
-          [@server, @emailThread] = specPrepareEmailThreadFetch()
-          @emailThread.fetch()
-          @server.respond()      
+          emailThreadAttributes = FactoryGirl.create("EmailThread")
+          emailThreadAttributes.emails.push(FactoryGirl.create("Email", draft_id: "draft"))
+          @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadAttributes,
+            app: TuringEmailApp
+            emailThreadUID: emailThreadAttributes.uid
+          )
           
         describe "when split pane mode is on", ->
           beforeEach ->

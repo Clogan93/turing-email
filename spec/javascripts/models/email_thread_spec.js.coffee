@@ -18,6 +18,21 @@ describe "EmailThread", ->
     afterEach ->
       @server.restore()
 
+    describe "#setThreadParsedProperties", ->
+      beforeEach ->
+        @server.restore()
+        @response = fixture.load("gmail_api/users.threads.get.fixture.json")[0]
+        @threadMinParsed = fixture.load("gmail_api/users.thread.min.parsed.fixture.json")[0]
+        @server = sinon.fakeServer.create()
+        
+        @threadInfo = @response.result
+        @result = TuringEmailApp.Models.EmailThread.setThreadParsedProperties(uid: @threadInfo.id,
+                                                                              @threadInfo.messages,
+                                                                              @threadInfo.messages[0])
+      
+      it "sets the thread properties", ->
+        expect(JSON.stringify(@result)).toEqual(JSON.stringify(@threadMinParsed))
+      
     describe "#removeFromFolder", ->
       beforeEach ->
         @emailFolderID = "INBOX"
@@ -145,7 +160,216 @@ describe "EmailThread", ->
     it "initializes the variables", ->
       expect(@emailThreadTemp.app).toEqual(TuringEmailApp)
       expect(@emailThreadTemp.emailThreadUID).toEqual("1")
+
+  describe "Network", ->
+    describe "#load", ->
+      beforeEach ->
+        @success = sinon.stub()
+        @error = sinon.stub()
+        @options = success: @success, error: @error
+        @fetchStub = sinon.stub(@emailThread, "fetch")
+        
+        @checkFetch = =>
+          expect(@emailThread.loading).toBeTruthy()
+          expect(@emailThread.emailThreadUID).toEqual(@emailThread.get("uid"))
+          expect(@fetchStub).toHaveBeenCalled()
           
+        @checkSuccess = =>
+          expect(@emailThread.get("loaded")).toBeTruthy()
+          expect(@emailThread.loading).toBeFalsy()
+          expect(@success).toHaveBeenCalled()
+          expect(@error).not.toHaveBeenCalled()
+          
+        @checkError = =>
+          expect(@emailThread.get("loaded")).toBeFalsy()
+          expect(@emailThread.loading).toBeFalsy()
+          expect(@success).not.toHaveBeenCalled()
+          expect(@error).toHaveBeenCalled()
+        
+      afterEach ->
+        @fetchStub.restore()
+        
+      describe "loaded=true", ->
+        beforeEach ->
+          @emailThread.set("loaded", true)
+
+        describe "force=false", ->
+          beforeEach ->
+            @emailThread.load(@options)
+            
+          it "calls success", ->
+            expect(@options.success).toHaveBeenCalled()
+            
+          it "does not fetch", ->
+            expect(@fetchStub).not.toHaveBeenCalled()
+            
+        describe "force=true", ->
+          describe "loading=true", ->
+            beforeEach ->
+              @emailThread.loading = true
+              @emailThread.load(@options, true)
+              
+            it "returns", ->
+              expect(@success).not.toHaveBeenCalled()
+              expect(@error).not.toHaveBeenCalled()
+              expect(@fetchStub).not.toHaveBeenCalled()
+            
+          describe "loading=false", ->
+            beforeEach ->
+              @emailThread.loading = false
+              @emailThread.load(@options, true)
+              
+            it "fetches", ->
+              @checkFetch()
+              
+            describe "on success", ->
+              beforeEach ->
+                @fetchStub.args[0][0].success()
+                
+              it "loads", ->
+                @checkSuccess()
+                
+            describe "on error", ->
+              beforeEach ->
+                @emailThread.set("loaded", false)
+                @fetchStub.args[0][0].error()
+
+              it "errors", ->
+                @checkError()
+    
+      describe "loaded=false", ->
+        beforeEach ->
+          @emailThread.set("loaded", false)
+          
+        describe "loading=true", ->
+          beforeEach ->
+            @emailThread.loading = true
+            @emailThread.load(@options)
+
+          it "returns", ->
+            expect(@success).not.toHaveBeenCalled()
+            expect(@error).not.toHaveBeenCalled()
+            expect(@fetchStub).not.toHaveBeenCalled()
+
+        describe "loading=false", ->
+          beforeEach ->
+            @emailThread.loading = false
+            @emailThread.load(@options)
+
+          it "fetches", ->
+            @checkFetch()
+
+          describe "on success", ->
+            beforeEach ->
+              @fetchStub.args[0][0].success()
+
+            it "loads", ->
+              @checkSuccess()
+
+          describe "on error", ->
+            beforeEach ->
+              @emailThread.set("loaded", false)
+              @fetchStub.args[0][0].error()
+
+            it "errors", ->
+              @checkError()
+      
+    describe "#sync", ->
+      beforeEach ->
+        @superStub = sinon.stub(TuringEmailApp.Models.EmailThread.__super__, "sync")
+        @googleRequestStub = sinon.stub(window, "googleRequest", ->)
+        @triggerStub = sinon.stub(@emailThread, "trigger", ->)
+  
+      afterEach ->
+        @triggerStub.restore()
+        @googleRequestStub.restore()
+        @superStub.restore()
+  
+      describe "write", ->
+        beforeEach ->
+          @method = "write"
+          @model = {}
+          @options = {}
+
+          @emailThread.sync(@method, @model, @options)
+  
+        it "calls super", ->
+          expect(@superStub).toHaveBeenCalledWith(@method, @model, @options)
+  
+        it "does NOT call googleRequest", ->
+          expect(@googleRequestStub).not.toHaveBeenCalled()
+          
+        it "does not trigger the request event", ->
+          expect(@triggerStub).not.toHaveBeenCalled()
+  
+      describe "read", ->
+        beforeEach ->
+          @model = {}
+          @options = error: sinon.stub()
+          @emailThread.sync("read", @model, @options)
+  
+        it "does not call super", ->
+          expect(@superStub).not.toHaveBeenCalled()
+  
+        it "calls googleRequest", ->
+          expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
+          specCompareFunctions((=> @threadsGetRequest()), @googleRequestStub.args[0][1])
+          specCompareFunctions(((response) => @processThreadsGetRequest(response, options)), @googleRequestStub.args[0][2])
+          expect(@googleRequestStub.args[0][3]).toEqual(@options.error)
+
+        it "triggers the request event", ->
+          expect(@triggerStub).toHaveBeenCalledWith("request", @model, null, @options)
+      
+    describe "#threadsGetRequest", ->
+      beforeEach ->
+        window.gapi = client: gmail: users: threads: get: ->
+
+        @ret = {}
+        @threadsGetStub = sinon.stub(gapi.client.gmail.users.threads, "get", => return @ret)
+
+        @params =
+          userId: "me"
+          id: @emailThread.emailThreadUID
+
+      afterEach ->
+        @threadsGetStub.restore()
+
+      it "prepares and returns the Gmail API request", ->
+        @returned = @emailThread.threadsGetRequest()
+
+        expect(@threadsGetStub).toHaveBeenCalledWith(@params)
+        expect(@returned).toEqual(@ret)
+          
+    describe "#processThreadsGetRequest", ->
+      beforeEach ->
+        @response = fixture.load("gmail_api/users.threads.get.fixture.json")[0]
+        @options = {success: sinon.stub()}
+
+        @threadJSON = {}
+        @parseThreadInfoStub = sinon.stub(@emailThread, "parseThreadInfo", => @threadJSON)
+        
+        @emailThread.processThreadsGetRequest(@response, @options)
+    
+      afterEach ->
+        @parseThreadInfoStub.restore()
+        
+      it "parse the response", ->
+        expect(@parseThreadInfoStub).toHaveBeenCalledWith(@response.result)
+        
+      it "passes the result of parseThreadInfo to the success handler", ->
+        expect(@options.success).toHaveBeenCalledWith(@threadJSON)
+        
+    describe "#parseThreadInfo", ->
+      beforeEach ->
+        @response = fixture.load("gmail_api/users.threads.get.fixture.json")[0]
+        @threadInfo = @response.result
+
+        @threadParsed = fixture.load("gmail_api/users.thread.parsed.fixture.json")[0]
+        @result = @emailThread.parseThreadInfo(@threadInfo)
+        
+      it "parses the thread", ->
+        expect(JSON.stringify(@result)).toEqual(JSON.stringify(@threadParsed))
+        
   describe "Events", ->
     describe "#threadsModifyUnreadRequest", ->
       beforeEach ->

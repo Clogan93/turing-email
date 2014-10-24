@@ -779,8 +779,9 @@ describe "TuringEmailApp", ->
           @singleAction = sinon.spy()
           @multiAction = sinon.spy()
       
-          @server.restore()
-          [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
+          @listView = specCreateEmailThreadsListView()
+          @listViewDiv = @listView.$el
+          @emailThreads = @listView.collection
       
           TuringEmailApp.views.emailThreadsListView = @listView
           TuringEmailApp.collections.emailThreads = @emailThreads
@@ -958,7 +959,9 @@ describe "TuringEmailApp", ->
           
       describe "#readClicked", ->
         beforeEach ->
-          [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
+          @listView = specCreateEmailThreadsListView()
+          @listViewDiv = @listView.$el
+          @emailThreads = @listView.collection
   
           TuringEmailApp.views.emailThreadsListView = @listView
           TuringEmailApp.collections.emailThreads = @emailThreads
@@ -998,7 +1001,9 @@ describe "TuringEmailApp", ->
 
       describe "#unreadClicked", ->
         beforeEach ->
-          [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
+          @listView = specCreateEmailThreadsListView()
+          @listViewDiv = @listView.$el
+          @emailThreads = @listView.collection
 
           TuringEmailApp.views.emailThreadsListView = @listView
           TuringEmailApp.collections.emailThreads = @emailThreads
@@ -1107,7 +1112,9 @@ describe "TuringEmailApp", ->
       describe "#labelAsClicked", ->
         beforeEach ->
           @server.restore()
-          [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
+          @listView = specCreateEmailThreadsListView()
+          @listViewDiv = @listView.$el
+          @emailThreads = @listView.collection
 
           TuringEmailApp.views.emailThreadsListView = @listView
           TuringEmailApp.collections.emailThreads = @emailThreads
@@ -1149,8 +1156,9 @@ describe "TuringEmailApp", ->
 
       describe "#moveToFolderClicked", ->
         beforeEach ->
-          @server.restore()
-          [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
+          @listView = specCreateEmailThreadsListView()
+          @listViewDiv = @listView.$el
+          @emailThreads = @listView.collection
 
           TuringEmailApp.views.emailThreadsListView = @listView
           TuringEmailApp.collections.emailThreads = @emailThreads
@@ -1226,8 +1234,9 @@ describe "TuringEmailApp", ->
 
       describe "#replyClicked", ->
         beforeEach ->
-          @server.restore()
-          [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
+          @listView = specCreateEmailThreadsListView()
+          @listViewDiv = @listView.$el
+          @emailThreads = @listView.collection
     
           TuringEmailApp.views.emailThreadsListView = @listView
           TuringEmailApp.collections.emailThreads = @emailThreads
@@ -1247,8 +1256,9 @@ describe "TuringEmailApp", ->
 
       describe "#forwardClicked", ->
         beforeEach ->
-          @server.restore()
-          [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
+          @listView = specCreateEmailThreadsListView()
+          @listViewDiv = @listView.$el
+          @emailThreads = @listView.collection
     
           TuringEmailApp.views.emailThreadsListView = @listView
           TuringEmailApp.collections.emailThreads = @emailThreads
@@ -1268,8 +1278,9 @@ describe "TuringEmailApp", ->
         
       describe "#archiveClicked", ->
         beforeEach ->
-          @server.restore()
-          [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
+          @listView = specCreateEmailThreadsListView()
+          @listViewDiv = @listView.$el
+          @emailThreads = @listView.collection
 
           TuringEmailApp.views.emailThreadsListView = @listView
           TuringEmailApp.collections.emailThreads = @emailThreads
@@ -1316,8 +1327,9 @@ describe "TuringEmailApp", ->
 
       describe "#trashClicked", ->
         beforeEach ->
-          @server.restore()
-          [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
+          @listView = specCreateEmailThreadsListView()
+          @listViewDiv = @listView.$el
+          @emailThreads = @listView.collection
 
           TuringEmailApp.views.emailThreadsListView = @listView
           TuringEmailApp.collections.emailThreads = @emailThreads
@@ -1364,7 +1376,9 @@ describe "TuringEmailApp", ->
 
     describe "#listItemSelected", ->
       beforeEach ->
-        [@listViewDiv, @listView, @emailThreads, @server] = specCreateEmailThreadsListView()
+        @listView = specCreateEmailThreadsListView()
+        @listViewDiv = @listView.$el
+        @emailThreads = @listView.collection
   
         TuringEmailApp.views.emailThreadsListView = @listView
         TuringEmailApp.collections.emailThreads = @emailThreads
@@ -1725,10 +1739,11 @@ describe "TuringEmailApp", ->
 
     describe "#moveTuringEmailReportToTop", ->
       beforeEach ->
-        @server.restore()
-  
-        [@listViewDiv, emailThreadsListView, emailThreads, @server] = specCreateEmailThreadsListView()
-        TuringEmailApp.views.emailThreadsListView = emailThreadsListView
+        @listView = specCreateEmailThreadsListView()
+        @listViewDiv = @listView.$el
+        @emailThreads = @listView.collection
+        
+        TuringEmailApp.views.emailThreadsListView = @listView
   
       afterEach ->
         @server.restore()

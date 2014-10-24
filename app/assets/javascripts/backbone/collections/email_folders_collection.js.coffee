@@ -31,7 +31,7 @@ class TuringEmailApp.Collections.EmailFoldersCollection extends Backbone.Collect
         options.error
       )
 
-      @trigger("request", collection, null, options);
+      @trigger("request", collection, null, options)
 
   labelsListRequest: ->
     gapi.client.gmail.users.labels.list(userId: "me", fields: "labels/id")

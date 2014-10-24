@@ -10,29 +10,35 @@ describe "EmailFoldersCollection", ->
       beforeEach ->
         @superStub = sinon.stub(TuringEmailApp.Collections.EmailFoldersCollection.__super__, "sync")
         @googleRequestStub = sinon.stub(window, "googleRequest", ->)
+        @triggerStub = sinon.stub(@emailFoldersCollection, "trigger", ->)
   
       afterEach ->
+        @triggerStub.restore()
         @googleRequestStub.restore()
         @superStub.restore()
         
       describe "write", ->
         beforeEach ->
           @method = "write"
-          @model = {}
+          @collection = {}
           @options = {}
           
-          @emailFoldersCollection.sync(@method, @model, @options)
+          @emailFoldersCollection.sync(@method, @collection, @options)
           
         it "calls super", ->
-          expect(@superStub).toHaveBeenCalledWith(@method, @model, @options)
+          expect(@superStub).toHaveBeenCalledWith(@method, @collection, @options)
           
         it "does NOT call googleRequest", ->
           expect(@googleRequestStub).not.toHaveBeenCalled()
+
+        it "does not trigger the request event", ->
+          expect(@triggerStub).not.toHaveBeenCalled()
         
       describe "read", ->
         beforeEach ->
-          @error = sinon.stub()
-          @emailFoldersCollection.sync("read", {}, error: @error)
+          @collection = {}
+          @options = error: sinon.stub()
+          @emailFoldersCollection.sync("read", @collection, @options)
   
         it "does not call super", ->
           expect(@superStub).not.toHaveBeenCalled()
@@ -41,7 +47,10 @@ describe "EmailFoldersCollection", ->
           expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
           specCompareFunctions((=> @labelsListRequest()), @googleRequestStub.args[0][1])
           specCompareFunctions(((response) => @loadLabels(response.result.labels, options)), @googleRequestStub.args[0][2])
-          expect(@googleRequestStub.args[0][3]).toEqual(@error)
+          expect(@googleRequestStub.args[0][3]).toEqual(@options.error)
+
+        it "triggers the request event", ->
+          expect(@triggerStub).toHaveBeenCalledWith("request", @collection, null, @options)
 
     describe "#labelsListRequest", ->
       beforeEach ->

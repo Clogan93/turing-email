@@ -76,10 +76,10 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
   ###############
 
   load: (options, force=false) ->
-    if @get("loaded")? and not force
+    if @get("loaded") and not force
       options.success?()
     else
-      return if @loading?
+      return if @loading
 
       @loading = true
       @emailThreadUID = @get("uid")
@@ -97,12 +97,32 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
         error?()
 
       @fetch(options)
-    
-  parseThreadInfo: (threadInfo, options) ->
+
+  sync: (method, model, options) ->
+    if method != "read"
+      super(method, model, options)
+    else
+      googleRequest(
+        @app
+        => @threadsGetRequest()
+        (response) => @processThreadsGetRequest(response, options)
+        options.error
+      )
+
+      @trigger("request", model, null, options)
+
+  threadsGetRequest: ->
+    return gapi.client.gmail.users.threads.get(userId: "me", id: @emailThreadUID)
+
+  processThreadsGetRequest: (response, options) ->
+    threadJSON = @parseThreadInfo(response.result)
+    options.success?(threadJSON)
+
+  parseThreadInfo: (threadInfo) ->
     lastMessageInfo = _.last(threadInfo.messages)
     threadParsed = uid: threadInfo.id
     TuringEmailApp.Models.EmailThread.setThreadParsedProperties(threadParsed, threadInfo.messages, lastMessageInfo)
-    
+
     threadParsed.emails = _.map(threadInfo.messages, (message) =>
       emailParsed = {}
 
@@ -120,24 +140,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     )
 
     return threadParsed
-
-  sync: (method, model, options) ->
-    if method != "read"
-      super(method, model, options)
-    else
-      googleRequest(
-        @app
-        => gapi.client.gmail.users.threads.get(userId: "me", id: @emailThreadUID)
-
-        (response) =>
-          threadJSON = @parseThreadInfo(response.result)
-          options.success?(threadJSON)
-
-        options.error
-      )
-
-      @trigger("request", model, null, options);
-    
+      
   ##############
   ### Events ###
   ##############
