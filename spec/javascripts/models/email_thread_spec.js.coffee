@@ -11,124 +11,186 @@ describe "EmailThread", ->
   describe "Class Methods", ->
     beforeEach ->
       @server = sinon.fakeServer.create()
+
+      @emailThreadUIDs = (emailThread.uid for emailThread in @emailThreads)
+      @requestBody = "email_thread_uids%5B%5D=" + @emailThreadUIDs.join("&email_thread_uids%5B%5D=")
       
     afterEach ->
       @server.restore()
 
     describe "#removeFromFolder", ->
-
       beforeEach ->
-        @emailThreadUIDs = []
-        for emailThread in @emailThreads
-          @emailThreadUIDs.push emailThread.uid
-
         @emailFolderID = "INBOX"
+        @requestBody += "&email_folder_id=" + @emailFolderID
+
+        TuringEmailApp.Models.EmailThread.removeFromFolder(@emailThreadUIDs, @emailFolderID)
 
       it "posts the emailThreadUIDs and the emailFolderID to the remove from folder API", ->
-        TuringEmailApp.Models.EmailThread.removeFromFolder @emailThreadUIDs, @emailFolderID
         expect(@server.requests.length).toEqual 1
+        
         request = @server.requests[0]
         expect(request.method).toEqual "POST"
         expect(request.url).toEqual "/api/v1/email_threads/remove_from_folder"
-        expect(request.requestBody).toEqual "email_thread_uids%5B%5D=1480ae36da1ba858&email_thread_uids%5B%5D=147f774efa8eb2e7&email_folder_id=INBOX"
+        expect(request.requestBody).toEqual(@requestBody)
 
     describe "#trash", ->
-
       beforeEach ->
-        @emailThreadUIDs = []
-        for emailThread in @emailThreads
-          @emailThreadUIDs.push emailThread.uid
-
-      it "posts the emailThreadUIDs to the trash API", ->
         TuringEmailApp.Models.EmailThread.trash @emailThreadUIDs
+        
+      it "posts the emailThreadUIDs to the trash API", ->
         expect(@server.requests.length).toEqual 1
+        
         request = @server.requests[0]
         expect(request.method).toEqual "POST"
         expect(request.url).toEqual "/api/v1/email_threads/trash"
-        expect(request.requestBody).toEqual "email_thread_uids%5B%5D=1480ae36da1ba858&email_thread_uids%5B%5D=147f774efa8eb2e7"
+        expect(request.requestBody).toEqual(@requestBody) 
 
     describe "#applyGmailLabel", ->
-
       beforeEach ->
-        @emailThreadUIDs = []
-        for emailThread in @emailThreads
-          @emailThreadUIDs.push emailThread.uid
-
         emailFolder = FactoryGirl.create("EmailFolder")
         @labelID = emailFolder.label_id
         @labelName = emailFolder.name
-
+        
       describe "when all the data is present", ->
-
-        it "posts the emailThreadUIDs, the label ID and the label name to the apply gmail label API", ->
+        beforeEach ->
+          @requestBody += "&gmail_label_id=" + @labelID + "&gmail_label_name=" + @labelName
           TuringEmailApp.Models.EmailThread.applyGmailLabel @emailThreadUIDs, @labelID, @labelName
+          
+        it "posts the emailThreadUIDs, the label ID and the label name to the apply gmail label API", ->
           expect(@server.requests.length).toEqual 1
+          
           request = @server.requests[0]
           expect(request.method).toEqual "POST"
           expect(request.url).toEqual "/api/v1/email_threads/apply_gmail_label"
-          expect(request.requestBody).toEqual "email_thread_uids%5B%5D=1480ae36da1ba858&email_thread_uids%5B%5D=147f774efa8eb2e7&gmail_label_id=Label_119&gmail_label_name=Mint"
+          expect(request.requestBody).toEqual(@requestBody)
 
       describe "when there is no label ID", ->
-
-        it "posts the emailThreadUIDs, the label ID and the label name to the apply gmail label API", ->
+        beforeEach ->
+          @requestBody += "&gmail_label_name=" + @labelName
           TuringEmailApp.Models.EmailThread.applyGmailLabel @emailThreadUIDs, null, @labelName
+        
+        it "posts the emailThreadUIDs, the label ID and the label name to the apply gmail label API", ->
           expect(@server.requests.length).toEqual 1
+          
           request = @server.requests[0]
           expect(request.method).toEqual "POST"
           expect(request.url).toEqual "/api/v1/email_threads/apply_gmail_label"
-          expect(request.requestBody).toEqual "email_thread_uids%5B%5D=1480ae36da1ba858&email_thread_uids%5B%5D=147f774efa8eb2e7&gmail_label_name=Mint"
+          expect(request.requestBody).toEqual(@requestBody)
 
       describe "when there is no label name", ->
-
-        it "posts the emailThreadUIDs, the label ID and the label name to the apply gmail label API", ->
+        beforeEach ->
+          @requestBody += "&gmail_label_id=" + @labelID
           TuringEmailApp.Models.EmailThread.applyGmailLabel @emailThreadUIDs, @labelID, null
+          
+        it "posts the emailThreadUIDs, the label ID and the label name to the apply gmail label API", ->
           expect(@server.requests.length).toEqual 1
+          
           request = @server.requests[0]
           expect(request.method).toEqual "POST"
           expect(request.url).toEqual "/api/v1/email_threads/apply_gmail_label"
-          expect(request.requestBody).toEqual "email_thread_uids%5B%5D=1480ae36da1ba858&email_thread_uids%5B%5D=147f774efa8eb2e7&gmail_label_id=Label_119"
+          expect(request.requestBody).toEqual(@requestBody)
 
     describe "#moveToFolder", ->
-
       beforeEach ->
-        @emailThreadUIDs = []
-        for emailThread in @emailThreads
-          @emailThreadUIDs.push emailThread.uid
-
         emailFolder = FactoryGirl.create("EmailFolder")
         @folderID = emailFolder.label_id
         @folderName = emailFolder.name
 
       describe "when all the data is present", ->
-
-        it "posts the emailThreadUIDs, the label ID and the label name to the apply gmail label API", ->
+        beforeEach ->
+          @requestBody += "&email_folder_id=" + @folderID + "&email_folder_name=" + @folderName
           TuringEmailApp.Models.EmailThread.moveToFolder @emailThreadUIDs, @folderID, @folderName
+        
+        it "posts the emailThreadUIDs, the label ID and the label name to the apply gmail label API", ->
           expect(@server.requests.length).toEqual 1
+          
           request = @server.requests[0]
           expect(request.method).toEqual "POST"
           expect(request.url).toEqual "/api/v1/email_threads/move_to_folder"
-          expect(request.requestBody).toEqual "email_thread_uids%5B%5D=1480ae36da1ba858&email_thread_uids%5B%5D=147f774efa8eb2e7&email_folder_id=Label_119&email_folder_name=Mint"
+          expect(request.requestBody).toEqual(@requestBody)
 
       describe "when there is no label ID", ->
-
-        it "posts the emailThreadUIDs, the label ID and the label name to the apply gmail label API", ->
+        beforeEach ->
+          @requestBody += "&email_folder_name=" + @folderName
           TuringEmailApp.Models.EmailThread.moveToFolder @emailThreadUIDs, null, @folderName
+          
+        it "posts the emailThreadUIDs, the label ID and the label name to the apply gmail label API", ->
           expect(@server.requests.length).toEqual 1
+          
           request = @server.requests[0]
           expect(request.method).toEqual "POST"
           expect(request.url).toEqual "/api/v1/email_threads/move_to_folder"
-          expect(request.requestBody).toEqual "email_thread_uids%5B%5D=1480ae36da1ba858&email_thread_uids%5B%5D=147f774efa8eb2e7&email_folder_name=Mint"
-
+          expect(request.requestBody).toEqual(@requestBody)
+          
       describe "when there is no label name", ->
+        beforeEach ->
+          @requestBody += "&email_folder_id=" + @folderID
+          TuringEmailApp.Models.EmailThread.moveToFolder @emailThreadUIDs, @folderID, null
 
         it "posts the emailThreadUIDs, the label ID and the label name to the apply gmail label API", ->
-          TuringEmailApp.Models.EmailThread.moveToFolder @emailThreadUIDs, @folderID, null
           expect(@server.requests.length).toEqual 1
+          
           request = @server.requests[0]
           expect(request.method).toEqual "POST"
           expect(request.url).toEqual "/api/v1/email_threads/move_to_folder"
-          expect(request.requestBody).toEqual "email_thread_uids%5B%5D=1480ae36da1ba858&email_thread_uids%5B%5D=147f774efa8eb2e7&email_folder_id=Label_119"
+          expect(request.requestBody).toEqual(@requestBody)
 
+  describe "#initialize", ->
+    beforeEach ->
+      @emailThreadTemp = new TuringEmailApp.Models.EmailThread(undefined,
+        app: TuringEmailApp
+        emailThreadUID: "1"
+      )
+
+    it "initializes the variables", ->
+      expect(@emailThreadTemp.app).toEqual(TuringEmailApp)
+      expect(@emailThreadTemp.emailThreadUID).toEqual("1")
+          
+  describe "Events", ->
+    describe "#threadsModifyUnreadRequest", ->
+      beforeEach ->
+        window.gapi = client: gmail: users: threads: modify: ->
+
+        @ret = {}
+        @threadsModifyStub = sinon.stub(gapi.client.gmail.users.threads, "modify", => return @ret)
+
+        @params =
+          userId: "me"
+          id: @emailThread.get("uid")
+
+      afterEach ->
+        @threadsModifyStub.restore()
+
+      describe "seenValue=true", ->
+        beforeEach ->
+          @body = removeLabelIds: ["UNREAD"]
+          @returned = @emailThread.threadsModifyUnreadRequest(true)
+          
+        it "prepares and returns the Gmail API request", ->
+          expect(@threadsModifyStub).toHaveBeenCalledWith(@params, @body)
+          expect(@returned).toEqual(@ret)
+
+      describe "seenValue=false", ->
+        beforeEach ->
+          @body = addLabelIds: ["UNREAD"]
+          @returned = @emailThread.threadsModifyUnreadRequest(false)
+
+        it "prepares and returns the Gmail API request", ->
+          expect(@threadsModifyStub).toHaveBeenCalledWith(@params, @body)
+          expect(@returned).toEqual(@ret)
+      
+    describe "#seenChanged", ->
+      beforeEach ->
+        @googleRequestStub = sinon.stub(window, "googleRequest", ->)
+        @emailThread.set("seen", !@emailThread.get("seen"))
+        
+      afterEach ->
+        @googleRequestStub.restore()
+
+      it "calls googleRequest", ->
+        expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
+        specCompareFunctions((=> @threadsModifyUnreadRequest(seenValue)), @googleRequestStub.args[0][1])
+          
   describe "Getters", ->
     describe "#sortedEmails", ->
       beforeEach ->

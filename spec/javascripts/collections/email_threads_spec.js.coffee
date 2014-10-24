@@ -13,6 +13,7 @@ describe "EmailThreadsCollection", ->
       )
 
     it "initializes the variables", ->
+      expect(@emailThreadsCollectionTemp.app).toEqual(TuringEmailApp)
       expect(@emailThreadsCollectionTemp.pageTokens).toEqual([null])
       expect(@emailThreadsCollectionTemp.pageTokenIndex).toEqual(0)
       expect(@emailThreadsCollectionTemp.folderID).toEqual("INBOX")

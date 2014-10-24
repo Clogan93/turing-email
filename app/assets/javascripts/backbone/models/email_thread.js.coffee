@@ -71,32 +71,32 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     
     @listenTo(this, "change:seen", @seenChanged)
 
+  ###############
+  ### Network ###
+  ###############
+
   load: (options, force=false) ->
     if @get("loaded")? and not force
       options.success?()
     else
       return if @loading?
-      
+
       @loading = true
       @emailThreadUID = @get("uid")
-      
+
       options ?= {}
       success = options.success
       options.success = =>
         @set("loaded", true)
         @loading = false
         success?()
-        
+
       error = options.error
       options.error = =>
         @loading = false
         error?()
-        
-      @fetch(options)
 
-  ###############
-  ### Network ###
-  ###############
+      @fetch(options)
     
   parseThreadInfo: (threadInfo, options) ->
     lastMessageInfo = _.last(threadInfo.messages)
@@ -142,19 +142,21 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
   ### Events ###
   ##############
 
-  seenChanged: (model, seenValue)->
+  threadsModifyUnreadRequest: (seenValue) ->
     if seenValue
       body = removeLabelIds: ["UNREAD"]
     else
       body = addLabelIds: ["UNREAD"]
-
+      
+    gapi.client.gmail.users.threads.modify(
+      {userId: "me", id: @get("uid")},
+      body
+    )
+  
+  seenChanged: (model, seenValue)->
     googleRequest(
       @app
-      =>
-        gapi.client.gmail.users.threads.modify(
-          {userId: "me", id: @get("uid")},
-          body
-        )
+      => @threadsModifyUnreadRequest(seenValue)
     )
 
   ###############
