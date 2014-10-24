@@ -268,6 +268,7 @@ body {
 #page-wrapper {
   margin: 0 0 0 0;
   padding-right: 0px;
+  min-height: 0px;
 }
 
 .table-mail .mail-date {
@@ -460,6 +461,9 @@ table.table-mail tr td {
   white-space: nowrap;
   max-width: 775px;
   text-overflow: ellipsis;
+  span {
+    font-weight: normal;
+  }
 }
 
 .selected_tree_folder {
@@ -499,6 +503,7 @@ html, body {
   padding: 0px;
   margin: 0px;
   overflow: hidden;
+  min-width: 450px;
 }
 
 .filler:after {
@@ -518,6 +523,9 @@ html, body {
 
 .mailbox-content {
   padding: 10px 20px 10px 0px;
+  .category-list {
+    padding: 0px;
+  }
 }
 
 .wrapper-content {
@@ -714,4 +722,25 @@ div[contenteditable]:focus {
     right: 2px;
   }
 
+}
+
+.folder-list.m-b-md {
+  padding: 0px;
+}
+
+.email-iframe {
+  width: 100%;
+}
+
+.word_count_chart_div {
+  width: 900px;
+  height: 500px;
+}
+
+.more-dropdown-menu {
+  height: 75px;
+}
+
+.navbar.navbar-static-top {
+  margin-bottom: 0px;
 }

@@ -35,7 +35,7 @@
                   <%
                     if(email.subject.trim() == "Turing Email - Your daily Genie Report!" || email.html_part_encoded != null) {
                     %>
-                      <iframe id="email_iframe<%= index %>" style="width: 100%;"></iframe>
+                      <iframe class="email-iframe" id="email_iframe<%= index %>"></iframe>
                     <%
                     } else if(email.text_part_encoded != null) {%>
                       <pre><%= base64_decode_urlsafe(email.text_part_encoded) %></pre>
