@@ -184,6 +184,10 @@ window.validateAttributes = (expectedAttributes, model, modelRendered, expectedA
 
     expect(value).toEqual(model[key])
 
+window.validateUser = (user, userRendered) ->
+  expectedAttributes = ["email"]
+  validateAttributes(expectedAttributes, user, userRendered)
+    
 window.validateUserSettings = (userSettings, userSettingsRendered) ->
   expectedAttributes = ["id", "demo_mode_enabled", "keyboard_shortcuts_enabled", "genie_enabled", "split_pane_mode"]
   validateAttributes(expectedAttributes, userSettings, userSettingsRendered)
@@ -195,14 +199,6 @@ window.validateKeys = (objectJSON, expectedKeys) ->
   expectedKeys = expectedKeys.slice().sort()
   
   expect(keys).toEqual expectedKeys
-
-window.validateUserAttributes = (userJSON) ->
-  expectedAttributes = ["email"]
-  validateKeys(userJSON, expectedAttributes)
-  
-window.validateUserSettingsAttributes = (userSettingsJSON) ->
-  expectedAttributes = ["id", "demo_mode_enabled", "keyboard_shortcuts_enabled", "genie_enabled", "split_pane_mode"]
-  validateKeys(userSettingsJSON, expectedAttributes)
 
 window.validateBrainRulesAttributes = (brainRulesJSON) ->
   expectedAttributes = ["uid", "from_address", "to_address", "subject", "list_id"]

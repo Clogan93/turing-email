@@ -17,6 +17,6 @@ class Api::V1::WebsitePreviewsController < ApiController
     url = params[:url]
     url += "http://" if url !~ /https?:\/\//i
     html = open(url).read
-    render :html => html.html_safe
+    render :json => {:url => url, :html => html.html_safe}
   end
 end

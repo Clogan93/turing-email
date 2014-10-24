@@ -167,23 +167,16 @@ describe "TuringEmailApp", ->
         spy.restore()
   
     describe "#setupUser", ->
-      it "loads the user and user settings", ->
-        @server.restore()
+      beforeEach ->
+        @fetchStub = sinon.stub(TuringEmailApp.Models.User.__super__, "fetch")
 
-        userFixtures = fixture.load("user.fixture.json");
-        @validUserFixture = userFixtures[0]["valid"]
-        
-
-        [@server] = specPrepareUserSettingsFetch()
-        @server.respondWith "GET", "/api/v1/users/current", JSON.stringify(@validUserFixture)
-
-        TuringEmailApp.models.userSettings.fetch()
         TuringEmailApp.setupUser()
-
-        @server.respond()
         
-        validateUserAttributes(TuringEmailApp.models.user.toJSON())
-        validateUserSettingsAttributes(TuringEmailApp.models.userSettings.toJSON())
+      afterEach ->
+        @fetchStub.restore()
+      
+      it "fetches the user and user settings", ->
+        expect(@fetchStub.callCount).toEqual(2)
         
       describe "the userSettings keyboard_shortcuts_enabled attribute changes", ->
         beforeEach ->
@@ -1626,9 +1619,7 @@ describe "TuringEmailApp", ->
 
     describe "#isSplitPaneMode", ->
       beforeEach ->
-        [@server] = specPrepareUserSettingsFetch()
-        TuringEmailApp.models.userSettings.fetch()
-        @server.respond()
+        TuringEmailApp.models.userSettings = new TuringEmailApp.Models.UserSettings(FactoryGirl.create("UserSettings"))
     
       describe "when split pane mode is horizontal in the user settings", ->
         beforeEach ->
