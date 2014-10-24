@@ -167,23 +167,16 @@ describe "TuringEmailApp", ->
         spy.restore()
   
     describe "#setupUser", ->
-      it "loads the user and user settings", ->
-        @server.restore()
+      beforeEach ->
+        @fetchStub = sinon.stub(TuringEmailApp.Models.User.__super__, "fetch")
 
-        userFixtures = fixture.load("user.fixture.json");
-        @validUserFixture = userFixtures[0]["valid"]
-        
-
-        [@server] = specPrepareUserSettingsFetch()
-        @server.respondWith "GET", "/api/v1/users/current", JSON.stringify(@validUserFixture)
-
-        TuringEmailApp.models.userSettings.fetch()
         TuringEmailApp.setupUser()
-
-        @server.respond()
         
-        validateUserAttributes(TuringEmailApp.models.user.toJSON())
-        validateUserSettingsAttributes(TuringEmailApp.models.userSettings.toJSON())
+      afterEach ->
+        @fetchStub.restore()
+      
+      it "fetches the user and user settings", ->
+        expect(@fetchStub.callCount).toEqual(2)
         
       describe "the userSettings keyboard_shortcuts_enabled attribute changes", ->
         beforeEach ->
@@ -984,38 +977,28 @@ describe "TuringEmailApp", ->
             @listView.select(@emailThread)
             
             @setStub = sinon.stub(@emailThread, "set", ->)
-            @markEmailThreadReadStub = sinon.stub(@listView, "markEmailThreadRead", ->)
             
             TuringEmailApp.readClicked()
           
           afterEach ->
             @setStub.restore()
-            @markEmailThreadReadStub.restore()
             
           it "sets the email thread to read", ->
             expect(@setStub).toHaveBeenCalledWith("seen", true)
-
-          it "marks the email thread as read in the list view", ->
-            expect(@markEmailThreadReadStub).toHaveBeenCalledWith(@emailThread)
             
         describe "when an email thread is checked", ->
           beforeEach ->
             @listView.check(@emailThread)
 
             @setStub = sinon.stub(@emailThread, "set", ->)
-            @markCheckedReadStub = sinon.stub(@listView, "markCheckedRead")
 
             TuringEmailApp.readClicked()
 
           afterEach ->
             @setStub.restore()
-            @markCheckedReadStub.restore()
 
           it "sets the email thread to read", ->
             expect(@setStub).toHaveBeenCalledWith("seen", true)
-
-          it "marks all the checked items in the list view as read", ->
-            expect(@markCheckedReadStub).toHaveBeenCalled()
 
       describe "#unreadClicked", ->
         beforeEach ->
@@ -1034,38 +1017,28 @@ describe "TuringEmailApp", ->
             @listView.select(@emailThread)
 
             @setStub = sinon.stub(@emailThread, "set", ->)
-            @markEmailThreadUnreadStub = sinon.stub(@listView, "markEmailThreadUnread", ->)
 
             TuringEmailApp.unreadClicked()
 
           afterEach ->
             @setStub.restore()
-            @markEmailThreadUnreadStub.restore()
 
           it "sets the email thread to unread", ->
             expect(@setStub).toHaveBeenCalledWith("seen", false)
-
-          it "marks the email thread as read in the list view", ->
-            expect(@markEmailThreadUnreadStub).toHaveBeenCalledWith(@emailThread)
 
         describe "when an email thread is checked", ->
           beforeEach ->
             @listView.check(@emailThread)
 
             @setStub = sinon.stub(@emailThread, "set", ->)
-            @markEmailThreadUnreadStub = sinon.stub(@listView, "markCheckedUnread")
 
             TuringEmailApp.unreadClicked()
 
           afterEach ->
             @setStub.restore()
-            @markEmailThreadUnreadStub.restore()
 
           it "sets the email thread to unread", ->
             expect(@setStub).toHaveBeenCalledWith("seen", false)
-
-          it "marks all the checked items in the list view as read", ->
-            expect(@markEmailThreadUnreadStub).toHaveBeenCalled()
             
       describe "#leftArrowClicked", ->
         beforeEach ->
@@ -1646,9 +1619,7 @@ describe "TuringEmailApp", ->
 
     describe "#isSplitPaneMode", ->
       beforeEach ->
-        [@server] = specPrepareUserSettingsFetch()
-        TuringEmailApp.models.userSettings.fetch()
-        @server.respond()
+        TuringEmailApp.models.userSettings = new TuringEmailApp.Models.UserSettings(FactoryGirl.create("UserSettings"))
     
       describe "when split pane mode is horizontal in the user settings", ->
         beforeEach ->
@@ -1674,21 +1645,14 @@ describe "TuringEmailApp", ->
     describe "#showEmailThread", ->
       beforeEach ->
         TuringEmailApp.collections.emailThreads.reset(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE))
-        
         @emailThread = TuringEmailApp.collections.emailThreads.at(0)
+        
         @setStub = sinon.stub(@emailThread, "set")
-
         @eventSpy = null
 
       afterEach ->
-        @setStub.restore()
         @eventSpy.restore() if @eventSpy?
-    
-      it "marks the email thread as read", ->
-        spy = sinon.spy(TuringEmailApp.views.emailThreadsListView, "markEmailThreadRead")
-        TuringEmailApp.showEmailThread(@emailThread)
-        expect(spy).toHaveBeenCalledWith(@emailThread)
-        spy.restore()
+        @setStub.restore()
     
       emailThreadViewEvents = ["goBackClicked", "replyClicked", "forwardClicked", "archiveClicked", "trashClicked"]
       for event in emailThreadViewEvents

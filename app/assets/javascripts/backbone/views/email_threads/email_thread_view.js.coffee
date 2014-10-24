@@ -12,6 +12,8 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     if @model
       @model.load(
         success: =>
+          @model.set("seen", true)
+
           modelJSON = @model.toJSON()
           modelJSON["sortedEmails"] = @model.sortedEmails()
           
