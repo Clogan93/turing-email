@@ -387,10 +387,8 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @applyActionToSelectedThreads(
       =>
         @selectedEmailThread()?.set("seen", true)
-        @views.emailThreadsListView.markEmailThreadRead(@selectedEmailThread())
       (checkedListItemViews, selectedEmailThreadUIDs) =>
         listItemView.model.set("seen", true) for listItemView in checkedListItemViews
-        @views.emailThreadsListView.markCheckedRead()
       false, false
     )
 
@@ -398,10 +396,8 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @applyActionToSelectedThreads(
       =>
         @selectedEmailThread()?.set("seen", false)
-        @views.emailThreadsListView.markEmailThreadUnread(@selectedEmailThread())
       (checkedListItemViews, selectedEmailThreadUIDs) =>
         listItemView.model.set("seen", false) for listItemView in checkedListItemViews
-        @views.emailThreadsListView.markCheckedUnread()
       false, false
     )
 
@@ -579,10 +575,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     return splitPaneMode is "horizontal" || splitPaneMode is "vertical"
     
   showEmailThread: (emailThread) ->
-    emailThread?.set("seen", true)
     emailThreadView = @views.mainView.showEmailThread(emailThread, @isSplitPaneMode())
-
-    @views.emailThreadsListView.markEmailThreadRead(emailThread) if emailThread
 
     @listenTo(emailThreadView, "goBackClicked", @goBackClicked)
     @listenTo(emailThreadView, "replyClicked", @replyClicked)
