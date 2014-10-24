@@ -28,7 +28,7 @@ describe "ListItemView", ->
 
         expect(@listItemView.el).toContain("td.check-mail")
         expect(@listItemView.$el.find('td.mail-contact').text().trim()).toEqual @emailThread.fromPreview()
-        expect(@listItemView.$el.find('td.mail-subject').text().trim()).toEqual @emailThread.subjectPreview()
+        expect(@listItemView.$el.find('td.mail-subject').text().trim()).toEqual @emailThread.subjectPreview() + " - " + @emailThread.get("snippet")
         expect(@listItemView.$el.find('td.mail-date').text().trim()).toEqual @emailThread.datePreview()
 
     describe "#addedToDOM", ->
