@@ -350,7 +350,14 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       if indexOfUrl isnt -1 and linkPreviewIndex is -1
         link = emailHtml.substring(indexOfUrl).split(" ")[0]
 
-        websitePreview = new WebsitePreview(link)
+        websitePreview = new TuringEmailApp.Models.WebsitePreview(
+          urlSuffix: link
+        )
+
+        websitePreviewView = new WebsitePreviewView(
+          model: websitePreview
+        )
+        websitePreviewView.render()
 
         linkTitle = websitePreview.title()
         linkImageUrl = websitePreview.image()
