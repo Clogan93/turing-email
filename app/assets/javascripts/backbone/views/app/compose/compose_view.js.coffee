@@ -341,8 +341,8 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
                                 There was an error in sending your email!</div>')
 
   setupLinkPreviews: ->
-    @$el.find(".compose_form .note-editable").bind "keydown", "space return shift+return", ->
-      emailHtml = $(@).html()
+    @$el.find(".compose_form .note-editable").bind "keydown", "space return shift+return", =>
+      emailHtml = @$el.find(".compose_form .note-editable").html()
       indexOfUrl = emailHtml.search(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/)
 
       linkPreviewIndex = emailHtml.search("compose_link_preview")
@@ -354,7 +354,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
           urlSuffix: link
         )
 
-        websitePreviewView = new TuringEmailApp.Views.App.WebsitePreviewView(
+        @websitePreviewView = new TuringEmailApp.Views.App.WebsitePreviewView(
           model: websitePreview
           el: $(@)
         )

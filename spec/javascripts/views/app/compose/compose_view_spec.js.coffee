@@ -755,3 +755,27 @@ describe "ComposeView", ->
         @composeView.sendEmailDelayedError JSON.stringify({})
         expect(@composeView.$el).toContainHtml('<div id="email_sent_error_alert" class="alert alert-danger" role="alert">
                                 There was an error in sending your email!</div>')
+
+    describe "#setupLinkPreviews", ->
+      
+      it "binds keydown to the compose body", ->
+        expect(@composeView.$el.find(".compose_form .note-editable")).toHandle("keydown")
+
+      describe "when text is entered in the compose body", ->
+
+        describe "when there is no link", ->
+
+          it "does not create the website preview view", ->
+            @composeView.$el.find(".compose_form .note-editable").html("hello world")
+            expect(@composeView.websitePreviewView).not.toBeDefined()
+
+        describe "when there is a link", ->
+
+          it "create the website preview view", ->
+            @composeView.$el.find(".compose_form .note-editable").html("this is a test http://www.apple.com")
+
+            @event = jQuery.Event("keydown")
+            @event.which = $.ui.keyCode.SPACE
+            @composeView.$el.find(".compose_form .note-editable").trigger(@event)
+
+            expect(@composeView.websitePreviewView).toBeDefined()
