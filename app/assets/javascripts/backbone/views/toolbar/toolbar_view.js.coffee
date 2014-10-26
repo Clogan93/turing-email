@@ -1,7 +1,7 @@
 class TuringEmailApp.Views.ToolbarView extends Backbone.View
   @MAX_RETRY_ATTEMPTS: 5
 
-  template: JST["backbone/templates/toolbar/toolbar_view"]
+  template: JST["backbone/templates/toolbar/toolbar"]
   tagName: "div"
 
   initialize: (options) ->

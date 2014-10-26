@@ -1,0 +1,46 @@
+/*************************
+***** COMPOSE VIEW ****
+*************************/
+
+.reply_button {
+  float: left;
+}
+
+.forward_button {
+  float: right;
+}
+
+.compose-modal-dialog {
+  width: 840px !important;
+}
+
+#compose_email_body, #compose_form .note-editable {
+  height: 250px !important;
+  overflow: scroll;
+}
+
+.note-editor 
+{
+  height: 100% !important;
+}
+
+div[contenteditable]:focus {
+  border: 1px solid rgb(86, 180, 239);
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.05) inset, 0px 0px 8px rgba(82, 168, 236, 0.6);
+}
+
+#compose_form_attachments_label {
+  float: left;
+}
+
+#compose_form_attachments_input {
+  float: right;
+}
+
+.send_email_button span {
+  color: #ffffff;
+  font-size: 13px;
+  text-decoration: none;
+  line-height: 34px;
+  width: 100%;
+}

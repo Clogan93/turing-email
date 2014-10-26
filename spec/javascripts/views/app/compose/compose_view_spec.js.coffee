@@ -8,7 +8,7 @@ describe "ComposeView", ->
     specStopTuringEmailApp()
 
   it "has the right template", ->
-    expect(@composeView.template).toEqual JST["backbone/templates/app/compose/modal_compose_view"]
+    expect(@composeView.template).toEqual JST["backbone/templates/app/compose/modal_compose"]
 
   describe "after render", ->
     beforeEach ->

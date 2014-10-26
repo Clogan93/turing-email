@@ -1,0 +1,68 @@
+/************************ 
+*** EMAIL THREAD VIEW ***
+*************************/
+
+.email_information {
+  span {
+    position: relative;
+    top: 10px;
+  }
+
+  .email-from {
+    padding-left: 10px;
+    padding-right: 10px;
+    font-weight: bold;
+  }
+
+  .email-date {
+    float: right;
+    padding-right: 15px;
+  }
+}
+
+.each-email-reply-button {
+  position: relative;
+  float: right;
+  margin-right: 10px;
+  bottom: 38px;
+}
+
+.each-email-forward-button {
+  position: relative;
+  float: right;
+  bottom: 38px;
+  right: 5px;
+}
+
+.email-thread-view-default-text {
+  text-align: center;
+  padding-top: 8%;
+  font-size: 16px;
+  color: #223;
+}
+
+.email-thread-header {
+  padding-top: 10px;
+}
+
+.email_information {
+  border-top: 1px solid #e5e5e5;
+  padding-top: 5px;
+  height: 45px;
+  cursor: pointer;
+}
+
+.email_subject {
+  padding: 15px 0px;
+  color: #222;
+}
+
+.email-thread-header #email_subject {
+  font-weight: normal;
+  font-size: 18px;
+}
+
+.collapsed_email {
+  background-color: rgb(243, 243, 243);
+  cursor: pointer;
+}

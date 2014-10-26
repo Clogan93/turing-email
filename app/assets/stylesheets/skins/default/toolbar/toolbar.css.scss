@@ -1,0 +1,45 @@
+/************************ 
+******** Toolbar ********
+*************************/
+
+.paginate_left_link, .paginate_right_link {
+  border-radius: 3px;
+}
+
+.dropdown-link {
+  cursor: pointer;
+}
+
+.toolbar-buttons {
+  padding-left: 0px;
+}
+
+.toolbar-elements {
+  margin-top: 13px;
+}
+
+.pagination-buttons {
+  padding-right: 15px;
+}
+
+#bulk_action_checkbox_dropdown {
+  button {
+    background-color: white;
+    border: 1px solid #e7eaec;
+    float: left;
+    margin-right: 4px;
+    margin-top: 0px;
+    padding: 3px 12px;
+  }
+  ul {
+    margin-top: 34px;
+  }
+}
+
+.create_filter {
+  cursor: pointer;
+}
+
+a#refresh_link {
+  color: black;
+}

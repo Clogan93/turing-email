@@ -1,0 +1,25 @@
+/************************ 
+******* TREE VIEW *******
+*************************/
+
+.selected_tree_folder {
+  font-weight: bold !important;
+  color: #1ab394 !important;
+}
+
+li.contains_unread_emails {
+  font-weight: bold;
+}
+
+li.contains_no_unread_emails {
+  font-weight: normal;;
+}
+
+#email_folders {
+  li {
+    padding: 0px;
+  }
+  ul ul {
+    padding-left: 30px;
+  }
+}

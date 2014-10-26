@@ -1,7 +1,7 @@
 TuringEmailApp.Views.App ||= {}
 
 class TuringEmailApp.Views.App.ComposeView extends Backbone.View
-  template: JST["backbone/templates/app/compose/modal_compose_view"]
+  template: JST["backbone/templates/app/compose/modal_compose"]
 
   initialize: (options) ->
     @app = options.app

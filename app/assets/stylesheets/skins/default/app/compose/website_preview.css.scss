@@ -1,0 +1,38 @@
+/*************************
+***** WEBSITE PREVIEW ****
+*************************/
+
+.compose_link_preview {
+
+  border: 1px solid #e5e6e7;
+  border-radius: 3px;
+  height: 100px;
+
+  .compose_link_preview_left_column {
+    width: 20%;
+    float: left;
+  }
+
+  .compose_link_preview_right_column {
+    padding-top: 9px;
+    width: 98%;
+    line-height: 15px;
+  }
+
+  .compose_link_preview_image {
+    width: 98px;
+  }
+
+  .compose_link_preview_title {
+    font-weight: bold;
+    position: relative;
+  }
+
+  .compose_link_preview_close_button {
+    float: right;
+    cursor: pointer;
+    position: relative;
+    top: 2px;
+    right: 2px;
+  }
+}
