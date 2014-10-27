@@ -97,7 +97,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
       @searchClicked($(event.target).find("input").val())
 
   setupComposeButton: ->
-    $("#compose_button").click =>
+    $(".compose_button").click =>
       @views.composeView.loadEmpty()
       @views.composeView.show()
 
@@ -147,7 +147,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @collections.emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(undefined, app: TuringEmailApp)
     @views.emailFoldersTreeView = new TuringEmailApp.Views.EmailFolders.TreeView(
       app: this
-      el: $("#email_folders")
+      el: $(".email_folders")
       collection: @collections.emailFolders
     )
     

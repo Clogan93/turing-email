@@ -2,72 +2,6 @@
 ******* LIST VIEW *******
 *************************/
 
-/* Preview Pane Styling */
-
-#preview_panel {
-  width: 81.5%;
-  height: 50%;
-  position: fixed !important;
-  bottom: 0px;
-  left: 18.5%;
-  z-index: 1000;
-  display: none;
-  background-color: white;
-
-  #resize_border {
-    height: 3px;
-    width: 100%;
-    border-top: 1px solid #e5e5e5;
-    border-bottom: 1px solid #e5e5e5;
-    background-color: rgba(255, 255, 255, 0.1);
-    cursor: row-resize;
-  }
-  #preview_content {
-    height: 100%;
-    overflow-y: scroll;
-  }
-}
-
-/* Email Table Styling */
-
-#email_table {
-  tr {
-    // border-top: 1px gray solid;
-    border-color: #ddd;
-    border-width: 1px;
-    border-top-style: solid;
-    background-color: rgb(243, 243, 243);
-  }
-
-  td {
-    padding: 8px 0px;
-    white-space: nowrap;
-    overflow: hidden;
-  }
-
-  .email_from_column {
-    min-width: 150px;
-    max-width: 150px;
-  }
-
-  .email_subject_column {
-    padding-left: 10px;
-    width: 825px;
-    max-width: 825px;
-
-    span.email_snippet {
-      color: gray;
-    }
-  }
-
-  .email_date_column {
-    padding-left: 10px;
-    width: 90px;
-    max-width: 90px;
-  }
-
-}
-
 table.table-mail tr td {
   padding: 1px !important;
 }
@@ -82,16 +16,4 @@ table.table-mail tr td {
   padding: 0px !important;
 
   overflow-x: hidden !important;
-}
-
-#lowerEmailPane {
-  margin-right: 0px;
-}
-
-.main_email_list_content {
-  position: fixed;
-  height: 52%;
-  overflow: scroll;
-  left: 16%;
-  width: 84%;
 }

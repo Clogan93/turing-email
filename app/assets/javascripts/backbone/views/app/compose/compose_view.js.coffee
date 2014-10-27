@@ -92,8 +92,8 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     
     @removeEmailSentAlert() if @currentAlertToken?
     
-    @currentAlertToken = @app.showAlert('Your message has been sent. <span id="undo_email_send">Undo</span>', "alert-info")
-    $("#undo_email_send").click =>
+    @currentAlertToken = @app.showAlert('Your message has been sent. <span class="undo_email_send">Undo</span>', "alert-info")
+    $(".undo_email_send").click =>
       clearTimeout(TuringEmailApp.sendEmailTimeout)
       
       @removeEmailSentAlert()

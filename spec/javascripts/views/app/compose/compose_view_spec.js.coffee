@@ -131,7 +131,7 @@ describe "ComposeView", ->
         expect(@composeView.currentAlertToken).toBeDefined()
 
       it "binds the click event to undo email send button", ->
-        expect($("#undo_email_send")).toHandle("click")
+        expect($(".undo_email_send")).toHandle("click")
 
       describe "when the undo email send button is clicked", ->
         beforeEach ->
@@ -141,19 +141,19 @@ describe "ComposeView", ->
 
         it "should remove the alert", ->
           spy = sinon.spy(@composeView, "removeEmailSentAlert")
-          $("#undo_email_send").click()
+          $(".undo_email_send").click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
         it "should load the email", ->
           spy = sinon.spy(@composeView, "loadEmail")
-          $("#undo_email_send").click()
+          $(".undo_email_send").click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
         it "show the compose modal", ->
           spy = sinon.spy(@composeView, "show")
-          $("#undo_email_send").click()
+          $(".undo_email_send").click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
@@ -536,7 +536,7 @@ describe "ComposeView", ->
         @composeView.$el.find(".compose_form #cc_input").val(@seededChance.email())
         @composeView.$el.find(".compose_form #bcc_input").val(@seededChance.email())
         @composeView.$el.find(".compose_form #subject_input").val(@seededChance.string({length: 25}))
-        @composeView.$el.find(".compose_form #compose_email_body").html(@seededChance.string({length: 250}))
+        @composeView.$el.find(".compose_form .compose_email_body").html(@seededChance.string({length: 250}))
 
         @composeView.emailInReplyToUID = chance.integer({min: 1, max: 10000})
 

@@ -2,10 +2,6 @@
 **** LIST ITEM VIEW *****
 *************************/
 
-.icheckbox_square-green {
-  transform: scale(0.7, 0.7);
-}
-
 .unread .icheckbox_square-green {
   left: 1px;
 }
@@ -25,10 +21,6 @@
   span {
     font-weight: normal;
   }
-}
-
-.email_thread_highlight {
-  border-left: 2px solid rgb(1, 148, 125) !important;
 }
 
 .read {

@@ -66,7 +66,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
           thread_id = thread_elements[thread_elements.length - 1]
           $.get "/api/v1/email_threads/show/" + thread_id, (data) ->
             email_from_email_thread = data.emails[data.emails.length - 1]
-            $('#composeModal #compose_email_body').val("\n\n\n\n" + TuringEmailApp.Views.App.ComposeView.retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes(email_from_email_thread))
+            $('#composeModal .compose_email_body').val("\n\n\n\n" + TuringEmailApp.Views.App.ComposeView.retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes(email_from_email_thread))
             $('#compose_form #email_in_reply_to_uid_input').val(email_from_email_thread.uid)
 
         iframe.contents().find("body").find('a[href^="#from_address"]').click (event) ->

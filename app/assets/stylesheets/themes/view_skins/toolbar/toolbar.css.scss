@@ -2,11 +2,16 @@
 ******** Toolbar ********
 *************************/
 
-.paginate_left_link, .paginate_right_link {
-  border-radius: 3px;
+.pagination-buttons {
+  padding-right: 15px;
+
+  .paginate_left_link, .paginate_right_link {
+    border-radius: 3px;
+  }
+
 }
 
-.dropdown-link {
+.dropdown-link, .create_filter {
   cursor: pointer;
 }
 
@@ -18,11 +23,8 @@
   margin-top: 13px;
 }
 
-.pagination-buttons {
-  padding-right: 15px;
-}
+.bulk_action_checkbox_dropdown {
 
-#bulk_action_checkbox_dropdown {
   button {
     background-color: white;
     border: 1px solid #e7eaec;
@@ -31,26 +33,23 @@
     margin-top: 0px;
     padding: 3px 12px;
   }
+
   ul {
     margin-top: 34px;
   }
-}
 
-.create_filter {
-  cursor: pointer;
-}
-
-a#refresh_link {
-  color: black;
 }
 
 .current_emails_displayed_counter {
+
   float: left;
   margin-right: 5px;
   margin-top: 9px;
+
   span {
     font-weight: bold;
   }
+
 }
 
 .more-dropdown-menu {
