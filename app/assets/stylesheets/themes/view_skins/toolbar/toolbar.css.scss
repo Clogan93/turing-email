@@ -43,3 +43,12 @@
 a#refresh_link {
   color: black;
 }
+
+.current_emails_displayed_counter {
+  float: left;
+  margin-right: 5px;
+  margin-top: 9px;
+  span {
+    font-weight: bold;
+  }
+}

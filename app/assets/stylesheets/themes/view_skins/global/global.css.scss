@@ -1,0 +1,174 @@
+/************************ 
+** POSSIBLY SUPERFLOUS **
+*************************/
+
+// html, body {
+//   height: 100%;
+// }
+
+/************************ 
+********* GLOBAL ********
+*************************/
+
+body {
+  font-family: arial, sans-serif;
+}
+
+h3 {
+  color: #777777;
+}
+
+.container-fluid {
+  min-width: 650px !important;
+}
+
+#page-wrapper {
+  margin: 0px 0px 0px 0px;
+  padding-right: 0px;
+  min-height: 0px;
+}
+
+/************************ 
+******** GENERAL ********
+*************************/
+
+#email_content {
+  max-width: 98%;
+}
+
+#undo_email_send {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+#no_conversations_selected {
+  padding-top: 10%;
+  font-size: 20px;
+}
+
+.dismiss-alert-link {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+table.table-mail tr td {
+  padding: 5px !important;
+}
+
+.mail-box-header {
+  padding: 0px 20px 12px 20px !important;
+  min-width: 450px;
+}
+
+.empty-text {
+  text-align: center;
+}
+
+/* Fixed sidebar CSS */
+
+.fixed {
+  width: 200px;
+  float: left;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.fixed:hover {
+  overflow-y: scroll;
+}
+
+.fixed + div {
+   margin-left: 200px;
+}
+
+.fill { 
+  min-height: 100%;
+  position: relative;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.filler {
+  padding: 0px;
+  margin: 0px;
+  overflow: hidden;
+  min-width: 450px;
+}
+
+.filler:after {
+  background-color:inherit;
+  bottom: 0;
+  content: "";
+  height: auto;
+  min-height: 100%;
+  left: 0;
+  margin:inherit;
+  right: 0;
+  position: absolute;
+  top: 0;
+  width: inherit;
+  z-index: -1;
+}
+
+.mailbox-content {
+  padding: 10px 20px 10px 0px;
+  .category-list {
+    padding: 0px;
+  }
+}
+
+.wrapper-content {
+  padding: 0px 0px 6px 10px;
+}
+
+.dropdown-menu {
+  margin-top: 10px;
+  height: 270px;
+  overflow-y: scroll;
+}
+
+.mail-body {
+  padding: 0px;
+}
+
+.email_body {
+
+  .row {
+    padding: 15px 10px;
+  }
+
+}
+
+.mail-tools {
+  margin-top: 10px;
+
+  .email-thread-date {
+    padding-right: 15px;
+  }
+}
+
+.email-date-displayed {
+  width: 85% !important;
+}
+
+.folder-list.m-b-md {
+  padding: 0px;
+}
+
+.email-iframe {
+  width: 100%;
+}
+
+.more-dropdown-menu {
+  height: 75px;
+}
+
+  /***************************************
+*** TO RE-FACTOR WITH SCSS FUNCTIONS ***
+****************************************/
+
+.settings-view, .analytics-view, .report-view {
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
