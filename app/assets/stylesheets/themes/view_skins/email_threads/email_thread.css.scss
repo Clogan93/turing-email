@@ -76,3 +76,32 @@ pre {
   word-wrap: break-word; /* IE 5.5+ */
   overflow-y: hidden;
 }
+
+.mail-box-header {
+  padding: 0px 20px 12px 20px !important;
+  min-width: 450px;
+}
+
+.mail-body {
+  padding: 0px;
+}
+
+.email_body {
+
+  .row {
+    padding: 15px 10px;
+  }
+
+}
+
+.email-iframe {
+  width: 100%;
+}
+
+.email-date-displayed {
+  width: 85% !important;
+}
+
+.mail-tools {
+  margin-top: 10px;
+}
