@@ -19,7 +19,7 @@ describe "WebsitePreviewView", ->
     describe "#render", ->
       
       it "sets up a hide event on the close link", ->
-        expect(@websitePreviewView.$el.find(".compose_link_preview_close_button")).toHandle("click")
+        expect(@websitePreviewView.$el.find(".compose-link-preview-close-button")).toHandle("click")
 
       describe "#attributes", ->
 
@@ -34,7 +34,7 @@ describe "WebsitePreviewView", ->
         it "hides the preview", ->
           @spy = sinon.spy(@websitePreviewView, "hide")
           
-          @websitePreviewView.$el.find(".compose_link_preview_close_button").click()
+          @websitePreviewView.$el.find(".compose-link-preview-close-button").click()
           
           expect(@spy).toHaveBeenCalled()
           @spy.restore()

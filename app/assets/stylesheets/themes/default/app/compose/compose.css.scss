@@ -6,7 +6,7 @@
   width: 840px !important;
 }
 
-.compose_email_body, #compose_form .note-editable {
+.compose-email-body, #compose-form .note-editable {
   height: 250px !important;
   overflow: scroll;
 }
@@ -21,11 +21,11 @@ div[contenteditable]:focus {
   box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.05) inset, 0px 0px 8px rgba(82, 168, 236, 0.6);
 }
 
-.compose_form_attachments_label {
+.compose-form-attachments-label {
   float: left;
 }
 
-.compose_form_attachments_input {
+.compose-form-attachments-input {
   float: right;
 }
 

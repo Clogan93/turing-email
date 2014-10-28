@@ -13,4 +13,4 @@ class TuringEmailApp.Views.App.EmbeddedComposeView extends TuringEmailApp.Views.
     return this
 
   hide: ->
-    @$el.find("#compose_form").hide()
+    @$el.find("#compose-form").hide()

@@ -117,7 +117,7 @@ describe "ListItemView", ->
           @listItemView.updateCheckStyles()
         
         it "adds the selected styles", ->
-          expect(@listItemView.$el).toHaveClass("checked_email_thread")
+          expect(@listItemView.$el).toHaveClass("checked-email-thread")
 
       describe "when unchecked", ->
         beforeEach ->
@@ -125,7 +125,7 @@ describe "ListItemView", ->
           @listItemView.updateCheckStyles()
         
         it "removes the selected styles", ->
-          expect(@listItemView.$el).not.toHaveClass("checked_email_thread")
+          expect(@listItemView.$el).not.toHaveClass("checked-email-thread")
 
     describe "#toggleCheck", ->
       beforeEach ->
@@ -156,10 +156,10 @@ describe "ListItemView", ->
         @listItemView.addedToDOM()
 
       it "checks the list items", ->
-        @listItemView.$el.removeClass("checked_email_thread")
-        expect(@listItemView.$el).not.toHaveClass("checked_email_thread")
+        @listItemView.$el.removeClass("checked-email-thread")
+        expect(@listItemView.$el).not.toHaveClass("checked-email-thread")
         @listItemView.check()
-        expect(@listItemView.$el).toHaveClass("checked_email_thread")
+        expect(@listItemView.$el).toHaveClass("checked-email-thread")
 
       it "triggers selected", ->
         spy = sinon.backbone.spy(@listItemView, "checked")
@@ -173,9 +173,9 @@ describe "ListItemView", ->
         @listItemView.check()
 
       it "unchecks the list items", ->
-        expect(@listItemView.$el).toHaveClass("checked_email_thread")
+        expect(@listItemView.$el).toHaveClass("checked-email-thread")
         @listItemView.uncheck()
-        expect(@listItemView.$el).not.toHaveClass("checked_email_thread")
+        expect(@listItemView.$el).not.toHaveClass("checked-email-thread")
 
       it "triggers unchecked", ->
         spy = sinon.backbone.spy(@listItemView, "unchecked")
@@ -184,11 +184,11 @@ describe "ListItemView", ->
         spy.restore()
 
     describe "#select", ->
-      it "adds the currently_being_read class", ->
-        @listItemView.$el.removeClass("currently_being_read")
-        expect(@listItemView.$el).not.toHaveClass("currently_being_read")
+      it "adds the currently-being-read class", ->
+        @listItemView.$el.removeClass("currently-being-read")
+        expect(@listItemView.$el).not.toHaveClass("currently-being-read")
         @listItemView.select()
-        expect(@listItemView.$el).toHaveClass("currently_being_read")
+        expect(@listItemView.$el).toHaveClass("currently-being-read")
 
       it "triggers selected", ->
         spy = sinon.backbone.spy(@listItemView, "selected")
@@ -200,11 +200,11 @@ describe "ListItemView", ->
       beforeEach ->
         @listItemView.select()
 
-      it "removes the currently_being_read class", ->
-        @listItemView.$el.addClass("currently_being_read")
-        expect(@listItemView.$el).toHaveClass("currently_being_read")
+      it "removes the currently-being-read class", ->
+        @listItemView.$el.addClass("currently-being-read")
+        expect(@listItemView.$el).toHaveClass("currently-being-read")
         @listItemView.deselect()
-        expect(@listItemView.$el).not.toHaveClass("currently_being_read")
+        expect(@listItemView.$el).not.toHaveClass("currently-being-read")
 
       it "triggers deselected", ->
         spy = sinon.backbone.spy(@listItemView, "deselected")

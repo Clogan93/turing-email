@@ -66,8 +66,8 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
           thread_id = thread_elements[thread_elements.length - 1]
           $.get "/api/v1/email_threads/show/" + thread_id, (data) ->
             email_from_email_thread = data.emails[data.emails.length - 1]
-            $('#composeModal .compose_email_body').val("\n\n\n\n" + TuringEmailApp.Views.App.ComposeView.retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes(email_from_email_thread))
-            $('#compose_form #email_in_reply_to_uid_input').val(email_from_email_thread.uid)
+            $('#composeModal .compose-email-body').val("\n\n\n\n" + TuringEmailApp.Views.App.ComposeView.retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes(email_from_email_thread))
+            $('#compose-form #email_in_reply_to_uid_input').val(email_from_email_thread.uid)
 
         iframe.contents().find("body").find('a[href^="#from_address"]').click (event) ->
           event.preventDefault()
@@ -105,17 +105,17 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
         @$el.find(".embedded_compose_view_" + email.uid).append(embeddedComposeView.$el)
 
   setupEmailExpandAndCollapse: ->
-    @$el.find(".email .email_information").click (event) =>
-      $(event.currentTarget).parent().find(".email_body").toggle()
-      $(event.currentTarget).parent().toggleClass("collapsed_email")
+    @$el.find(".email .email-information").click (event) =>
+      $(event.currentTarget).parent().find(".email-body").toggle()
+      $(event.currentTarget).parent().toggleClass("collapsed-email")
       $(event.currentTarget).toggleClass("email-date-displayed")
 
       iframe = $(event.currentTarget).parent().find("iframe")
       @updateIframeHeight(iframe)
 
       $(event.currentTarget).parent().siblings(".email").each ->
-        $(this).addClass "collapsed_email"
-        $(this).find(".email_body").hide()
+        $(this).addClass "collapsed-email"
+        $(this).find(".email-body").hide()
 
   setupButtons: ->
     if !TuringEmailApp.isSplitPaneMode()

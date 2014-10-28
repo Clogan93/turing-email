@@ -62,7 +62,7 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
   ###############
 
   isSelected: ->
-    return @$el.hasClass "currently_being_read"
+    return @$el.hasClass "currently-being-read"
 
   isChecked: ->
     return @diviCheck?.hasClass "checked"
@@ -74,22 +74,22 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
   select: (options) ->
     return if @isSelected()
     
-    @$el.addClass("currently_being_read")
+    @$el.addClass("currently-being-read")
 
     @trigger("selected", this) if (not options?.silent?) || options.silent is false
 
   deselect: (options) ->
     return if not @isSelected()
     
-    @$el.removeClass("currently_being_read")
+    @$el.removeClass("currently-being-read")
 
     @trigger("deselected", this) if (not options?.silent?) || options.silent is false
 
   updateCheckStyles: ->
     if @diviCheck.hasClass "checked"
-      @$el.addClass("checked_email_thread")
+      @$el.addClass("checked-email-thread")
     else
-      @$el.removeClass("checked_email_thread")
+      @$el.removeClass("checked-email-thread")
 
   toggleCheck: ->
     if @diviCheck.hasClass "checked" then @uncheck() else @check()

@@ -63,19 +63,19 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       @$el.find("i.fa-trash-o").tooltip('hide')
       @trigger("trashClicked", this)
 
-    @$el.find("#paginate_left_link").click =>
-      @$el.find("#paginate_left_link").tooltip('hide')
+    @$el.find("#paginate-left-link").click =>
+      @$el.find("#paginate-left-link").tooltip('hide')
       @trigger("leftArrowClicked", this)
 
-    @$el.find("#paginate_right_link").click =>
-      @$el.find("#paginate_left_link").tooltip('hide')
+    @$el.find("#paginate-right-link").click =>
+      @$el.find("#paginate-left-link").tooltip('hide')
       @trigger("rightArrowClicked", this)
 
     $(window).resize =>
       if $(".mail-box-header.toolbar").width() < 525
-        $(".current_emails_displayed_counter").hide()
+        $(".current-emails-displayed-counter").hide()
       else
-        $(".current_emails_displayed_counter").show()
+        $(".current-emails-displayed-counter").show()
 
     @$el.find(".label_as_link").click (event) =>
       @$el.find(".label_as_link").tooltip('hide')

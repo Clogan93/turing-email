@@ -5,13 +5,13 @@
 .pagination-buttons {
   padding-right: 15px;
 
-  .paginate_left_link, .paginate_right_link {
+  .paginate-left-link, .paginate-right-link {
     border-radius: 3px;
   }
 
 }
 
-.dropdown-link, .create_filter {
+.dropdown-link, .create-filter {
   cursor: pointer;
 }
 
@@ -23,7 +23,7 @@
   margin-top: 13px;
 }
 
-.bulk_action_checkbox_dropdown {
+.bulk-action-checkbox-dropdown {
 
   button {
     background-color: white;
@@ -40,7 +40,7 @@
 
 }
 
-.current_emails_displayed_counter {
+.current-emails-displayed-counter {
 
   float: left;
   margin-right: 5px;

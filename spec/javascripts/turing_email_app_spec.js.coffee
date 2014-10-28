@@ -84,7 +84,7 @@ describe "TuringEmailApp", ->
         
     describe "#setupComposeButton", ->
       beforeEach ->
-        @divComposeButton = $('<button class="compose_button" type="button">Compose Email</button>').appendTo("body")
+        @divComposeButton = $('<button class="compose-button" type="button">Compose Email</button>').appendTo("body")
         
         TuringEmailApp.setupComposeButton()
         
@@ -112,7 +112,7 @@ describe "TuringEmailApp", ->
 
     describe "#setupFiltering", ->
       beforeEach ->
-        @createFilterDiv = $('<div class="create_filter"><div />').appendTo("body")
+        @createFilterDiv = $('<div class="create-filter"><div />').appendTo("body")
         @filterFormDiv = $('<div id="filter_form"><div />').appendTo("body")
         @dropdownDiv = $('<div class="dropdown" id="email-rule-dropdown"><a href="#"></a></div>').appendTo("body")
         
@@ -124,12 +124,12 @@ describe "TuringEmailApp", ->
         @dropdownDiv.remove()
   
       it "hooks the click action on the email filter dropdown", ->
-        expect($(".create_filter")).toHandle("click")
+        expect($(".create-filter")).toHandle("click")
   
       describe "when the create filter link is clicked", ->
         it "triggers the click.bs.dropdown event on the dropdown link", ->
           spy = spyOnEvent('#email-rule-dropdown a', 'click.bs.dropdown')
-          $('.create_filter').click()
+          $('.create-filter').click()
           expect('click.bs.dropdown').toHaveBeenTriggeredOn('#email-rule-dropdown a')
 
           expect(spy).toHaveBeenTriggered()

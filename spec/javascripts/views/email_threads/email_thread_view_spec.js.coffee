@@ -41,10 +41,10 @@ describe "EmailThreadView", ->
           @emailThreadView.$el.find(".email"). each ->
 
             #Collect Attributes from the rendered DOM.
-            emailInformation = $(@).find(".email_information")
+            emailInformation = $(@).find(".email-information")
             fromNames.push $(emailInformation.find(".email-from")[0]).text().trim()
 
-            emailBody = $(@).find(".email_body .col-md-11")
+            emailBody = $(@).find(".email-body .col-md-11")
             if emailBody.length is 0 then textParts.push null else textParts.push emailBody.text().trim()
 
           #Run expectations
@@ -114,16 +114,16 @@ describe "EmailThreadView", ->
 
     describe "#setupEmailExpandAndCollapse", ->
 
-      it "should have .email .email_information handle clicks", ->
-        expect(@emailThreadView.$el.find('.email .email_information')).toHandle("click")
+      it "should have .email .email-information handle clicks", ->
+        expect(@emailThreadView.$el.find('.email .email-information')).toHandle("click")
 
-      describe "when a .email .email_information is clicked", ->
+      describe "when a .email .email-information is clicked", ->
         beforeEach ->
           @updateIframeHeightStub = sinon.stub(@emailThreadView, "updateIframeHeight", ->)
           @emailDiv = @emailThreadView.$el.find('.email').first()
-          @emailInfoDiv = @emailDiv.find(".email_information")
+          @emailInfoDiv = @emailDiv.find(".email-information")
 
-          @isCollapsed = @emailDiv.hasClass("collapsed_email")
+          @isCollapsed = @emailDiv.hasClass("collapsed-email")
           @emailInfoDiv.click()
           
         afterEach ->
@@ -131,24 +131,24 @@ describe "EmailThreadView", ->
           @emailInfoDiv.click() # undo the expand/collapse
 
         it "shows the email body", ->
-          expect(@emailDiv.hasClass("collapsed_email") == !@isCollapsed).toBeTruthy()
+          expect(@emailDiv.hasClass("collapsed-email") == !@isCollapsed).toBeTruthy()
           
         it "updates the iframe height", ->
           iframe = @emailDiv.find("iframe")
           # TODO not working because email rendered is not an HTML email - tried to make it HTML but broke other tests.
           #expect(@updateIframeHeightStub).toHaveBeenCalledWith(iframe)
 
-      describe "when a .email .email_information is clicked twice", ->
+      describe "when a .email .email-information is clicked twice", ->
         beforeEach ->
           @emailDiv = @emailThreadView.$el.find('.email').first()
-          @emailInfoDiv = @emailDiv.find(".email_information")
+          @emailInfoDiv = @emailDiv.find(".email-information")
 
-          @isCollapsed = @emailDiv.hasClass("collapsed_email")
+          @isCollapsed = @emailDiv.hasClass("collapsed-email")
           @emailInfoDiv.click()
           @emailInfoDiv.click()
           
         it "should hide the email body", ->
-          expect(@emailDiv.hasClass("collapsed_email") == @isCollapsed).toBeTruthy()
+          expect(@emailDiv.hasClass("collapsed-email") == @isCollapsed).toBeTruthy()
 
     describe "#setupButtons", ->  
       it "should handle clicks", ->

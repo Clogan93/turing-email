@@ -129,7 +129,7 @@ describe "MainView", ->
           it "shows the email controls", ->
             expect(@primaryPane.children().length).toEqual(2)
             expect($(@primaryPane.children()[0])).toHaveClass("toolbar")
-            expect($(@primaryPane.children()[1])).toHaveClass("email_threads_list_view")
+            expect($(@primaryPane.children()[1])).toHaveClass("email-threads-list-view")
 
         describe "with split pane", ->
           beforeEach ->
@@ -143,7 +143,7 @@ describe "MainView", ->
             splitPane = $(@primaryPane.children()[1])
             expect(splitPane.children().length).toEqual(3)
             
-            expect(splitPane.children()[0]).toHaveClass("email_threads_list_view")
+            expect(splitPane.children()[0]).toHaveClass("email-threads-list-view")
             expect(splitPane.children()[1]).toHaveClass("email_thread_view")
             expect(splitPane.children()[2]).toHaveClass("ui-layout-resizer-south")
 

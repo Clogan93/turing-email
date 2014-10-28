@@ -47,12 +47,12 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       ]
     ]
 
-    @$el.find(".compose_form").submit =>
+    @$el.find(".compose-form").submit =>
       console.log "SEND clicked! Sending..."
       @sendEmail()
       return false
 
-    @$el.find(".compose_form #save_button").click =>
+    @$el.find(".compose-form #save_button").click =>
       console.log "SAVE clicked - saving the draft!"
       
       # if already in the middle of saving, no reason to save again
@@ -79,7 +79,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       )
 
     @$el.find("#composeModal").on "hidden.bs.modal", (event) =>
-      @$el.find(".compose_form #save_button").click()
+      @$el.find(".compose-form #save_button").click()
 
   show: ->
     @$el.find("#composeModal").modal "show"
@@ -92,8 +92,8 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     
     @removeEmailSentAlert() if @currentAlertToken?
     
-    @currentAlertToken = @app.showAlert('Your message has been sent. <span class="undo_email_send">Undo</span>', "alert-info")
-    $(".undo_email_send").click =>
+    @currentAlertToken = @app.showAlert('Your message has been sent. <span class="undo-email-send">Undo</span>', "alert-info")
+    $(".undo-email-send").click =>
       clearTimeout(TuringEmailApp.sendEmailTimeout)
       
       @removeEmailSentAlert()
@@ -110,19 +110,19 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
   resetView: ->
     console.log("ComposeView RESET!!")
     
-    @$el.find(".compose_form #email_sent_error_alert").remove()
+    @$el.find(".compose-form #email_sent_error_alert").remove()
     @removeEmailSentAlert()
 
     @currentEmailDraft = null
     @emailInReplyToUID = null
     @emailThreadParent = null
 
-    @$el.find(".compose_form #to_input").val("")
-    @$el.find(".compose_form #cc_input").val("")
-    @$el.find(".compose_form #bcc_input").val("")
+    @$el.find(".compose-form #to_input").val("")
+    @$el.find(".compose-form #cc_input").val("")
+    @$el.find(".compose-form #bcc_input").val("")
 
-    @$el.find(".compose_form #subject_input").val("")
-    @$el.find(".compose_form .note-editable").html("")
+    @$el.find(".compose-form #subject_input").val("")
+    @$el.find(".compose-form .note-editable").html("")
 
   loadEmpty: ->
     @resetView()
@@ -150,8 +150,8 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     console.log("ComposeView loadEmailAsReply!!")
     @resetView()
 
-    @$el.find(".compose_form #to_input").val(if emailJSON.reply_to_address? then emailJSON.reply_to_address else emailJSON.from_address)
-    @$el.find(".compose_form #subject_input").val(@subjectWithPrefixFromEmail(emailJSON, "Re: "))
+    @$el.find(".compose-form #to_input").val(if emailJSON.reply_to_address? then emailJSON.reply_to_address else emailJSON.from_address)
+    @$el.find(".compose-form #subject_input").val(@subjectWithPrefixFromEmail(emailJSON, "Re: "))
     @loadEmailBody(emailJSON, true)
 
     @emailInReplyToUID = emailJSON.uid
@@ -161,18 +161,18 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     console.log("ComposeView loadEmailAsForward!!")
     @resetView()
 
-    @$el.find(".compose_form #subject_input").val(@subjectWithPrefixFromEmail(emailJSON, "Fwd: "))
+    @$el.find(".compose-form #subject_input").val(@subjectWithPrefixFromEmail(emailJSON, "Fwd: "))
     @loadEmailBody(emailJSON, true)
     
     @emailThreadParent = emailThreadParent
 
   loadEmailHeaders: (emailJSON) ->
     console.log("ComposeView loadEmailHeaders!!")
-    @$el.find(".compose_form #to_input").val(emailJSON.tos)
-    @$el.find(".compose_form #cc_input").val(emailJSON.ccs)
-    @$el.find(".compose_form #bcc_input").val(emailJSON.bccs)
+    @$el.find(".compose-form #to_input").val(emailJSON.tos)
+    @$el.find(".compose-form #cc_input").val(emailJSON.ccs)
+    @$el.find(".compose-form #bcc_input").val(emailJSON.bccs)
 
-    @$el.find(".compose_form #subject_input").val(@subjectWithPrefixFromEmail(emailJSON))
+    @$el.find(".compose-form #subject_input").val(@subjectWithPrefixFromEmail(emailJSON))
 
   parseEmail: (emailJSON) ->
     htmlFailed = true
@@ -235,7 +235,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       [body, html] = @parseEmail(emailJSON)
       body = $.parseHTML(body) if not html
 
-    @$el.find(".compose_form .note-editable").html(body)
+    @$el.find(".compose-form .note-editable").html(body)
     
     return body
 
@@ -256,13 +256,13 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     console.log "ComposeView updateEmail!"
     email.set("email_in_reply_to_uid", @emailInReplyToUID)
 
-    email.set("tos", @$el.find(".compose_form").find("#to_input").val().split(","))
-    email.set("ccs", @$el.find(".compose_form").find("#cc_input").val().split(","))
-    email.set("bccs",  @$el.find(".compose_form").find("#bcc_input").val().split(","))
+    email.set("tos", @$el.find(".compose-form").find("#to_input").val().split(","))
+    email.set("ccs", @$el.find(".compose-form").find("#cc_input").val().split(","))
+    email.set("bccs",  @$el.find(".compose-form").find("#bcc_input").val().split(","))
 
-    email.set("subject", @$el.find(".compose_form").find("#subject_input").val())
-    email.set("html_part", @$el.find(".compose_form").find(".note-editable").html())
-    email.set("text_part", @$el.find(".compose_form").find(".note-editable").text())
+    email.set("subject", @$el.find(".compose-form").find("#subject_input").val())
+    email.set("html_part", @$el.find(".compose-form").find(".note-editable").html())
+    email.set("text_part", @$el.find(".compose-form").find(".note-editable").text())
 
   sendEmail: (draftToSend=null) ->
     console.log "ComposeView sendEmail!"
@@ -337,15 +337,15 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     @loadEmail(emailToSendJSON, @emailThreadParent)
     @show()
 
-    @$el.find(".compose_form").prepend('<div id="email_sent_error_alert" class="alert alert-danger" role="alert">
+    @$el.find(".compose-form").prepend('<div id="email_sent_error_alert" class="alert alert-danger" role="alert">
                                 There was an error in sending your email!</div>')
 
   setupLinkPreviews: ->
-    @$el.find(".compose_form .note-editable").bind "keydown", "space return shift+return", =>
-      emailHtml = @$el.find(".compose_form .note-editable").html()
+    @$el.find(".compose-form .note-editable").bind "keydown", "space return shift+return", =>
+      emailHtml = @$el.find(".compose-form .note-editable").html()
       indexOfUrl = emailHtml.search(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/)
 
-      linkPreviewIndex = emailHtml.search("compose_link_preview")
+      linkPreviewIndex = emailHtml.search("compose-link-preview")
 
       if indexOfUrl isnt -1 and linkPreviewIndex is -1
         link = emailHtml.substring(indexOfUrl)?.split(" ")?[0]

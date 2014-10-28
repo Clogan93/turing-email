@@ -24,13 +24,13 @@ if (emailFolder) {
     style = "";
   
     if (!haveChildren) {
-      style += "label_without_children";
+      style += "label-without-children";
     }
   
     if (emailFolder.num_unread_threads > 0) {
-      style += " contains_unread_emails";
+      style += " contains-unread-emails";
     } else {
-      style += " contains_no_unread_emails";
+      style += " contains-no-unread-emails";
     }
   
     style = style.trim();%>
@@ -38,9 +38,9 @@ if (emailFolder) {
     <ul>
       <li class="<%= style %>">
         <% if (haveChildren) { %>
-          <span class="bullet_span">▼ </span>
+          <span class="bullet-span">▼ </span>
         <% } %>
-        <a id="<%= emailFolder.label_id %>" class="label_link" href="<%= emailFolder.label_id %>" data-toggle="tooltip" title="<%= nodeName %>">
+        <a id="<%= emailFolder.label_id %>" class="label-link" href="<%= emailFolder.label_id %>" data-toggle="tooltip" title="<%= nodeName %>">
           <%= nodeName %> <span class="badge"><%= emailFolder.badgeString %></span>
         </a><%
   }

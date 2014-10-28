@@ -52,7 +52,7 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
   #############
 
   setupNodes: ->
-    @$el.find(".bullet_span").click (event) =>
+    @$el.find(".bullet-span").click (event) =>
       $(event.target).parent().children("ul").children("li").toggle()
       if $(event.target).text() == "► "
         $(event.target).text("▼ ")
@@ -82,11 +82,11 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
     return if @selectedItem() is emailFolder && options?.force != true
 
     if @selectedItem()?
-      @$el.find("#" + @selectedItem().get("label_id")).removeClass("selected_tree_folder")
+      @$el.find("#" + @selectedItem().get("label_id")).removeClass("selected-tree-folder")
       @trigger("emailFolderDeselected", this, @selectedItem())
 
     @selectedEmailFolder = emailFolder
-    @$el.find("#" + emailFolder?.get("label_id")).addClass("selected_tree_folder") if emailFolder?
+    @$el.find("#" + emailFolder?.get("label_id")).addClass("selected-tree-folder") if emailFolder?
 
     @trigger("emailFolderSelected", this, emailFolder) if (not options?.silent?) || options.silent is false
 
@@ -94,7 +94,7 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
     emailFolderID = emailFolder.get("label_id")
 
     if emailFolderID is "INBOX"
-      @$el.find('.inbox_count_badge').html(emailFolder.badgeString())
+      @$el.find('.inbox-count-badge').html(emailFolder.badgeString())
     else
       @$el.find('a[href="' + emailFolderID + '"]>.badge').html(emailFolder.badgeString())
       

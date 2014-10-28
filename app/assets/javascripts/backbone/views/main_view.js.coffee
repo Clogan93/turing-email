@@ -96,9 +96,9 @@ class TuringEmailApp.Views.Main extends Backbone.View
 
     @primaryPaneDiv.html("")
 
-    emailThreadsListViewDiv = $('<div class="mail-box email_threads_list_view">
+    emailThreadsListViewDiv = $('<div class="mail-box email-threads-list-view">
                                    <table class="table table-hover table-mail">
-                                     <tbody class="email_threads_list_view_tbody"></tbody>
+                                     <tbody class="email-threads-list-view-tbody"></tbody>
                                    </table>
                                  </div>')
 
@@ -141,7 +141,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
         emptyFolderMessageDiv.append("<div class='empty-text'>There are no conversations with this label.</div>")
       @toolbarView.refreshToolbarButtonView.show()
     else
-      @emailThreadsListView.$el = @$el.find(".email_threads_list_view_tbody")
+      @emailThreadsListView.$el = @$el.find(".email-threads-list-view-tbody")
       @emailThreadsListView.render()
       @resizeEmailThreadsListView()
       @toolbarView.refreshToolbarButtonView.hide()
