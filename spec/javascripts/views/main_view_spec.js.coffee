@@ -154,7 +154,8 @@ describe "MainView", ->
 
         describe "when there are no emails in list view's collection", ->
           beforeEach ->
-            @mainView.emailThreadsListView.collection = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
+            @mainView.emailThreadsListView.collection =
+              new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
 
             @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
         
