@@ -167,10 +167,4 @@ describe "EmailFoldersCollection", ->
         it "calls modelRemoved for each model model removed", ->
           for emailFolder in @oldEmailFolders
             expect(@modelRemovedStub).toHaveBeenCalledWith(emailFolder)
-            
-    describe "Getters", ->
-      describe "#getEmailFolder", ->
-        it "returns the email folder with the specified label_id", ->
-          for emailFolder in @emailFoldersCollection.models
-            retrievedEmailFolder = @emailFoldersCollection.getEmailFolder(emailFolder.get("label_id"))
-            expect(emailFolder).toEqual retrievedEmailFolder
+ 

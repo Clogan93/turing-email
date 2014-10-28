@@ -147,7 +147,7 @@ describe "TreeView", ->
         it "selects the email folder associated with the link", ->
           spy = sinon.spy(@treeView, "select")
           firstLink = @treeView.$el.find("a").first()
-          emailFolder = @treeView.collection.getEmailFolder(firstLink.attr("href"))
+          emailFolder = @treeView.collection.get(firstLink.attr("href"))
           firstLink.click()
           expect(spy).toHaveBeenCalled()
           expect(spy).toHaveBeenCalledWith(emailFolder)
@@ -237,7 +237,7 @@ describe "TreeView", ->
 
     describe "when the email folder is the inbox", ->
       beforeEach ->
-        @inboxEmailFolder = @treeView.collection.getEmailFolder "INBOX"
+        @inboxEmailFolder = @treeView.collection.get("INBOX")
 
       it "updates the inbox count badge", ->
         @treeView.updateBadgeCount @inboxEmailFolder
@@ -246,7 +246,7 @@ describe "TreeView", ->
     describe "when the email folder is not the inbox", ->
       beforeEach ->
         @emailFolderID = @emailFolders.at(0).get("label_id")
-        @nonInboxEmailFolder = @treeView.collection.getEmailFolder @emailFolderID
+        @nonInboxEmailFolder = @treeView.collection.get(@emailFolderID)
 
       it "updates the email folder's badge count", ->
         @treeView.updateBadgeCount @nonInboxEmailFolder

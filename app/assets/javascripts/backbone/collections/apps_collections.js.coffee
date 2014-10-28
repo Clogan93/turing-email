@@ -1,7 +1,6 @@
 class TuringEmailApp.Collections.AppsCollection extends Backbone.Collection
   model: TuringEmailApp.Models.App
-  idAttribute: "uid"
-  url: '/api/v1/apps'
+  url: "/api/v1/apps"
 
   initialize: (models, options) ->
     @listenTo(this, "remove", @modelRemoved)

@@ -434,12 +434,6 @@ describe "EmailThreadsCollection", ->
             expect(@triggerStub).toHaveBeenCalledWith("change:pageTokenIndex", @emailThreadsCollection, 0)
             
     describe "Getters", ->
-      describe "#getEmailThread", ->
-        it "returns the email thread with the specified uid", ->
-          for emailThread in @emailThreadsCollection.models
-            retrievedEmailThread = @emailThreadsCollection.getEmailThread emailThread.get("uid")
-            expect(emailThread).toEqual retrievedEmailThread
-      
       describe "#hasNextPage", ->
         beforeEach ->
           @oldPageTokens = @emailThreadsCollection.pageTokens

@@ -122,16 +122,18 @@ describe "SettingsView", ->
       spy.restore()
 
     describe "when saveSettings is called", ->
-
       it "patches the server", ->
         @settingsView.$el.find(".genie_rules_button").click()
+        
         genieSwitch = @settingsView.$el.find("#genie_switch")
         genieSwitch.click()
+        
         expect(@server.requests.length).toEqual 3
+        
         request = @server.requests[2]
+        
         expect(request.method).toEqual "PATCH"
         expect(request.url).toEqual "/api/v1/user_configurations"
-        @server.restore()
 
       it "updates the user settings model with the correct values", ->
         expect(@userSettings.get("genie_enabled")).toEqual(true)
@@ -142,7 +144,6 @@ describe "SettingsView", ->
 
         expect(@userSettings.get("genie_enabled")).toEqual(true)
         expect(@userSettings.get("split_pane_mode")).toEqual("off")
-        @server.restore()
 
       it "displays a success alert after the save button is clicked and then hides it", ->
         @clock = sinon.useFakeTimers()
@@ -152,7 +153,7 @@ describe "SettingsView", ->
 
         @settingsView.saveSettings()
 
-        @server.respondWith "PATCH", @userSettings.url, JSON.stringify(@userSettings)
+        @server.respondWith "PATCH", @userSettings.url, stringifyUserSettings(@userSettings)
         @server.respond()
 
         expect(showSettingsAlertSpy).toHaveBeenCalled()
@@ -167,6 +168,28 @@ describe "SettingsView", ->
         showSettingsAlertSpy.restore()
         removeSettingsAlertSpy.restore()
 
+  describe "#setupUninstallAppButtons", ->
+    it "binds the uninstall button's click event", ->
+      expect(@settingsView.$el.find(".uninstall-app-button")).toHandle("click")
+
+    describe "clicking on the uninstall app button", ->
+      beforeEach ->
+        @removeSpy = sinon.spy($.prototype, "remove")
+        
+      afterEach ->
+        @removeSpy.restore()
+      
+      it "uninstalls the app and removes its element from the DOM", ->
+        uninstallButton = @settingsView.$el.find(".uninstall-app-button").first()
+        uninstallButton.click()
+
+        expect(@server.requests.length).toEqual 3
+        request = @server.requests[2]
+        expect(request.method).toEqual "DELETE"
+        expect(request.url).toEqual "/api/v1/apps/uninstall/" + uninstallButton.attr("data")
+
+        expect(@removeSpy).toHaveBeenCalled()
+        
   describe "#setupRuleCreation", ->
 
     it "binds the click event to the email rules button", ->

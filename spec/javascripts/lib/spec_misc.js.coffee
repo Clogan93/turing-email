@@ -135,3 +135,11 @@ window.verifyReportsRendered = (parent) ->
     reportDiv = parent.find(reportSelector)
     expect(reportDiv.length).toEqual(1)
     expect(reportDiv.html()).not.toEqual("")
+
+window.stringifyUserSettings = (userSettings) ->
+  userSettingsJSON = userSettings.toJSON()
+  
+  for installedApp in userSettingsJSON.installed_apps
+    installedApp.app = JSON.stringify(installedApp.app)
+    
+  return JSON.stringify(userSettingsJSON)
