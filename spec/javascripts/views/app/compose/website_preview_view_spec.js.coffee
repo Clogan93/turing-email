@@ -2,7 +2,7 @@ describe "WebsitePreviewView", ->
   beforeEach ->
     websitePreviewAttributes = FactoryGirl.create("WebsitePreview")
     @websitePreview = new TuringEmailApp.Models.WebsitePreview(websitePreviewAttributes,
-      urlSuffix: websitePreviewAttributes.url
+      websiteURL: websitePreviewAttributes.url
     )
 
     @websitePreviewView = new TuringEmailApp.Views.App.WebsitePreviewView(

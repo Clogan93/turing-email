@@ -2,10 +2,10 @@ class TuringEmailApp.Models.WebsitePreview extends Backbone.Model
   url: "/api/v1/website_previews/proxy?url="
 
   initialize: (options) ->
-    @url += options.urlSuffix
+    @url += options.websiteURL
 
-  urlSuffixIs: (urlSuffix) ->
-    @url = "/api/v1/website_previews/proxy?url=" + urlSuffix
+  websiteURLIs: (websiteURL) ->
+    @url = "/api/v1/website_previews/proxy?url=" + websiteURL
 
   parse: (response, options) ->
     parsedResponse = []

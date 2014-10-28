@@ -1,7 +1,7 @@
 describe "WebsitePreview", ->
   beforeEach ->
     @websitePreview = new TuringEmailApp.Models.WebsitePreview(
-      urlSuffix: ""
+      websiteURL: ""
     )
     
   it "has the right url", ->
@@ -9,7 +9,7 @@ describe "WebsitePreview", ->
 
   it "correctly sets the suffix", ->
     otherWebsitePreview = new TuringEmailApp.Models.WebsitePreview(
-      urlSuffix: "suffix"
+      websiteURL: "suffix"
     )
     expect(otherWebsitePreview.url).toEqual("/api/v1/website_previews/proxy?url=suffix")
 
@@ -17,7 +17,7 @@ describe "WebsitePreview", ->
     beforeEach ->
       websitePreviewServerResponseAttributes = FactoryGirl.create("WebsitePreviewServerResponse")
       @websitePreview = new TuringEmailApp.Models.WebsitePreview(websitePreviewServerResponseAttributes,
-        urlSuffix: websitePreviewServerResponseAttributes.url
+        websiteURL: websitePreviewServerResponseAttributes.url
       )
 
       @parsedResponse = @websitePreview.parse(websitePreviewServerResponseAttributes)

@@ -351,7 +351,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
         link = emailHtml.substring(indexOfUrl)?.split(" ")?[0]
 
         websitePreview = new TuringEmailApp.Models.WebsitePreview(
-          urlSuffix: link
+          websiteURL: link
         )
 
         @websitePreviewView = new TuringEmailApp.Views.App.WebsitePreviewView(
