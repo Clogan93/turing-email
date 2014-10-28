@@ -1,0 +1,104 @@
+/************************ 
+*** EMAIL THREAD VIEW ***
+*************************/
+
+.email_information {
+
+  border-top: 1px solid #e5e5e5;
+  padding-top: 5px;
+  height: 45px;
+  cursor: pointer;
+
+  span {
+    position: relative;
+    top: 10px;
+  }
+
+  .email-from {
+    padding-left: 10px;
+    padding-right: 10px;
+    font-weight: bold;
+  }
+
+  .email-date {
+    float: right;
+    padding-right: 15px;
+  }
+
+}
+
+.each-email-reply-button {
+  position: relative;
+  float: right;
+  margin-right: 10px;
+  bottom: 38px;
+}
+
+.each-email-forward-button {
+  position: relative;
+  float: right;
+  bottom: 38px;
+  right: 5px;
+}
+
+.email-thread-view-default-text {
+  text-align: center;
+  padding-top: 8%;
+  font-size: 16px;
+  color: #223;
+}
+
+.email-thread-header {
+
+  padding-top: 10px;
+
+  .email_subject {
+    font-weight: normal;
+    font-size: 18px;
+  }
+
+}
+
+.collapsed_email {
+  background-color: rgb(243, 243, 243);
+  cursor: pointer;
+}
+
+pre.email-body {
+  background-color: white;
+  white-space: -moz-pre-wrap; /* Mozilla, supported since 1999 */
+  white-space: -pre-wrap; /* Opera */
+  white-space: -o-pre-wrap; /* Opera */
+  white-space: pre-wrap; /* CSS3 - Text module (Candidate Recommendation) http://www.w3.org/TR/css3-text/#white-space */
+  word-wrap: break-word; /* IE 5.5+ */
+  overflow-y: hidden;
+}
+
+.mail-box-header {
+  padding: 0px 20px 12px 20px !important;
+  min-width: 450px;
+}
+
+.mail-body {
+  padding: 0px;
+}
+
+.email_body {
+
+  .row {
+    padding: 15px 10px;
+  }
+
+}
+
+.email-iframe {
+  width: 100%;
+}
+
+.email-date-displayed {
+  width: 85% !important;
+}
+
+.mail-tools {
+  margin-top: 10px;
+}

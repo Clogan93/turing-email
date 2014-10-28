@@ -1,7 +1,7 @@
 TuringEmailApp.Views.App ||= {}
 
 class TuringEmailApp.Views.App.EmbeddedComposeView extends TuringEmailApp.Views.App.ComposeView
-  template: JST["backbone/templates/app/compose/embedded_compose_view"]
+  template: JST["backbone/templates/app/compose/embedded_compose"]
 
   render: ->
     @currentEmailDraft = new TuringEmailApp.Models.EmailDraft(@email)

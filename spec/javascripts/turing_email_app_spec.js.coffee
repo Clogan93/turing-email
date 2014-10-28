@@ -84,7 +84,7 @@ describe "TuringEmailApp", ->
         
     describe "#setupComposeButton", ->
       beforeEach ->
-        @divComposeButton = $('<button id="compose_button" type="button">Compose Email</button>').appendTo("body")
+        @divComposeButton = $('<button class="compose_button" type="button">Compose Email</button>').appendTo("body")
         
         TuringEmailApp.setupComposeButton()
         

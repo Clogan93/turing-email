@@ -1,0 +1,54 @@
+/************************ 
+******* TREE VIEW *******
+*************************/
+
+.selected_tree_folder {
+  font-weight: bold !important;
+  color: #1ab394 !important;
+}
+
+li.contains_unread_emails {
+  font-weight: bold;
+}
+
+li.contains_no_unread_emails {
+  font-weight: normal;;
+}
+
+.email_folders {
+  li {
+    padding: 0px;
+  }
+  ul ul {
+    padding-left: 30px;
+  }
+}
+
+.bullet_span {
+  cursor: pointer;
+  float: left;
+  padding-top: 4px;
+  padding-right: 7px;
+  font-size: 14px;
+}
+
+.label_without_children {
+  margin-left: 1px;
+}
+
+a.label_link {
+  color: #666666;
+  font-weight: normal;
+  max-width: 200px;
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+a.label_link:hover {
+  background-color: #DFDFDF;
+}
+
+.folder-list.m-b-md {
+  padding: 0px;
+}

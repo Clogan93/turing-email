@@ -1,7 +1,7 @@
 TuringEmailApp.Views.App ||= {}
 
 class TuringEmailApp.Views.App.ComposeView extends Backbone.View
-  template: JST["backbone/templates/app/compose/modal_compose_view"]
+  template: JST["backbone/templates/app/compose/modal_compose"]
 
   initialize: (options) ->
     @app = options.app
@@ -9,6 +9,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
   render: ->
     @$el.html(@template())
     @setupComposeView()
+    @setupLinkPreviews()
     return this
 
   setupComposeView: ->
@@ -91,8 +92,8 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     
     @removeEmailSentAlert() if @currentAlertToken?
     
-    @currentAlertToken = @app.showAlert('Your message has been sent. <span id="undo_email_send">Undo</span>', "alert-info")
-    $("#undo_email_send").click =>
+    @currentAlertToken = @app.showAlert('Your message has been sent. <span class="undo_email_send">Undo</span>', "alert-info")
+    $(".undo_email_send").click =>
       clearTimeout(TuringEmailApp.sendEmailTimeout)
       
       @removeEmailSentAlert()
@@ -338,3 +339,23 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
 
     @$el.find(".compose_form").prepend('<div id="email_sent_error_alert" class="alert alert-danger" role="alert">
                                 There was an error in sending your email!</div>')
+
+  setupLinkPreviews: ->
+    @$el.find(".compose_form .note-editable").bind "keydown", "space return shift+return", =>
+      emailHtml = @$el.find(".compose_form .note-editable").html()
+      indexOfUrl = emailHtml.search(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/)
+
+      linkPreviewIndex = emailHtml.search("compose_link_preview")
+
+      if indexOfUrl isnt -1 and linkPreviewIndex is -1
+        link = emailHtml.substring(indexOfUrl)?.split(" ")?[0]
+
+        websitePreview = new TuringEmailApp.Models.WebsitePreview(
+          websiteURL: link
+        )
+
+        @websitePreviewView = new TuringEmailApp.Views.App.WebsitePreviewView(
+          model: websitePreview
+          el: $(@)
+        )
+        websitePreview.fetch()

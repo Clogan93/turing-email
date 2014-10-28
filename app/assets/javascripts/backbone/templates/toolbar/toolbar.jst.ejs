@@ -17,9 +17,9 @@ function outputFolderDropdown(emailFolders, uniqueID, className) {
 }
 %>
 
-<div class="mail-tools toolbar-elements row">
+<div class="toolbar-elements row">
   <div class="toolbar-buttons">
-    <div class="dropdown" id="bulk_action_checkbox_dropdown">
+    <div class="dropdown bulk_action_checkbox_dropdown">
       <button class="btn" data-toggle="dropdown" type="button">
         <input type="checkbox" class="i-checks">
         <span class="caret"></span>
@@ -66,7 +66,7 @@ function outputFolderDropdown(emailFolders, uniqueID, className) {
 
       <button type="button" class="btn btn-white btn-sm dropdown-toggle tooltip-button" data-toggle="dropdown" id="moreDropdownMenu" data-placement="top" data-original-title="More">More <span class="caret"></span></button>
 
-      <ul class="dropdown-menu" role="menu" aria-labelledby="moreDropdownMenu" style="height: 75px;">
+      <ul class="dropdown-menu more-dropdown-menu" role="menu" aria-labelledby="moreDropdownMenu">
         <li role="presentation"><a role="menuitem" tabindex="-1" class="dropdown-link mark_as_read">Mark as read</a></li>
         <li role="presentation"><a role="menuitem" tabindex="-1" class="dropdown-link mark_as_unread">Mark as unread</a></li>
         <li role="presentation"><a role="menuitem" href="#apps" tabindex="-1" class="dropdown-link apps_link">Apps</a></li>
@@ -74,7 +74,7 @@ function outputFolderDropdown(emailFolders, uniqueID, className) {
     </span>
 
     <span class="btn-group pull-right pagination-buttons">
-      <div id="current_emails_displayed_counter">
+      <div class="current_emails_displayed_counter">
         <span><span id="start_number">0</span>-<span id="end_number">0</span></span> of <span id="total_emails_number">0</span>
       </div>
       <button id="paginate_left_link" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Left"><i class="fa fa-arrow-left"></i></button>

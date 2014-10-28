@@ -14,7 +14,7 @@ describe "EmbeddedComposeView", ->
     specStopTuringEmailApp()
 
   it "has the right template", ->
-    expect(@embeddedComposeView.template).toEqual JST["backbone/templates/app/compose/embedded_compose_view"]
+    expect(@embeddedComposeView.template).toEqual JST["backbone/templates/app/compose/embedded_compose"]
 
   describe "after render", ->
     beforeEach ->

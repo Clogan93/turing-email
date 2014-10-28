@@ -1,7 +1,7 @@
 class TuringEmailApp.Views.ToolbarView extends Backbone.View
   @MAX_RETRY_ATTEMPTS: 5
 
-  template: JST["backbone/templates/toolbar/toolbar_view"]
+  template: JST["backbone/templates/toolbar/toolbar"]
   tagName: "div"
 
   initialize: (options) ->
@@ -71,9 +71,9 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
     $(window).resize =>
       if $(".mail-box-header.toolbar").width() < 525
-        $("#current_emails_displayed_counter").hide()
+        $(".current_emails_displayed_counter").hide()
       else
-        $("#current_emails_displayed_counter").show()
+        $(".current_emails_displayed_counter").show()
 
     @$el.find(".label_as_link").click (event) =>
       @$el.find(".label_as_link").tooltip('hide')

@@ -1,0 +1,55 @@
+/************************ 
+**** LIST ITEM VIEW *****
+*************************/
+
+.unread .icheckbox_square-green {
+  left: 1px;
+}
+
+.contain-from {
+  overflow-x: hidden;
+  white-space: nowrap;
+  max-width: 250px;
+  text-overflow: ellipsis;
+}
+
+.contain-subject {
+  overflow-x: hidden;
+  white-space: nowrap;
+  max-width: 775px;
+  text-overflow: ellipsis;
+  span {
+    font-weight: normal;
+  }
+}
+
+.read {
+
+  font-weight: bold;
+  border: 1px solid #efefef;
+  background-color: white;
+  padding: 4px;
+
+  td {
+    background-color: whitesmoke !important;
+  }
+
+}
+
+.unread td {
+  background-color: white !important;
+}
+
+.currently_being_read td {
+  background-color: rgb(231, 246, 236) !important;
+}
+
+.checked_email_thread td {
+  background-color: rgb(252, 248, 227) !important;
+}
+
+.table-mail .mail-date {
+  font-size: 12px;
+  min-width: 75px;
+  padding-right: 20px !important;
+}

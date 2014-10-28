@@ -8,7 +8,7 @@ describe "ComposeView", ->
     specStopTuringEmailApp()
 
   it "has the right template", ->
-    expect(@composeView.template).toEqual JST["backbone/templates/app/compose/modal_compose_view"]
+    expect(@composeView.template).toEqual JST["backbone/templates/app/compose/modal_compose"]
 
   describe "after render", ->
     beforeEach ->
@@ -131,7 +131,7 @@ describe "ComposeView", ->
         expect(@composeView.currentAlertToken).toBeDefined()
 
       it "binds the click event to undo email send button", ->
-        expect($("#undo_email_send")).toHandle("click")
+        expect($(".undo_email_send")).toHandle("click")
 
       describe "when the undo email send button is clicked", ->
         beforeEach ->
@@ -141,19 +141,19 @@ describe "ComposeView", ->
 
         it "should remove the alert", ->
           spy = sinon.spy(@composeView, "removeEmailSentAlert")
-          $("#undo_email_send").click()
+          $(".undo_email_send").click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
         it "should load the email", ->
           spy = sinon.spy(@composeView, "loadEmail")
-          $("#undo_email_send").click()
+          $(".undo_email_send").click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
         it "show the compose modal", ->
           spy = sinon.spy(@composeView, "show")
-          $("#undo_email_send").click()
+          $(".undo_email_send").click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
@@ -536,7 +536,7 @@ describe "ComposeView", ->
         @composeView.$el.find(".compose_form #cc_input").val(@seededChance.email())
         @composeView.$el.find(".compose_form #bcc_input").val(@seededChance.email())
         @composeView.$el.find(".compose_form #subject_input").val(@seededChance.string({length: 25}))
-        @composeView.$el.find(".compose_form #compose_email_body").html(@seededChance.string({length: 250}))
+        @composeView.$el.find(".compose_form .compose_email_body").html(@seededChance.string({length: 250}))
 
         @composeView.emailInReplyToUID = chance.integer({min: 1, max: 10000})
 
@@ -755,3 +755,27 @@ describe "ComposeView", ->
         @composeView.sendEmailDelayedError JSON.stringify({})
         expect(@composeView.$el).toContainHtml('<div id="email_sent_error_alert" class="alert alert-danger" role="alert">
                                 There was an error in sending your email!</div>')
+
+    describe "#setupLinkPreviews", ->
+      
+      it "binds keydown to the compose body", ->
+        expect(@composeView.$el.find(".compose_form .note-editable")).toHandle("keydown")
+
+      describe "when text is entered in the compose body", ->
+
+        describe "when there is no link", ->
+
+          it "does not create the website preview view", ->
+            @composeView.$el.find(".compose_form .note-editable").html("hello world")
+            expect(@composeView.websitePreviewView).not.toBeDefined()
+
+        describe "when there is a link", ->
+
+          it "create the website preview view", ->
+            @composeView.$el.find(".compose_form .note-editable").html("this is a test http://www.apple.com")
+
+            @event = jQuery.Event("keydown")
+            @event.which = $.ui.keyCode.SPACE
+            @composeView.$el.find(".compose_form .note-editable").trigger(@event)
+
+            expect(@composeView.websitePreviewView).toBeDefined()

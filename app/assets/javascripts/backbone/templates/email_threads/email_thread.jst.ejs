@@ -8,7 +8,7 @@
   </div>
 
   <div class="mail-tools tooltip-demo row">
-    <span  class="col-md-9" id="email_subject"><%= subjectPreview %></span>
+    <span  class="col-md-9 email_subject"><%= subjectPreview %></span>
   </div>
 </div>
 
@@ -35,13 +35,13 @@
                   <%
                     if(email.subject.trim() == "Turing Email - Your daily Genie Report!" || email.html_part_encoded != null) {
                     %>
-                      <iframe id="email_iframe<%= index %>" style="width: 100%;"></iframe>
+                      <iframe class="email-iframe" id="email_iframe<%= index %>"></iframe>
                     <%
                     } else if(email.text_part_encoded != null) {%>
-                      <pre><%= base64_decode_urlsafe(email.text_part_encoded) %></pre>
+                      <pre class="email-body"><%= base64_decode_urlsafe(email.text_part_encoded) %></pre>
                     <%
                     } else if(email.body_text_encoded != null) {%>
-                      <pre name="body_text"><%= base64_decode_urlsafe(email.body_text_encoded) %></pre>
+                      <pre class="email-body" name="body_text"><%= base64_decode_urlsafe(email.body_text_encoded) %></pre>
                     <%
                     }
                   %>

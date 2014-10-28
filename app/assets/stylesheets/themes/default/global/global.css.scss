@@ -1,0 +1,75 @@
+/************************ 
+********* GLOBAL ********
+*************************/
+
+body {
+  font-family: arial, sans-serif;
+}
+
+h3 {
+  color: #777777;
+}
+
+.container-fluid {
+  min-width: 650px !important;
+}
+
+#page-wrapper {
+  margin: 0px 0px 0px 0px;
+  padding-right: 0px;
+  min-height: 0px;
+}
+
+.fixed {
+  width: 200px;
+  float: left;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.fixed:hover {
+  overflow-y: scroll;
+}
+
+.fixed + div {
+   margin-left: 200px;
+}
+
+.fill { 
+  min-height: 100%;
+  position: relative;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.filler {
+  padding: 0px;
+  margin: 0px;
+  overflow: hidden;
+  min-width: 450px;
+}
+
+.filler:after {
+  background-color:inherit;
+  bottom: 0;
+  content: "";
+  height: auto;
+  min-height: 100%;
+  left: 0;
+  margin:inherit;
+  right: 0;
+  position: absolute;
+  top: 0;
+  width: inherit;
+  z-index: -1;
+}
+
+.dropdown-menu {
+  margin-top: 10px;
+  height: 270px;
+  overflow-y: scroll;
+}
+
+.icheckbox_square-green {
+  transform: scale(0.7, 0.7);
+}
