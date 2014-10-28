@@ -179,6 +179,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @routers.reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
     @routers.settingsRouter = new TuringEmailApp.Routers.SettingsRouter()
     @routers.searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()
+    @routers.appsLibraryRouter = new TuringEmailApp.Routers.AppsLibraryRouter()
 
   ###############
   ### Getters ###
@@ -623,16 +624,12 @@ window.TuringEmailApp = new(Backbone.View.extend(
   showEmails: ->
     @views.mainView.showEmails(@isSplitPaneMode())
 
+  showAppsLibrary: ->
+    @views.mainView.showAppsLibrary()
+    
   showSettings: ->
-    if _.keys(@models.userSettings.attributes).length is 0
-      setTimeout(
-        =>
-          @showSettings()
-        100
-      )
-
-      return
-
+    @models.userSettings.fetch(reset: true)
+      
     @collections.emailRules = new TuringEmailApp.Collections.Rules.EmailRulesCollection()
     @collections.emailRules.fetch(reset: true)
 

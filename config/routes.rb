@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       
       resources :users, only: [:create]
       get '/users/current', to: 'users#current'
+      get '/users/installed_apps', to: 'users#installed_apps'
       post '/users/declare_email_bankruptcy', to: 'users#declare_email_bankruptcy'
 
       get '/user_configurations', to: 'user_configurations#show'
@@ -75,6 +76,11 @@ Rails.application.routes.draw do
       get '/email_rules/recommended_rules', to: 'email_rules#recommended_rules'
 
       get '/website_previews/proxy', to: 'website_previews#proxy'
+      
+      resources :apps, only: [:create, :index]
+      post '/apps/install/:app_uid', to: 'apps#install'
+      delete '/apps/uninstall/:app_uid', to: 'apps#uninstall'
+      post '/apps/test', to: 'apps#test'
     end
   end
 

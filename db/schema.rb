@@ -11,10 +11,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141017212109) do
+ActiveRecord::Schema.define(version: 20141026223435) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "apps", force: true do |t|
+    t.integer  "user_id"
+    t.text     "uid"
+    t.text     "name"
+    t.text     "description"
+    t.text     "app_type"
+    t.text     "callback_url"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "apps", ["name"], name: "index_apps_on_name", unique: true, using: :btree
+  add_index "apps", ["uid"], name: "index_apps_on_uid", unique: true, using: :btree
 
   create_table "delayed_jobs", force: true do |t|
     t.integer  "priority",   default: 0, null: false
@@ -225,6 +239,26 @@ ActiveRecord::Schema.define(version: 20141017212109) do
 
   add_index "imap_folders", ["email_account_id", "email_account_type", "name"], name: "index_imap_folders_on_email_account_and_name", unique: true, using: :btree
   add_index "imap_folders", ["email_account_id", "email_account_type"], name: "index_imap_folders_on_email_account", using: :btree
+
+  create_table "installed_apps", force: true do |t|
+    t.integer  "installed_app_subclass_id"
+    t.string   "installed_app_subclass_type"
+    t.integer  "user_id"
+    t.integer  "app_id"
+    t.boolean  "permissions_email_headers",   default: false
+    t.boolean  "permissions_email_content",   default: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "installed_apps", ["user_id", "app_id"], name: "index_installed_apps_on_user_id_and_app_id", unique: true, using: :btree
+
+  create_table "installed_panel_apps", force: true do |t|
+    t.text     "panel",      default: "right"
+    t.integer  "position",   default: 0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "ip_infos", force: true do |t|
     t.inet     "ip"

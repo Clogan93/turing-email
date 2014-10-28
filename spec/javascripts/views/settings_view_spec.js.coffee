@@ -115,7 +115,7 @@ describe "SettingsView", ->
 
     it "is called by the switch change event on the switches", ->
       spy = sinon.spy(@settingsView, "saveSettings")
-      @settingsView.$el.find("#genie_rules_button").click()
+      @settingsView.$el.find(".genie_rules_button").click()
       genieSwitch = @settingsView.$el.find("#genie_switch")
       genieSwitch.click()
       expect(spy).toHaveBeenCalled()
@@ -124,7 +124,7 @@ describe "SettingsView", ->
     describe "when saveSettings is called", ->
 
       it "patches the server", ->
-        @settingsView.$el.find("#genie_rules_button").click()
+        @settingsView.$el.find(".genie_rules_button").click()
         genieSwitch = @settingsView.$el.find("#genie_switch")
         genieSwitch.click()
         expect(@server.requests.length).toEqual 3
@@ -182,13 +182,13 @@ describe "SettingsView", ->
         spy.restore()
 
     it "binds the click event to the brain rules button", ->
-      expect(@settingsView.$el.find("#genie_rules_button")).toHandle("click")
+      expect(@settingsView.$el.find(".genie_rules_button")).toHandle("click")
 
     describe "when the brain rules button is clicked", ->
 
       it "shows the create rules view in genie_rule mode", ->
         spy = sinon.spy(@settingsView.createRulesView, "show")
-        @settingsView.$el.find("#genie_rules_button").click()
+        @settingsView.$el.find(".genie_rules_button").click()
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith("genie_rule")
         spy.restore()
