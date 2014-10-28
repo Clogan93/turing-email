@@ -262,5 +262,6 @@ class TuringEmailApp.Views.Main extends Backbone.View
       });
     else
       emailThreadViewDiv.html(emailThreadView.$el)
+      emailThreadView.render()
 
     return emailThreadView
