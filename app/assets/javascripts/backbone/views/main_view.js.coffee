@@ -80,7 +80,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
     appsSplitPaneDiv = @$el.find(".apps_split_pane")
     return if appsSplitPaneDiv.length is 0
 
-    height = $(window).height() - appsSplitPaneDiv.offset().top - 6
+    height = $(window).height() - appsSplitPaneDiv.offset().top - 20
     height = 1 if height <= 0
 
     appsSplitPaneDiv.height(height)
@@ -136,7 +136,8 @@ class TuringEmailApp.Views.Main extends Backbone.View
         livePaneResizing: true,
         showDebugMessages: true,
 
-        south__size: if @splitPaneLayout? then @splitPaneLayout.state.south.size else 0.5
+        south__size: if @splitPaneLayout? then @splitPaneLayout.state.south.size else 0.5,
+        south__onresize: => @resizeAppsSplitPane()
       });
     else
       if @emailThreadsListView.collection.length is 0
@@ -261,6 +262,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
         east__size: 200
       });
     else
+      emailThreadViewDiv.off("resize")
       emailThreadViewDiv.html(emailThreadView.$el)
       emailThreadView.render()
 
