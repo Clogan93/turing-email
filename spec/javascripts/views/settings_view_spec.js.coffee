@@ -209,7 +209,7 @@ describe "SettingsView", ->
         expect(@server.requests.length).toEqual 3
         request = @server.requests[2]
         expect(request.method).toEqual "DELETE"
-        expect(request.url).toEqual "/api/v1/email_rules/" + firstDeleteButton.attr("data") + ".json"
+        expect(request.url).toEqual "/api/v1/email_rules/" + firstDeleteButton.attr("data")
 
         expect(removeSpy).toHaveBeenCalled()
         removeSpy.restore()
@@ -228,7 +228,7 @@ describe "SettingsView", ->
         expect(@server.requests.length).toEqual 3
         request = @server.requests[2]
         expect(request.method).toEqual "DELETE"
-        expect(request.url).toEqual "/api/v1/genie_rules/" + firstDeleteButton.attr("data") + ".json"
+        expect(request.url).toEqual "/api/v1/genie_rules/" + firstDeleteButton.attr("data")
 
         expect(removeSpy).toHaveBeenCalled()
         removeSpy.restore()

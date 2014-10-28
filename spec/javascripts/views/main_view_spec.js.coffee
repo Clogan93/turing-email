@@ -74,7 +74,7 @@ describe "MainView", ->
       beforeEach ->
         @sidebarResizeSpy = sinon.stub(@mainView, "resizeSidebar", ->)
         @resizePrimaryPaneSpy = sinon.stub(@mainView, "resizePrimaryPane", ->)
-        @resizeSplitPaneSpy = sinon.stub(@mainView, "resizeSplitPane", ->)
+        @resizePrimarySplitPaneSpy = sinon.stub(@mainView, "resizePrimarySplitPane", ->)
         @resizeEmailThreadsListViewSpy = sinon.stub(@mainView, "resizeEmailThreadsListView", ->)
 
         @mainView.resize()
@@ -82,7 +82,7 @@ describe "MainView", ->
       afterEach ->
         @sidebarResizeSpy.restore()
         @resizePrimaryPaneSpy.restore()
-        @resizeSplitPaneSpy.restore()
+        @resizePrimarySplitPaneSpy.restore()
         @resizeEmailThreadsListViewSpy.restore()
 
       it "resizes the sidebar", ->
@@ -92,7 +92,7 @@ describe "MainView", ->
         expect(@resizePrimaryPaneSpy).toHaveBeenCalled()
 
       it "resizes the split pane", ->
-        expect(@resizeSplitPaneSpy).toHaveBeenCalled()
+        expect(@resizePrimarySplitPaneSpy).toHaveBeenCalled()
 
       it "resizes the email threads list view pane", ->
         expect(@resizeEmailThreadsListViewSpy).toHaveBeenCalled()
@@ -119,12 +119,12 @@ describe "MainView", ->
 
         describe "without split pane", ->
           beforeEach ->
-            @resizeSplitPaneSpy = sinon.spy(@mainView, "resizeSplitPane")
+            @resizePrimarySplitPaneSpy = sinon.spy(@mainView, "resizePrimarySplitPane")
             
             @mainView.showEmails(false)
             
           afterEach ->
-            @resizeSplitPaneSpy.restore()
+            @resizePrimarySplitPaneSpy.restore()
             
           it "shows the email controls", ->
             expect(@primaryPane.children().length).toEqual(2)
@@ -138,7 +138,7 @@ describe "MainView", ->
           it "shows the email controls", ->
             expect(@primaryPane.children().length).toEqual(2)
             expect($(@primaryPane.children()[0])).toHaveClass("toolbar")
-            expect($(@primaryPane.children()[1])).toHaveClass("split_pane")
+            expect($(@primaryPane.children()[1])).toHaveClass("primary_split_pane")
             
             splitPane = $(@primaryPane.children()[1])
             expect(splitPane.children().length).toEqual(3)
