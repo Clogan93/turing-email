@@ -2,7 +2,7 @@
 *** EMAIL THREAD VIEW ***
 *************************/
 
-.email_information {
+.email-information {
 
   border-top: 1px solid #e5e5e5;
   padding-top: 5px;
@@ -54,13 +54,13 @@
 .email-thread-header {
   padding-top: 10px;
 
-  .email_subject {
+  .email-subject {
     font-weight: normal;
     font-size: 18px;
   }
 }
 
-.collapsed_email {
+.collapsed-email {
   background-color: rgb(243, 243, 243);
   cursor: pointer;
 }
@@ -84,7 +84,7 @@ pre.email-body {
   padding: 0px;
 }
 
-.email_body {
+.email-body {
 
   .row {
     padding: 15px 10px;

@@ -41,7 +41,7 @@ window.specStartTuringEmailApp = ->
   TuringEmailApp.collections.emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(undefined, app: TuringEmailApp)
   TuringEmailApp.views.emailFoldersTreeView = new TuringEmailApp.Views.EmailFolders.TreeView(
     app: TuringEmailApp
-    el: $(".email_folders")
+    el: $(".email-folders")
     collection: TuringEmailApp.collections.emailFolders
   )
 

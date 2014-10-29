@@ -2,20 +2,20 @@
 ******* TREE VIEW *******
 *************************/
 
-.selected_tree_folder {
+.selected-tree-folder {
   font-weight: bold !important;
   color: #1ab394 !important;
 }
 
-li.contains_unread_emails {
+li.contains-unread-emails {
   font-weight: bold;
 }
 
-li.contains_no_unread_emails {
+li.contains-no-unread-emails {
   font-weight: normal;;
 }
 
-.email_folders {
+.email-folders {
   li {
     padding: 0px;
   }
@@ -24,7 +24,7 @@ li.contains_no_unread_emails {
   }
 }
 
-.bullet_span {
+.bullet-span {
   cursor: pointer;
   float: left;
   padding-top: 4px;
@@ -32,11 +32,11 @@ li.contains_no_unread_emails {
   font-size: 14px;
 }
 
-.label_without_children {
+.label-without-children {
   margin-left: 1px;
 }
 
-a.label_link {
+a.label-link {
   color: #666666;
   font-weight: normal;
   max-width: 200px;
@@ -45,7 +45,7 @@ a.label_link {
   text-overflow: ellipsis;
 }
 
-a.label_link:hover {
+a.label-link:hover {
   background-color: #DFDFDF;
 }
 

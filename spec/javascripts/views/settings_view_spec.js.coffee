@@ -58,7 +58,7 @@ describe "SettingsView", ->
       
     it "renders the Email Bankruptcy button", ->
       expect(@settingsDiv).toContainHtml('<h4 class="h4">Email Bankruptcy</h4>')
-      expect(@settingsDiv).toContainHtml('<button id="email_bankruptcy_button" type="button" class="btn btn-block btn-danger">Declare Email Bankruptcy</button>')
+      expect(@settingsDiv).toContainHtml('<button type="button" class="btn btn-block btn-danger email-bankruptcy-button">Declare Email Bankruptcy</button>')
 
     it "renders the demo mode switch", ->
       demoModeSwitch = $(".demo_mode_switch")
@@ -87,10 +87,10 @@ describe "SettingsView", ->
           return false
         
       it "does NOT post the bankruptcy request to the server", ->
-        spyOnEvent("#email_bankruptcy_button", "click")
-        emailBankruptcyButton = @settingsDiv.find("#email_bankruptcy_button")
+        spyOnEvent(".email-bankruptcy-button", "click")
+        emailBankruptcyButton = @settingsDiv.find(".email-bankruptcy-button")
         emailBankruptcyButton.click()
-        expect("click").toHaveBeenPreventedOn("#email_bankruptcy_button")
+        expect("click").toHaveBeenPreventedOn(".email-bankruptcy-button")
 
         expect(@server.requests.length).toEqual 2
         
@@ -100,10 +100,10 @@ describe "SettingsView", ->
           return true
       
       it "posts the bankruptcy request to the server", ->
-        spyOnEvent("#email_bankruptcy_button", "click")
-        emailBankruptcyButton = @settingsDiv.find("#email_bankruptcy_button")
+        spyOnEvent(".email-bankruptcy-button", "click")
+        emailBankruptcyButton = @settingsDiv.find(".email-bankruptcy-button")
         emailBankruptcyButton.click()
-        expect("click").toHaveBeenPreventedOn("#email_bankruptcy_button")
+        expect("click").toHaveBeenPreventedOn(".email-bankruptcy-button")
   
         expect(@server.requests.length).toEqual 3
         request = @server.requests[2]
@@ -112,7 +112,7 @@ describe "SettingsView", ->
 
       it "show the settings alert", ->
         spy = sinon.spy(@settingsView, "showSettingsAlert")
-        emailBankruptcyButton = @settingsDiv.find("#email_bankruptcy_button")
+        emailBankruptcyButton = @settingsDiv.find(".email-bankruptcy-button")
         emailBankruptcyButton.click()
         expect(spy).toHaveBeenCalled()
         spy.restore()
@@ -121,7 +121,8 @@ describe "SettingsView", ->
 
     it "is called by the switch change event on the switches", ->
       spy = sinon.spy(@settingsView, "saveSettings")
-      @settingsView.$el.find(".genie_rules_button").click()
+      @settingsView.$el.find(".genie-rules-button").click()
+
       genieSwitch = @settingsView.$el.find("#genie_switch")
       genieSwitch.click()
       expect(spy).toHaveBeenCalled()
@@ -129,8 +130,8 @@ describe "SettingsView", ->
 
     describe "when saveSettings is called", ->
       it "patches the server", ->
-        @settingsView.$el.find(".genie_rules_button").click()
-        
+        @settingsView.$el.find(".genie-rules-button").click()
+
         genieSwitch = @settingsView.$el.find("#genie_switch")
         genieSwitch.click()
         
@@ -206,25 +207,26 @@ describe "SettingsView", ->
   describe "#setupRuleCreation", ->
 
     it "binds the click event to the email rules button", ->
-      expect(@settingsView.$el.find("#email_rules_button")).toHandle("click")
+      expect(@settingsView.$el.find(".email-rules-button")).toHandle("click")
 
     describe "when the email rules button is clicked", ->
 
       it "shows the create rules view in email_rule mode", ->
         spy = sinon.spy(@settingsView.createRulesView, "show")
-        @settingsView.$el.find("#email_rules_button").click()
+        @settingsView.$el.find(".email-rules-button").click()
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith("email_rule")
         spy.restore()
 
     it "binds the click event to the brain rules button", ->
-      expect(@settingsView.$el.find(".genie_rules_button")).toHandle("click")
+      expect(@settingsView.$el.find(".genie-rules-button")).toHandle("click")
 
     describe "when the brain rules button is clicked", ->
 
       it "shows the create rules view in genie_rule mode", ->
         spy = sinon.spy(@settingsView.createRulesView, "show")
-        @settingsView.$el.find(".genie_rules_button").click()
+        @settingsView.$el.find(".genie-rules-button").click()
+
         expect(spy).toHaveBeenCalled()
         expect(spy).toHaveBeenCalledWith("genie_rule")
         spy.restore()

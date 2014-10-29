@@ -98,12 +98,12 @@ window.TuringEmailApp = new(Backbone.View.extend(
       @searchClicked($(event.target).find("input").val())
 
   setupComposeButton: ->
-    $(".compose_button").click =>
+    $(".compose-button").click =>
       @views.composeView.loadEmpty()
       @views.composeView.show()
 
   setupFiltering: ->
-    $(".create_filter").click (event) ->
+    $(".create-filter").click (event) ->
       event.preventDefault()
       $(".email-rule-dropdown a").trigger('click.bs.dropdown')
       return false
@@ -148,7 +148,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @collections.emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(undefined, app: TuringEmailApp)
     @views.emailFoldersTreeView = new TuringEmailApp.Views.EmailFolders.TreeView(
       app: this
-      el: $(".email_folders")
+      el: $(".email-folders")
       collection: @collections.emailFolders
     )
     

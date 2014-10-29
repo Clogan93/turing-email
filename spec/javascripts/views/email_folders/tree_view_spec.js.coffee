@@ -30,13 +30,13 @@ describe "TreeView", ->
 
           if emailFolder.get("label_type") == "user"
             expect(link).toBeVisible()
-            expect(link).toHaveClass("label_link")
+            expect(link).toHaveClass("label-link")
             labelNameComponents = emailFolder.get("name").split("/")
             labelName = labelNameComponents[labelNameComponents.length - 1]
             expect(link).toContainHtml(labelName +
               ' <span class="badge">' + emailFolder.get("num_unread_threads") + '</span>')
           else if labelID is "INBOX"
-            badge = link.find("span.inbox_count_badge")
+            badge = link.find("span.inbox-count-badge")
             expect(badge.text()).toEqual("" + emailFolder.get("num_unread_threads"))
           else if labelID is "DRAFT"
             badge = link.find("span.badge")
@@ -95,8 +95,8 @@ describe "TreeView", ->
         @emailFolders.models[4].set("num_unread_threads", 0)
         @treeView.render()
 
-      it "assigns the contains_no_unread_emails class to the label with no unread emails", ->
-        expect(@treeView.$el.find(".contains_no_unread_emails")).toContainHtml('<span class="badge"></span>')
+      it "assigns the contains-no-unread-emails class to the label with no unread emails", ->
+        expect(@treeView.$el.find(".contains-no-unread-emails")).toContainHtml('<span class="badge"></span>')
 
   describe "#generateTree", ->
     beforeEach ->
@@ -123,7 +123,7 @@ describe "TreeView", ->
         @emailFolders.add(FactoryGirl.create("EmailFolder", name: @emailFolders.at(0).get("name") + "/Test"))
 
       it "binds the click event to the bullet span", ->
-        expect(@treeView.$el.find(".bullet_span")).toHandle("click")
+        expect(@treeView.$el.find(".bullet-span")).toHandle("click")
 
       it "binds the click event to the a tags", ->
         expect(@treeView.$el.find("a")).toHandle("click")
@@ -241,7 +241,7 @@ describe "TreeView", ->
 
       it "updates the inbox count badge", ->
         @treeView.updateBadgeCount @inboxEmailFolder
-        expect(@treeView.$el.find('.inbox_count_badge')).toContainHtml(@inboxEmailFolder.badgeString())
+        expect(@treeView.$el.find('.inbox-count-badge')).toContainHtml(@inboxEmailFolder.badgeString())
 
     describe "when the email folder is not the inbox", ->
       beforeEach ->

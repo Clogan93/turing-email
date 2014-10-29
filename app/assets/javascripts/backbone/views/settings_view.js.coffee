@@ -25,7 +25,7 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     return this
 
   setupEmailBankruptcyButton: ->
-    @$el.find("#email_bankruptcy_button").click (event) =>
+    @$el.find(".email-bankruptcy-button").click (event) =>
       event.preventDefault()
       
       confirm_response = confirm("Are you sure you want to declare email bankruptcy?")
@@ -80,12 +80,12 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     )
     @createRulesView.render()
 
-    @$el.find("#email_rules_button").click (event) =>
+    @$el.find(".email-rules-button").click (event) =>
       @createRulesView.show("email_rule")
       
       return false
 
-    @$el.find(".genie_rules_button").click (event) =>
+    @$el.find(".genie-rules-button").click (event) =>
       @createRulesView.show("genie_rule")
 
       return false

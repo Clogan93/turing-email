@@ -88,8 +88,8 @@ describe "ToolbarView", ->
         expect(@toolbarView.$el.find(".mark_as_unread").parent()).toHandle("click")
         expect(@toolbarView.$el.find("i.fa-archive").parent()).toHandle("click")
         expect(@toolbarView.$el.find("i.fa-trash-o").parent()).toHandle("click")
-        expect(@toolbarView.$el.find("#paginate_left_link")).toHandle("click")
-        expect(@toolbarView.$el.find("#paginate_right_link")).toHandle("click")
+        expect(@toolbarView.$el.find("#paginate-left-link")).toHandle("click")
+        expect(@toolbarView.$el.find("#paginate-right-link")).toHandle("click")
         expect(@toolbarView.$el.find(".label_as_link")).toHandle("click")
         expect(@toolbarView.$el.find(".move_to_folder_link")).toHandle("click")
         expect(@toolbarView.$el.find("#refresh_button")).toHandle("click")
@@ -127,17 +127,17 @@ describe "ToolbarView", ->
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
-      describe "when #paginate_left_link is clicked", ->
+      describe "when #paginate-left-link is clicked", ->
         it "triggers leftArrowClicked", ->
           spy = sinon.backbone.spy(@toolbarView, "leftArrowClicked")
-          @toolbarView.$el.find("#paginate_left_link").click()
+          @toolbarView.$el.find("#paginate-left-link").click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
-      describe "when #paginate_right_link is clicked", ->
+      describe "when #paginate-right-link is clicked", ->
         it "triggers rightArrowClicked", ->
           spy = sinon.backbone.spy(@toolbarView, "rightArrowClicked")
-          @toolbarView.$el.find("#paginate_right_link").click()
+          @toolbarView.$el.find("#paginate-right-link").click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 

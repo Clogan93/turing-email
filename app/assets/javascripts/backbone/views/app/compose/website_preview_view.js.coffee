@@ -9,10 +9,10 @@ class TuringEmailApp.Views.App.WebsitePreviewView extends Backbone.View
   render: ->
     @$el.append(@template(@model.toJSON()))
 
-    @$el.find(".compose_link_preview_close_button").click =>
+    @$el.find(".compose-link-preview-close-button").click =>
       @hide()
 
     return this
 
   hide: ->
-    @$el.find(".compose_link_preview").remove()
+    @$el.find(".compose-link-preview").remove()
