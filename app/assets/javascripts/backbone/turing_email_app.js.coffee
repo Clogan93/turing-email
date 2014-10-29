@@ -429,7 +429,8 @@ window.TuringEmailApp = new(Backbone.View.extend(
       =>
         @selectedEmailThread()?.moveToFolder(folderID, folderName)
       (checkedListItemViews, selectedEmailThreadUIDs) =>
-        TuringEmailApp.Models.EmailThread.moveToFolder(selectedEmailThreadUIDs, folderID, folderName)
+        for emailThreadUID in selectedEmailThreadUIDs
+          @collections.emailFolders.get(emailThreadUID).moveToFolder(folderID, folderName)
       true, true, true, true
     )
 
