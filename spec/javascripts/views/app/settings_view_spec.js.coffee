@@ -74,6 +74,33 @@ describe "SettingsView", ->
       expect(@settingsDiv).toContain(splitPaneSwitch)
       expect(splitPaneSwitch.is(":checked")).toEqual(@userSettings.get("split_pane_mode") == "horizontal")
 
+    it "renders the email rules table", ->
+      emailRulesTable = $(".email-rules-table")
+      expect(@settingsDiv).toContain(emailRulesTable)
+
+    it "renders the email rules", ->
+      emailRule = TuringEmailApp.collections.emailRules.models[0]
+      expect(@settingsDiv.find(".email-rule")).toContainHtml('<td>' + emailRule.get("from_address") + '</td>')
+      expect(@settingsDiv.find(".email-rule")).toContainHtml('<td>' + emailRule.get("to_address") + '</td>')
+      expect(@settingsDiv.find(".email-rule")).toContainHtml('<td>' + emailRule.get("subject") + '</td>')
+      expect(@settingsDiv.find(".email-rule")).toContainHtml('<td>' + emailRule.get("list_id") + '</td>')
+      expect(@settingsDiv.find(".email-rule")).toContainHtml('<td>' + emailRule.get("destination_folder_name") + '</td>')
+
+    it "renders the brain rules table", ->
+      brainRulesTable = $(".brain-rules-table")
+      expect(@settingsDiv).toContain(brainRulesTable)
+
+    it "renders the brain rules", ->
+      brainRule = TuringEmailApp.collections.brainRules.models[0]
+      from_address = if brainRule.get("from_address")? then brainRule.get("from_address") else ""
+      to_address = if brainRule.get("to_address")? then brainRule.get("to_address") else ""
+      subject = if brainRule.get("subject")? then brainRule.get("subject") else ""
+      list_id = if brainRule.get("list_id")? then brainRule.get("list_id") else ""
+      expect(@settingsDiv.find(".brain-rule").first()).toContainHtml('<td>' + from_address + '</td>')
+      expect(@settingsDiv.find(".brain-rule").first()).toContainHtml('<td>' + to_address + '</td>')
+      expect(@settingsDiv.find(".brain-rule").first()).toContainHtml('<td>' + subject + '</td>')
+      expect(@settingsDiv.find(".brain-rule").first()).toContainHtml('<td>' + list_id + '</td>')
+
   describe "#setupSwitches", ->
 
     it "sets up the demo mode switch", ->
@@ -92,7 +119,7 @@ describe "SettingsView", ->
       @settingsView.setupSwitches()
       expect(@settingsDiv.find("#split_pane_switch").parent().parent()).toHaveClass "has-switch"
 
-  describe "email bankruptcy button", ->
+  describe "#setupEmailBankruptcyButton", ->
     describe "the user cancels the action", ->
       beforeEach ->
         window.confirm = ->

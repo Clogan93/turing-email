@@ -87,7 +87,7 @@
                   <%
                     for(var i = 0; i < emailRules.length; i++) {
                       %>
-                        <tr>
+                        <tr class="email-rule">
 
                           <td><%= emailRules[i].from_address %></td>
                           <td><%= emailRules[i].to_address %></td>
@@ -129,7 +129,7 @@
                   <%
                     for(var i = 0; i < brainRules.length; i++) {
                       %>
-                        <tr>
+                        <tr class="brain-rule">
 
                           <td><%= brainRules[i].from_address %></td>
                           <td><%= brainRules[i].to_address %></td>
@@ -168,13 +168,3 @@
 
   </div>
 </div>
-
-<!--
-<br />
-<h4 class="h4">Going Live</h4>
-<div class="row">
-  <div class="col-md-10">
-    <input type="checkbox" id="go_live_switch" checked>
-  </div>
-</div>
--->
