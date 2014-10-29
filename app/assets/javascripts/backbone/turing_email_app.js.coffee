@@ -1,6 +1,7 @@
 #= require_self
 #= require_tree ./templates
 #= require ./models/email
+#= require ./models/installed_apps/installed_app
 #= require_tree ./models
 #= require_tree ./collections
 #= require ./views/email_threads/list_item_view
@@ -104,7 +105,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   setupFiltering: ->
     $(".create_filter").click (event) ->
       event.preventDefault()
-      $("#email-rule-dropdown a").trigger('click.bs.dropdown')
+      $(".email-rule-dropdown a").trigger('click.bs.dropdown')
       return false
 
   setupToolbar: ->

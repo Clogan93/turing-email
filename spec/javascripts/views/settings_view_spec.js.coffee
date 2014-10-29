@@ -50,6 +50,12 @@ describe "SettingsView", ->
       expect(@settingsDiv).toContainHtml('<h4 class="h4">Email Genie</h4>')
       expect(@settingsDiv).toContainHtml('<h4 class="h4">Horizontal Preview Panel</h4>')
 
+    it "renders the tabs", ->
+      expect(@settingsDiv.find("a[href=#tab-1]").text()).toEqual("General")
+      expect(@settingsDiv.find("a[href=#tab-2]").text()).toEqual("Rules")
+      expect(@settingsDiv.find("a[href=#tab-3]").text()).toEqual("Installed Apps")
+      expect(@settingsDiv.find("a[href=#tab-4]").text()).toEqual("Bankruptcy")
+      
     it "renders the Email Bankruptcy button", ->
       expect(@settingsDiv).toContainHtml('<h4 class="h4">Email Bankruptcy</h4>')
       expect(@settingsDiv).toContainHtml('<button id="email_bankruptcy_button" type="button" class="btn btn-block btn-danger">Declare Email Bankruptcy</button>')
@@ -180,15 +186,22 @@ describe "SettingsView", ->
         @removeSpy.restore()
       
       it "uninstalls the app and removes its element from the DOM", ->
-        uninstallButton = @settingsView.$el.find(".uninstall-app-button").first()
-        uninstallButton.click()
-
-        expect(@server.requests.length).toEqual 3
-        request = @server.requests[2]
-        expect(request.method).toEqual "DELETE"
-        expect(request.url).toEqual "/api/v1/apps/uninstall/" + uninstallButton.attr("data")
-
-        expect(@removeSpy).toHaveBeenCalled()
+        index = 0
+        
+        for uninstallButton in @settingsView.$el.find(".uninstall-app-button")
+          uninstallButton = $(uninstallButton)
+          @removeSpy.reset()
+          
+          uninstallButton.click()
+  
+          expect(@server.requests.length).toEqual 3 + index
+          request = @server.requests[2 + index]
+          expect(request.method).toEqual "DELETE"
+          expect(request.url).toEqual "/api/v1/apps/uninstall/" + uninstallButton.attr("data")
+  
+          expect(@removeSpy).toHaveBeenCalled()
+          
+          index += 1
         
   describe "#setupRuleCreation", ->
 

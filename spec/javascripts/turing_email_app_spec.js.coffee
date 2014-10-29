@@ -114,7 +114,7 @@ describe "TuringEmailApp", ->
       beforeEach ->
         @createFilterDiv = $('<div class="create_filter"><div />').appendTo("body")
         @filterFormDiv = $('<div id="filter_form"><div />').appendTo("body")
-        @dropdownDiv = $('<div class="dropdown" id="email-rule-dropdown"><a href="#"></a></div>').appendTo("body")
+        @dropdownDiv = $('<div class="dropdown email-rule-dropdown"><a href="#"></a></div>').appendTo("body")
         
         TuringEmailApp.setupFiltering()
       
@@ -128,9 +128,9 @@ describe "TuringEmailApp", ->
   
       describe "when the create filter link is clicked", ->
         it "triggers the click.bs.dropdown event on the dropdown link", ->
-          spy = spyOnEvent('#email-rule-dropdown a', 'click.bs.dropdown')
+          spy = spyOnEvent('.email-rule-dropdown a', 'click.bs.dropdown')
           $('.create_filter').click()
-          expect('click.bs.dropdown').toHaveBeenTriggeredOn('#email-rule-dropdown a')
+          expect('click.bs.dropdown').toHaveBeenTriggeredOn('.email-rule-dropdown a')
 
           expect(spy).toHaveBeenTriggered()
 

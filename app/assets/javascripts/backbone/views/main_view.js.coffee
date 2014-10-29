@@ -238,17 +238,16 @@ class TuringEmailApp.Views.Main extends Backbone.View
       appsSplitPane.append(emailThreadView.$el)
       emailThreadView.render()
   
-      appsIframe = $("<iframe></iframe>").appendTo(appsSplitPane)
-      appsIframe.addClass("ui-layout-east")
+      appsDiv = $("<div />").appendTo(appsSplitPane)
+      appsDiv.addClass("ui-layout-east")
 
       if emailThread?
-        installedApp = @app.models.userSettings.get("installed_apps")[0]
-        $.post(installedApp.app.callback_url, {
-          email_thread: emailThread.toJSON()  
-        }, null, "html").done(
-          (data, status) ->
-            appsIframe.contents().find("html").html(data)
-        )
+        for installedAppJSON in @app.models.userSettings.get("installed_apps")
+          appIframe = $("<iframe></iframe>").appendTo(appsDiv)
+          appIframe.css("width", "160px")
+          appIframe.css("border", "solid 1px black")
+          installedApp = TuringEmailApp.Models.InstalledApps.InstalledApp.CreateFromJSON(installedAppJSON)
+          installedApp.run(appIframe, emailThread)
       
       @resizeAppsSplitPane()
   

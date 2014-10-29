@@ -257,12 +257,57 @@ describe "MainView", ->
       describe "#showEmailThread", ->
         beforeEach ->
           emailThreadAttributes = FactoryGirl.create("EmailThread")
-          emailThreadAttributes.emails.push(FactoryGirl.create("Email", draft_id: "draft"))
-          @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadAttributes,
+          emailDraftAttributes = FactoryGirl.create("Email", draft_id: "draft")
+          emailThreadAttributes.emails.push(emailDraftAttributes)
+          
+          @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadAttributes.toJSON(),
             app: TuringEmailApp
             emailThreadUID: emailThreadAttributes.uid
           )
           
+        describe "with apps", ->
+          beforeEach ->
+            TuringEmailApp.models.userSettings.set(FactoryGirl.create("UserSettings"))
+
+            @server = sinon.fakeServer.create()
+            
+            @resizeAppsSplitPaneStub = sinon.stub(@mainView, "resizeAppsSplitPane")
+            @runStub = sinon.stub(TuringEmailApp.Models.InstalledApps.InstalledPanelApp.prototype, "run")
+            
+            @emailThreadView = TuringEmailApp.views.mainView.showEmailThread(@emailThread, true)
+            @appsSplitPaneDiv = $(@primaryPane.find(".apps_split_pane"))
+            
+            @appsDiv = $(@appsSplitPaneDiv.children()[1])
+            
+          afterEach ->
+            @runStub.restore()
+            @resizeAppsSplitPaneStub.restore()
+            @server.restore()
+
+          it "creates the split pane", ->
+            expect(@appsSplitPaneDiv).toBeDefined()
+            
+          it "puts the thread view in the center pane", ->
+            expect(@emailThreadView.$el).toHaveClass("ui-layout-center")
+            
+          it "adds the email thread view to the split pane", ->
+            expect(@appsSplitPaneDiv.children()[0]).toEqual(@emailThreadView.$el[0])
+          
+          it "adds the apps div to the split pane", ->
+            expect(@appsDiv[0].nodeName).toEqual("DIV")
+
+          it "puts the apps div in the east pane", ->
+            expect(@appsDiv).toHaveClass("ui-layout-east")
+            
+          it "adds the app iframes to the split pane", ->
+            expect(@appsDiv.children().length).toEqual(TuringEmailApp.models.userSettings.get("installed_apps").length)
+            
+          it "runs all the apps", ->
+            expect(@runStub.callCount).toEqual(TuringEmailApp.models.userSettings.get("installed_apps").length)
+            
+          it "resizes the apps split pane", ->
+            expect(@resizeAppsSplitPaneStub).toHaveBeenCalled()
+
         describe "without apps", ->
           describe "when split pane mode is on", ->
             beforeEach ->

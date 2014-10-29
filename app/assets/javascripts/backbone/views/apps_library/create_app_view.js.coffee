@@ -13,6 +13,18 @@ class TuringEmailApp.Views.AppsLibrary.CreateAppView extends Backbone.View
 
   setupView: ->
     @$el.find(".create-app-form").submit => @onSubmit()
+
+  show: ->
+    @$el.find(".dropdown a").trigger("click.bs.dropdown")
+
+  hide: ->
+    @$el.find(".dropdown a").trigger("click.bs.dropdown")
+
+  resetView: ->
+    @$el.find(".create-app-form .create-app-name").val("")
+    @$el.find(".create-app-form .create-app-description").val("")
+    @$el.find(".create-app-form .create-app-type").val("")
+    @$el.find(".create-app-form .create-app-callback-url").val("")
   
   onSubmit: ->
     $.post "/api/v1/apps", {
@@ -33,15 +45,3 @@ class TuringEmailApp.Views.AppsLibrary.CreateAppView extends Backbone.View
     @hide()
   
     return false # avoid to execute the actual submit of the form.
-
-  show: ->
-    @$el.find("#app-dropdown a").trigger("click.bs.dropdown")
-
-  hide: ->
-    @$el.find("#app-dropdown a").trigger("click.bs.dropdown")
-
-  resetView: ->
-    @$el.find(".create-app-form .create-app-name").val("")
-    @$el.find(".create-app-form .create-app-description").val("")
-    @$el.find(".create-app-form .create-app-type").val("")
-    @$el.find(".create-app-form .create-app-callback-url").val("")

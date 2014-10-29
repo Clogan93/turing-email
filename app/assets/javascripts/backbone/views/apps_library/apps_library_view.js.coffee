@@ -4,10 +4,10 @@ class TuringEmailApp.Views.AppsLibrary.AppsLibraryView extends Backbone.View
   template: JST["backbone/templates/apps_library/apps_library"]
   
   initialize: (options) ->
-    @listenTo(@collection, "add", @render)
-    @listenTo(@collection, "remove", @render)
-    @listenTo(@collection, "reset", @render)
-    @listenTo(@collection, "destroy", @render)
+    @listenTo(@collection, "add", => @render())
+    @listenTo(@collection, "remove", => @render())
+    @listenTo(@collection, "reset", => @render())
+    @listenTo(@collection, "destroy", => @render())
 
   render: ->
     @$el.html(@template(apps: @collection.toJSON()))
@@ -27,14 +27,14 @@ class TuringEmailApp.Views.AppsLibrary.AppsLibraryView extends Backbone.View
       @onCreateAppButtonClick(event)
 
     @$el.find(".install_app_button").click (event) =>
-      @onInstallAppButtonclick(event)
+      @onInstallAppButtonClick(event)
 
   onCreateAppButtonClick: (event) ->
     @createAppView.show()
 
     return false
-    
-  onInstallAppButtonclick: (event) ->
+
+  onInstallAppButtonClick: (event) ->
     index = @$el.find(".install_app_button").index(event.currentTarget)
     app = @collection.at(index)
 

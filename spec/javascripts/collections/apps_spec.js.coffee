@@ -2,7 +2,7 @@ describe "AppsCollection", ->
   beforeEach ->
     @appsCollection = new TuringEmailApp.Collections.AppsCollection()
 
-  it "should use the App model", ->
+  it "uses the App model", ->
     expect(@appsCollection.model).toEqual(TuringEmailApp.Models.App)
 
   it "has the right URL", ->
