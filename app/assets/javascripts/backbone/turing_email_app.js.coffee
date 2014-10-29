@@ -420,7 +420,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
       =>
         @selectedEmailThread()?.applyGmailLabel(labelID, labelName)
       (checkedListItemViews, selectedEmailThreadUIDs) =>
-        TuringEmailApp.Models.EmailThread.applyGmailLabel(selectedEmailThreadUIDs, labelID, labelName)
+        TuringEmailApp.Models.EmailThread.applyGmailLabel(TuringEmailApp, selectedEmailThreadUIDs, labelID, labelName)
       false, false
     )
 
@@ -430,7 +430,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
         @selectedEmailThread()?.moveToFolder(folderID, folderName)
       (checkedListItemViews, selectedEmailThreadUIDs) =>
         for emailThreadUID in selectedEmailThreadUIDs
-          @collections.emailFolders.get(emailThreadUID).moveToFolder(folderID, folderName)
+          @collections.emailThreads.get(emailThreadUID).moveToFolder(folderID, folderName)
       true, true, true, true
     )
 
@@ -460,7 +460,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
       =>
         @selectedEmailThread()?.removeFromFolder(@selectedEmailFolderID())
       (checkedListItemViews, selectedEmailThreadUIDs) =>
-        TuringEmailApp.Models.EmailThread.removeFromFolder(selectedEmailThreadUIDs, @selectedEmailFolderID())
+        TuringEmailApp.Models.EmailThread.removeFromFolder(TuringEmailApp, selectedEmailThreadUIDs, @selectedEmailFolderID())
       true, true, true, true
     )
 
@@ -469,7 +469,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
       =>
         @selectedEmailThread()?.trash()
       (checkedListItemViews, selectedEmailThreadUIDs) =>
-        TuringEmailApp.Models.EmailThread.trash(selectedEmailThreadUIDs)
+        TuringEmailApp.Models.EmailThread.trash(TuringEmailApp, selectedEmailThreadUIDs)
       true, true, true, true
     )
 

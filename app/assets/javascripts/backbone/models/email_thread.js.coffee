@@ -32,10 +32,14 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
   @removeGmailLabelRequest: (emailThreadUID, labelID) ->
     gapi.client.gmail.users.threads.modify({userId: "me", id: emailThreadUID}, {removeLabelIds: [labelID]})
     
-  @removeFromFolder: (emailThreadUIDs, emailFolderID, success, error) ->
+  @removeFromFolder: (app, emailThreadUIDs, emailFolderID, success, error) ->
+    if emailFolderID == "SENT"
+      error?()
+      return
+      
     for emailThreadUID in emailThreadUIDs
       googleRequest(
-        @app
+        app
         => @removeGmailLabelRequest(emailThreadUID, labelID)
         success
         error
@@ -44,24 +48,24 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
   @trashRequest: (emailThreadUID) ->
     gapi.client.gmail.users.threads.trash(userId: "me", id: emailThreadUID)
     
-  @trash: (emailThreadUIDs) ->
+  @trash: (app, emailThreadUIDs) ->
     for emailThreadUID in emailThreadUIDs
       googleRequest(
-        @app
+        app
         => @trashRequest(emailThreadUID)
       )
 
   @applyGmailLabelRequest: (emailThreadUID, labelID) ->
     gapi.client.gmail.users.threads.modify({userId: "me", id: emailThreadUID}, {addLabelIds: [labelID]})
     
-  @applyGmailLabel: (emailThreadUIDs, labelID, labelName, success, error) ->
+  @applyGmailLabel: (app, emailThreadUIDs, labelID, labelName, success, error) ->
     run = (response) =>
       if response?
         labelID = response.result.id
       
       for emailThreadUID in emailThreadUIDs
         googleRequest(
-          @app
+          app
           => @applyGmailLabelRequest(emailThreadUID, labelID)
           success
           error
@@ -71,7 +75,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
       run()
     else
       googleRequest(
-        @app
+        app
         => @createGmailLabelRequest(labelName)
         (response) => run(response)
         error
@@ -83,14 +87,14 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     gapi.client.gmail.users.threads.modify({userId: "me", id: emailThreadUID},
                                            {addLabelIds: addLabelIDs, removeLabelIds: removeLabelIDs})
       
-  @moveToFolder: (emailThreadUIDs, folderID, folderName, currentFolderIDs, success, error) ->
+  @moveToFolder: (app, emailThreadUIDs, folderID, folderName, currentFolderIDs, success, error) ->
     run = (response) =>
       if response?
         folderID = response.result.id
 
       for emailThreadUID in emailThreadUIDs
         googleRequest(
-          @app
+          app
           => @modifyGmailLabelsRequest(emailThreadUID, [folderID], currentFolderIDs)
           success
           error
@@ -100,7 +104,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
       run()
     else
       googleRequest(
-        @app
+        app
         => @createGmailLabelRequest(folderName)
         (response) => run(response)
         error
@@ -222,24 +226,20 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
   ### Actions ###  
   ###############
     
-  # TODO write tests
   removeFromFolder: (emailFolderID) ->
-    TuringEmailApp.Models.EmailThread.removeFromFolder([@get("uid")], emailFolderID)
+    TuringEmailApp.Models.EmailThread.removeFromFolder(@app, [@get("uid")], emailFolderID)
   
-  # TODO write tests
   trash: ->
-    TuringEmailApp.Models.EmailThread.trash([@get("uid")])
+    TuringEmailApp.Models.EmailThread.trash(@app, [@get("uid")])
 
-  # TODO write tests
   applyGmailLabel: (labelID, labelName) ->
-    TuringEmailApp.Models.EmailThread.applyGmailLabel([@get("uid")], labelID, labelName,
+    TuringEmailApp.Models.EmailThread.applyGmailLabel(@app, [@get("uid")], labelID, labelName,
       (data) =>
         @trigger("change:folder", this, data)
     )
 
-  # TODO write tests
   moveToFolder: (folderID, folderName) ->
-    TuringEmailApp.Models.EmailThread.moveToFolder([@get("uid")], folderID, folderName, @get("folder_ids"),
+    TuringEmailApp.Models.EmailThread.moveToFolder(@app, [@get("uid")], folderID, folderName, @get("folder_ids"),
       (data, status) =>
         @trigger("change:folder", this, data)
     )
