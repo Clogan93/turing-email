@@ -39,7 +39,6 @@ window.TuringEmailApp = new(Backbone.View.extend(
     
     @setupSearchBar()
     @setupComposeButton()
-    @setupFiltering()
 
     @setupToolbar()
     @setupUser()
@@ -101,12 +100,6 @@ window.TuringEmailApp = new(Backbone.View.extend(
     $(".compose-button").click =>
       @views.composeView.loadEmpty()
       @views.composeView.show()
-
-  setupFiltering: ->
-    $(".create-filter").click (event) ->
-      event.preventDefault()
-      $(".email-rule-dropdown a").trigger('click.bs.dropdown')
-      return false
 
   setupToolbar: ->
     @views.toolbarView = @views.mainView.toolbarView
