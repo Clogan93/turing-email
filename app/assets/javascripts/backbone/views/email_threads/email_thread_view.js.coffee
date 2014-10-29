@@ -57,17 +57,17 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
         iframe.contents().find("body").find('a[href^="#email_thread"]').click (event) ->
           event.preventDefault()
           
-          $('#composeModal').modal()
+          $('.compose-modal').modal()
           subject = "Re: " + $(@).text()
-          $('#composeModal #subject_input').val(subject)
+          $('.compose-modal .subject-input').val(subject)
           reply_link = $(@).parent().parent().find('a[href^="mailto:"]').attr("href").replace "mailto:", ""
-          $('#composeModal #to_input').val(reply_link)
+          $('.compose-modal .to-input').val(reply_link)
 
           thread_elements = $(@).attr("href").split("/")
           thread_id = thread_elements[thread_elements.length - 1]
           $.get "/api/v1/email_threads/show/" + thread_id, (data) ->
             email_from_email_thread = data.emails[data.emails.length - 1]
-            $('#composeModal .compose-email-body').val("\n\n\n\n" + TuringEmailApp.Views.App.ComposeView.retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes(email_from_email_thread))
+            $('.compose-modal .compose-email-body').val("\n\n\n\n" + TuringEmailApp.Views.App.ComposeView.retrieveEmailBodyAttributeToUseBasedOnAvailableAttributes(email_from_email_thread))
             $('#compose-form #email_in_reply_to_uid_input').val(email_from_email_thread.uid)
 
         iframe.contents().find("body").find('a[href^="#from_address"]').click (event) ->
@@ -120,7 +120,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
 
   setupButtons: ->
     if !TuringEmailApp.isSplitPaneMode()
-      @$el.find("#email_back_button").click =>
+      @$el.find(".email-back-button").click =>
         @trigger("goBackClicked", this)
 
     @$el.find(".email_reply_button").click =>

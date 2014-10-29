@@ -52,7 +52,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       @sendEmail()
       return false
 
-    @$el.find(".compose-form #save_button").click =>
+    @$el.find(".compose-form .save-button").click =>
       console.log "SAVE clicked - saving the draft!"
       
       # if already in the middle of saving, no reason to save again
@@ -78,14 +78,14 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
           @savingDraft = false
       )
 
-    @$el.find("#composeModal").on "hidden.bs.modal", (event) =>
-      @$el.find(".compose-form #save_button").click()
+    @$el.find(".compose-modal").on "hidden.bs.modal", (event) =>
+      @$el.find(".compose-form .save-button").click()
 
   show: ->
-    @$el.find("#composeModal").modal "show"
+    @$el.find(".compose-modal").modal "show"
     
   hide: ->
-    @$el.find("#composeModal").modal "hide"
+    @$el.find(".compose-modal").modal "hide"
 
   showEmailSentAlert: (emailSentJSON) ->
     console.log "ComposeView showEmailSentAlert"
@@ -117,11 +117,11 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     @emailInReplyToUID = null
     @emailThreadParent = null
 
-    @$el.find(".compose-form #to_input").val("")
-    @$el.find(".compose-form #cc_input").val("")
-    @$el.find(".compose-form #bcc_input").val("")
+    @$el.find(".compose-form .to-input").val("")
+    @$el.find(".compose-form .cc-input").val("")
+    @$el.find(".compose-form .bcc-input").val("")
 
-    @$el.find(".compose-form #subject_input").val("")
+    @$el.find(".compose-form .subject-input").val("")
     @$el.find(".compose-form .note-editable").html("")
 
   loadEmpty: ->
@@ -150,8 +150,8 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     console.log("ComposeView loadEmailAsReply!!")
     @resetView()
 
-    @$el.find(".compose-form #to_input").val(if emailJSON.reply_to_address? then emailJSON.reply_to_address else emailJSON.from_address)
-    @$el.find(".compose-form #subject_input").val(@subjectWithPrefixFromEmail(emailJSON, "Re: "))
+    @$el.find(".compose-form .to-input").val(if emailJSON.reply_to_address? then emailJSON.reply_to_address else emailJSON.from_address)
+    @$el.find(".compose-form .subject-input").val(@subjectWithPrefixFromEmail(emailJSON, "Re: "))
     @loadEmailBody(emailJSON, true)
 
     @emailInReplyToUID = emailJSON.uid
@@ -161,18 +161,18 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     console.log("ComposeView loadEmailAsForward!!")
     @resetView()
 
-    @$el.find(".compose-form #subject_input").val(@subjectWithPrefixFromEmail(emailJSON, "Fwd: "))
+    @$el.find(".compose-form .subject-input").val(@subjectWithPrefixFromEmail(emailJSON, "Fwd: "))
     @loadEmailBody(emailJSON, true)
     
     @emailThreadParent = emailThreadParent
 
   loadEmailHeaders: (emailJSON) ->
     console.log("ComposeView loadEmailHeaders!!")
-    @$el.find(".compose-form #to_input").val(emailJSON.tos)
-    @$el.find(".compose-form #cc_input").val(emailJSON.ccs)
-    @$el.find(".compose-form #bcc_input").val(emailJSON.bccs)
+    @$el.find(".compose-form .to-input").val(emailJSON.tos)
+    @$el.find(".compose-form .cc-input").val(emailJSON.ccs)
+    @$el.find(".compose-form .bcc-input").val(emailJSON.bccs)
 
-    @$el.find(".compose-form #subject_input").val(@subjectWithPrefixFromEmail(emailJSON))
+    @$el.find(".compose-form .subject-input").val(@subjectWithPrefixFromEmail(emailJSON))
 
   parseEmail: (emailJSON) ->
     htmlFailed = true
@@ -256,11 +256,11 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     console.log "ComposeView updateEmail!"
     email.set("email_in_reply_to_uid", @emailInReplyToUID)
 
-    email.set("tos", @$el.find(".compose-form").find("#to_input").val().split(","))
-    email.set("ccs", @$el.find(".compose-form").find("#cc_input").val().split(","))
-    email.set("bccs",  @$el.find(".compose-form").find("#bcc_input").val().split(","))
+    email.set("tos", @$el.find(".compose-form").find(".to-input").val().split(","))
+    email.set("ccs", @$el.find(".compose-form").find(".cc-input").val().split(","))
+    email.set("bccs",  @$el.find(".compose-form").find(".bcc-input").val().split(","))
 
-    email.set("subject", @$el.find(".compose-form").find("#subject_input").val())
+    email.set("subject", @$el.find(".compose-form").find(".subject-input").val())
     email.set("html_part", @$el.find(".compose-form").find(".note-editable").html())
     email.set("text_part", @$el.find(".compose-form").find(".note-editable").text())
 
@@ -281,7 +281,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       
       if @savingDraft
         console.log "SAVING DRAFT!!!!!!! do TIMEOUT callback!"
-        # if still saving the draft from save_button click need to retry because otherwise multiple drafts
+        # if still saving the draft from save-button click need to retry because otherwise multiple drafts
         # might be created or the wrong version of the draft might be sent.
         setTimeout (=>
          @sendEmail(draftToSend)

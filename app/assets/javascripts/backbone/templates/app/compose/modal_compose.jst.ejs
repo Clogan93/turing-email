@@ -1,16 +1,16 @@
-<div class="modal fade" id="composeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade compose-modal" tabindex="-1" role="dialog" aria-labelledby="my-modal-label" aria-hidden="true">
   <div class="modal-dialog modal-lg compose-modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel">Compose</h4>
+        <h4 class="modal-title my-modal-label">Compose</h4>
       </div>
       <form class="compose-form">
         <div class="modal-body">
-            <input id="to_input" type="text" class="form-control" placeholder="To"/><br />
-            <input id="cc_input" type="text" class="form-control" placeholder="CC"/><br />
-            <input id="bcc_input" type="text" class="form-control" placeholder="BCC"/><br />
-            <input id="subject_input" type="text" class="form-control" placeholder="Subject"/><br />
+            <input type="text" class="form-control to-input" placeholder="To"/><br />
+            <input type="text" class="form-control cc-input" placeholder="CC"/><br />
+            <input type="text" class="form-control bcc-input" placeholder="BCC"/><br />
+            <input type="text" class="form-control subject-input" placeholder="Subject"/><br />
             <label class="compose-form-attachments-label">Attachments</label><input class="compose-form-attachments-input" type="file" name="attachment" multiple />
             <br />
             <br />
@@ -18,7 +18,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button id="save_button" type="button" class="btn btn-info">Save</button>
+          <button type="button" class="btn btn-info save-button">Save</button>
           <button type="submit" class="btn btn-primary">Send</button>
         </div>
       </form>

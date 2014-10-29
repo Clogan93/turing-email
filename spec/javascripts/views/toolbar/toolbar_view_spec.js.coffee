@@ -88,11 +88,11 @@ describe "ToolbarView", ->
         expect(@toolbarView.$el.find(".mark_as_unread").parent()).toHandle("click")
         expect(@toolbarView.$el.find("i.fa-archive").parent()).toHandle("click")
         expect(@toolbarView.$el.find("i.fa-trash-o").parent()).toHandle("click")
-        expect(@toolbarView.$el.find("#paginate-left-link")).toHandle("click")
-        expect(@toolbarView.$el.find("#paginate-right-link")).toHandle("click")
+        expect(@toolbarView.$el.find(".paginate-left-link")).toHandle("click")
+        expect(@toolbarView.$el.find(".paginate-right-link")).toHandle("click")
         expect(@toolbarView.$el.find(".label_as_link")).toHandle("click")
         expect(@toolbarView.$el.find(".move_to_folder_link")).toHandle("click")
-        expect(@toolbarView.$el.find("#refresh_button")).toHandle("click")
+        expect(@toolbarView.$el.find(".refresh-button")).toHandle("click")
 
       it "sets up bulk action buttons", ->
         spy = sinon.spy(@toolbarView, "setupBulkActionButtons")
@@ -127,17 +127,17 @@ describe "ToolbarView", ->
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
-      describe "when #paginate-left-link is clicked", ->
+      describe "when .paginate-left-link is clicked", ->
         it "triggers leftArrowClicked", ->
           spy = sinon.backbone.spy(@toolbarView, "leftArrowClicked")
-          @toolbarView.$el.find("#paginate-left-link").click()
+          @toolbarView.$el.find(".paginate-left-link").click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
-      describe "when #paginate-right-link is clicked", ->
+      describe "when .paginate-right-link is clicked", ->
         it "triggers rightArrowClicked", ->
           spy = sinon.backbone.spy(@toolbarView, "rightArrowClicked")
-          @toolbarView.$el.find("#paginate-right-link").click()
+          @toolbarView.$el.find(".paginate-right-link").click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
@@ -155,55 +155,55 @@ describe "ToolbarView", ->
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
-      describe "when #refresh_button is clicked", ->
+      describe "when .refresh-button is clicked", ->
         it "triggers refreshClicked", ->
-          @toolbarView.$el.find("#refresh_button").show()
+          @toolbarView.$el.find(".refresh-button").show()
           spy = sinon.backbone.spy(@toolbarView, "refreshClicked")
-          @toolbarView.$el.find("#refresh_button").click()
+          @toolbarView.$el.find(".refresh-button").click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
     describe "#setupBulkActionButtons", ->
 
       it "should handle clicks", ->
-        expect(@toolbarView.$el.find("#all_bulk_action")).toHandle("click")
-        expect(@toolbarView.$el.find("#none_bulk_action")).toHandle("click")
-        expect(@toolbarView.$el.find("#read_bulk_action")).toHandle("click")
-        expect(@toolbarView.$el.find("#unread_bulk_action")).toHandle("click")
+        expect(@toolbarView.$el.find(".all-bulk-action")).toHandle("click")
+        expect(@toolbarView.$el.find(".none-bulk-action")).toHandle("click")
+        expect(@toolbarView.$el.find(".read-bulk-action")).toHandle("click")
+        expect(@toolbarView.$el.find(".unread-bulk-action")).toHandle("click")
 
-      describe "when all_bulk_action is clicked", ->
+      describe "when all-bulk-action is clicked", ->
         it "triggers checkAllClicked", ->
           spy = sinon.backbone.spy(@toolbarView, "checkAllClicked")
-          @toolbarView.$el.find("#all_bulk_action").click()
+          @toolbarView.$el.find(".all-bulk-action").click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
         it "checks the all checkbox", ->
-          @toolbarView.$el.find("#all_bulk_action").click()
+          @toolbarView.$el.find(".all-bulk-action").click()
           expect(@toolbarView.allCheckboxIsChecked()).toBeTruthy()
 
-      describe "when none_bulk_action is clicked", ->
+      describe "when none-bulk-action is clicked", ->
         it "triggers uncheckAllClicked", ->
           spy = sinon.backbone.spy(@toolbarView, "uncheckAllClicked")
-          @toolbarView.$el.find("#none_bulk_action").click()
+          @toolbarView.$el.find(".none-bulk-action").click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
         it "unchecks the all checkbox", ->
-          @toolbarView.$el.find("#none_bulk_action").click()
+          @toolbarView.$el.find(".none-bulk-action").click()
           expect(@toolbarView.allCheckboxIsChecked()).toBeFalsy()
 
-      describe "when read_bulk_action is clicked", ->
+      describe "when read-bulk-action is clicked", ->
         it "triggers checkAllReadClicked", ->
           spy = sinon.backbone.spy(@toolbarView, "checkAllReadClicked")
-          @toolbarView.$el.find("#read_bulk_action").click()
+          @toolbarView.$el.find(".read-bulk-action").click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
-      describe "when unread_bulk_action is clicked", ->
+      describe "when unread-bulk-action is clicked", ->
         it "triggers checkAllUnreadClicked", ->
           spy = sinon.backbone.spy(@toolbarView, "checkAllUnreadClicked")
-          @toolbarView.$el.find("#unread_bulk_action").click()
+          @toolbarView.$el.find(".unread-bulk-action").click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
@@ -237,10 +237,10 @@ describe "ToolbarView", ->
         @emailFolder = TuringEmailApp.collections.emailFolders.models[0]
         
         @validatePaginationText = ->
-          totalEmailsNumber = parseInt(@toolbarView.$el.find("#total_emails_number").text())
+          totalEmailsNumber = parseInt(@toolbarView.$el.find(".total-emails-number").text())
           expect(totalEmailsNumber).toEqual @emailFolder.get("num_threads")
   
-          startNumber = parseInt(@toolbarView.$el.find("#start_number").text())
+          startNumber = parseInt(@toolbarView.$el.find(".start-number").text())
           expect(startNumber).toEqual ((@page - 1) * TuringEmailApp.Models.UserSettings.EmailThreadsPerPage + 1)
 
 
@@ -248,7 +248,7 @@ describe "ToolbarView", ->
           if lastThreadNumber > totalEmailsNumber
             lastThreadNumber = totalEmailsNumber
 
-          endNumber = parseInt(@toolbarView.$el.find("#end_number").text())
+          endNumber = parseInt(@toolbarView.$el.find(".end-number").text())
           expect(endNumber).toEqual lastThreadNumber
         
       describe "first page", ->
@@ -271,11 +271,11 @@ describe "ToolbarView", ->
 
     describe "#showMoveToFolderMenu", ->
       beforeEach ->
-        spyOnEvent(@toolbarView.$el.find("#moveToFolderDropdownMenu"), "click.bs.dropdown")
+        spyOnEvent(@toolbarView.$el.find(".move-to-folder-dropdown-menu"), "click.bs.dropdown")
         @toolbarView.showMoveToFolderMenu()
       
       it "shows the move to folder menu", ->
-        expect("click.bs.dropdown").toHaveBeenTriggeredOn(@toolbarView.$el.find("#moveToFolderDropdownMenu"))
+        expect("click.bs.dropdown").toHaveBeenTriggeredOn(@toolbarView.$el.find(".move-to-folder-dropdown-menu"))
           
     describe "TuringEmailApp Events", ->
     

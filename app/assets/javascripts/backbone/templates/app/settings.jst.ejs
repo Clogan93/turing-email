@@ -49,7 +49,7 @@
               <h4 class="h4">Email Genie</h4>
             </div>
             <div class="col-md-3 settings-switch">
-              <input type="checkbox" id="genie_switch" <%= userSettings.genie_enabled == true ? "checked" : "" %>>
+              <input type="checkbox" class="genie-switch" <%= userSettings.genie_enabled == true ? "checked" : "" %>>
             </div>
           </div>
 
@@ -60,7 +60,7 @@
               <h4 class="h4">Horizontal Preview Panel</h4>
             </div>
             <div class="col-md-3 settings-switch">
-              <input type="checkbox" id="split_pane_switch" <%= userSettings.split_pane_mode == "horizontal" ? "checked" : "" %>>
+              <input type="checkbox" class="split-pane-switch" <%= userSettings.split_pane_mode == "horizontal" ? "checked" : "" %>>
             </div>
           </div>
 
@@ -99,7 +99,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-md-4" id="email_rules_container">
+            <div class="col-md-4 email-rules-container">
               <button type="button" class="btn btn-block btn-primary email-rules-button">Create New Email Rule</button>
             </div>
           </div>
@@ -134,7 +134,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-md-4" id="genie_rules_container">
+            <div class="col-md-4 genie-rules-container">
               <button type="button" class="btn btn-block btn-primary genie-rules-button">Create New Genie Rule</button>
             </div>
           </div>
@@ -176,7 +176,7 @@
 
           <h4 class="h4">Email Bankruptcy</h4>
           <div class="row">
-            <div class="col-md-4" id="email_bankruptcy_container">
+            <div class="col-md-4 email-bankruptcy-container">
               <button type="button" class="btn btn-block btn-danger email-bankruptcy-button">Declare Email Bankruptcy</button>
             </div>
           </div>

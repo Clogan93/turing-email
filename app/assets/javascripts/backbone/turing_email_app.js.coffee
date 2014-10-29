@@ -93,7 +93,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @views.mainView.render()
 
   setupSearchBar: ->
-    $("#top-search-form").submit (event) =>
+    $(".top-search-form").submit (event) =>
       event.preventDefault();
       @searchClicked($(event.target).find("input").val())
 

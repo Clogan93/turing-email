@@ -26,7 +26,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
 
     @composeView = new TuringEmailApp.Views.App.ComposeView(
       app: @app
-      el: @$el.find("#compose_view")
+      el: @$el.find(".compose-view")
     )
     @composeView.render()
 

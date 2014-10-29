@@ -34,7 +34,7 @@ describe "ComposeView", ->
         spy.restore()
 
       it "binds the click event to save button", ->
-        expect(@composeView.$el.find(".compose-form #save_button")).toHandle("click")
+        expect(@composeView.$el.find(".compose-form .save-button")).toHandle("click")
 
       describe "when the save button is clicked", ->
         beforeEach ->
@@ -42,7 +42,7 @@ describe "ComposeView", ->
 
         it "updates the draft", ->
           spy = sinon.spy(@composeView, "updateDraft")
-          @composeView.$el.find(".compose-form #save_button").click()
+          @composeView.$el.find(".compose-form .save-button").click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
@@ -51,7 +51,7 @@ describe "ComposeView", ->
           it "if does not update the draft", ->
             @composeView.savingDraft = true
             spy = sinon.spy(@composeView, "updateDraft")
-            @composeView.$el.find(".compose-form #save_button").click()
+            @composeView.$el.find(".compose-form .save-button").click()
             expect(spy).not.toHaveBeenCalled()
             spy.restore()
 
@@ -61,20 +61,20 @@ describe "ComposeView", ->
 
           it "triggers change:draft", ->
             spy = sinon.backbone.spy(@composeView, "change:draft")
-            @composeView.$el.find(".compose-form #save_button").click()
+            @composeView.$el.find(".compose-form .save-button").click()
             @server.respond()
             expect(spy).toHaveBeenCalled()
             spy.restore()
 
           it "stops saving the draft", ->
-            @composeView.$el.find(".compose-form #save_button").click()
+            @composeView.$el.find(".compose-form .save-button").click()
             @server.respond()
             expect(@composeView.savingDraft).toEqual(false)
 
         describe "when the server responds unsuccessfully", ->
 
           it "stops saving the draft", ->
-            @composeView.$el.find(".compose-form #save_button").click()
+            @composeView.$el.find(".compose-form .save-button").click()
             @server.respond([404, {}, ""])
             expect(@composeView.savingDraft).toEqual(false)
 
@@ -105,7 +105,7 @@ describe "ComposeView", ->
 
       it "hides the compose modal", ->
         @composeView.hide()
-        expect(@composeView.$el.find("#composeModal").hasClass("in")).toBeFalsy()
+        expect(@composeView.$el.find(".compose-modal").hasClass("in")).toBeFalsy()
 
     describe "#showEmailSentAlert", ->
       
@@ -175,19 +175,19 @@ describe "ComposeView", ->
 
     describe "#resetView", ->
       beforeEach ->
-        @composeView.$el.find(".compose-form #to_input").val("This is the to input.")
-        @composeView.$el.find(".compose-form #cc_input").val("This is the cc input.")
-        @composeView.$el.find(".compose-form #bcc_input").val("This is the bcc input.")
-        @composeView.$el.find(".compose-form #subject_input").val("This is the subject input.")
+        @composeView.$el.find(".compose-form .to-input").val("This is the to input.")
+        @composeView.$el.find(".compose-form .cc-input").val("This is the cc input.")
+        @composeView.$el.find(".compose-form .bcc-input").val("This is the bcc input.")
+        @composeView.$el.find(".compose-form .subject-input").val("This is the subject input.")
         @composeView.$el.find(".compose-form .note-editable").html("This is the compose email body.")
 
         @composeView.resetView()
 
       it "should clear the compose view input fields", ->
-        expect(@composeView.$el.find(".compose-form #to_input").val()).toEqual ""
-        expect(@composeView.$el.find(".compose-form #cc_input").val()).toEqual ""
-        expect(@composeView.$el.find(".compose-form #bcc_input").val()).toEqual ""
-        expect(@composeView.$el.find(".compose-form #subject_input").val()).toEqual ""
+        expect(@composeView.$el.find(".compose-form .to-input").val()).toEqual ""
+        expect(@composeView.$el.find(".compose-form .cc-input").val()).toEqual ""
+        expect(@composeView.$el.find(".compose-form .bcc-input").val()).toEqual ""
+        expect(@composeView.$el.find(".compose-form .subject-input").val()).toEqual ""
         expect(@composeView.$el.find(".compose-form .note-editable").html()).toEqual ""
 
       it "removes the email sent error alert", ->
@@ -294,7 +294,7 @@ describe "ComposeView", ->
           emailJSON = {}
           emailJSON["reply_to_address"] = @seededChance.email()
           @composeView.loadEmailAsReply emailJSON
-          expect(@composeView.$el.find(".compose-form #to_input").val()).toEqual emailJSON.reply_to_address
+          expect(@composeView.$el.find(".compose-form .to-input").val()).toEqual emailJSON.reply_to_address
 
       describe "when there is not a reply to address", ->
 
@@ -302,14 +302,14 @@ describe "ComposeView", ->
           emailJSON = {}
           emailJSON["from_address"] = @seededChance.email()
           @composeView.loadEmailAsReply emailJSON
-          expect(@composeView.$el.find(".compose-form #to_input").val()).toEqual emailJSON.from_address
+          expect(@composeView.$el.find(".compose-form .to-input").val()).toEqual emailJSON.from_address
 
       it "updates the subject input", ->
         emailJSON = {}
         emailJSON["subject"] = @seededChance.string({length: 20})
         @composeView.loadEmailAsReply emailJSON
         subjectWithPrefixFromEmail = @composeView.subjectWithPrefixFromEmail(emailJSON, "Re: ")
-        expect(@composeView.$el.find(".compose-form #subject_input").val()).toEqual subjectWithPrefixFromEmail
+        expect(@composeView.$el.find(".compose-form .subject-input").val()).toEqual subjectWithPrefixFromEmail
 
       it "updates the email in reply to UID", ->
         emailJSON = {}
@@ -332,7 +332,7 @@ describe "ComposeView", ->
         emailJSON["subject"] = @seededChance.string({length: 20})
         @composeView.loadEmailAsForward emailJSON
         subjectWithPrefixFromEmail = @composeView.subjectWithPrefixFromEmail(emailJSON, "Fwd: ")
-        expect(@composeView.$el.find(".compose-form #subject_input").val()).toEqual subjectWithPrefixFromEmail
+        expect(@composeView.$el.find(".compose-form .subject-input").val()).toEqual subjectWithPrefixFromEmail
 
       it "loads the email body", ->
         spy = sinon.spy(@composeView, "loadEmailBody")
@@ -350,26 +350,26 @@ describe "ComposeView", ->
         emailJSON = {}
         emailJSON["tos"] = @seededChance.email()
         @composeView.loadEmailHeaders emailJSON
-        expect(@composeView.$el.find(".compose-form #to_input").val()).toEqual emailJSON.tos
+        expect(@composeView.$el.find(".compose-form .to-input").val()).toEqual emailJSON.tos
 
       it "updates the cc input", ->
         emailJSON = {}
         emailJSON["ccs"] = @seededChance.email()
         @composeView.loadEmailHeaders emailJSON
-        expect(@composeView.$el.find(".compose-form #cc_input").val()).toEqual emailJSON.ccs
+        expect(@composeView.$el.find(".compose-form .cc-input").val()).toEqual emailJSON.ccs
 
       it "updates the bcc input", ->
         emailJSON = {}
         emailJSON["bccs"] = @seededChance.email()
         @composeView.loadEmailHeaders emailJSON
-        expect(@composeView.$el.find(".compose-form #bcc_input").val()).toEqual emailJSON.bccs
+        expect(@composeView.$el.find(".compose-form .bcc-input").val()).toEqual emailJSON.bccs
 
       it "updates the subject input", ->
         emailJSON = {}
         emailJSON["subject"] = @seededChance.string({length: 20})
         @composeView.loadEmailHeaders emailJSON
         subjectWithPrefixFromEmail = @composeView.subjectWithPrefixFromEmail(emailJSON)
-        expect(@composeView.$el.find(".compose-form #subject_input").val()).toEqual subjectWithPrefixFromEmail
+        expect(@composeView.$el.find(".compose-form .subject-input").val()).toEqual subjectWithPrefixFromEmail
 
     describe "#parseEmail", ->
       beforeEach ->
@@ -532,10 +532,10 @@ describe "ComposeView", ->
         @seededChance = new Chance(1)
         @email = new TuringEmailApp.Models.EmailDraft()
 
-        @composeView.$el.find(".compose-form #to_input").val(@seededChance.email())
-        @composeView.$el.find(".compose-form #cc_input").val(@seededChance.email())
-        @composeView.$el.find(".compose-form #bcc_input").val(@seededChance.email())
-        @composeView.$el.find(".compose-form #subject_input").val(@seededChance.string({length: 25}))
+        @composeView.$el.find(".compose-form .to-input").val(@seededChance.email())
+        @composeView.$el.find(".compose-form .cc-input").val(@seededChance.email())
+        @composeView.$el.find(".compose-form .bcc-input").val(@seededChance.email())
+        @composeView.$el.find(".compose-form .subject-input").val(@seededChance.string({length: 25}))
         @composeView.$el.find(".compose-form .compose-email-body").html(@seededChance.string({length: 250}))
 
         @composeView.emailInReplyToUID = chance.integer({min: 1, max: 10000})
@@ -546,16 +546,16 @@ describe "ComposeView", ->
         expect(@email.get("email_in_reply_to_uid")).toEqual @composeView.emailInReplyToUID
 
       it "updates the email model with the to input value from the compose form", ->
-        expect(@email.get("tos")[0]).toEqual @composeView.$el.find(".compose-form #to_input").val()
+        expect(@email.get("tos")[0]).toEqual @composeView.$el.find(".compose-form .to-input").val()
 
       it "updates the email model with the cc input value from the compose form", ->
-        expect(@email.get("ccs")[0]).toEqual @composeView.$el.find(".compose-form #cc_input").val()
+        expect(@email.get("ccs")[0]).toEqual @composeView.$el.find(".compose-form .cc-input").val()
 
       it "updates the email model with the bcc input value from the compose form", ->
-        expect(@email.get("bccs")[0]).toEqual @composeView.$el.find(".compose-form #bcc_input").val()
+        expect(@email.get("bccs")[0]).toEqual @composeView.$el.find(".compose-form .bcc-input").val()
 
       it "updates the email model with the subject input value from the compose form", ->
-        expect(@email.get("subject")).toEqual @composeView.$el.find(".compose-form #subject_input").val()
+        expect(@email.get("subject")).toEqual @composeView.$el.find(".compose-form .subject-input").val()
 
       it "updates the email model with the html input value from the compose form", ->
         expect(@email.get("html_part")).toEqual @composeView.$el.find(".compose-form .note-editable").html()
@@ -571,7 +571,7 @@ describe "ComposeView", ->
 
         it "updates the draft", ->
           spy = sinon.spy(@composeView, "updateDraft")
-          @composeView.$el.find(".compose-form #save_button").click()
+          @composeView.$el.find(".compose-form .save-button").click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 

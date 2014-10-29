@@ -61,12 +61,12 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       @$el.find("i.fa-trash-o").tooltip('hide')
       @trigger("trashClicked", this)
 
-    @$el.find("#paginate-left-link").click =>
-      @$el.find("#paginate-left-link").tooltip('hide')
+    @$el.find(".paginate-left-link").click =>
+      @$el.find(".paginate-left-link").tooltip('hide')
       @trigger("leftArrowClicked", this)
 
-    @$el.find("#paginate-right-link").click =>
-      @$el.find("#paginate-left-link").tooltip('hide')
+    @$el.find(".paginate-right-link").click =>
+      @$el.find(".paginate-right-link").tooltip('hide')
       @trigger("rightArrowClicked", this)
 
     $(window).resize =>
@@ -96,8 +96,8 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     )
     @refreshToolbarButtonView.render()
 
-    @$el.find("#refresh_button").click =>
-      @$el.find("#refresh_button").tooltip('hide')
+    @$el.find(".refresh-button").click =>
+      @$el.find(".refresh-button").tooltip('hide')
       @trigger("refreshClicked", this)
 
     @$el.find(".toolbar-elements, .pagination-buttons").tooltip
@@ -108,18 +108,18 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       $(this).tooltip('hide')
 
   setupBulkActionButtons: ->
-    @$el.find("#all_bulk_action").click =>
+    @$el.find(".all-bulk-action").click =>
       @divAllCheckbox.iCheck("check")
       @trigger("checkAllClicked", this)
 
-    @$el.find("#none_bulk_action").click =>
+    @$el.find(".none-bulk-action").click =>
       @divAllCheckbox.iCheck("uncheck")
       @trigger("uncheckAllClicked", this)
 
-    @$el.find("#read_bulk_action").click =>
+    @$el.find(".read-bulk-action").click =>
       @trigger("checkAllReadClicked", this)
 
-    @$el.find("#unread_bulk_action").click =>
+    @$el.find(".unread-bulk-action").click =>
       @trigger("checkAllUnreadClicked", this)
 
   #################
@@ -152,12 +152,12 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       firstThreadNumber = 0
       lastThreadNumber = 0
 
-    @$el.find("#total_emails_number").html(numThreads)
-    @$el.find("#start_number").html(firstThreadNumber)
-    @$el.find("#end_number").html(lastThreadNumber)
+    @$el.find(".total-emails-number").html(numThreads)
+    @$el.find(".start-number").html(firstThreadNumber)
+    @$el.find(".end-number").html(lastThreadNumber)
     
   showMoveToFolderMenu: ->
-    @$el.find("#moveToFolderDropdownMenu").trigger("click.bs.dropdown")
+    @$el.find(".move-to-folder-dropdown-menu").trigger("click.bs.dropdown")
 
   #############################
   ### TuringEmailApp Events ###

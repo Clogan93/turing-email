@@ -56,7 +56,7 @@ describe "TuringEmailApp", ->
 
     describe "#setupSearchBar", ->
       beforeEach ->
-        @divSearchForm = $('<form role="search" id="top-search-form" class="navbar-form-custom"></form>').appendTo("body")
+        @divSearchForm = $('<form role="search" class="navbar-form-custom top-search-form"></form>').appendTo("body")
         
         TuringEmailApp.setupSearchBar()
        
@@ -67,9 +67,9 @@ describe "TuringEmailApp", ->
         expect(@divSearchForm).toHandle("submit")
        
       it "prevents the default submit action", ->
-        selector = "#" + @divSearchForm.attr("id")
+        selector = ".top-search-form"
         spyOnEvent(selector, "submit")
-        
+
         @divSearchForm.submit()
         
         expect("submit").toHaveBeenPreventedOn(selector)
