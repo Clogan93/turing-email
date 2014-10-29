@@ -1,25 +1,8 @@
 <div id="wrapper">
   <div id="page-wrapper" class="gray-bg">
 
-    <div class="row border-bottom search-nav-bar">
-      <nav class="navbar navbar-static-top white-bg" role="navigation">
-        <div class="col-lg-9 navbar-header">
-          <form role="search" class="navbar-form-custom top-search-form">
-            <div class="form-group">
-              <input type="text" placeholder="Search for something..." class="form-control" id="top-search" name="top-search" />
-            </div>
-          </form>
-        </div>
-        <ul class="col-lg-3 nav navbar-top-links navbar-right">
-          <li>
-            <span class="m-r-sm text-muted welcome-message">Welcome to Turing.</span>
-          </li>
-          <li>
-            <a data-method="delete" href="/signout" rel="nofollow"><i class="fa fa-sign-out"></i> Log out</a>
-          </li>
-        </ul>
-      </nav>
-    </div>
+    <% var template = JST["backbone/templates/app/search_bar"]; %>
+    <%= template() %>
 
     <div class="wrapper wrapper-content">
       <div class="container-fluid fill">
