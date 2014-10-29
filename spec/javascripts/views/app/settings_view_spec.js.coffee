@@ -74,6 +74,24 @@ describe "SettingsView", ->
       expect(@settingsDiv).toContain(splitPaneSwitch)
       expect(splitPaneSwitch.is(":checked")).toEqual(@userSettings.get("split_pane_mode") == "horizontal")
 
+  describe "#setupSwitches", ->
+
+    it "sets up the demo mode switch", ->
+      @settingsView.setupSwitches()
+      expect(@settingsDiv.find(".demo_mode_switch").parent().parent()).toHaveClass "has-switch"
+
+    it "sets up the keyboard shortcuts switch", ->
+      @settingsView.setupSwitches()
+      expect(@settingsDiv.find(".keyboard_shortcuts_switch").parent().parent()).toHaveClass "has-switch"
+
+      @settingsView.setupSwitches()
+    it "sets up the genie switch", ->
+      expect(@settingsDiv.find("#genie_switch").parent().parent()).toHaveClass "has-switch"
+
+    it "sets up the split pane switch", ->
+      @settingsView.setupSwitches()
+      expect(@settingsDiv.find("#split_pane_switch").parent().parent()).toHaveClass "has-switch"
+
   describe "email bankruptcy button", ->
     describe "the user cancels the action", ->
       beforeEach ->
