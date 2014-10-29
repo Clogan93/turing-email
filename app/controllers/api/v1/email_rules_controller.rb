@@ -47,12 +47,6 @@ class Api::V1::EmailRulesController < ApiController
     @email_rules = current_user.email_rules
   end
   
-  swagger_api :recommended_rules do
-    summary 'Return recommended rules.'
-
-    response :ok
-  end
-
   swagger_api :destroy do
     summary 'Delete email rule.'
 
@@ -65,6 +59,12 @@ class Api::V1::EmailRulesController < ApiController
     @email_rule.destroy!
 
     render :json => {}
+  end
+
+  swagger_api :recommended_rules do
+    summary 'Return recommended rules for the current user.'
+    
+    response :ok
   end
 
   def recommended_rules

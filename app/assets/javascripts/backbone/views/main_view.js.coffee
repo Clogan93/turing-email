@@ -55,7 +55,8 @@ class TuringEmailApp.Views.Main extends Backbone.View
   resize: ->
     @resizeSidebar()
     @resizePrimaryPane()
-    @resizeSplitPane()
+    @resizePrimarySplitPane()
+    @resizeAppsSplitPane()
     @resizeEmailThreadsListView()
     
   resizeSidebar: ->
@@ -70,15 +71,24 @@ class TuringEmailApp.Views.Main extends Backbone.View
     height = $(window).height() - @primaryPaneDiv.offset().top - 6
     @primaryPaneDiv.height(height)
     
-  resizeSplitPane: ->
-    splitPaneDiv = @$el.find(".split_pane")
-    return if splitPaneDiv.length is 0
+  resizePrimarySplitPane: ->
+    primarySplitPaneDiv = @$el.find(".primary_split_pane")
+    return if primarySplitPaneDiv.length is 0
 
-    height = $(window).height() - splitPaneDiv.offset().top - 6
+    height = $(window).height() - primarySplitPaneDiv.offset().top - 6
     height = 1 if height <= 0
     
-    splitPaneDiv.height(height)
+    primarySplitPaneDiv.height(height)
 
+  resizeAppsSplitPane: ->
+    appsSplitPaneDiv = @$el.find(".apps_split_pane")
+    return if appsSplitPaneDiv.length is 0
+
+    height = $(window).height() - appsSplitPaneDiv.offset().top - 20
+    height = 1 if height <= 0
+
+    appsSplitPaneDiv.height(height)
+    
   resizeEmailThreadsListView: ->
     return if not @emailThreadsListView?
     
@@ -110,27 +120,28 @@ class TuringEmailApp.Views.Main extends Backbone.View
     @toolbarView.render()
 
     if isSplitPaneMode
-      splitPane = $("<div />", {class: "split_pane"}).appendTo(@primaryPaneDiv)
+      primarySplitPane = $("<div />", {class: "primary_split_pane"}).appendTo(@primaryPaneDiv)
 
       if @emailThreadsListView.collection.length is 0
-        emptyFolderMessageDiv = $("<div />", {class: "ui-layout-center"}).appendTo(splitPane)
+        emptyFolderMessageDiv = $("<div />", {class: "ui-layout-center"}).appendTo(primarySplitPane)
       else
         emailThreadsListViewDiv.addClass("ui-layout-center")
-        splitPane.append(emailThreadsListViewDiv)
+        primarySplitPane.append(emailThreadsListViewDiv)
       
-      emailThreadViewDiv = $("<div class='email_thread_view'><div class='email-thread-view-default-text'>No conversations selected</div></div>").appendTo(splitPane)
+      emailThreadViewDiv = $("<div class='email_thread_view'><div class='email-thread-view-default-text'>No conversations selected</div></div>").appendTo(primarySplitPane)
       emailThreadViewDiv.addClass("ui-layout-south")
 
-      @resizeSplitPane()
+      @resizePrimarySplitPane()
       
-      @splitPaneLayout = splitPane.layout({
+      @splitPaneLayout = primarySplitPane.layout({
         applyDefaultStyles: true,
         resizable: true,
         closable: false,
         livePaneResizing: true,
-        showDebugMessages: true
+        showDebugMessages: true,
 
-        south__size: if @splitPaneLayout? then @splitPaneLayout.state.south.size else 0.5
+        south__size: if @splitPaneLayout? then @splitPaneLayout.state.south.size else 0.5,
+        south__onresize: => @resizeAppsSplitPane()
       });
     else
       if @emailThreadsListView.collection.length is 0
@@ -152,6 +163,19 @@ class TuringEmailApp.Views.Main extends Backbone.View
 
     return true
 
+  showAppsLibrary: ->
+    return false if not @primaryPaneDiv?
+
+    apps = new TuringEmailApp.Collections.AppsCollection()
+    apps.fetch()
+    appsLibraryView = new TuringEmailApp.Views.AppsLibrary.AppsLibraryView(collection: apps)
+    appsLibraryView.render()
+    
+    @primaryPaneDiv.html("")
+    @primaryPaneDiv.append(appsLibraryView.$el)
+    
+    return appsLibraryView
+    
   showSettings: ->
     return false if not @primaryPaneDiv?
     
@@ -212,8 +236,39 @@ class TuringEmailApp.Views.Main extends Backbone.View
       emailThreadViewDiv = @primaryPaneDiv
 
     emailThreadViewDiv.html("")
-    emailThreadViewDiv.append(emailThreadView.$el)
-    
-    emailThreadView.render()
+
+    if @app.models.userSettings?.get("installed_apps")?.length > 0
+      appsSplitPane = $("<div />", {class: "apps_split_pane"}).appendTo(emailThreadViewDiv)
+      
+      emailThreadView.$el.addClass("ui-layout-center")
+      appsSplitPane.append(emailThreadView.$el)
+      emailThreadView.render()
   
+      appsDiv = $("<div />").appendTo(appsSplitPane)
+      appsDiv.addClass("ui-layout-east")
+
+      if emailThread?
+        for installedAppJSON in @app.models.userSettings.get("installed_apps")
+          appIframe = $("<iframe></iframe>").appendTo(appsDiv)
+          appIframe.css("width", "160px")
+          appIframe.css("border", "solid 1px black")
+          installedApp = TuringEmailApp.Models.InstalledApps.InstalledApp.CreateFromJSON(installedAppJSON)
+          installedApp.run(appIframe, emailThread)
+      
+      @resizeAppsSplitPane()
+  
+      appsSplitPane.layout({
+        applyDefaultStyles: true,
+        resizable: false,
+        closable: false,
+        livePaneResizing: true,
+        showDebugMessages: true,
+  
+        east__size: 200
+      });
+    else
+      emailThreadViewDiv.off("resize")
+      emailThreadViewDiv.html(emailThreadView.$el)
+      emailThreadView.render()
+
     return emailThreadView

@@ -24,7 +24,6 @@
     float: right;
     padding-right: 15px;
   }
-
 }
 
 .each-email-reply-button {
@@ -48,15 +47,17 @@
   color: #223;
 }
 
-.email-thread-header {
+.email-thread {
+  overflow-x: hidden !important;
+}
 
+.email-thread-header {
   padding-top: 10px;
 
   .email-subject {
     font-weight: normal;
     font-size: 18px;
   }
-
 }
 
 .collapsed-email {

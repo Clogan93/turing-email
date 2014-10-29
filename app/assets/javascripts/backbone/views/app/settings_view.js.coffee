@@ -9,6 +9,7 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
 
     @listenTo(options.emailRules, "reset", @render)
     @listenTo(options.brainRules, "reset", @render)
+    
     @listenTo(@model, "change", @render)
     @listenTo(@model, "destroy", @remove)
 
@@ -16,6 +17,7 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     @$el.html(@template({'userSettings' : @model.toJSON(), 'emailRules' : @emailRules.toJSON(), 'brainRules' : @brainRules.toJSON()}))
 
     @setupEmailBankruptcyButton()
+    @setupUninstallAppButtons()
     @setupSwitches()
     @setupRuleCreation()
     @setupRuleDeletion()
@@ -44,6 +46,14 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     @$el.find(".demo_mode_switch, .keyboard_shortcuts_switch, #genie_switch, #split_pane_switch").on "switch-change", (event, state) =>
       @saveSettings()
 
+  setupUninstallAppButtons: ->
+    @$el.find(".uninstall-app-button").click (event) ->
+      $.ajax
+        url: "/api/v1/apps/uninstall/" + $(@).attr("data")
+        type: "DELETE"
+
+      $(@).parent().parent().remove()
+      
   saveSettings: ->
     demo_mode_enabled = @$el.find(".demo_mode_switch").parent().parent().hasClass("switch-on")
     keyboard_shortcuts_enabled = @$el.find(".keyboard_shortcuts_switch").parent().parent().hasClass("switch-on")
@@ -83,28 +93,24 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
   setupRuleDeletion: ->
     @$el.find(".email-rules-table .rule-deletion-button").click (event) ->
       $.ajax
-        url: "/api/v1/email_rules/" + $(@).attr("data") + ".json"
+        url: "/api/v1/email_rules/" + $(@).attr("data")
         type: "DELETE"
 
       $(@).parent().parent().remove()
 
     @$el.find(".brain-rules-table .rule-deletion-button").click (event) ->
       $.ajax
-        url: "/api/v1/genie_rules/" + $(@).attr("data") + ".json"
+        url: "/api/v1/genie_rules/" + $(@).attr("data")
         type: "DELETE"
 
       $(@).parent().parent().remove()
 
   showSettingsAlert: (alertMessage) ->
-    console.log "SettingsView showSettingsAlert"
-
     @removeSettingsAlert() if @currentAlertToken?
 
     @currentAlertToken = TuringEmailApp.showAlert(alertMessage, "alert-success")
 
   removeSettingsAlert: ->
-    console.log "SettingsView REMOVE SettingsAlert"
-
     if @currentAlertToken?
       TuringEmailApp.removeAlert(@currentAlertToken)
       @currentAlertToken = null

@@ -58,13 +58,19 @@ class Api::V1::UsersController < ApiController
     render 'api/v1/users/show'
   end
 
-  swagger_api :current do
-    summary 'Return the current user.'
+  swagger_api :installed_apps do
+    summary 'Return the installed apps for the current user.'
 
     response :ok
   end
 
-  swagger_api :bankruptcy do
+  def installed_apps
+    @installed_apps = current_user.installed_apps
+    
+    render 'api/v1/installed_apps/index'
+  end
+
+  swagger_api :declare_email_bankruptcy do
     summary 'Declare Email Bankruptcy! Delete all emails from inbox.'
 
     response :ok

@@ -76,14 +76,3 @@ class TuringEmailApp.Collections.EmailFoldersCollection extends Backbone.Collect
     )
 
     return labelsParsed
-
-  ###############
-  ### Getters ###
-  ###############
-
-  getEmailFolder: (emailFolderID) ->
-    emailFolders = @filter((emailFolder) ->
-      emailFolder.get("label_id") is emailFolderID
-    )
-
-    return if emailFolders.length > 0 then emailFolders[0] else null

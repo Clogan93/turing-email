@@ -30,6 +30,9 @@ describe "EmailThreadView", ->
     describe "#render", ->
       it "should have the root element be a div", ->
         expect(@emailThreadView.el.nodeName).toEqual "DIV"
+        
+      it "has the email-thread class", ->
+        expect(@emailThreadView.el).toHaveClass("email-thread")
 
       describe "when the email is not a draft", ->
 

@@ -18,14 +18,14 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
     @generateTree()
 
     systemBadges =
-      inbox: @collection.getEmailFolder("INBOX")?.badgeString()
-      draft: @collection.getEmailFolder("DRAFT")?.badgeString()
+      inbox: @collection.get("INBOX")?.badgeString()
+      draft: @collection.get("DRAFT")?.badgeString()
     
     @$el.html(@template(nodeName: "", node: @tree, systemBadges: systemBadges))
 
     @setupNodes()
 
-    @select(@collection.getEmailFolder(@selectedItem().get("label_id")), silent: true) if @selectedItem()?
+    @select(@collection.get(@selectedItem().get("label_id")), silent: true) if @selectedItem()?
       
     return this
 
@@ -63,7 +63,7 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
       event.preventDefault()
 
       emailFolderID = $(event.currentTarget).attr("href")
-      emailFolder = @collection.getEmailFolder(emailFolderID)
+      emailFolder = @collection.get(emailFolderID)
       @select(emailFolder, force: true)
 
   ###############

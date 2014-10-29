@@ -7,7 +7,10 @@ describe "EmailThread", ->
     )
     
     @emailThreads = FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE)
-    
+
+  it "uses uid as idAttribute", ->
+    expect(@emailThread.idAttribute).toEqual("uid")
+
   describe "Class Methods", ->
     beforeEach ->
       @server = sinon.fakeServer.create()

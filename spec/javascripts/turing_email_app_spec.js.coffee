@@ -114,7 +114,7 @@ describe "TuringEmailApp", ->
       beforeEach ->
         @createFilterDiv = $('<div class="create-filter"><div />').appendTo("body")
         @filterFormDiv = $('<div id="filter_form"><div />').appendTo("body")
-        @dropdownDiv = $('<div class="dropdown" id="email-rule-dropdown"><a href="#"></a></div>').appendTo("body")
+        @dropdownDiv = $('<div class="dropdown email-rule-dropdown"><a href="#"></a></div>').appendTo("body")
         
         TuringEmailApp.setupFiltering()
       
@@ -128,9 +128,9 @@ describe "TuringEmailApp", ->
   
       describe "when the create filter link is clicked", ->
         it "triggers the click.bs.dropdown event on the dropdown link", ->
-          spy = spyOnEvent('#email-rule-dropdown a', 'click.bs.dropdown')
+          spy = spyOnEvent('.email-rule-dropdown a', 'click.bs.dropdown')
           $('.create-filter').click()
-          expect('click.bs.dropdown').toHaveBeenTriggeredOn('#email-rule-dropdown a')
+          expect('click.bs.dropdown').toHaveBeenTriggeredOn('.email-rule-dropdown a')
 
           expect(spy).toHaveBeenTriggered()
 
@@ -292,6 +292,7 @@ describe "TuringEmailApp", ->
         expect(TuringEmailApp.routers.reportsRouter).toBeDefined()
         expect(TuringEmailApp.routers.settingsRouter).toBeDefined()
         expect(TuringEmailApp.routers.searchResultsRouter).toBeDefined()
+        expect(TuringEmailApp.routers.appsLibraryRouter).toBeDefined()
   
   describe "after start", ->
     beforeEach ->
@@ -441,7 +442,7 @@ describe "TuringEmailApp", ->
           beforeEach ->
             @reloadEmailThreadsStub.args[0][0].success(TuringEmailApp.collections.emailThreads)
   
-            @emailFolder = TuringEmailApp.collections.emailFolders.getEmailFolder("INBOX")
+            @emailFolder = TuringEmailApp.collections.emailFolders.get("INBOX")
           
           it "reloads the email threads", ->
             expect(@reloadEmailThreadsStub).toHaveBeenCalled()
@@ -698,6 +699,7 @@ describe "TuringEmailApp", ->
             @listenToSpy = sinon.spy(TuringEmailApp, "listenTo")
             @moveTuringEmailReportToTopSpy = sinon.spy(TuringEmailApp, "moveTuringEmailReportToTop")
 
+            @triggerStub = sinon.stub(@oldEmailThreads[0], "trigger")
             TuringEmailApp.views.emailThreadsListView.select(@oldEmailThreads[0])
             @emailThreadsListViewSelectStub = sinon.stub(TuringEmailApp.views.emailThreadsListView, "select", ->)
             
@@ -713,6 +715,7 @@ describe "TuringEmailApp", ->
             @listenToSpy.restore()
             @moveTuringEmailReportToTopSpy.restore()
             @emailThreadsListViewSelectStub.restore()
+            @triggerStub.restore()
 
           it "stops listening on the old models", ->
             expect(@stopListeningSpy).toHaveBeenCalledWith(oldEmailThread) for oldEmailThread in @oldEmailThreads
@@ -729,7 +732,7 @@ describe "TuringEmailApp", ->
             expect(@moveTuringEmailReportToTopSpy).toHaveBeenCalled()
             
           it "selects the previously selected email thread", ->
-            emailThreadToSelect = TuringEmailApp.collections.emailThreads.getEmailThread(@oldEmailThreads[0].get("uid"))
+            emailThreadToSelect = TuringEmailApp.collections.emailThreads.get(@oldEmailThreads[0].get("uid"))
             expect(@emailThreadsListViewSelectStub).toHaveBeenCalledWith(emailThreadToSelect)
               
           it "calls the success callback", ->
@@ -1562,7 +1565,7 @@ describe "TuringEmailApp", ->
 
         @unreadCounts = {}
         for folderID in @emailThread.get("folder_ids")
-          folder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
+          folder = TuringEmailApp.collections.emailFolders.get(folderID)
           @unreadCounts[folderID] = folder.get("num_unread_threads") 
   
       afterEach ->
@@ -1574,7 +1577,7 @@ describe "TuringEmailApp", ->
         TuringEmailApp.emailThreadSeenChanged @emailThread, true
 
         for folderID in @emailThread.get("folder_ids")
-          folder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
+          folder = TuringEmailApp.collections.emailFolders.get(folderID)
           expect(spy).toHaveBeenCalledWith(TuringEmailApp, folder)
 
         spy.restore()
@@ -1585,7 +1588,7 @@ describe "TuringEmailApp", ->
           
         it "decrements the unread count", ->
           for folderID in @emailThread.get("folder_ids")
-            folder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
+            folder = TuringEmailApp.collections.emailFolders.get(folderID)
             expect(folder.get("num_unread_threads")).toEqual(@unreadCounts[folderID] - 1)
 
       describe "seenValue=false", ->
@@ -1594,18 +1597,18 @@ describe "TuringEmailApp", ->
 
         it "increments the unread count", ->
           for folderID in @emailThread.get("folder_ids")
-            folder = TuringEmailApp.collections.emailFolders.getEmailFolder(folderID)
+            folder = TuringEmailApp.collections.emailFolders.get(folderID)
             expect(folder.get("num_unread_threads")).toEqual(@unreadCounts[folderID] + 1)
 
     describe "#emailThreadFolderChanged", ->
 
       describe "when the folder is not already in the collection", ->
         beforeEach ->
-          @getEmailFolderStub = sinon.stub(TuringEmailApp.collections.emailFolders, "getEmailFolder")
-          @getEmailFolderStub.returns(null)
+          @getStub = sinon.stub(TuringEmailApp.collections.emailFolders, "get")
+          @getStub.returns(null)
 
         afterEach ->
-          @getEmailFolderStub.restore()
+          @getStub.restore()
 
         it "it reloads the email folders", ->
           spy = sinon.spy(TuringEmailApp, "loadEmailFolders")
@@ -1615,11 +1618,11 @@ describe "TuringEmailApp", ->
 
       describe "when the folder is already in the collection", ->
         beforeEach ->
-          @getEmailFolderStub = sinon.stub(TuringEmailApp.collections.emailFolders, "getEmailFolder")
-          @getEmailFolderStub.returns({})
+          @getStub = sinon.stub(TuringEmailApp.collections.emailFolders, "get")
+          @getStub.returns({})
 
         afterEach ->
-          @getEmailFolderStub.restore()
+          @getStub.restore()
 
         it "it reloads the email folders", ->
           spy = sinon.spy(TuringEmailApp, "loadEmailFolders")
@@ -1791,8 +1794,22 @@ describe "TuringEmailApp", ->
       it "shows the emails on the main view", ->
         expect(@showEmailsSpy).toHaveBeenCalledWith(TuringEmailApp.isSplitPaneMode())
 
+    describe "#showAppsLibrary", ->
+      beforeEach ->
+        @showAppsLibraryStub = sinon.stub(TuringEmailApp.views.mainView, "showAppsLibrary")
+
+        TuringEmailApp.showAppsLibrary()
+      
+      afterEach ->
+        @showAppsLibraryStub.restore()
+
+      it "shows the apps library on the main view", ->
+        expect(@showAppsLibraryStub).toHaveBeenCalled()
+        
     describe "#showSettings", ->
       beforeEach ->
+        @showSettingsStub = sinon.stub(TuringEmailApp.views.mainView, "showSettings")
+        
         @server.restore()
 
         brainRulesFixtures = fixture.load("rules/brain_rules.fixture.json", true)
@@ -1810,12 +1827,12 @@ describe "TuringEmailApp", ->
 
       afterEach ->
         @server.restore()
+        @showSettingsStub.restore()
 
       it "shows the Settings on the main view", ->
-        @showSettingsSpy = sinon.spy(TuringEmailApp.views.mainView, "showSettings")
         TuringEmailApp.showSettings()
-        expect(@showSettingsSpy).toHaveBeenCalled()
-        @showSettingsSpy.restore()
+        expect(@showSettingsStub).toHaveBeenCalled()
+        @showSettingsStub.restore()
 
       it "loads the brain rules", ->
         TuringEmailApp.showSettings()

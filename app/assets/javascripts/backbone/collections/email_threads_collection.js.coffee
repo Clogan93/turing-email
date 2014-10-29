@@ -157,13 +157,6 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
   ### Getters ###
   ###############
 
-  getEmailThread: (emailThreadUID) ->
-    emailThreads = @filter((emailThread) ->
-      emailThread.get("uid") is emailThreadUID
-    )
-
-    return if emailThreads.length > 0 then emailThreads[0] else null
-
   hasNextPage: ->
     return @pageTokenIndex < @pageTokens.length - 1
 

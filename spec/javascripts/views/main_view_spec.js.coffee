@@ -78,7 +78,8 @@ describe "MainView", ->
       beforeEach ->
         @sidebarResizeSpy = sinon.stub(@mainView, "resizeSidebar", ->)
         @resizePrimaryPaneSpy = sinon.stub(@mainView, "resizePrimaryPane", ->)
-        @resizeSplitPaneSpy = sinon.stub(@mainView, "resizeSplitPane", ->)
+        @resizePrimarySplitPaneSpy = sinon.stub(@mainView, "resizePrimarySplitPane", ->)
+        @resizeAppsSplitPaneSpy = sinon.stub(@mainView, "resizeAppsSplitPane", ->)
         @resizeEmailThreadsListViewSpy = sinon.stub(@mainView, "resizeEmailThreadsListView", ->)
 
         @mainView.resize()
@@ -86,7 +87,8 @@ describe "MainView", ->
       afterEach ->
         @sidebarResizeSpy.restore()
         @resizePrimaryPaneSpy.restore()
-        @resizeSplitPaneSpy.restore()
+        @resizePrimarySplitPaneSpy.restore()
+        @resizeAppsSplitPaneSpy.restore()
         @resizeEmailThreadsListViewSpy.restore()
 
       it "resizes the sidebar", ->
@@ -95,8 +97,11 @@ describe "MainView", ->
       it "resizes the primary pane", ->
         expect(@resizePrimaryPaneSpy).toHaveBeenCalled()
 
-      it "resizes the split pane", ->
-        expect(@resizeSplitPaneSpy).toHaveBeenCalled()
+      it "resizes the primary split pane", ->
+        expect(@resizePrimarySplitPaneSpy).toHaveBeenCalled()
+
+      it "resizes the apps split pane", ->
+        expect(@resizeAppsSplitPaneSpy).toHaveBeenCalled()
 
       it "resizes the email threads list view pane", ->
         expect(@resizeEmailThreadsListViewSpy).toHaveBeenCalled()
@@ -123,12 +128,12 @@ describe "MainView", ->
 
         describe "without split pane", ->
           beforeEach ->
-            @resizeSplitPaneSpy = sinon.spy(@mainView, "resizeSplitPane")
+            @resizePrimarySplitPaneSpy = sinon.spy(@mainView, "resizePrimarySplitPane")
             
             @mainView.showEmails(false)
             
           afterEach ->
-            @resizeSplitPaneSpy.restore()
+            @resizePrimarySplitPaneSpy.restore()
             
           it "shows the email controls", ->
             expect(@primaryPane.children().length).toEqual(2)
@@ -142,7 +147,7 @@ describe "MainView", ->
           it "shows the email controls", ->
             expect(@primaryPane.children().length).toEqual(2)
             expect($(@primaryPane.children()[0])).toHaveClass("toolbar")
-            expect($(@primaryPane.children()[1])).toHaveClass("split_pane")
+            expect($(@primaryPane.children()[1])).toHaveClass("primary_split_pane")
             
             splitPane = $(@primaryPane.children()[1])
             expect(splitPane.children().length).toEqual(3)
@@ -158,7 +163,8 @@ describe "MainView", ->
 
         describe "when there are no emails in list view's collection", ->
           beforeEach ->
-            @mainView.emailThreadsListView.collection = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
+            @mainView.emailThreadsListView.collection =
+              new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
 
             @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
         
@@ -221,6 +227,14 @@ describe "MainView", ->
         it "sets the email rules on the settings view", ->
           expect(@settingsView.emailRules).toEqual TuringEmailApp.collections.emailRules
 
+      describe "#showAppsLibrary", ->
+        beforeEach ->
+          @appsLibraryView = @mainView.showAppsLibrary()
+
+        it "shows the apps library view", ->
+          expect(@primaryPane.children().length).toEqual(1)
+          expect($(@primaryPane.children()[0]).html()).toEqual(@appsLibraryView.$el.html())
+
       describe "#showAnalytics", ->
         beforeEach ->
           @server.restore()
@@ -247,24 +261,70 @@ describe "MainView", ->
       describe "#showEmailThread", ->
         beforeEach ->
           emailThreadAttributes = FactoryGirl.create("EmailThread")
-          emailThreadAttributes.emails.push(FactoryGirl.create("Email", draft_id: "draft"))
-          @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadAttributes,
+          emailDraftAttributes = FactoryGirl.create("Email", draft_id: "draft")
+          emailThreadAttributes.emails.push(emailDraftAttributes)
+          
+          @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadAttributes.toJSON(),
             app: TuringEmailApp
             emailThreadUID: emailThreadAttributes.uid
           )
           
-        describe "when split pane mode is on", ->
+        describe "with apps", ->
           beforeEach ->
-            @emailThreadView = TuringEmailApp.views.mainView.showEmailThread(@emailThread, true)
+            TuringEmailApp.models.userSettings.set(FactoryGirl.create("UserSettings"))
+
+            @server = sinon.fakeServer.create()
             
-          it "renders the email thread in the email_thread_view", ->
-            emailThreadView = $(@primaryPane.find(".email_thread_view").children()[0])
-            expect(emailThreadView.html()).toEqual(@emailThreadView.$el.html())
-  
-        describe "when split pane mode is off", ->
-          beforeEach ->
-            @emailThreadView = TuringEmailApp.views.mainView.showEmailThread(@emailThread, false)
-  
-          it "renders the email thread in the primary pane", ->
-            emailThreadView = $(@primaryPane.children()[0])
-            expect(emailThreadView.html()).toEqual(@emailThreadView.$el.html())
+            @resizeAppsSplitPaneStub = sinon.stub(@mainView, "resizeAppsSplitPane")
+            @runStub = sinon.stub(TuringEmailApp.Models.InstalledApps.InstalledPanelApp.prototype, "run")
+            
+            @emailThreadView = TuringEmailApp.views.mainView.showEmailThread(@emailThread, true)
+            @appsSplitPaneDiv = $(@primaryPane.find(".apps_split_pane"))
+            
+            @appsDiv = $(@appsSplitPaneDiv.children()[1])
+            
+          afterEach ->
+            @runStub.restore()
+            @resizeAppsSplitPaneStub.restore()
+            @server.restore()
+
+          it "creates the split pane", ->
+            expect(@appsSplitPaneDiv).toBeDefined()
+            
+          it "puts the thread view in the center pane", ->
+            expect(@emailThreadView.$el).toHaveClass("ui-layout-center")
+            
+          it "adds the email thread view to the split pane", ->
+            expect(@appsSplitPaneDiv.children()[0]).toEqual(@emailThreadView.$el[0])
+          
+          it "adds the apps div to the split pane", ->
+            expect(@appsDiv[0].nodeName).toEqual("DIV")
+
+          it "puts the apps div in the east pane", ->
+            expect(@appsDiv).toHaveClass("ui-layout-east")
+            
+          it "adds the app iframes to the split pane", ->
+            expect(@appsDiv.children().length).toEqual(TuringEmailApp.models.userSettings.get("installed_apps").length)
+            
+          it "runs all the apps", ->
+            expect(@runStub.callCount).toEqual(TuringEmailApp.models.userSettings.get("installed_apps").length)
+            
+          it "resizes the apps split pane", ->
+            expect(@resizeAppsSplitPaneStub).toHaveBeenCalled()
+
+        describe "without apps", ->
+          describe "when split pane mode is on", ->
+            beforeEach ->
+              @emailThreadView = TuringEmailApp.views.mainView.showEmailThread(@emailThread, true)
+              
+            it "renders the email thread in the email_thread_view", ->
+              emailThreadView = $(@primaryPane.find(".email_thread_view").children()[0])
+              expect(emailThreadView.html()).toEqual(@emailThreadView.$el.html())
+    
+          describe "when split pane mode is off", ->
+            beforeEach ->
+              @emailThreadView = TuringEmailApp.views.mainView.showEmailThread(@emailThread, false)
+    
+            it "renders the email thread in the primary pane", ->
+              emailThreadView = $(@primaryPane.children()[0])
+              expect(emailThreadView.html()).toEqual(@emailThreadView.$el.html())

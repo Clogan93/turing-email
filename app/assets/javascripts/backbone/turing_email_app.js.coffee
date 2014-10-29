@@ -1,6 +1,7 @@
 #= require_self
 #= require_tree ./templates
 #= require ./models/email
+#= require ./models/installed_apps/installed_app
 #= require_tree ./models
 #= require_tree ./collections
 #= require ./views/email_threads/list_item_view
@@ -104,7 +105,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   setupFiltering: ->
     $(".create-filter").click (event) ->
       event.preventDefault()
-      $("#email-rule-dropdown a").trigger('click.bs.dropdown')
+      $(".email-rule-dropdown a").trigger('click.bs.dropdown')
       return false
 
   setupToolbar: ->
@@ -179,6 +180,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @routers.reportsRouter = new TuringEmailApp.Routers.ReportsRouter()
     @routers.settingsRouter = new TuringEmailApp.Routers.SettingsRouter()
     @routers.searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()
+    @routers.appsLibraryRouter = new TuringEmailApp.Routers.AppsLibraryRouter()
 
   ###############
   ### Getters ###
@@ -223,7 +225,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
     @reloadEmailThreads(
       success: (collection, response, options) =>
-        emailFolder = @collections.emailFolders.getEmailFolder(emailFolderID)
+        emailFolder = @collections.emailFolders.get(emailFolderID)
         @views.emailFoldersTreeView.select(emailFolder, silent: true)
         @trigger("change:currentEmailFolder", this, emailFolder, @collections.emailThreads.pageTokenIndex + 1)
   
@@ -291,7 +293,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   ##############################
     
   loadEmailThread: (emailThreadUID, callback) ->
-    emailThread = @collections.emailThreads?.getEmailThread(emailThreadUID)
+    emailThread = @collections.emailThreads?.get(emailThreadUID)
 
     if emailThread?
       callback(emailThread)
@@ -322,7 +324,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
         @moveTuringEmailReportToTop(@views.emailThreadsListView)
 
         if selectedEmailThread? && not @selectedEmailThread()?
-          emailThreadToSelect = collection.getEmailThread(selectedEmailThread.get("uid"))
+          emailThreadToSelect = collection.get(selectedEmailThread.get("uid"))
 
           if emailThreadToSelect?
             @ignoreListItemSelected = true
@@ -555,14 +557,14 @@ window.TuringEmailApp = new(Backbone.View.extend(
     delta = if seenValue then -1 else 1
       
     for folderID in emailThread.get("folder_ids")
-      folder = @collections.emailFolders.getEmailFolder(folderID)
+      folder = @collections.emailFolders.get(folderID)
       continue if not folder?
       
       folder.set("num_unread_threads", folder.get("num_unread_threads") + delta)
       @trigger("change:emailFolderUnreadCount", this, folder)
 
   emailThreadFolderChanged: (emailThread, newFolder) ->
-    folder = @collections.emailFolders.getEmailFolder(newFolder["label_id"])
+    folder = @collections.emailFolders.get(newFolder["label_id"])
 
     @loadEmailFolders() if not folder?
 
@@ -623,16 +625,12 @@ window.TuringEmailApp = new(Backbone.View.extend(
   showEmails: ->
     @views.mainView.showEmails(@isSplitPaneMode())
 
+  showAppsLibrary: ->
+    @views.mainView.showAppsLibrary()
+    
   showSettings: ->
-    if _.keys(@models.userSettings.attributes).length is 0
-      setTimeout(
-        =>
-          @showSettings()
-        100
-      )
-
-      return
-
+    @models.userSettings.fetch(reset: true)
+      
     @collections.emailRules = new TuringEmailApp.Collections.Rules.EmailRulesCollection()
     @collections.emailRules.fetch(reset: true)
 

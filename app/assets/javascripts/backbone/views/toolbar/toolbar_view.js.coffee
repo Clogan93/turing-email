@@ -48,11 +48,9 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @setupBulkActionButtons()
 
     @$el.find(".mark_as_read").parent().click =>
-      @$el.find(".mark_as_read").tooltip('hide')
       @trigger("readClicked", this)
 
     @$el.find(".mark_as_unread").parent().click =>
-      @$el.find(".mark_as_unread").tooltip('hide')
       @trigger("unreadClicked", this)
 
     @$el.find("i.fa-archive").parent().click =>

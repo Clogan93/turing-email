@@ -25,6 +25,12 @@ class User < ActiveRecord::Base
   
   has_many :email_rules,
            :dependent => :destroy
+  
+  has_many :apps,
+           :dependent => :destroy
+  
+  has_many :installed_apps,
+           :dependent => :destroy
 
   before_validation {
     self.email = cleanse_email(self.email) if self.email

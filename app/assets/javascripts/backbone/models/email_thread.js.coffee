@@ -1,4 +1,6 @@
 class TuringEmailApp.Models.EmailThread extends Backbone.Model
+  idAttribute: "uid"
+  
   @setThreadParsedProperties: (threadParsed, messages, messageInfo) ->
     threadParsed.num_messages = messages.length
     threadParsed.snippet = messageInfo.snippet
