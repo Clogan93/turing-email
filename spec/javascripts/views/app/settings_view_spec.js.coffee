@@ -39,7 +39,7 @@ describe "SettingsView", ->
     specStopTuringEmailApp()
 
   it "has the right template", ->
-    expect(@settingsView.template).toEqual JST["backbone/templates/settings"]
+    expect(@settingsView.template).toEqual JST["backbone/templates/app/settings"]
 
   describe "#render", ->
     it "renders the settings view", ->

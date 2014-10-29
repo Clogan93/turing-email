@@ -1,5 +1,5 @@
 class TuringEmailApp.Views.SettingsView extends Backbone.View
-  template: JST["backbone/templates/settings"]
+  template: JST["backbone/templates/app/settings"]
 
   className: "settings-view"
 
