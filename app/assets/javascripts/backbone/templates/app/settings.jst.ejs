@@ -159,7 +159,7 @@
                   for(var i = 0; i < userSettings.installed_apps.length; i++) {
                     var installedApp = userSettings.installed_apps[i].app
                 %>
-                  <tr>
+                  <tr class="installed-app">
                     <td><%= installedApp.name %></td>
                     <td><%= installedApp.description %></td>
                     <td><button type="button" data="<%= installedApp.uid %>" class="btn btn-danger uninstall-app-button">Uninstall App</button></td>

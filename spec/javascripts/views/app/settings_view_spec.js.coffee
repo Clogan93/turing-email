@@ -107,6 +107,16 @@ describe "SettingsView", ->
       expect(@settingsDiv.find(".brain-rule").first()).toContainHtml('<td>' + subject + '</td>')
       expect(@settingsDiv.find(".brain-rule").first()).toContainHtml('<td>' + list_id + '</td>')
 
+    it "renders the installed apps table", ->
+      installedAppsTable = $(".installed-apps-table")
+      expect(@settingsDiv).toContain(installedAppsTable)
+
+    it "renders the installed apps information", ->
+      installedAppsTable = $(".installed-apps-table")
+      for installedApp, index in @userSettings.toJSON().installed_apps
+        expect(@settingsDiv.find(".installed-app")[index]).toContainHtml('<td>' + installedApp.app.name + '</td>')
+        expect(@settingsDiv.find(".installed-app")[index]).toContainHtml('<td>' + installedApp.app.description + '</td>')
+
   describe "#setupSwitches", ->
 
     it "sets up the demo mode switch", ->
