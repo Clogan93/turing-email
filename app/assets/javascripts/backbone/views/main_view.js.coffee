@@ -9,7 +9,11 @@ class TuringEmailApp.Views.Main extends Backbone.View
     @toolbarView = new TuringEmailApp.Views.ToolbarView(
       app: @app
     )
-    
+
+    @miniatureToolbarView = new TuringEmailApp.Views.MiniatureToolbarView(
+      app: @app
+    )
+
   render: ->
     @$el.html(@template())
     
@@ -159,6 +163,8 @@ class TuringEmailApp.Views.Main extends Backbone.View
     settingsView.render()
 
     @primaryPaneDiv.html("")
+    @primaryPaneDiv.append(@miniatureToolbarView.$el)
+    @miniatureToolbarView.render()
     @primaryPaneDiv.append(settingsView.$el)
 
     return settingsView

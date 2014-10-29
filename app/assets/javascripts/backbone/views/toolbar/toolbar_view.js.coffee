@@ -13,7 +13,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
     @$el.addClass("mail-box-header")
     @$el.addClass("toolbar")
-  
+
   render: ->
     emailFolders = @currentEmailFolders?.toJSON() ? []
     @$el.html(@template({'emailFolders' : emailFolders}))
