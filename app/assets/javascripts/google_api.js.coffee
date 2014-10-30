@@ -1,4 +1,4 @@
-googleProcessError = (reason, app, makeRequest, attempt) ->
+googleProcessError = (opt_onRejected, reason, app, makeRequest, attempt) ->
   if reason.status == 401 and app?
     app.refreshGmailAPIToken().done(=> makeRequest())
   else if reason.status == 429
@@ -23,7 +23,7 @@ window.googleRequest = (app, generateRequest, opt_onFulfilled, opt_onRejected, o
 
     request.then(
       opt_onFulfilled
-      (reason) -> googleProcessError(reason, app, makeRequest, attempt)
+      (reason) -> googleProcessError(opt_onRejected, reason, app, makeRequest, attempt)
       opt_context
     )
 
