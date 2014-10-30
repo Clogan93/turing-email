@@ -315,12 +315,14 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       console.log "ComposeView sendEmailDelayed CALLBACK! doing send"
       @removeEmailSentAlert()
 
-      if emailToSend.sendDraft?
+      if emailToSend instanceof TuringEmailApp.Models.EmailDraft
         console.log "sendDraft!"
-        emailToSend.sendDraft().done(=>
-          @trigger "change:draft", this, emailToSend, @emailThreadParent
-        ).fail(=>
-          @sendEmailDelayedError(emailToSend.toJSON())
+        emailToSend.sendDraft(
+          @app
+          =>
+            @trigger "change:draft", this, emailToSend, @emailThreadParent
+          =>
+            @sendEmailDelayedError(emailToSend.toJSON())
         )
       else
         console.log "send email!"

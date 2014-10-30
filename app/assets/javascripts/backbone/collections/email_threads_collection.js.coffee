@@ -27,6 +27,9 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
     if method != "read"
       super(method, collection, options)
     else
+      options ?= {}
+      options.folderID = @folderID
+
       googleRequest(
         @app
         => @threadsListRequest(options)
@@ -40,13 +43,17 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
     params =
       userId: "me"
       maxResults: TuringEmailApp.Models.UserSettings.EmailThreadsPerPage
-      fields: "nextPageToken,threads(id)"
 
-    params["labelIds"] = @folderID if @folderID?
     params["pageToken"] = @pageTokens[@pageTokenIndex] if @pageTokens[@pageTokenIndex]?
-    params["q"] = options.query if options?.query
-
-    gapi.client.gmail.users.threads.list(params)
+      
+    if options.folderID is "DRAFT"
+      gapi.client.gmail.users.drafts.list(params)
+    else
+      params["fields"] = "nextPageToken,threads(id)"
+      params["labelIds"] = options.folderID if options.folderID?
+      params["q"] = options.query if options?.query
+  
+      gapi.client.gmail.users.threads.list(params)
 
   processThreadsListRequest: (response, options) ->
     @pageTokens[@pageTokenIndex + 1] = response.result.nextPageToken if response.result.nextPageToken?
@@ -54,6 +61,8 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
 
     if response.result.threads?
       @loadThreads(response.result.threads, options)
+    else if response.result.drafts?
+      @loadDrafts(response.result.drafts, options)
     else
       options.success?([])
 
@@ -65,6 +74,20 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
       options.error
     )
 
+  loadDrafts: (draftsListInfo, options) ->
+    options.draftsListInfo = draftsListInfo
+
+    threadsListInfo = []
+    for draftInfo in draftsListInfo
+      threadsListInfo.push(id: draftInfo.message.threadId)
+    
+    googleRequest(
+      @app
+      => @threadsGetBatch(threadsListInfo)
+      (response) => @processThreadsGetBatch(response, options)
+      options.error
+    )
+    
   threadsGetBatch: (threadsListInfo) ->
     batch = gapi.client.newBatch();
 
@@ -125,6 +148,12 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
       options.error(reason)
     else
       threads.sort((a, b) => b.date - a.date)
+      
+      if options.draftsListInfo?
+        for draftInfo in options.draftsListInfo
+          thread = _.find(threads, (thread) -> thread.uid == draftInfo.message.threadId);
+          thread.draftInfo = draftInfo if thread?
+      
       options.success(threads)
 
   threadFromMessageInfo: (threadInfo, lastMessageInfo) ->
@@ -132,7 +161,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
     TuringEmailApp.Models.EmailThread.setThreadParsedProperties(threadParsed, threadInfo.messages, lastMessageInfo)
 
     return threadParsed
-
+    
   ###############
   ### Setters ###
   ###############

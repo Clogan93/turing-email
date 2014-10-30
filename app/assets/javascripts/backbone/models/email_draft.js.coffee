@@ -1,13 +1,14 @@
 class TuringEmailApp.Models.EmailDraft extends TuringEmailApp.Models.Email
   url: "/api/v1/email_accounts/drafts"
 
-  sendDraft: ->
-    postData = {}
-    postData.draft_id = @get("draft_id")
-    
-    $.ajax({
-      url: "/api/v1/email_accounts/send_draft"
-      type: "POST"
-      data: postData
-      dataType : "json"
-    })
+  @sendDraftRequest: (draftID) ->
+    gapi.client.gmail.users.drafts.send({userId: "me"}, {id: draftID})
+  
+  @sendDraft: (app, draftID, success, error) ->
+    googleRequest(
+      app
+      => TuringEmailApp.Models.EmailDraft.sendDraftRequest(draftID)
+    )
+
+  sendDraft: (app, success, error) ->
+    TuringEmailApp.Models.EmailDraft.sendDraft(app, @get("draft_id"), success, error)

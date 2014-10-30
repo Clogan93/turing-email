@@ -139,6 +139,11 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
       options ?= {}
       success = options.success
       options.success = =>
+        draftInfo = @get("draftInfo")
+        if draftInfo
+          message = _.find(@get("emails"), (emailJSON) -> emailJSON.uid == draftInfo.message.id)
+          message.draft_id = draftInfo.id if message?
+        
         @set("loaded", true)
         @loading = false
         success?()
