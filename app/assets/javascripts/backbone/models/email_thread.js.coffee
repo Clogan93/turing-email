@@ -190,7 +190,10 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
 
       TuringEmailApp.Models.Email.parseHeaders(emailParsed, message.payload.headers)
 
-      emailParsed.body_text_encoded = message.payload.body.data if message.payload.body.size > 0
+      if message.payload.body.size > 0
+        emailParsed.body_text_encoded = message.payload.body.data
+        emailParsed.body_text = base64_decode_urlsafe(emailParsed.body_text_encoded)
+
       TuringEmailApp.Models.Email.parseBody(emailParsed, message.payload.parts)
 
       return emailParsed
