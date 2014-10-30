@@ -411,9 +411,7 @@ describe "ComposeView", ->
         tDate = new TDate()
         tDate.initializeWithISO8601(@emailJSON.date)
         
-        @headerText = "\r\n\r\n"
-        @headerText += tDate.longFormDateString() + ", " + @emailJSON.from_address + " wrote:"
-        @headerText += "\r\n\r\n"
+        @headerText = tDate.longFormDateString() + ", " + @emailJSON.from_address + " wrote:"
   
       describe "text", ->
         beforeEach ->
