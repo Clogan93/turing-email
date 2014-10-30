@@ -1,24 +1,56 @@
-<div class="text-center col-md-offset-4 col-sm-12 col-md-4" style="padding-top: 17.5%;">
-  <h1>Welcome to Turing!</h1>
+<div class="text-center col-sm-12 col-md-12" style="padding-top: 17.5%;">
+
+  <h1 class="welcome-title">Welcome to Turing!</h1>
   <br />
   <br />
 
-  <% if !current_user.nil? %>
-    <a href="<%= mail_url %>">Mail</a>
-    <br />
-    <br />
+  <div class="row">
 
-    <% google_o_auth2_token = nil
-       google_o_auth2_token = current_user.gmail_accounts.first.google_o_auth2_token if current_user.gmail_accounts.first %>
+    <div class="col-sm-offset-1 col-sm-3">
+      <h3>The Brain</h3>
+      <p>The AI-based brain that we've built help solve your problems with unmanageable email volume. Each day, the brain will go through and process your emails so you can better manage them.</p>
+    </div>
 
-    <%= link_to("#{google_o_auth2_token ? 'Change' : 'Link'} Gmail Account", gmail_o_auth2_url(true)) %>
-    <% if google_o_auth2_token %>
-      | <%= link_to('Unlink Gmail Account', gmail_o_auth2_remove_url, method: 'delete') %>
-    <% end %>
+    <div class="col-sm-4">
+      <h3>Extensibility</h3>
+      <p>Extending many email clients requires reverse engineering. The Turing email client natively supports extensibility so that every aspect of it can be built upon and extended.</p>
+    </div>
 
-    <br /><br />
-    <%= link_to('Signout', signout_path, :method => :delete, class: 'btn btn-primary block full-width m-b') %>
-  <% else %>
-    <%= link_to('Login', signin_path, class: 'btn btn-primary block full-width m-b') %> <%= link_to('Register', signup_path, class: 'btn btn-sm btn-white btn-block') %>
-  <% end %>
+    <div class="col-sm-3">
+      <h3>Custom Skins</h3>
+      <p>Don't like how your email client looks? We allow for custom skinning of the email client? In time, we'll support a library of skins so that you can get the look that matches your preferences.</p>
+    </div>
+
+  </div>
+
+  <br />
+  <br />
+
+  <div class="row">
+
+    <div class="text-center col-md-offset-4 col-sm-12 col-md-4">
+
+      <% if !current_user.nil? %>
+        <a href="<%= mail_url %>">Mail</a>
+        <br />
+        <br />
+
+        <% google_o_auth2_token = nil
+           google_o_auth2_token = current_user.gmail_accounts.first.google_o_auth2_token if current_user.gmail_accounts.first %>
+
+        <%= link_to("#{google_o_auth2_token ? 'Change' : 'Link'} Gmail Account", gmail_o_auth2_url(true)) %>
+        <% if google_o_auth2_token %>
+          | <%= link_to('Unlink Gmail Account', gmail_o_auth2_remove_url, method: 'delete') %>
+        <% end %>
+
+        <br /><br />
+        <%= link_to('Signout', signout_path, :method => :delete, class: 'btn btn-primary block full-width m-b') %>
+      <% else %>
+        <%= link_to('Login', signin_path, class: 'btn btn-primary block full-width m-b') %> <%= link_to('Register', signup_path, class: 'btn btn-sm btn-white btn-block') %>
+      <% end %>
+
+    </div>
+
+  </div>
+
 </div>
