@@ -244,29 +244,23 @@ window.TuringEmailApp = new(Backbone.View.extend(
   #######################
   ### Alert Functions ###
   #######################
-  
-  showAlert: (text, classType) ->
-    @removeAlert(@currentAlert.data("token")) if @currentAlert?
-    
-    html = '<div class="text-center alert ' + classType +
-           '" role="alert" style="z-index: 2000; margin-bottom: 0px; position: absolute; width: 100%;">' + text +
-           '</div>'
-    
-    @currentAlert = $(html).prependTo("body")
-    @currentAlert.data("token", _.uniqueId())
 
-    token = @currentAlert.data("token")
+  showAlert: (text, classType) ->
+    @removeAlert(@currentAlert.token) if @currentAlert?
     
-    dismissDiv = $('<span class="dismiss-alert"> (<span class="dismiss-alert-link">dismiss</span>)</span>').appendTo(@currentAlert)
-    dismissDiv.find(".dismiss-alert-link").click(=>
-      @removeAlert(token)
+    @currentAlert = new TuringEmailApp.Views.App.AlertView(
+      text: text
+      classType: classType
     )
-    
-    return token
-    
+    @currentAlert.render()
+
+    $(@currentAlert.el).prependTo("body")
+
+    return @currentAlert.token
+
   removeAlert: (token) ->
-    return if not @currentAlert? || @currentAlert.data("token") != token
-    @currentAlert.remove()
+    return if not @currentAlert? || @currentAlert.token != token
+    $(@currentAlert.el).remove()
     @currentAlert = undefined
 
   ##############################
