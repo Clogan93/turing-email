@@ -41,32 +41,33 @@ describe "EmailThreadView", ->
           fromNames = []
           textParts = []
 
-          @emailThreadView.$el.find(".email"). each ->
+          @emailThreadView.$el.find(".email").each ->
 
             #Collect Attributes from the rendered DOM.
             emailInformation = $(@).find(".email-information")
             fromNames.push $(emailInformation.find(".email-from")[0]).text().trim()
 
-            emailBody = $(@).find(".email-body .col-md-11")
-            if emailBody.length is 0 then textParts.push null else textParts.push emailBody.text().trim()
+            emailBody = $($(@).find(".email-body .col-md-11")).text().trim()
+            if emailBody.length is 0 then textParts.push(undefined) else textParts.push(emailBody)
 
           #Run expectations
           for email, index in @emailThread.get("emails")
             if email.draft_id is null
               expect(fromNames[index]).toEqual email.from_name
-              expect(textParts[index]).toEqual base64_decode_urlsafe(email.text_part_encoded)
+              expect(textParts[index]).toEqual email.text_part
 
-        describe "when there is a no html or text parts of the email yet there is a body part", ->
-
+        describe "when there are no html or text parts of the email yet there is a body part", ->
           it "should render the body part", ->
             for email, index in @emailThread.get("emails")
               if email.draft_id is null
                 @seededChance = new Chance(1)
                 randomBodyText = @seededChance.string({length: 150})
-                @emailThread.get("emails")[index].html_part_encoded = null
-                @emailThread.get("emails")[index].text_part_encoded = null
+                
                 @emailThread.get("emails")[index].body_text_encoded = base64_encode_urlsafe(randomBodyText)
+                @emailThread.get("emails")[index].body_text = randomBodyText
+                
                 @emailThreadView.render()
+                
                 expect(@emailThreadView.$el.find("pre[name='body_text']")).toContainHtml(randomBodyText)
 
       describe "when the email is a draft", ->

@@ -89,7 +89,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
   # TODO write tests
   renderHTMLEmails: ->
     for email, index in @model.get("emails")
-      if email.html_part_encoded?
+      if email.html_part?
         @insertHtmlIntoIframe email, index
 
     @updateIframeHeight(@$el.find("iframe").last())
@@ -134,7 +134,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     iframe = @$el.find("#email_iframe" + index.toString())
     
     iframeHTML = iframe.contents().find("html")
-    iframeHTML.html("<div>" + base64_decode_urlsafe(email.html_part_encoded) + "</div>")
+    iframeHTML.html("<div>" + email.html_part + "</div>")
 
     body = iframe.contents().find("body")
     

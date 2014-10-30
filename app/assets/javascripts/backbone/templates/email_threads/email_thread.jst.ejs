@@ -33,15 +33,15 @@
               <div class="row">
                 <div class="col-md-11">
                   <%
-                    if(email.subject.trim() == "Turing Email - Your daily Genie Report!" || email.html_part_encoded != null) {
+                    if(email.subject.trim() == "Turing Email - Your daily Genie Report!" || email.html_part != null) {
                     %>
                       <iframe class="email-iframe" id="email_iframe<%= index %>"></iframe>
                     <%
-                    } else if(email.text_part_encoded != null) {%>
-                      <pre class="email-body"><%= base64_decode_urlsafe(email.text_part_encoded) %></pre>
+                    } else if(email.text_part != null) {%>
+                      <pre class="email-body"><%= email.text_part %></pre>
                     <%
-                    } else if(email.body_text_encoded != null) {%>
-                      <pre class="email-body" name="body_text"><%= base64_decode_urlsafe(email.body_text_encoded) %></pre>
+                    } else if(email.body_text != null) {%>
+                      <pre class="email-body" name="body_text"><%= email.body_text %></pre>
                     <%
                     }
                   %>

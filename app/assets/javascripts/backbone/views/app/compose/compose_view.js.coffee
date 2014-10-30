@@ -216,12 +216,14 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     headerText += tDate.longFormDateString() + ", " + emailJSON.from_address + " wrote:"
     headerText += "\r\n\r\n"
 
+    headerText = headerText.replace(/\r\n/g, "<br />")
+
     [body, html] = @parseEmail(emailJSON)
 
-    if html
-      headerText = headerText.replace(/\r\n/g, "<br />")  
+    if html  
       $(body[0]).prepend(headerText)
     else
+      body = body.replace(/\r\n/g, "<br />")
       body = $($.parseHTML(headerText + body))
 
     return body
@@ -315,12 +317,14 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       console.log "ComposeView sendEmailDelayed CALLBACK! doing send"
       @removeEmailSentAlert()
 
-      if emailToSend.sendDraft?
+      if emailToSend instanceof TuringEmailApp.Models.EmailDraft
         console.log "sendDraft!"
-        emailToSend.sendDraft().done(=>
-          @trigger "change:draft", this, emailToSend, @emailThreadParent
-        ).fail(=>
-          @sendEmailDelayedError(emailToSend.toJSON())
+        emailToSend.sendDraft(
+          @app
+          =>
+            @trigger "change:draft", this, emailToSend, @emailThreadParent
+          =>
+            @sendEmailDelayedError(emailToSend.toJSON())
         )
       else
         console.log "send email!"

@@ -43,10 +43,12 @@ class TuringEmailApp.Models.Email extends Backbone.Model
     for part in parts
       if not foundText and part.mimeType.toLowerCase() == "text/plain" and part.body.size > 0
         emailParsed.text_part_encoded = part.body.data
+        emailParsed.text_part = base64_decode_urlsafe(emailParsed.text_part_encoded)
         foundText = true
 
       if not foundHTML and part.mimeType.toLowerCase() == "text/html" and part.body.size > 0
         emailParsed.html_part_encoded = part.body.data
+        emailParsed.html_part = base64_decode_urlsafe(emailParsed.html_part_encoded)
         foundHTML = true
 
       if not emailParsed.text_part_encoded? or not emailParsed.html_part_encoded?
