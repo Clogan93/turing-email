@@ -1,4 +1,6 @@
 class TuringEmailApp.Models.Email extends Backbone.Model
+  idAttribute: "uid"
+  
   @parseHeaders: (emailParsed, headers) ->
     headersMap =
       "message-id": "message_id"

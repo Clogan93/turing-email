@@ -72,8 +72,7 @@ module SpecMisc
   end
   
   def validate_email(email, email_rendered)
-    expected_attributes = %w(id
-                             auto_filed
+    expected_attributes = %w(auto_filed
                              uid draft_id message_id list_id
                              seen snippet date
                              from_name from_address

@@ -1,9 +1,5 @@
 object @email
 
-node(:id) do |email|
-  "id"
-end
-
 attributes :auto_filed
 attributes :uid, :draft_id, :message_id, :list_id
 attributes :seen, :snippet, :date
