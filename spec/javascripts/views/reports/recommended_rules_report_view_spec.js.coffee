@@ -52,13 +52,6 @@ describe "RecommendedRulesReportView", ->
       expect(@recommendedRulesReportView.$el.find(".rule_recommendation_link")).toHandle("click")
 
     describe "when the rules recommendation link is clicked", ->
-      beforeEach ->
-        @server = sinon.fakeServer.create()
-        @server.respondWith "POST", @sendDraftURL, JSON.stringify({})
-
-      afterEach ->
-        @server.restore()
-
       it "prevents the default link action", ->
         selector = ".rule_recommendation_link"
         $("body").append(@recommendedRulesReportView.$el)
@@ -84,7 +77,7 @@ describe "RecommendedRulesReportView", ->
       it "should post the email rule to the server", ->
         @recommendedRulesReportView.$el.find(".rule_recommendation_link").click()
         
-        expect(@server.requests.length).toEqual 1
-        request = @server.requests[0]
+        expect(@server.requests.length).toEqual 2
+        request = @server.requests[1]
         expect(request.method).toEqual "POST"
         expect(request.url).toEqual "/api/v1/email_rules"
