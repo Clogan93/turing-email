@@ -277,6 +277,15 @@ describe "EmailThread", ->
         @error = sinon.stub()
         @options = success: @success, error: @error
         @fetchStub = sinon.stub(@emailThread, "fetch")
+
+        @emailThread.set("emails", [uid: "message id"])
+        
+        draftInfo =
+          id: "draft id"
+          message:
+            id: "message id"
+        
+        @emailThread.set("draftInfo", draftInfo)
         
         @checkFetch = =>
           expect(@emailThread.loading).toBeTruthy()
@@ -288,6 +297,8 @@ describe "EmailThread", ->
           expect(@emailThread.loading).toBeFalsy()
           expect(@success).toHaveBeenCalled()
           expect(@error).not.toHaveBeenCalled()
+          
+          expect(@emailThread.get("emails")[0].draft_id).toEqual("draft id")
           
         @checkError = =>
           expect(@emailThread.get("loaded")).toBeFalsy()

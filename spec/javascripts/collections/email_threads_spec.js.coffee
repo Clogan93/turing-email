@@ -51,10 +51,15 @@ describe "EmailThreadsCollection", ->
         beforeEach ->
           @collection = {}
           @options = error: sinon.stub()
+          
+          @emailThreadsCollection.folderIDIs("INBOX")
           @emailThreadsCollection.sync("read", @collection, @options)
 
         it "does not call super", ->
           expect(@superStub).not.toHaveBeenCalled()
+
+        it "sets the folderID", ->
+          expect(@options.folderID).toEqual(@emailThreadsCollection.folderID)
 
         it "calls googleRequest", ->
           expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
@@ -81,7 +86,7 @@ describe "EmailThreadsCollection", ->
         @threadsListStub.restore()
 
       it "prepares and returns the Gmail API request", ->
-        @returned = @emailThreadsCollection.threadsListRequest()
+        @returned = @emailThreadsCollection.threadsListRequest({})
         
         expect(@threadsListStub).toHaveBeenCalledWith(@params)
         expect(@returned).toEqual(@ret)
@@ -91,7 +96,7 @@ describe "EmailThreadsCollection", ->
           @emailThreadsCollection.folderIDIs("test")
           @params["labelIds"] = @emailThreadsCollection.folderID
           
-          @returned = @emailThreadsCollection.threadsListRequest()
+          @returned = @emailThreadsCollection.threadsListRequest(folderID: "test")
         
         it "prepares and returns the Gmail API request", ->
           expect(@threadsListStub).toHaveBeenCalledWith(@params)
@@ -102,7 +107,7 @@ describe "EmailThreadsCollection", ->
           @emailThreadsCollection.pageTokens[0] = "token"
           @params["pageToken"] = @emailThreadsCollection.pageTokens[0]
           
-          @returned = @emailThreadsCollection.threadsListRequest()
+          @returned = @emailThreadsCollection.threadsListRequest({})
 
         it "prepares and returns the Gmail API request", ->
           expect(@threadsListStub).toHaveBeenCalledWith(@params)
@@ -120,15 +125,18 @@ describe "EmailThreadsCollection", ->
           
     describe "#processThreadsListRequest", ->
       beforeEach ->
-        @response = fixture.load("gmail_api/users.threads.list.fixture.json")[0]
         @options = {success: sinon.stub()}
         @loadThreadsStub = sinon.stub(@emailThreadsCollection, "loadThreads", ->)
+        @loadDraftsStub = sinon.stub(@emailThreadsCollection, "loadDrafts", ->)
         
       afterEach ->
+        @loadDraftsStub.restore()
         @loadThreadsStub.restore()
 
       describe "with threads", ->
         beforeEach ->
+          @response = fixture.load("gmail_api/users.threads.list.fixture.json")[0]
+          
           @emailThreadsCollection.processThreadsListRequest(@response, @options)
 
         it "updates the page tokens", ->
@@ -136,18 +144,42 @@ describe "EmailThreadsCollection", ->
 
         it "loads the threads", ->
           expect(@loadThreadsStub).toHaveBeenCalledWith(@response.result.threads, @options)
+
+        it "does NOT load the drafts", ->
+          expect(@loadDraftsStub).not.toHaveBeenCalled()
           
         it "does not call success", ->
           expect(@options.success).not.toHaveBeenCalled()
 
-      describe "without threads", ->
+      describe "with drafts", ->
         beforeEach ->
-          @response.result.threads = undefined
+          @response = fixture.load("gmail_api/users.drafts.list.fixture.json")[0]
+
+          @emailThreadsCollection.processThreadsListRequest(@response, @options)
+
+        it "updates the page tokens", ->
+          expect(@emailThreadsCollection.pageTokens).toEqual([null])
+
+        it "does NOT load the threads", ->
+          expect(@loadThreadsStub).not.toHaveBeenCalled()
+          
+        it "loads the drafts", ->
+          expect(@loadDraftsStub).toHaveBeenCalledWith(@response.result.drafts, @options)
+
+        it "does not call success", ->
+          expect(@options.success).not.toHaveBeenCalled()
+          
+      describe "without threads or drafts", ->
+        beforeEach ->
+          @response = result: {}
 
           @emailThreadsCollection.processThreadsListRequest(@response, @options)
           
         it "updates the page tokens", ->
-          expect(@emailThreadsCollection.pageTokens).toEqual([null, @response.result.nextPageToken])
+          expect(@emailThreadsCollection.pageTokens).toEqual([null])
+        
+        it "does NOT load the drafts", ->
+          expect(@loadDraftsStub).not.toHaveBeenCalled()
           
         it "does not load the threads", ->
           expect(@loadThreadsStub).not.toHaveBeenCalled()
@@ -166,6 +198,28 @@ describe "EmailThreadsCollection", ->
 
       afterEach ->
         @googleRequestStub.restore()
+
+      it "calls googleRequest", ->
+        expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
+        specCompareFunctions((=> @threadsGetBatch(threadsListInfo)), @googleRequestStub.args[0][1])
+        specCompareFunctions(((response) => @processThreadsGetBatch(response, options)), @googleRequestStub.args[0][2])
+        expect(@googleRequestStub.args[0][3]).toEqual(@error)
+
+    describe "#loadDrafts", ->
+      beforeEach ->
+        @googleRequestStub = sinon.stub(window, "googleRequest", ->)
+        draftsListResponse = fixture.load("gmail_api/users.drafts.list.fixture.json")[0]
+        @draftsListInfo = draftsListResponse.result.drafts
+
+        @error = sinon.stub()
+        @options = error: @error
+        @emailThreadsCollection.loadDrafts(@draftsListInfo, @options)
+
+      afterEach ->
+        @googleRequestStub.restore()
+        
+      it "saves the drafts list info", ->
+        expect(@options.draftsListInfo).toEqual(@draftsListInfo)
 
       it "calls googleRequest", ->
         expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)

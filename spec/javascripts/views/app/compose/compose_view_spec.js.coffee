@@ -674,41 +674,36 @@ describe "ComposeView", ->
 
       describe "when send draft is defined", ->
         beforeEach ->
-          @server = sinon.fakeServer.create()
-          @server.respondWith "POST", "/api/v1/email_accounts/send_draft", JSON.stringify({})
           @clock = sinon.useFakeTimers()
 
+          @sendDraftStub = sinon.stub(@email, "sendDraft", ->)
+          @changeDraftSpy = sinon.backbone.spy(@composeView, "change:draft")
+
         afterEach ->
+          @changeDraftSpy.restore()
+          @sendDraftStub.restore()
+          
           @clock.restore()
 
         it "should send the draft", ->
-          @spy = sinon.spy(@email, "sendDraft")
           @composeView.sendEmailDelayed @email
-          @server.respond()
-
           @clock.tick(5000)
 
-          expect(@spy).toHaveBeenCalled()
-          @spy.restore()
+          expect(@sendDraftStub).toHaveBeenCalled()
 
         it "triggers change:draft upon being done", ->
-          @spySendDraft = sinon.spy(@email, "sendDraft")
-          @spyChangeDraft = sinon.backbone.spy(@composeView, "change:draft")
           @composeView.sendEmailDelayed @email
-
           @clock.tick(5000)
           
-          expect(@spySendDraft).toHaveBeenCalled()
-          @server.respond()
-          expect(@spyChangeDraft).toHaveBeenCalled()
-          @spySendDraft.restore()
-          @spyChangeDraft()
-          @spyChangeDraft.restore()
+          expect(@sendDraftStub).toHaveBeenCalled()
+
+          @sendDraftStub.args[0][1]()
+          expect(@changeDraftSpy).toHaveBeenCalled()
 
       describe "when send draft is not defined", ->
         beforeEach ->
           @server = sinon.fakeServer.create()
-          @email.sendDraft = null
+          @email = new TuringEmailApp.Models.Email()
           @clock = sinon.useFakeTimers()
 
         afterEach ->

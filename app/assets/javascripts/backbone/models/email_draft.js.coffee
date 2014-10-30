@@ -8,6 +8,8 @@ class TuringEmailApp.Models.EmailDraft extends TuringEmailApp.Models.Email
     googleRequest(
       app
       => TuringEmailApp.Models.EmailDraft.sendDraftRequest(draftID)
+      success
+      error
     )
 
   sendDraft: (app, success, error) ->
