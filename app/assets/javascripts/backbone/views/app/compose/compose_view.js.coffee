@@ -216,12 +216,14 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     headerText += tDate.longFormDateString() + ", " + emailJSON.from_address + " wrote:"
     headerText += "\r\n\r\n"
 
+    headerText = headerText.replace(/\r\n/g, "<br />")
+
     [body, html] = @parseEmail(emailJSON)
 
-    if html
-      headerText = headerText.replace(/\r\n/g, "<br />")  
+    if html  
       $(body[0]).prepend(headerText)
     else
+      body = body.replace(/\r\n/g, "<br />")
       body = $($.parseHTML(headerText + body))
 
     return body
