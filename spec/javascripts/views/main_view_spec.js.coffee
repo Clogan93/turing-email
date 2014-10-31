@@ -23,7 +23,6 @@ describe "MainView", ->
     it "creates the toolbar", ->
       expect(@mainView.toolbarView).toBeDefined()
 
-
     it "creates the miniature toolbar", ->
       expect(@mainView.miniatureToolbarView).toBeDefined()
 

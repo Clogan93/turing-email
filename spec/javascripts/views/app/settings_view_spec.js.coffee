@@ -72,7 +72,6 @@ describe "SettingsView", ->
       
     it "renders the email genie switch", ->
       genieSwitch = $(".genie-switch")
-
       expect(@settingsDiv).toContain(genieSwitch)
       expect(genieSwitch.is(":checked")).toEqual(@userSettings.get("genie_enabled"))
 
@@ -147,7 +146,7 @@ describe "SettingsView", ->
       beforeEach ->
         window.confirm = ->
           return false
-        
+
       it "does NOT post the bankruptcy request to the server", ->
         spyOnEvent(".email-bankruptcy-button", "click")
         emailBankruptcyButton = @settingsDiv.find(".email-bankruptcy-button")
@@ -186,7 +185,6 @@ describe "SettingsView", ->
       @settingsView.$el.find(".genie-rules-button").click()
 
       genieSwitch = @settingsView.$el.find(".genie-switch")
-
       genieSwitch.click()
       expect(spy).toHaveBeenCalled()
       spy.restore()

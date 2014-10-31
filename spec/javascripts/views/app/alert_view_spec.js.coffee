@@ -5,7 +5,7 @@ describe "AlertView", ->
     @classtype = 'testClassType'
     @alertView = new TuringEmailApp.Views.App.AlertView(
       classType: @classtype
-      text: 'testText'
+      text: "testText"
     )
 
   afterEach ->
@@ -29,9 +29,12 @@ describe "AlertView", ->
       expect(@alertView.$el.find(".dismiss-alert-link")).toHandle("click")
 
     describe "when the dismiss alert link is clicked", ->
-
+      beforeEach ->
+        @removeAlertStub = sinon.stub(TuringEmailApp, "removeAlert")
+        
+      afterEach ->
+        @removeAlertStub.restore()
+      
       it "removes the alert view", ->
-        spy = sinon.spy(TuringEmailApp, "removeAlert")
         @alertView.$el.find(".dismiss-alert-link").click()
-        expect(spy).toHaveBeenCalled()
-        spy.restore()
+        expect(@removeAlertStub).toHaveBeenCalled()
