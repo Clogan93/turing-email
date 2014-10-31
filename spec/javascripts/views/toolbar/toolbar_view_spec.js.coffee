@@ -48,6 +48,18 @@ describe "ToolbarView", ->
         TuringEmailApp.collections.emailFolders = null
         expect(@toolbarView.render()).toEqual @toolbarView
 
+      it "renders the label as options in sorted order", ->
+        labelAsUnorderedListElements = @toolbarView.$el.find(".label-as .dropdown-menu li")
+        labelAsUnorderedListElements.each (index, labelAsUnorderedListElement) ->
+          if index is not 0 or index is not labelAsUnorderedListElements.length - 1
+            expect(labelAsUnorderedListElement.find("a").text() < labelAsUnorderedListElements[index - 1].find("a").text()).toBeTruthy()
+
+      it "renders the move to options in sorted order", ->
+        moveToUnorderedListElements = @toolbarView.$el.find(".move-to .dropdown-menu li")
+        moveToUnorderedListElements.each (index, moveToUnorderedListElement) ->
+          if index is not 0 or index is not moveToUnorderedListElements.length - 1
+            expect(moveToUnorderedListElement.find("a").text() < moveToUnorderedListElements[index - 1].find("a").text()).toBeTruthy()
+
     describe "#setupAllCheckbox", ->
 
       it "sets up the all checkbox", ->
