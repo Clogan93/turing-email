@@ -141,7 +141,13 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     if @get("loaded") and not force
       options.success?()
     else
-      return if @loading
+      if @loading
+        setTimeout(
+          => @load(options, force)
+          250
+        )
+        
+        return
 
       @loading = true
       @emailThreadUID = @get("uid")
