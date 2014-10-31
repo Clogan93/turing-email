@@ -69,8 +69,7 @@ class GmailAccount < ActiveRecord::Base
     email.snippet = gmail_data['snippet']
   end
 
-  def GmailAccount.get_userinfo(api_client = nil)
-    api_client = self.google_o_auth2_token.api_client() if api_client.nil?
+  def GmailAccount.get_userinfo(api_client)
     o_auth2_client = Google::OAuth2Client.new(api_client)
     userinfo_data = o_auth2_client.userinfo_get()
 
@@ -144,6 +143,7 @@ class GmailAccount < ActiveRecord::Base
   end
   
   def refresh_user_info(api_client = nil, do_save = true)
+    api_client = self.google_o_auth2_token.api_client() if api_client.nil?
     userinfo_data = GmailAccount.get_userinfo(api_client)
 
     self.google_id = userinfo_data['id']

@@ -5,8 +5,7 @@ describe 'authenticating Gmail', :type => :feature, :js => true do
   before { capybara_signin_user(user) }
   
   it 'should authenticate, change, and unlink the Gmail account' do
-    visit '/'
-    click_button('Login')
+    visit gmail_o_auth2_url(true)
 
     if has_field?('Email')
       fill_in('Email', :with => SpecMisc::GMAIL_TEST_EMAIL)
@@ -18,7 +17,7 @@ describe 'authenticating Gmail', :type => :feature, :js => true do
     click_button('Cancel')
     expect(page).to have_content(I18n.t('gmail.access_not_granted'))
 
-    click_button('Login')
+    visit gmail_o_auth2_url(true)
     sleep(2)
     click_button('Accept')
     expect(page).to have_content(I18n.t('gmail.authenticated'))
