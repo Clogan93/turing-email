@@ -12,7 +12,7 @@ class CreateGmailAccounts < ActiveRecord::Migration
       t.timestamps
     end
 
-    add_index :gmail_accounts, [:user_id, :google_id], :unique => true
+    add_index :gmail_accounts, :google_id, :unique => true
     add_index :gmail_accounts, [:user_id, :email], :unique => true
     add_index :gmail_accounts, :email
   end

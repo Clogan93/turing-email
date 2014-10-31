@@ -54,7 +54,7 @@ RSpec.configure do |config|
 
   config.before(:each, :link_gmail_account => true) do
     capybara_signin_user(user)
-    capybara_link_gmail(user)
+    capybara_link_gmail()
   end
 
   config.after(:each, :link_gmail_account => true) do

@@ -189,12 +189,25 @@ module SpecMisc
 
     expect(page).to have_link('Signout')
   end
-  
-  def capybara_link_gmail(user,
-                          gmail_email = SpecMisc::GMAIL_TEST_EMAIL,
+
+  def gmail_o_auth2_url(force = false)
+    o_auth2_base_client = Google::OAuth2Client.base_client($config.google_client_id, $config.google_secret)
+
+    o_auth2_base_client.redirect_uri = "#{$config.url}/gmail_oauth2_callback" 
+    o_auth2_base_client.scope = GmailAccount::SCOPES
+
+    options = {}
+    options[:access_type] = :offline
+    options[:approval_prompt] = force ? :force : :auto
+    options[:include_granted_scopes] = true
+
+    url = o_auth2_base_client.authorization_uri(options).to_s()
+    return url
+  end
+
+  def capybara_link_gmail(gmail_email = SpecMisc::GMAIL_TEST_EMAIL,
                           gmail_passowrd = SpecMisc::GMAIL_TEST_PASSWORD)
-    visit '/'
-    click_link 'Link Gmail Account'
+    visit gmail_o_auth2_url(true)
 
     if !has_field?('Email')
       sleep(2)

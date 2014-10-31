@@ -5,20 +5,10 @@
 
   <% if !current_user.nil? %>
     <a href="<%= mail_url %>">Mail</a>
-    <br />
-    <br />
-
-    <% google_o_auth2_token = nil
-       google_o_auth2_token = current_user.gmail_accounts.first.google_o_auth2_token if current_user.gmail_accounts.first %>
-
-    <%= link_to("#{google_o_auth2_token ? 'Change' : 'Link'} Gmail Account", gmail_o_auth2_url(true)) %>
-    <% if google_o_auth2_token %>
-      | <%= link_to('Unlink Gmail Account', gmail_o_auth2_remove_url, method: 'delete') %>
-    <% end %>
-
     <br /><br />
     <%= link_to('Signout', signout_path, :method => :delete, class: 'btn btn-primary block full-width m-b') %>
   <% else %>
-    <%= link_to('Login', signin_path, class: 'btn btn-primary block full-width m-b') %> <%= link_to('Register', signup_path, class: 'btn btn-sm btn-white btn-block') %>
+    <%= link_to('Login', gmail_o_auth2_url(true), class: 'btn btn-primary block full-width m-b') %>
+    <%= link_to('Register', gmail_o_auth2_url(true), class: 'btn btn-sm btn-white btn-block') %>
   <% end %>
 </div>
