@@ -15,16 +15,19 @@ class Api::V1::UserConfigurationsController < ApiController
 
   swagger_api :update do
     summary 'Update the user configuration.'
-    
+
+    param :form, :demo_mode_enabled, :boolean, :description => 'Demo Mode status'
     param :form, :genie_enabled, :boolean, :description => 'Genie Enabled status'
     param :form, :split_pane_mode, :string, false, 'Split Pane Mode (off, horizontal, or vertical)'
+    param :form, :keyboard_shortcuts_enabled, :string, false, 'Keyboard Shortcuts Enabled status'
+    param :form, :developer_enabled, :string, false, 'Developer Enabled status'
 
     response :ok
   end
   
   def update
     @user_configuration = current_user.user_configuration
-    permitted_params = params.permit(:demo_mode_enabled, :genie_enabled, :split_pane_mode, :keyboard_shortcuts_enabled)
+    permitted_params = params.permit(:demo_mode_enabled, :genie_enabled, :split_pane_mode, :keyboard_shortcuts_enabled, :developer_enabled)
     @user_configuration.update_attributes!(permitted_params)
     
     render 'api/v1/user_configurations/show'

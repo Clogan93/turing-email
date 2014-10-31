@@ -136,6 +136,16 @@ describe "SettingsView", ->
       expect(@settingsDiv.find(".split-pane-switch").parent().parent()).toHaveClass "has-switch"
 
   describe "#setupEmailBankruptcyButton", ->
+    it "renders the split pane switch", ->
+      splitPaneSwitch = $(".split_pane_switch")
+      expect(@settingsDiv).toContain(splitPaneSwitch)
+      expect(splitPaneSwitch.is(":checked")).toEqual(@userSettings.get("split_pane_mode") == "horizontal")
+
+    it "renders the developer switch", ->
+      developerSwitch = $(".developer_switch")
+      expect(@settingsDiv).toContain(developerSwitch)
+      expect(developerSwitch.is(":checked")).toEqual(@userSettings.get("developer_enabled"))
+
     describe "the user cancels the action", ->
       beforeEach ->
         window.confirm = ->
@@ -236,12 +246,14 @@ describe "SettingsView", ->
 
     describe "clicking on the uninstall app button", ->
       beforeEach ->
+        @triggerStub = sinon.stub(@settingsView, "trigger")
         @removeSpy = sinon.spy($.prototype, "remove")
         
       afterEach ->
         @removeSpy.restore()
+        @triggerStub.restore()
       
-      it "uninstalls the app and removes its element from the DOM", ->
+      it "triggers uninstallAppClicked and removes its element from the DOM", ->
         index = 0
         
         for uninstallButton in @settingsView.$el.find(".uninstall-app-button")
@@ -249,12 +261,9 @@ describe "SettingsView", ->
           @removeSpy.reset()
           
           uninstallButton.click()
-  
-          expect(@server.requests.length).toEqual 3 + index
-          request = @server.requests[2 + index]
-          expect(request.method).toEqual "DELETE"
-          expect(request.url).toEqual "/api/v1/apps/uninstall/" + uninstallButton.attr("data")
-  
+          appID = uninstallButton.attr("data")
+          
+          expect(@triggerStub).toHaveBeenCalledWith("uninstallAppClicked", @settingsView, appID)
           expect(@removeSpy).toHaveBeenCalled()
           
           index += 1

@@ -7,6 +7,7 @@ class CreateUserConfigurations < ActiveRecord::Migration
       t.boolean :keyboard_shortcuts_enabled, :default => true
       t.boolean :genie_enabled, :default => true
       t.text :split_pane_mode, :default => 'horizontal'
+      t.boolean :developer_enabled, :default => false
 
       t.timestamps
     end

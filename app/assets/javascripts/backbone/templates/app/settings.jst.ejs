@@ -29,7 +29,7 @@
               <h4 class="h4">Demo Mode</h4>
             </div>
             <div class="col-md-3 settings-switch">
-              <input type="checkbox" class="demo_mode_switch" <%= userSettings.demo_mode_enabled == true ? "checked" : "" %>>
+              <input type="checkbox" class="demo_mode_switch" <%= userSettings.demo_mode_enabled ? "checked" : "" %>>
             </div>
           </div>
 
@@ -40,7 +40,7 @@
               <h4 class="h4">Keyboard Shortcuts</h4>
             </div>
             <div class="col-md-3 settings-switch">
-              <input type="checkbox" class="keyboard_shortcuts_switch" <%= userSettings.keyboard_shortcuts_enabled == true ? "checked" : "" %>>
+              <input type="checkbox" class="keyboard_shortcuts_switch" <%= userSettings.keyboard_shortcuts_enabled ? "checked" : "" %>>
             </div>
           </div>
 
@@ -51,7 +51,7 @@
               <h4 class="h4">Email Genie</h4>
             </div>
             <div class="col-md-3 settings-switch">
-              <input type="checkbox" class="genie-switch" <%= userSettings.genie_enabled == true ? "checked" : "" %>>
+              <input type="checkbox" class="genie-switch" <%= userSettings.genie_enabled ? "checked" : "" %>>
             </div>
           </div>
 
@@ -66,6 +66,16 @@
             </div>
           </div>
 
+          <br />
+
+          <div class="row">
+            <div class="col-md-3">
+              <h4 class="h4">Developer</h4>
+            </div>
+            <div class="col-md-3 settings-switch">
+              <input type="checkbox" class="developer_switch" <%= userSettings.developer_enabled ? "checked" : "" %>>
+            </div>
+          </div>
         </div>
 
         <div id="tab-2" class="tab-pane settings-rules-pane">

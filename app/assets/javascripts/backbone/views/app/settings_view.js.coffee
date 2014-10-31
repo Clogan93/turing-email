@@ -14,6 +14,8 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     @listenTo(@model, "destroy", @remove)
 
   render: ->
+    selectedTabID = $(".tab-pane.active").attr("id")
+    
     @$el.html(@template({'userSettings' : @model.toJSON(), 'emailRules' : @emailRules.toJSON(), 'brainRules' : @brainRules.toJSON()}))
 
     @setupEmailBankruptcyButton()
@@ -21,6 +23,8 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     @setupSwitches()
     @setupRuleCreation()
     @setupRuleDeletion()
+
+    $("a[href=#" + selectedTabID + "]").click() if selectedTabID?
 
     return this
 
@@ -42,25 +46,31 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     @$el.find(".keyboard_shortcuts_switch").bootstrapSwitch()
     @$el.find(".genie-switch").bootstrapSwitch()
     @$el.find(".split-pane-switch").bootstrapSwitch()
+    @$el.find(".developer_switch").bootstrapSwitch()
 
-    @$el.find(".demo_mode_switch, .keyboard_shortcuts_switch, .genie-switch, .split-pane-switch").on "switch-change", (event, state) =>
+    @$el.find(".demo_mode_switch, .keyboard_shortcuts_switch, .genie-switch, .split-pane-switch, .developer_switch").on "switch-change", (event, state) =>
       @saveSettings()
 
   setupUninstallAppButtons: ->
-    @$el.find(".uninstall-app-button").click (event) ->
-      $.ajax
-        url: "/api/v1/apps/uninstall/" + $(@).attr("data")
-        type: "DELETE"
+    @$el.find(".uninstall-app-button").click (event) =>
+      appID = $(event.currentTarget).attr("data")
+      @trigger("uninstallAppClicked", this, appID)
 
-      $(@).parent().parent().remove()
+      $(event.currentTarget).parent().parent().remove()
       
   saveSettings: ->
     demo_mode_enabled = @$el.find(".demo_mode_switch").parent().parent().hasClass("switch-on")
     keyboard_shortcuts_enabled = @$el.find(".keyboard_shortcuts_switch").parent().parent().hasClass("switch-on")
     genie_enabled = @$el.find(".genie-switch").parent().parent().hasClass("switch-on")
     split_pane_mode = if @$el.find(".split-pane-switch").parent().parent().hasClass("switch-on") then "horizontal" else "off"
+    developer_enabled = @$el.find(".developer_switch").parent().parent().hasClass("switch-on")
 
-    @model.set(demo_mode_enabled: demo_mode_enabled, genie_enabled: genie_enabled, split_pane_mode: split_pane_mode, keyboard_shortcuts_enabled: keyboard_shortcuts_enabled)
+    @model.set({
+      demo_mode_enabled: demo_mode_enabled,
+      genie_enabled: genie_enabled,
+      split_pane_mode: split_pane_mode,
+      keyboard_shortcuts_enabled: keyboard_shortcuts_enabled,
+      developer_enabled: developer_enabled})
 
     @model.save(null, {
       patch: true

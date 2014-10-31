@@ -3,7 +3,7 @@ describe "AppsLibrary", ->
     specStartTuringEmailApp()
 
     @apps = new TuringEmailApp.Collections.AppsCollection(FactoryGirl.createLists("App", FactoryGirl.SMALL_LIST_SIZE))
-    @appsLibraryView = new TuringEmailApp.Views.AppsLibrary.AppsLibraryView(collection: @apps)
+    @appsLibraryView = new TuringEmailApp.Views.AppsLibrary.AppsLibraryView(collection: @apps, developer_enabled: true)
 
   afterEach ->
     specStopTuringEmailApp()
@@ -72,7 +72,22 @@ describe "AppsLibrary", ->
       
     it "calls setupButtons", ->
       expect(@setupButtonsStub).toHaveBeenCalled()
-  
+      
+    describe "developer_enabled=true", ->
+      beforeEach ->
+        @appsLibraryView.render()
+        
+      it "renders the create button", ->
+        expect(@appsLibraryView.$el.find(".create_app_button").length).toEqual(1)
+      
+    describe "developer_enabled=false", ->
+      beforeEach ->
+        @appsLibraryView.developer_enabled = false
+        @appsLibraryView.render()
+
+      it "does NOT render the create button", ->
+        expect(@appsLibraryView.$el.find(".create_app_button").length).toEqual(0)
+        
   describe "after render", ->
     beforeEach ->
       @appsLibraryView.render()
@@ -126,7 +141,6 @@ describe "AppsLibrary", ->
 
       describe "#onInstallAppButtonClick", ->
         beforeEach ->
-          @server = sinon.fakeServer.create()
           @clock = sinon.useFakeTimers()
         
           @event =
@@ -135,23 +149,19 @@ describe "AppsLibrary", ->
           @alertToken = {}
           @showAlertStub = sinon.stub(TuringEmailApp, "showAlert", => @alertToken)
           @removeAlertStub = sinon.stub(TuringEmailApp, "removeAlert")
+          @triggerStub = sinon.stub(@appsLibraryView, "trigger")
 
           @appsLibraryView.onInstallAppButtonClick(@event)
 
         afterEach ->
           @clock.restore()
-          @server.restore()
 
           @removeAlertStub.restore()
           @showAlertStub.restore()
-          
-        it "posts the install request", ->
-          expect(@server.requests.length).toEqual 1
+          @triggerStub.restore()
 
-          request = @server.requests[0]
-          expect(request.method).toEqual("POST")
-          expect(request.url).toEqual("/api/v1/apps/install/" + @apps.at(0).get("uid"))
-          expect(request.requestBody).toEqual(null)
+        it "triggers installAppClicked", ->
+          expect(@triggerStub).toHaveBeenCalledWith("installAppClicked", @appsLibraryView, @apps.at(0).get("uid"))
           
         it "shows the alert", ->
           expect(@showAlertStub).toHaveBeenCalledWith("You have installed the app!", "alert-success")
