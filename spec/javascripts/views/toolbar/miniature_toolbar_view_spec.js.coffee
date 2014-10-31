@@ -14,11 +14,15 @@ describe "MiniatureToolbarView", ->
       @miniatureToolbarView.render()
 
     describe "#render", ->
-
+      beforeEach ->
+        @setupSettingsButtonStub = sinon.stub(@miniatureToolbarView, "setupSettingsButton")
+        
+      afterEach ->
+        @setupSettingsButtonStub.restore()
+      
       it "renders as a DIV", ->
         expect(@miniatureToolbarView.el.nodeName).toEqual "DIV"
 
       it "sets up the settings button", ->
-        spy = sinon.spy(@miniatureToolbarView, "setupSettingsButton")
         @miniatureToolbarView.render()
-        expect(spy).toHaveBeenCalled()
+        expect(@setupSettingsButtonStub).toHaveBeenCalled()
