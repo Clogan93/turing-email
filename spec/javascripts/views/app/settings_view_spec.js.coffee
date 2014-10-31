@@ -85,6 +85,7 @@ describe "SettingsView", ->
       expect(@settingsDiv).toContain(developerSwitch)
       expect(developerSwitch.is(":checked")).toEqual(@userSettings.get("developer_enabled"))
 
+  describe "email bankruptcy button", ->
     it "renders the email rules table", ->
       emailRulesTable = $(".email-rules-table")
       expect(@settingsDiv).toContain(emailRulesTable)
