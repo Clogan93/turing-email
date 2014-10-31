@@ -55,6 +55,16 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
         => @trashRequest(emailThreadUID)
       )
 
+  @deleteDraftRequest: (draftID) ->
+    gapi.client.gmail.users.drafts.delete(userId: "me", id: draftID)
+
+  @deleteDraft: (app, draftIDs) ->
+    for draftID in draftIDs
+      googleRequest(
+        app
+        => @deleteDraftRequest(draftID)
+      )
+
   @applyGmailLabelRequest: (emailThreadUID, labelID) ->
     gapi.client.gmail.users.threads.modify({userId: "me", id: emailThreadUID}, {addLabelIds: [labelID]})
     
@@ -239,6 +249,9 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
   
   trash: ->
     TuringEmailApp.Models.EmailThread.trash(@app, [@get("uid")])
+    
+  deleteDraft: ->
+    TuringEmailApp.Models.EmailThread.deleteDraft(@app, [@get("draft_id")])
 
   applyGmailLabel: (labelID, labelName) ->
     TuringEmailApp.Models.EmailThread.applyGmailLabel(@app, [@get("uid")], labelID, labelName,

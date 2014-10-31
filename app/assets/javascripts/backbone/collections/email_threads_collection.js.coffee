@@ -132,17 +132,27 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
     return batch
 
   processMessagesGetBatch: (response, threadsInfo, options) ->
-    threads = _.map(threadsInfo, (threadInfo) =>
-      return null if reason?
+    threads = []
 
+    for threadInfo in threadsInfo
+      if options.folderID != "TRASH"
+        inTrash = true
+  
+        for message in threadInfo.messages
+          if not message.labelIds? || message.labelIds.indexOf("TRASH") == -1
+            inTrash = false
+            break
+        
+        continue if inTrash
+          
       lastMessage =_.last(threadInfo.messages)
       lastMessageResponse = response.result[lastMessage.id]
 
       if lastMessageResponse.status == 200
-        return @threadFromMessageInfo(threadInfo, lastMessageResponse.result)
+        threads.push(@threadFromMessageInfo(threadInfo, lastMessageResponse.result))
       else
         reason = lastMessageResponse.result
-    )
+        break
 
     if reason?
       options.error(reason)
