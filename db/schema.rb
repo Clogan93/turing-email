@@ -317,6 +317,7 @@ ActiveRecord::Schema.define(version: 20141026223435) do
     t.boolean  "keyboard_shortcuts_enabled", default: true
     t.boolean  "genie_enabled",              default: true
     t.text     "split_pane_mode",            default: "horizontal"
+    t.boolean  "developer_enabled",          default: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end

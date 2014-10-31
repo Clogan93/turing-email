@@ -164,7 +164,10 @@ class TuringEmailApp.Views.Main extends Backbone.View
 
     apps = new TuringEmailApp.Collections.AppsCollection()
     apps.fetch()
-    appsLibraryView = new TuringEmailApp.Views.AppsLibrary.AppsLibraryView(collection: apps)
+    appsLibraryView = new TuringEmailApp.Views.AppsLibrary.AppsLibraryView({
+      collection: apps,
+      developer_enabled: @app.models.userSettings.get("developer_enabled")
+    })
     appsLibraryView.render()
     
     @primaryPaneDiv.html("")

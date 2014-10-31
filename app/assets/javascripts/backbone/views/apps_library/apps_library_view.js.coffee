@@ -8,9 +8,11 @@ class TuringEmailApp.Views.AppsLibrary.AppsLibraryView extends Backbone.View
     @listenTo(@collection, "remove", => @render())
     @listenTo(@collection, "reset", => @render())
     @listenTo(@collection, "destroy", => @render())
+    
+    @developer_enabled = options.developer_enabled
 
   render: ->
-    @$el.html(@template(apps: @collection.toJSON()))
+    @$el.html(@template(developer_enabled: @developer_enabled, apps: @collection.toJSON()))
 
     @setupButtons()
     

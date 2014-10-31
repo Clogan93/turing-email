@@ -71,14 +71,19 @@ describe "SettingsView", ->
       expect(keyboardShortcutsSwitch.is(":checked")).toEqual(@userSettings.get("keyboard_shortcuts_enabled"))
       
     it "renders the email genie switch", ->
-      genieSwitch = $("#genie_switch")
+      genieSwitch = $(".genie_switch")
       expect(@settingsDiv).toContain(genieSwitch)
       expect(genieSwitch.is(":checked")).toEqual(@userSettings.get("genie_enabled"))
 
     it "renders the split pane switch", ->
-      splitPaneSwitch = $("#split_pane_switch")
+      splitPaneSwitch = $(".split_pane_switch")
       expect(@settingsDiv).toContain(splitPaneSwitch)
       expect(splitPaneSwitch.is(":checked")).toEqual(@userSettings.get("split_pane_mode") == "horizontal")
+
+    it "renders the developer switch", ->
+      developerSwitch = $(".developer_switch")
+      expect(@settingsDiv).toContain(developerSwitch)
+      expect(developerSwitch.is(":checked")).toEqual(@userSettings.get("developer_enabled"))
 
   describe "email bankruptcy button", ->
     describe "the user cancels the action", ->
@@ -123,7 +128,7 @@ describe "SettingsView", ->
       spy = sinon.spy(@settingsView, "saveSettings")
       @settingsView.$el.find(".genie-rules-button").click()
 
-      genieSwitch = @settingsView.$el.find("#genie_switch")
+      genieSwitch = @settingsView.$el.find(".genie_switch")
       genieSwitch.click()
       expect(spy).toHaveBeenCalled()
       spy.restore()
@@ -132,7 +137,7 @@ describe "SettingsView", ->
       it "patches the server", ->
         @settingsView.$el.find(".genie-rules-button").click()
 
-        genieSwitch = @settingsView.$el.find("#genie_switch")
+        genieSwitch = @settingsView.$el.find(".genie_switch")
         genieSwitch.click()
         
         expect(@server.requests.length).toEqual 3
@@ -146,7 +151,7 @@ describe "SettingsView", ->
         expect(@userSettings.get("genie_enabled")).toEqual(true)
         expect(@userSettings.get("split_pane_mode")).toEqual("horizontal")
 
-        splitPaneSwitch = $("#split_pane_switch")
+        splitPaneSwitch = $(".split_pane_switch")
         splitPaneSwitch.click()
 
         expect(@userSettings.get("genie_enabled")).toEqual(true)

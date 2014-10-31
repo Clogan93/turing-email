@@ -3,7 +3,7 @@ describe "AppsLibrary", ->
     specStartTuringEmailApp()
 
     @apps = new TuringEmailApp.Collections.AppsCollection(FactoryGirl.createLists("App", FactoryGirl.SMALL_LIST_SIZE))
-    @appsLibraryView = new TuringEmailApp.Views.AppsLibrary.AppsLibraryView(collection: @apps)
+    @appsLibraryView = new TuringEmailApp.Views.AppsLibrary.AppsLibraryView(collection: @apps, developer_enabled: true)
 
   afterEach ->
     specStopTuringEmailApp()
@@ -72,7 +72,22 @@ describe "AppsLibrary", ->
       
     it "calls setupButtons", ->
       expect(@setupButtonsStub).toHaveBeenCalled()
-  
+      
+    describe "developer_enabled=true", ->
+      beforeEach ->
+        @appsLibraryView.render()
+        
+      it "renders the create button", ->
+        expect(@appsLibraryView.$el.find(".create_app_button").length).toEqual(1)
+      
+    describe "developer_enabled=false", ->
+      beforeEach ->
+        @appsLibraryView.developer_enabled = false
+        @appsLibraryView.render()
+
+      it "does NOT render the create button", ->
+        expect(@appsLibraryView.$el.find(".create_app_button").length).toEqual(0)
+        
   describe "after render", ->
     beforeEach ->
       @appsLibraryView.render()

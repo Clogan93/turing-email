@@ -40,10 +40,11 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
   setupSwitches: ->
     @$el.find(".demo_mode_switch").bootstrapSwitch()
     @$el.find(".keyboard_shortcuts_switch").bootstrapSwitch()
-    @$el.find("#genie_switch").bootstrapSwitch()
-    @$el.find("#split_pane_switch").bootstrapSwitch()
+    @$el.find(".genie_switch").bootstrapSwitch()
+    @$el.find(".split_pane_switch").bootstrapSwitch()
+    @$el.find(".developer_switch").bootstrapSwitch()
 
-    @$el.find(".demo_mode_switch, .keyboard_shortcuts_switch, #genie_switch, #split_pane_switch").on "switch-change", (event, state) =>
+    @$el.find(".demo_mode_switch, .keyboard_shortcuts_switch, .genie_switch, .split_pane_switch, .developer_switch").on "switch-change", (event, state) =>
       @saveSettings()
 
   setupUninstallAppButtons: ->
@@ -57,10 +58,16 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
   saveSettings: ->
     demo_mode_enabled = @$el.find(".demo_mode_switch").parent().parent().hasClass("switch-on")
     keyboard_shortcuts_enabled = @$el.find(".keyboard_shortcuts_switch").parent().parent().hasClass("switch-on")
-    genie_enabled = @$el.find("#genie_switch").parent().parent().hasClass("switch-on")
-    split_pane_mode = if @$el.find("#split_pane_switch").parent().parent().hasClass("switch-on") then "horizontal" else "off"
+    genie_enabled = @$el.find(".genie_switch").parent().parent().hasClass("switch-on")
+    split_pane_mode = if @$el.find(".split_pane_switch").parent().parent().hasClass("switch-on") then "horizontal" else "off"
+    developer_enabled = @$el.find(".developer_switch").parent().parent().hasClass("switch-on")
 
-    @model.set(demo_mode_enabled: demo_mode_enabled, genie_enabled: genie_enabled, split_pane_mode: split_pane_mode, keyboard_shortcuts_enabled: keyboard_shortcuts_enabled)
+    @model.set({
+      demo_mode_enabled: demo_mode_enabled,
+      genie_enabled: genie_enabled,
+      split_pane_mode: split_pane_mode,
+      keyboard_shortcuts_enabled: keyboard_shortcuts_enabled,
+      developer_enabled: developer_enabled})
 
     @model.save(null, {
       patch: true
