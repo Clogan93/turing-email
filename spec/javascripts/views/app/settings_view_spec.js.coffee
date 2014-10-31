@@ -80,6 +80,11 @@ describe "SettingsView", ->
       expect(@settingsDiv).toContain(splitPaneSwitch)
       expect(splitPaneSwitch.is(":checked")).toEqual(@userSettings.get("split_pane_mode") == "horizontal")
 
+    it "renders the developer switch", ->
+      developerSwitch = $(".developer_switch")
+      expect(@settingsDiv).toContain(developerSwitch)
+      expect(developerSwitch.is(":checked")).toEqual(@userSettings.get("developer_enabled"))
+
     it "renders the email rules table", ->
       emailRulesTable = $(".email-rules-table")
       expect(@settingsDiv).toContain(emailRulesTable)
@@ -136,21 +141,11 @@ describe "SettingsView", ->
       expect(@settingsDiv.find(".split-pane-switch").parent().parent()).toHaveClass "has-switch"
 
   describe "#setupEmailBankruptcyButton", ->
-    it "renders the split pane switch", ->
-      splitPaneSwitch = $(".split_pane_switch")
-      expect(@settingsDiv).toContain(splitPaneSwitch)
-      expect(splitPaneSwitch.is(":checked")).toEqual(@userSettings.get("split_pane_mode") == "horizontal")
-
-    it "renders the developer switch", ->
-      developerSwitch = $(".developer_switch")
-      expect(@settingsDiv).toContain(developerSwitch)
-      expect(developerSwitch.is(":checked")).toEqual(@userSettings.get("developer_enabled"))
-
     describe "the user cancels the action", ->
       beforeEach ->
         window.confirm = ->
           return false
-        
+
       it "does NOT post the bankruptcy request to the server", ->
         spyOnEvent(".email-bankruptcy-button", "click")
         emailBankruptcyButton = @settingsDiv.find(".email-bankruptcy-button")
