@@ -18,10 +18,16 @@
         if(email.draft_id == null) {
           %>
           <div class="email<%= (emails.length > 1 && index < emails.length - 1) && email.seen ? " collapsed-email" : "" %>">
+
             <div class="email-information">
               <span class="email-from">
                 <%= email.fromPreview %>
               </span>
+              <% if(email.from_name != null) { %>
+              <span class="email-from-address">
+                &lt;<%= email.from_address %>&gt;
+              </span>
+              <% } %>
               <span class="email-date">
                 <%= email.datePreview %>
               </span>
