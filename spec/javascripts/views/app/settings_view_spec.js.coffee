@@ -39,7 +39,7 @@ describe "SettingsView", ->
     specStopTuringEmailApp()
 
   it "has the right template", ->
-    expect(@settingsView.template).toEqual JST["backbone/templates/settings"]
+    expect(@settingsView.template).toEqual JST["backbone/templates/app/settings"]
 
   describe "#render", ->
     it "renders the settings view", ->
@@ -71,12 +71,13 @@ describe "SettingsView", ->
       expect(keyboardShortcutsSwitch.is(":checked")).toEqual(@userSettings.get("keyboard_shortcuts_enabled"))
       
     it "renders the email genie switch", ->
-      genieSwitch = $(".genie_switch")
+      genieSwitch = $(".genie-switch")
+
       expect(@settingsDiv).toContain(genieSwitch)
       expect(genieSwitch.is(":checked")).toEqual(@userSettings.get("genie_enabled"))
 
     it "renders the split pane switch", ->
-      splitPaneSwitch = $(".split_pane_switch")
+      splitPaneSwitch = $(".split-pane-switch")
       expect(@settingsDiv).toContain(splitPaneSwitch)
       expect(splitPaneSwitch.is(":checked")).toEqual(@userSettings.get("split_pane_mode") == "horizontal")
 
@@ -86,6 +87,62 @@ describe "SettingsView", ->
       expect(developerSwitch.is(":checked")).toEqual(@userSettings.get("developer_enabled"))
 
   describe "email bankruptcy button", ->
+    it "renders the email rules table", ->
+      emailRulesTable = $(".email-rules-table")
+      expect(@settingsDiv).toContain(emailRulesTable)
+
+    it "renders the email rules", ->
+      emailRule = TuringEmailApp.collections.emailRules.models[0]
+      expect(@settingsDiv.find(".email-rule")).toContainHtml('<td>' + emailRule.get("from_address") + '</td>')
+      expect(@settingsDiv.find(".email-rule")).toContainHtml('<td>' + emailRule.get("to_address") + '</td>')
+      expect(@settingsDiv.find(".email-rule")).toContainHtml('<td>' + emailRule.get("subject") + '</td>')
+      expect(@settingsDiv.find(".email-rule")).toContainHtml('<td>' + emailRule.get("list_id") + '</td>')
+      expect(@settingsDiv.find(".email-rule")).toContainHtml('<td>' + emailRule.get("destination_folder_name") + '</td>')
+
+    it "renders the brain rules table", ->
+      brainRulesTable = $(".brain-rules-table")
+      expect(@settingsDiv).toContain(brainRulesTable)
+
+    it "renders the brain rules", ->
+      brainRule = TuringEmailApp.collections.brainRules.models[0]
+      from_address = if brainRule.get("from_address")? then brainRule.get("from_address") else ""
+      to_address = if brainRule.get("to_address")? then brainRule.get("to_address") else ""
+      subject = if brainRule.get("subject")? then brainRule.get("subject") else ""
+      list_id = if brainRule.get("list_id")? then brainRule.get("list_id") else ""
+      expect(@settingsDiv.find(".brain-rule").first()).toContainHtml('<td>' + from_address + '</td>')
+      expect(@settingsDiv.find(".brain-rule").first()).toContainHtml('<td>' + to_address + '</td>')
+      expect(@settingsDiv.find(".brain-rule").first()).toContainHtml('<td>' + subject + '</td>')
+      expect(@settingsDiv.find(".brain-rule").first()).toContainHtml('<td>' + list_id + '</td>')
+
+    it "renders the installed apps table", ->
+      installedAppsTable = $(".installed-apps-table")
+      expect(@settingsDiv).toContain(installedAppsTable)
+
+    it "renders the installed apps information", ->
+      installedAppsTable = $(".installed-apps-table")
+      for installedApp, index in @userSettings.toJSON().installed_apps
+        expect(@settingsDiv.find(".installed-app")[index]).toContainHtml('<td>' + installedApp.app.name + '</td>')
+        expect(@settingsDiv.find(".installed-app")[index]).toContainHtml('<td>' + installedApp.app.description + '</td>')
+
+  describe "#setupSwitches", ->
+
+    it "sets up the demo mode switch", ->
+      @settingsView.setupSwitches()
+      expect(@settingsDiv.find(".demo_mode_switch").parent().parent()).toHaveClass "has-switch"
+
+    it "sets up the keyboard shortcuts switch", ->
+      @settingsView.setupSwitches()
+      expect(@settingsDiv.find(".keyboard_shortcuts_switch").parent().parent()).toHaveClass "has-switch"
+
+      @settingsView.setupSwitches()
+    it "sets up the genie switch", ->
+      expect(@settingsDiv.find(".genie-switch").parent().parent()).toHaveClass "has-switch"
+
+    it "sets up the split pane switch", ->
+      @settingsView.setupSwitches()
+      expect(@settingsDiv.find(".split-pane-switch").parent().parent()).toHaveClass "has-switch"
+
+  describe "#setupEmailBankruptcyButton", ->
     describe "the user cancels the action", ->
       beforeEach ->
         window.confirm = ->
@@ -128,7 +185,8 @@ describe "SettingsView", ->
       spy = sinon.spy(@settingsView, "saveSettings")
       @settingsView.$el.find(".genie-rules-button").click()
 
-      genieSwitch = @settingsView.$el.find(".genie_switch")
+      genieSwitch = @settingsView.$el.find(".genie-switch")
+
       genieSwitch.click()
       expect(spy).toHaveBeenCalled()
       spy.restore()
@@ -137,7 +195,7 @@ describe "SettingsView", ->
       it "patches the server", ->
         @settingsView.$el.find(".genie-rules-button").click()
 
-        genieSwitch = @settingsView.$el.find(".genie_switch")
+        genieSwitch = @settingsView.$el.find(".genie-switch")
         genieSwitch.click()
         
         expect(@server.requests.length).toEqual 3
@@ -151,7 +209,7 @@ describe "SettingsView", ->
         expect(@userSettings.get("genie_enabled")).toEqual(true)
         expect(@userSettings.get("split_pane_mode")).toEqual("horizontal")
 
-        splitPaneSwitch = $(".split_pane_switch")
+        splitPaneSwitch = $(".split-pane-switch")
         splitPaneSwitch.click()
 
         expect(@userSettings.get("genie_enabled")).toEqual(true)

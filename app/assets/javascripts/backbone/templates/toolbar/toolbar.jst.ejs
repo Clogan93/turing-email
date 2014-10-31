@@ -24,11 +24,11 @@ function outputFolderDropdown(emailFolders, uniqueID, className) {
         <input type="checkbox" class="i-checks">
         <span class="caret"></span>
       </button>
-      <ul class="dropdown-menu" role="menu" aria-labelledby="labelAsDropdownMenu">
-        <li role="presentation"><a role="menuitem" tabindex="-1" id="all_bulk_action">All</a></li>
-        <li role="presentation"><a role="menuitem" tabindex="-1" id="none_bulk_action">None</a></li>
-        <li role="presentation"><a role="menuitem" tabindex="-1" id="read_bulk_action">Read</a></li>
-        <li role="presentation"><a role="menuitem" tabindex="-1" id="unread_bulk_action">Unread</a></li>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="label-as-dropdown-menu">
+        <li role="presentation"><a role="menuitem" tabindex="-1" class="all-bulk-action">All</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" class="none-bulk-action">None</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" class="read-bulk-action">Read</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" class="unread-bulk-action">Unread</a></li>
       </ul>
     </div>
     <span class="refresh-button-placement"></span>
@@ -36,8 +36,8 @@ function outputFolderDropdown(emailFolders, uniqueID, className) {
     <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Move to trash"><i class="fa fa-trash-o"></i></button>
 
     <span class="dropdown label-as">
-      <button type="button" class="btn btn-white btn-sm dropdown-toggle tooltip-button" data-toggle="dropdown" id="labelAsDropdownMenu" title="Label as"><i class="fa fa-tags"></i></button>
-      <ul class="dropdown-menu" role="menu" aria-labelledby="labelAsDropdownMenu">
+      <button type="button" class="btn btn-white btn-sm dropdown-toggle tooltip-button label-as-dropdown-menu" data-toggle="dropdown" title="Label as"><i class="fa fa-tags"></i></button>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="label-as-dropdown-menu">
         <li role="presentation"><a role="menuitem" tabindex="-1" href="#" class="createNewLabel">Create new</a></li>
         <li role="presentation" class="divider"></li>
         <% outputFolderDropdown(emailFolders, "labelAsLink", "label_as_link"); %>
@@ -46,9 +46,9 @@ function outputFolderDropdown(emailFolders, uniqueID, className) {
 
     <span class="dropdown">
 
-      <button type="button" class="btn btn-white btn-sm dropdown-toggle tooltip-button" data-toggle="dropdown" id="moveToFolderDropdownMenu" title="Move to"><i class="fa fa-folder"></i></button>
+      <button type="button" class="btn btn-white btn-sm dropdown-toggle tooltip-button move-to-folder-dropdown-menu" data-toggle="dropdown" title="Move to"><i class="fa fa-folder"></i></button>
 
-      <ul class="dropdown-menu" role="menu" aria-labelledby="moveToFolderDropdownMenu">
+      <ul class="dropdown-menu" role="menu" aria-labelledby="move-to-folder-dropdown-menu">
         <li role="presentation"><a role="menuitem" tabindex="-1" href="#" class="createNewEmailFolder">Create new</a></li>
         <li role="presentation" class="divider"></li>
         <% outputFolderDropdown(emailFolders, "moveToFolderLink", "move_to_folder_link"); %>
@@ -64,9 +64,9 @@ function outputFolderDropdown(emailFolders, uniqueID, className) {
 
     <span class="dropdown">
 
-      <button type="button" class="btn btn-white btn-sm dropdown-toggle tooltip-button" data-toggle="dropdown" id="moreDropdownMenu" data-placement="top" data-original-title="More">More <span class="caret"></span></button>
+      <button type="button" class="btn btn-white btn-sm dropdown-toggle tooltip-button more-dropdown-menu-target" data-toggle="dropdown" data-placement="top" data-original-title="More">More <span class="caret"></span></button>
 
-      <ul class="dropdown-menu more-dropdown-menu" role="menu" aria-labelledby="moreDropdownMenu">
+      <ul class="dropdown-menu more-dropdown-menu" role="menu" aria-labelledby="more-dropdown-menu-target">
         <li role="presentation"><a role="menuitem" tabindex="-1" class="dropdown-link mark_as_read">Mark as read</a></li>
         <li role="presentation"><a role="menuitem" tabindex="-1" class="dropdown-link mark_as_unread">Mark as unread</a></li>
         <li role="presentation"><a role="menuitem" href="#apps" tabindex="-1" class="dropdown-link apps_link">Apps</a></li>
@@ -75,10 +75,10 @@ function outputFolderDropdown(emailFolders, uniqueID, className) {
 
     <span class="btn-group pull-right pagination-buttons">
       <div class="current-emails-displayed-counter">
-        <span><span id="start_number">0</span>-<span id="end_number">0</span></span> of <span id="total_emails_number">0</span>
+        <span><span class="start-number">0</span>-<span class="end-number">0</span></span> of <span class="total-emails-number">0</span>
       </div>
-      <button id="paginate-left-link" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Left"><i class="fa fa-arrow-left"></i></button>
-      <button id="paginate-right-link" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Right"><i class="fa fa-arrow-right"></i></button>
+      <button class="btn btn-white btn-sm paginate-left-link" data-toggle="tooltip" data-placement="top" title="Left"><i class="fa fa-arrow-left"></i></button>
+      <button class="btn btn-white btn-sm paginate-right-link" data-toggle="tooltip" data-placement="top" title="Right"><i class="fa fa-arrow-right"></i></button>
     </span>
 
   </div>

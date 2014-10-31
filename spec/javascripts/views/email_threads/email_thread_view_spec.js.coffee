@@ -156,7 +156,7 @@ describe "EmailThreadView", ->
 
     describe "#setupButtons", ->  
       it "should handle clicks", ->
-        expect(@emailThreadView.$el.find('#email_back_button')).toHandle("click")
+        expect(@emailThreadView.$el.find('.email-back-button')).toHandle("click")
         expect(@emailThreadView.$el.find(".email_reply_button")).toHandle("click")
         expect(@emailThreadView.$el.find(".email_forward_button")).toHandle("click")
 
@@ -176,12 +176,12 @@ describe "EmailThreadView", ->
 
       describe "when isSplitPaneMode() is off", ->
 
-        it "should have email_back_button handle clicks", ->
-          expect(@emailThreadView.$el.find('#email_back_button')).toHandle("click")
+        it "should have email-back-button handle clicks", ->
+          expect(@emailThreadView.$el.find('.email-back-button')).toHandle("click")
 
-        describe "when email_back_button is clicked", ->
+        describe "when email-back-button is clicked", ->
           it "triggers goBackClicked", ->
             spy = sinon.backbone.spy(@emailThreadView, "goBackClicked")
-            @emailThreadView.$el.find("#email_back_button").click()
+            @emailThreadView.$el.find(".email-back-button").click()
             expect(spy).toHaveBeenCalled()
             spy.restore()

@@ -55,3 +55,16 @@
 .more-dropdown-menu {
   height: 75px;
 }
+
+.miniature-toolbar {
+
+  position: relative;
+  right: 12.5%;
+  top: 6%;
+
+  span {
+    float: right;
+    padding-right: 2px;
+  }
+
+}
