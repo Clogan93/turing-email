@@ -14,6 +14,8 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     @listenTo(@model, "destroy", @remove)
 
   render: ->
+    selectedTabID = $(".tab-pane.active").attr("id")
+    
     @$el.html(@template({'userSettings' : @model.toJSON(), 'emailRules' : @emailRules.toJSON(), 'brainRules' : @brainRules.toJSON()}))
 
     @setupEmailBankruptcyButton()
@@ -21,6 +23,8 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     @setupSwitches()
     @setupRuleCreation()
     @setupRuleDeletion()
+
+    $("a[href=#" + selectedTabID + "]").click() if selectedTabID?
 
     return this
 
@@ -48,12 +52,11 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
       @saveSettings()
 
   setupUninstallAppButtons: ->
-    @$el.find(".uninstall-app-button").click (event) ->
-      $.ajax
-        url: "/api/v1/apps/uninstall/" + $(@).attr("data")
-        type: "DELETE"
+    @$el.find(".uninstall-app-button").click (event) =>
+      appID = $(event.currentTarget).attr("data")
+      @trigger("uninstallAppClicked", this, appID)
 
-      $(@).parent().parent().remove()
+      $(event.currentTarget).parent().parent().remove()
       
   saveSettings: ->
     demo_mode_enabled = @$el.find(".demo_mode_switch").parent().parent().hasClass("switch-on")

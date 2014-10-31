@@ -1377,6 +1377,66 @@ describe "TuringEmailApp", ->
           it "trash the checked email threads", ->
             expect(@trashStub).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("uid")])
 
+      describe "#createNewLabelClicked", ->
+        beforeEach ->
+          @showStub = sinon.stub(TuringEmailApp.views.createFolderView, "show")
+          
+          TuringEmailApp.createNewLabelClicked()
+          
+        afterEach ->
+          @showStub.restore()
+
+        it "shows the create label view", ->
+          expect(@showStub).toHaveBeenCalledWith("label")
+
+      describe "#createNewEmailFolderClicked", ->
+        beforeEach ->
+          @showStub = sinon.stub(TuringEmailApp.views.createFolderView, "show")
+
+          TuringEmailApp.createNewEmailFolderClicked()
+
+        afterEach ->
+          @showStub.restore()
+          
+        it "shows the create folder view", ->
+          expect(@showStub).toHaveBeenCalledWith("folder")
+        
+      describe "#installAppClicked", ->
+        beforeEach ->
+          @installStub = sinon.stub(TuringEmailApp.Models.App, "Install")
+          @userSettingsFetchStub = sinon.stub(TuringEmailApp.models.userSettings, "fetch")
+          
+          @appID = "1"
+          TuringEmailApp.installAppClicked(undefined, @appID)
+          
+        afterEach ->
+          @userSettingsFetchStub.restore()
+          @installStub.restore()
+          
+        it "installs the app", ->
+          expect(@installStub).toHaveBeenCalledWith(@appID)
+          
+        it "refreshes the user settings", ->
+          expect(@userSettingsFetchStub).toHaveBeenCalledWith(reset: true)
+
+      describe "#uninstallAppClicked", ->
+        beforeEach ->
+          @uninstallStub = sinon.stub(TuringEmailApp.Models.InstalledApps.InstalledApp, "Uninstall")
+          @userSettingsFetchStub = sinon.stub(TuringEmailApp.models.userSettings, "fetch")
+
+          @appID = "1"
+          TuringEmailApp.uninstallAppClicked(undefined, @appID)
+
+        afterEach ->
+          @userSettingsFetchStub.restore()
+          @uninstallStub.restore()
+
+        it "installs the app", ->
+          expect(@uninstallStub).toHaveBeenCalledWith(@appID)
+
+        it "refreshes the user settings", ->
+          expect(@userSettingsFetchStub).toHaveBeenCalledWith(reset: true)
+          
     describe "#listItemSelected", ->
       beforeEach ->
         @listView = specCreateEmailThreadsListView()
@@ -1796,19 +1856,37 @@ describe "TuringEmailApp", ->
 
     describe "#showAppsLibrary", ->
       beforeEach ->
-        @showAppsLibraryStub = sinon.stub(TuringEmailApp.views.mainView, "showAppsLibrary")
+        @oldAppsLibraryView = TuringEmailApp.appsLibraryView = {}
+        
+        @appsLibraryView = {}
+        @showAppsLibraryStub = sinon.stub(TuringEmailApp.views.mainView, "showAppsLibrary", => @appsLibraryView)
+        @listenToStub = sinon.stub(TuringEmailApp, "listenTo", ->)
+        @stopListeningStub = sinon.stub(TuringEmailApp, "stopListening", ->)
 
         TuringEmailApp.showAppsLibrary()
       
       afterEach ->
+        @stopListeningStub.restore()
+        @listenToStub.restore()
         @showAppsLibraryStub.restore()
 
       it "shows the apps library on the main view", ->
         expect(@showAppsLibraryStub).toHaveBeenCalled()
         
+      it "stops listening on the old apps library view", ->
+        expect(@stopListeningStub).toHaveBeenCalledWith(@oldAppsLibraryView)
+        
+      it "listens for installAppClicked on the apps library view", ->
+        expect(@listenToStub).toHaveBeenCalledWith(@appsLibraryView, "installAppClicked", TuringEmailApp.installAppClicked)
+        
     describe "#showSettings", ->
       beforeEach ->
-        @showSettingsStub = sinon.stub(TuringEmailApp.views.mainView, "showSettings")
+        @oldSettingsView = TuringEmailApp.settingsView = {}
+        
+        @settingsView = {}
+        @showSettingsStub = sinon.stub(TuringEmailApp.views.mainView, "showSettings", => @settingsView)
+        @listenToStub = sinon.stub(TuringEmailApp, "listenTo", ->)
+        @stopListeningStub = sinon.stub(TuringEmailApp, "stopListening", ->)
         
         @server.restore()
 
@@ -1824,23 +1902,31 @@ describe "TuringEmailApp", ->
 
         userSettingsData = FactoryGirl.create("UserSettings")
         TuringEmailApp.models.userSettings = new TuringEmailApp.Models.UserSettings(userSettingsData)
+        
+        TuringEmailApp.showSettings()
 
       afterEach ->
         @server.restore()
+
+        @stopListeningStub.restore()
+        @listenToStub.restore()
         @showSettingsStub.restore()
 
       it "shows the Settings on the main view", ->
-        TuringEmailApp.showSettings()
         expect(@showSettingsStub).toHaveBeenCalled()
         @showSettingsStub.restore()
 
+      it "stops listening on the old settings view", ->
+        expect(@stopListeningStub).toHaveBeenCalledWith(@oldSettingsView)
+
+      it "listens for uninstallAppClicked on the settings view", ->
+        expect(@listenToStub).toHaveBeenCalledWith(@settingsView, "uninstallAppClicked", TuringEmailApp.uninstallAppClicked)
+
       it "loads the brain rules", ->
-        TuringEmailApp.showSettings()
         @server.respond()
         validateBrainRulesAttributes(TuringEmailApp.collections.brainRules.models[0].toJSON())
 
       it "loads the email rules", ->
-        TuringEmailApp.showSettings()
         @server.respond()
         validateEmailRulesAttributes(TuringEmailApp.collections.emailRules.models[0].toJSON())
 

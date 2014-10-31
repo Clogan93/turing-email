@@ -141,7 +141,6 @@ describe "AppsLibrary", ->
 
       describe "#onInstallAppButtonClick", ->
         beforeEach ->
-          @server = sinon.fakeServer.create()
           @clock = sinon.useFakeTimers()
         
           @event =
@@ -150,23 +149,19 @@ describe "AppsLibrary", ->
           @alertToken = {}
           @showAlertStub = sinon.stub(TuringEmailApp, "showAlert", => @alertToken)
           @removeAlertStub = sinon.stub(TuringEmailApp, "removeAlert")
+          @triggerStub = sinon.stub(@appsLibraryView, "trigger")
 
           @appsLibraryView.onInstallAppButtonClick(@event)
 
         afterEach ->
           @clock.restore()
-          @server.restore()
 
           @removeAlertStub.restore()
           @showAlertStub.restore()
-          
-        it "posts the install request", ->
-          expect(@server.requests.length).toEqual 1
+          @triggerStub.restore()
 
-          request = @server.requests[0]
-          expect(request.method).toEqual("POST")
-          expect(request.url).toEqual("/api/v1/apps/install/" + @apps.at(0).get("uid"))
-          expect(request.requestBody).toEqual(null)
+        it "triggers installAppClicked", ->
+          expect(@triggerStub).toHaveBeenCalledWith("installAppClicked", @appsLibraryView, @apps.at(0).get("uid"))
           
         it "shows the alert", ->
           expect(@showAlertStub).toHaveBeenCalledWith("You have installed the app!", "alert-success")

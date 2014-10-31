@@ -479,6 +479,14 @@ window.TuringEmailApp = new(Backbone.View.extend(
   createNewEmailFolderClicked: ->
     @views.createFolderView.show("folder")
 
+  installAppClicked: (view, appID) ->
+    TuringEmailApp.Models.App.Install(appID)
+    @models.userSettings.fetch(reset: true)
+    
+  uninstallAppClicked: (view, appID) ->
+    TuringEmailApp.Models.InstalledApps.InstalledApp.Uninstall(appID)  
+    @models.userSettings.fetch(reset: true)
+    
   #############################
   ### EmailThreads.ListView ###
   #############################
@@ -627,7 +635,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @views.mainView.showEmails(@isSplitPaneMode())
 
   showAppsLibrary: ->
-    @views.mainView.showAppsLibrary()
+    @stopListening(@appsLibraryView) if @appsLibraryView
+    
+    @appsLibraryView = @views.mainView.showAppsLibrary()
+    @listenTo(@appsLibraryView, "installAppClicked", @installAppClicked)
     
   showSettings: ->
     @models.userSettings.fetch(reset: true)
@@ -638,7 +649,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @collections.brainRules = new TuringEmailApp.Collections.Rules.BrainRulesCollection()
     @collections.brainRules.fetch(reset: true)
 
-    @views.mainView.showSettings()
+    @stopListening(@settingsView) if @settingsView
+    
+    @settingsView = @views.mainView.showSettings()
+    @listenTo(@settingsView, "uninstallAppClicked", @uninstallAppClicked)
 
   showAnalytics: ->
     @views.mainView.showAnalytics()

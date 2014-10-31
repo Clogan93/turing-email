@@ -186,12 +186,14 @@ describe "SettingsView", ->
 
     describe "clicking on the uninstall app button", ->
       beforeEach ->
+        @triggerStub = sinon.stub(@settingsView, "trigger")
         @removeSpy = sinon.spy($.prototype, "remove")
         
       afterEach ->
         @removeSpy.restore()
+        @triggerStub.restore()
       
-      it "uninstalls the app and removes its element from the DOM", ->
+      it "triggers uninstallAppClicked and removes its element from the DOM", ->
         index = 0
         
         for uninstallButton in @settingsView.$el.find(".uninstall-app-button")
@@ -199,12 +201,9 @@ describe "SettingsView", ->
           @removeSpy.reset()
           
           uninstallButton.click()
-  
-          expect(@server.requests.length).toEqual 3 + index
-          request = @server.requests[2 + index]
-          expect(request.method).toEqual "DELETE"
-          expect(request.url).toEqual "/api/v1/apps/uninstall/" + uninstallButton.attr("data")
-  
+          appID = uninstallButton.attr("data")
+          
+          expect(@triggerStub).toHaveBeenCalledWith("uninstallAppClicked", @settingsView, appID)
           expect(@removeSpy).toHaveBeenCalled()
           
           index += 1

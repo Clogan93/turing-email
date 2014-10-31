@@ -40,7 +40,7 @@ class TuringEmailApp.Views.AppsLibrary.AppsLibraryView extends Backbone.View
     index = @$el.find(".install_app_button").index(event.currentTarget)
     app = @collection.at(index)
 
-    $.post "/api/v1/apps/install/" + app.get("uid")
+    @trigger("installAppClicked", this, app.get("uid"))
     
     alertToken = TuringEmailApp.showAlert("You have installed the app!", "alert-success")
 
