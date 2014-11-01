@@ -1,8 +1,11 @@
 class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collection
   model: TuringEmailApp.Models.EmailThread
+  url: "/api/v1/email_threads/in_folder?folder_id=INBOX"
 
   initialize: (models, options) ->
     @app = options.app
+    @demoMode = if options.demoMode? then options.demoMode else true
+
     @listenTo(this, "remove", @modelRemoved)
     @listenTo(this, "reset", @modelsReset)
 
@@ -24,7 +27,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
   ###############
 
   sync: (method, collection, options) ->
-    if method != "read"
+    if method != "read" || @demoMode
       super(method, collection, options)
     else
       options ?= {}
@@ -171,6 +174,12 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
     TuringEmailApp.Models.EmailThread.setThreadParsedProperties(threadParsed, threadInfo.messages, lastMessageInfo)
 
     return threadParsed
+
+  parse: (threadsJSON, options) ->
+    if @demoMode
+      TuringEmailApp.Models.EmailThread.SetThreadPropertiesFromJSON(threadJSON, @demoMode) for threadJSON in threadsJSON
+
+    return threadsJSON
     
   ###############
   ### Setters ###
@@ -184,20 +193,32 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
     @resetPageTokens() if @folderID != folderID
 
     @folderID = folderID
+    @setupURL() if @demoMode
+    
     @trigger("change:folderID", this, @folderID)
 
   pageTokenIndexIs: (pageTokenIndex) ->
     @pageTokenIndex = parseInt(pageTokenIndex)
-    @pageTokenIndex = Math.min(@pageTokens.length - 1, @pageTokenIndex)
+    @pageTokenIndex = Math.min(@pageTokens.length - 1, @pageTokenIndex) if !@demoMode
+
+    @setupURL() if @demoMode
 
     @trigger("change:pageTokenIndex", this, @pageTokenIndex)
+  
+  # TODO write tests
+  setupURL: ->
+    @url = "/api/v1/email_threads/in_folder?folder_id=" + @folderID if @folderID
+    @url += "&page=" + (@pageTokenIndex + 1) if @pageTokenIndex
     
   ###############
   ### Getters ###
   ###############
 
   hasNextPage: ->
-    return @pageTokenIndex < @pageTokens.length - 1
+    if @demoMode
+      return @length % TuringEmailApp.Models.UserSettings.EmailThreadsPerPage == 0
+    else
+      return @pageTokenIndex < @pageTokens.length - 1
 
   hasPreviousPage: ->
     return @pageTokenIndex > 0

@@ -1,6 +1,9 @@
 describe "EmailFoldersCollection", ->
   beforeEach ->
-    @emailFoldersCollection = new TuringEmailApp.Collections.EmailFoldersCollection(undefined, app: TuringEmailApp)
+    @emailFoldersCollection = new TuringEmailApp.Collections.EmailFoldersCollection(undefined,
+      app: TuringEmailApp
+      demoMode: false
+    )
 
   it "should use the EmailFolder model", ->
     expect(@emailFoldersCollection.model).toEqual TuringEmailApp.Models.EmailFolder

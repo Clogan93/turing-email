@@ -41,6 +41,8 @@ $config.http_errors = {
 
 # globals
 
+$config.gmail_live = false
+
 $config.company_name = 'Turing Technology, Inc.'
 $config.service_name = 'Turing Email'
 $config.service_name_short = 'Turing'

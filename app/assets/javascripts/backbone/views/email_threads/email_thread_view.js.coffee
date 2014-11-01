@@ -9,10 +9,15 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
       @listenTo(@model, "destroy", @remove)
 
   render: ->
+    return if @rendering
+    
     if @model
+      @seenChanging = @model._changing && @model.changed.seen?
+      @rendering = true
+      
       @model.load(
         success: =>
-          @model.set("seen", true)
+          @model.set("seen", true) if not @seenChanging
 
           modelJSON = @model.toJSON()
           modelJSON["sortedEmails"] = @model.sortedEmails()
@@ -28,6 +33,11 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
   
           @setupEmailExpandAndCollapse()
           @setupButtons()
+          
+          @rendering = false
+          
+        error: =>
+          @rendering = false
       )
     else
       @$el.empty()

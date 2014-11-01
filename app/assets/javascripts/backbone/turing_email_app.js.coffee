@@ -25,11 +25,13 @@ window.TuringEmailApp = new(Backbone.View.extend(
   Collections: {}
   Routers: {}
 
-  start: ->
+  start: (userJSON, userSettingsJSON) ->
     @models = {}
     @views = {}
     @collections = {}
     @routers = {}
+
+    @setupUser(userJSON, userSettingsJSON)
     
     @setupGmailAPI()
     
@@ -41,7 +43,6 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @setupComposeButton()
 
     @setupToolbar()
-    @setupUser()
 
     # email folders
     @setupEmailFolders()
@@ -123,12 +124,17 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
     @trigger("change:toolbarView", this, @views.toolbarView)
 
-  setupUser: ->
-    @models.user = new TuringEmailApp.Models.User()
-    @models.user.fetch()
-
-    @models.userSettings = new TuringEmailApp.Models.UserSettings()
-    @models.userSettings.fetch()
+  setupUser: (userJSON, userSettingsJSON) ->
+    @models.user = new TuringEmailApp.Models.User(userJSON)
+    @models.userSettings = new TuringEmailApp.Models.UserSettings(userSettingsJSON)
+  
+    @listenTo(@models.userSettings, "change:demo_mode_enabled", =>
+      @collections.emailFolders.demoMode = @models.userSettings.get("demo_mode_enabled")
+      @collections.emailThreads.demoMode = @models.userSettings.get("demo_mode_enabled")
+      
+      @reloadEmailThreads()
+      @loadEmailFolders()
+    )
     
     @listenTo(@models.userSettings, "change:keyboard_shortcuts_enabled", =>
       if @models.userSettings.get("keyboard_shortcuts_enabled")
@@ -138,7 +144,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
     )
 
   setupEmailFolders: ->
-    @collections.emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(undefined, app: TuringEmailApp)
+    @collections.emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(undefined,
+      app: TuringEmailApp
+      demoMode: @models.userSettings.get("demo_mode_enabled")
+    )
     @views.emailFoldersTreeView = new TuringEmailApp.Views.EmailFolders.TreeView(
       app: this
       el: $(".email-folders")
@@ -158,7 +167,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @listenTo(@views.createFolderView, "createFolderFormSubmitted", (createFolderView, mode, folderName) => @createFolderFormSubmitted(mode, folderName))
 
   setupEmailThreads: ->
-    @collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: this)
+    @collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined,
+      app: this
+      demoMode: @models.userSettings.get("demo_mode_enabled")
+    )
     @views.emailThreadsListView = @views.mainView.createEmailThreadsListView(@collections.emailThreads)
 
     @listenTo(@views.emailThreadsListView, "listItemSelected", @listItemSelected)

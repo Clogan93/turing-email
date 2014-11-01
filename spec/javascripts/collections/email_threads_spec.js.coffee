@@ -1,6 +1,9 @@
 describe "EmailThreadsCollection", ->
   beforeEach ->
-    @emailThreadsCollection = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
+    @emailThreadsCollection = new TuringEmailApp.Collections.EmailThreadsCollection(undefined,
+      app: TuringEmailApp
+      demoMode: false
+    )
     
   it "should use the EmailThread model", ->
     expect(@emailThreadsCollection.model).toEqual(TuringEmailApp.Models.EmailThread)
@@ -9,6 +12,7 @@ describe "EmailThreadsCollection", ->
     beforeEach ->
       @emailThreadsCollectionTemp = new TuringEmailApp.Collections.EmailThreadsCollection(undefined,
         app: TuringEmailApp
+        demoMode: false
         folderID: "INBOX"
       )
 

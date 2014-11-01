@@ -63,6 +63,8 @@ class GmailAccountsController < ApplicationController
           gmail_account.save!
         end
 
+        gmail_account.delay.sync_email(labelIds: "INBOX") if created_gmail_account
+
         #flash[:success] = I18n.t('gmail.authenticated')
       rescue Exception => ex
         log_exception(false) { gmail_account.destroy! if created_gmail_account && gmail_account }

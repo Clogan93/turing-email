@@ -1,8 +1,11 @@
 class TuringEmailApp.Collections.EmailFoldersCollection extends Backbone.Collection
   model: TuringEmailApp.Models.EmailFolder
+  url: '/api/v1/email_folders'
   
   initialize: (models, options) ->
     @app = options.app
+    @demoMode = if options.demoMode? then options.demoMode else true
+
     @listenTo(this, "remove", @modelRemoved)
     @listenTo(this, "reset", @modelsReset)
 
@@ -21,7 +24,7 @@ class TuringEmailApp.Collections.EmailFoldersCollection extends Backbone.Collect
   ###############
 
   sync: (method, collection, options) ->
-    if method != "read"
+    if method != "read" || @demoMode
       super(method, collection, options)
     else
       googleRequest(
@@ -62,6 +65,8 @@ class TuringEmailApp.Collections.EmailFoldersCollection extends Backbone.Collect
     options.success(labelsInfo)
 
   parse: (labelsInfo, options) ->
+    return labelsInfo if @demoMode
+
     labelsParsed = _.map(labelsInfo, (label) =>
       labelParsed = {}
       labelParsed.label_id = label.id

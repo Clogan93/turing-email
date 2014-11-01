@@ -38,7 +38,10 @@ window.specStartTuringEmailApp = ->
   TuringEmailApp.models.user = new TuringEmailApp.Models.User()
   TuringEmailApp.models.userSettings = new TuringEmailApp.Models.UserSettings()
   
-  TuringEmailApp.collections.emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(undefined, app: TuringEmailApp)
+  TuringEmailApp.collections.emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(undefined,
+    app: TuringEmailApp
+    demoMode: false
+  )
   TuringEmailApp.views.emailFoldersTreeView = new TuringEmailApp.Views.EmailFolders.TreeView(
     app: TuringEmailApp
     el: $(".email-folders")
@@ -50,7 +53,10 @@ window.specStartTuringEmailApp = ->
 
   TuringEmailApp.views.createFolderView = TuringEmailApp.views.mainView.createFolderView
 
-  TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
+  TuringEmailApp.collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined,
+    app: TuringEmailApp
+    demoMode: false
+  )
   TuringEmailApp.views.emailThreadsListView = TuringEmailApp.views.mainView.createEmailThreadsListView(TuringEmailApp.collections.emailThreads)
 
   TuringEmailApp.routers.emailFoldersRouter = new TuringEmailApp.Routers.EmailFoldersRouter()
@@ -102,7 +108,10 @@ window.specPrepareReportFetches = (server) ->
   return server
     
 window.specCreateEmailThreadsListView = () ->
-  emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
+  emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined,
+    app: TuringEmailApp
+    demoMode: false
+  )
   emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView(collection: emailThreads)
   $("body").append(emailThreadsListView)
 
