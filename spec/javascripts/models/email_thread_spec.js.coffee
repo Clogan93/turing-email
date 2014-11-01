@@ -326,8 +326,18 @@ describe "EmailThread", ->
         describe "force=true", ->
           describe "loading=true", ->
             beforeEach ->
+              @setTimeoutStub = sinon.stub(window, "setTimeout")
+              
               @emailThread.loading = true
               @emailThread.load(@options, true)
+              
+            afterEach ->
+              @setTimeoutStub.restore()
+              
+            it "queues a load call", ->
+              expect(@setTimeoutStub).toHaveBeenCalled()
+              specCompareFunctions((=> @load(options, force)), @setTimeoutStub.args[0][0])
+              expect(@setTimeoutStub.args[0][1]).toEqual(250)
               
             it "returns", ->
               expect(@success).not.toHaveBeenCalled()
