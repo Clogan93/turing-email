@@ -3,14 +3,14 @@
    max_subject_len = 40
 %>
 
-<table border="1">
+<table border="1" class="brain-report-table">
   <tr>
-    <td></td>
-    <td><span style="font-weight: bold;"><%= show_to ? 'To' : 'From' %></span></td>
-    <td><span style="font-weight: bold;">Subject</span></td>
-    <td><span style="font-weight: bold;">Date</span></td>
+    <th></th>
+    <th><span style="font-weight: bold;"><%= show_to ? 'To' : 'From' %></span></th>
+    <th><span style="font-weight: bold;">Subject</span></th>
+    <th><span style="font-weight: bold;">Date</span></th>
     <% if include_auto_filed_folder %>
-      <td><span style="font-weight: bold;">Folder Moved To</span></td>
+      <th><span style="font-weight: bold;">Folder Moved To</span></th>
     <% end %>
   </tr>
 
