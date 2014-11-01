@@ -128,4 +128,21 @@ class User < ActiveRecord::Base
       end
     end
   end
+
+  def apply_email_rules_to_email(email)
+    self.email_rules.each do |email_rule|
+      matches = false
+      matches = true if email_rule.from_address && email.from_address == email_rule.from_address.downcase
+      matches = true if email_rule.list_id && email.list_id.downcase == email_rule.list_id.downcase
+      matches = true if email_rule.subject && email.subject =~ /.*#{email_rule.subject}.*/i
+      
+      if email_rule.to_address
+        email.email_recipients.each do |email_recipient|
+          matches = true if email_recipient.email_address.downcase == email_rule.to_address.downcase
+        end
+      end
+
+      email_account.move_email_to_folder(email, :folder_name => email_rule.destination_folder_name) if matches
+    end
+  end
 end

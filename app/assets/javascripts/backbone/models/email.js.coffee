@@ -43,12 +43,14 @@ class TuringEmailApp.Models.Email extends Backbone.Model
     foundHTML = false
 
     for part in parts
-      if not foundText and part.mimeType.toLowerCase() == "text/plain" and part.body.size > 0
+      if not foundText and part.mimeType.toLowerCase() == "text/plain" and
+         part.body.size > 0 and not part.body.attachmentId? and part.body.data?
         emailParsed.text_part_encoded = part.body.data
         emailParsed.text_part = base64_decode_urlsafe(emailParsed.text_part_encoded)
         foundText = true
 
-      if not foundHTML and part.mimeType.toLowerCase() == "text/html" and part.body.size > 0
+      if not foundHTML and part.mimeType.toLowerCase() == "text/html" and
+         part.body.size > 0 and not part.body.attachmentId? and part.body.data?
         emailParsed.html_part_encoded = part.body.data
         emailParsed.html_part = base64_decode_urlsafe(emailParsed.html_part_encoded)
         foundHTML = true

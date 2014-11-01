@@ -22,9 +22,6 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
       @markRead(silent: true)
     else
       @markUnread(silent: true)
-
-    @setupClick()
-    @setupCheckbox()
     
     @check(silent: true) if checked
     
@@ -33,14 +30,16 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
   #######################
   ### Setup Functions ###
   #######################
+
+  addedToDOM: ->
+    @setupClick()
+    @setupCheckbox()
     
   setupClick: ->
     tds = @$el.find('td.check-mail, td.mail-contact, td.mail-subject, td.mail-date')
+    tds.off("click")
     tds.click (event) =>
       @trigger("click", this)
-
-  addedToDOM: ->
-    @setupCheckbox()
 
   setupCheckbox: ->
     @$el.find(".i-checks").iCheck
@@ -48,7 +47,8 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
       radioClass: "iradio_square-green"
 
     @diviCheck = @$el.find("div.icheckbox_square-green")
-    
+
+    @$el.find("div.icheckbox_square-green ins").off("click")
     @$el.find("div.icheckbox_square-green ins").click (event) =>
       @updateCheckStyles()
 

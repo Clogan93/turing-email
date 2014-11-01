@@ -53,7 +53,10 @@ describe "MainView", ->
     beforeEach ->
       @server.restore()
       
-      @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
+      @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined,
+        app: TuringEmailApp
+        demoMode: false
+      )
       @emailThreads.reset(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE))
       @mainView.createEmailThreadsListView(@emailThreads)
     
@@ -111,7 +114,10 @@ describe "MainView", ->
 
       @server.restore()
 
-      @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
+      @emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined,
+        app: TuringEmailApp
+        demoMode: false
+      )
       @emailThreads.reset(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE))
       @mainView.createEmailThreadsListView(@emailThreads)
 
@@ -163,7 +169,10 @@ describe "MainView", ->
         describe "when there are no emails in list view's collection", ->
           beforeEach ->
             @mainView.emailThreadsListView.collection =
-              new TuringEmailApp.Collections.EmailThreadsCollection(undefined, app: TuringEmailApp)
+              new TuringEmailApp.Collections.EmailThreadsCollection(undefined,
+                app: TuringEmailApp
+                demoMode: false
+              )
 
             @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
         

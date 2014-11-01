@@ -2,7 +2,10 @@ describe "TreeView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(undefined, app: TuringEmailApp)
+    @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(undefined,
+      app: TuringEmailApp
+      demoMode: false
+    )
 
     @treeDiv = $("<div class='email_folders'></div>").appendTo("body")
     @treeView = new TuringEmailApp.Views.EmailFolders.TreeView(
@@ -177,6 +180,7 @@ describe "TreeView", ->
 
         @emailFolder = @emailFolders.models[0]
         @otherEmailFolder = @emailFolders.models[1]
+        
         @treeView.select(@emailFolder, force: true)
 
       it "deselects the item", ->
@@ -199,36 +203,49 @@ describe "TreeView", ->
         spy.restore()
 
       describe "when the email folder is the same and the option force is false", ->
+        beforeEach ->
+          @emailFolderSelectedSpy = sinon.backbone.spy(@treeView, "emailFolderSelected")
+          @emailFolderDeselectedSpy = sinon.backbone.spy(@treeView, "emailFolderDeselected")
 
-        it "returns immediately", ->
-          emailFolderSelectedSpy = sinon.backbone.spy(@treeView, "emailFolderSelected")
-          emailFolderDeselectedSpy = sinon.backbone.spy(@treeView, "emailFolderDeselected")
           @treeView.select(@emailFolder, force: false)
-          expect(emailFolderSelectedSpy).not.toHaveBeenCalled()
-          expect(emailFolderDeselectedSpy).not.toHaveBeenCalled()
+        
+        afterEach ->
+          @emailFolderSelectedSpy.restore()
+          @emailFolderDeselectedSpy.restore()
+        
+        it "returns immediately", ->
+          expect(@emailFolderSelectedSpy).not.toHaveBeenCalled()
+          expect(@emailFolderDeselectedSpy).not.toHaveBeenCalled()
+          
           expect(@treeView.selectedItem()).toEqual @emailFolder
-          emailFolderSelectedSpy.restore()
-          emailFolderDeselectedSpy.restore()
 
       describe "when the email folder is the same and there are no options", ->
+        beforeEach ->
+          @emailFolderSelectedSpy = sinon.backbone.spy(@treeView, "emailFolderSelected")
+          @emailFolderDeselectedSpy = sinon.backbone.spy(@treeView, "emailFolderDeselected")
 
-        it "returns immediately", ->
-          emailFolderSelectedSpy = sinon.backbone.spy(@treeView, "emailFolderSelected")
-          emailFolderDeselectedSpy = sinon.backbone.spy(@treeView, "emailFolderDeselected")
           @treeView.select(@emailFolder)
-          expect(emailFolderSelectedSpy).not.toHaveBeenCalled()
-          expect(emailFolderDeselectedSpy).not.toHaveBeenCalled()
+        
+        afterEach ->
+          @emailFolderSelectedSpy.restore()
+          @emailFolderDeselectedSpy.restore()
+          
+        it "returns immediately", ->
+          expect(@emailFolderSelectedSpy).not.toHaveBeenCalled()
+          expect(@emailFolderDeselectedSpy).not.toHaveBeenCalled()
+          
           expect(@treeView.selectedItem()).toEqual @emailFolder
-          emailFolderSelectedSpy.restore()
-          emailFolderDeselectedSpy.restore()
 
       describe "when options silent is true", ->
+        beforeEach ->
+          @spy = sinon.backbone.spy(@treeView, "emailFolderSelected")
 
-        it "does not triggers emailFolderSelected", ->
-          spy = sinon.backbone.spy(@treeView, "emailFolderSelected")
+        afterEach ->
+          @spy.restore()
+          
+        it "does not triggers emailFolderSelected", ->  
           @treeView.select(@otherEmailFolder, force: true, silent: true)
-          expect(spy).not.toHaveBeenCalled()
-          spy.restore()
+          expect(@spy).not.toHaveBeenCalled()
 
   describe "#updateBadgeCount", ->
     beforeEach ->

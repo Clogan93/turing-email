@@ -85,6 +85,17 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   ###############
   ### Actions ###
   ###############
+  
+  moveItemToTop: (emailThread) ->
+    @collection.remove(emailThread)
+    @collection.unshift(emailThread)
+
+    listItemView = @listItemViews[emailThread.get("uid")]
+    trReportEmail = listItemView.$el
+    trReportEmail.remove()
+    @$el.prepend(trReportEmail)
+
+    listItemView.addedToDOM()
 
   select: (emailThread, options) ->
     listItemView = @listItemViews?[emailThread.get("uid")]

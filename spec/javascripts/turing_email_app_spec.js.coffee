@@ -17,7 +17,7 @@ describe "TuringEmailApp", ->
     
   describe "#start", ->
     it "defines the model, view, collection, and router containers", ->
-      TuringEmailApp.start()
+      TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserSettings"))
       
       expect(TuringEmailApp.models).toBeDefined()
       expect(TuringEmailApp.views).toBeDefined()
@@ -144,15 +144,25 @@ describe "TuringEmailApp", ->
   
     describe "#setupUser", ->
       beforeEach ->
-        @fetchStub = sinon.stub(TuringEmailApp.Models.User.__super__, "fetch")
-
-        TuringEmailApp.setupUser()
-        
-      afterEach ->
-        @fetchStub.restore()
+        @listenToSpy = sinon.spy(TuringEmailApp, "listenTo")
+        TuringEmailApp.setupUser(FactoryGirl.create("User"), FactoryGirl.create("UserSettings"))
       
-      it "fetches the user and user settings", ->
-        expect(@fetchStub.callCount).toEqual(2)
+      afterEach ->
+        @listenToSpy.restore()
+        
+      it "create the user", ->
+        expect(TuringEmailApp.models.user instanceof TuringEmailApp.Models.User).toBeTruthy()
+
+      it "create the user settings", ->
+        expect(TuringEmailApp.models.userSettings instanceof TuringEmailApp.Models.UserSettings).toBeTruthy()
+
+      it "listens for change:demo_mode_enabled", ->
+        expect(@listenToSpy.args[0][0] instanceof TuringEmailApp.Models.UserSettings).toBeTruthy()
+        expect(@listenToSpy.args[0][1]).toEqual("change:demo_mode_enabled")
+        
+      it "listens for change:keyboard_shortcuts_enabled", ->
+        expect(@listenToSpy.args[1][0] instanceof TuringEmailApp.Models.UserSettings).toBeTruthy()
+        expect(@listenToSpy.args[1][1]).toEqual("change:keyboard_shortcuts_enabled")
         
       describe "the userSettings keyboard_shortcuts_enabled attribute changes", ->
         beforeEach ->
@@ -296,7 +306,10 @@ describe "TuringEmailApp", ->
       describe "#selectedEmailFolder", ->
         beforeEach ->
           emailFoldersData = FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE)
-          @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(emailFoldersData, app: TuringEmailApp)
+          @emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(emailFoldersData,
+            app: TuringEmailApp
+            demoMode: false
+          )
           
           TuringEmailApp.views.emailFoldersTreeView.select(@emailFolders.models[0])
 

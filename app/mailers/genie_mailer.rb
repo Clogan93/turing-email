@@ -15,4 +15,14 @@ class GenieMailer < ActionMailer::Base
   rescue Exception => ex
     log_email('GenieMailer.user_report_email FAILED!', "#{user.id} #{user.email}\r\n\r\n#{ex.log_message}")
   end
+  
+  def email_synced_email(user)
+    @user = user
+
+    email = mail(to: user.email, subject: "#{$config.service_name} - Email Ready!")
+
+    return email
+  rescue Exception => ex
+    log_email('GenieMailer.email_synced_email FAILED!', "#{user.id} #{user.email}\r\n\r\n#{ex.log_message}")
+  end
 end
