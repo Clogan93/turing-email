@@ -191,6 +191,7 @@ ActiveRecord::Schema.define(version: 20141026223435) do
     t.text     "google_id"
     t.text     "email"
     t.boolean  "verified_email"
+    t.datetime "sync_started_time"
     t.text     "last_history_id_synced"
     t.datetime "created_at"
     t.datetime "updated_at"

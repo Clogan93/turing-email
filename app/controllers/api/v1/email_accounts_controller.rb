@@ -32,20 +32,15 @@ class Api::V1::EmailAccountsController < ApiController
   end
 
   swagger_api :sync do
-    summary 'Sync email. Returns true if any emails were synced, else false.'
+    summary 'Queues email sync.'
 
     response :ok
   end
 
   # TODO write tests
   def sync
-    if @email_account.last_history_id_synced.nil?
-      synced_emails = false
-    else
-      synced_emails = @email_account.sync_email()
-    end
-    
-    render :json => {:synced_emails => synced_emails}
+    @email_account.delay.sync_email() if @email_account.last_history_id_synced
+    render :json => ''
   end
 
   swagger_api :search_threads do

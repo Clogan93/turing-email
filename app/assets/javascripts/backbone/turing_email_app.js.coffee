@@ -25,6 +25,17 @@ window.TuringEmailApp = new(Backbone.View.extend(
   Collections: {}
   Routers: {}
 
+  threadsListInboxCountRequest: ->
+    params =
+      userId: "me"
+      labelIds: "INBOX"
+      fields: "resultSizeEstimate"
+      
+    gapi.client.gmail.users.messages.list(params)
+  
+  renderSyncingEmailsMessage: (numEmailsToSync) ->
+    $("#main").html("Your emails are syncing! " + @models.user.get("num_emails") + " of " + numEmailsToSync)
+    
   start: (userJSON, userSettingsJSON) ->
     @models = {}
     @views = {}
@@ -34,6 +45,16 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @setupUser(userJSON, userSettingsJSON)
     
     @setupGmailAPI()
+    
+    if !@models.user.get("has_genie_report_ran")
+      googleRequest(
+        this,
+        => @threadsListInboxCountRequest()
+        (response) => @renderSyncingEmailsMessage(response.result.resultSizeEstimate)
+      )
+      
+      $("#main").html("Your emails are syncing!")
+      return
     
     @setupKeyboardHandler()
     
@@ -246,6 +267,8 @@ window.TuringEmailApp = new(Backbone.View.extend(
   ######################
 
   syncEmail: ->
+    $.post("api/v1/email_accounts/sync") if @models.userSettings.get("demo_mode_enabled")
+    
     @reloadEmailThreads()
     @loadEmailFolders()
 

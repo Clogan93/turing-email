@@ -12,6 +12,8 @@ class EmailGenie
             '<rocketship@optimizely.com' => 'Rocketship' }
 
   def EmailGenie.send_user_report_email(user, demo = false)
+    return if user.gmail_accounts.first.nil?
+
     inbox_label = user.gmail_accounts.first.inbox_folder
     if inbox_label
       where_clause = demo ? ['date > ?', Time.now - 24.hours] :

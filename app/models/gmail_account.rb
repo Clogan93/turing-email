@@ -470,9 +470,24 @@ class GmailAccount < ActiveRecord::Base
       
       return synced_emails
     else
+      if self.sync_started_time
+        seconds_since_sync_started = ((DateTime.now() - self.sync_started_time) * 24 * 60 * 60).to_i
+
+        if seconds_since_sync_started < 60 * 5
+          log_console("SKIPPING SYNC because seconds_since_sync_started=#{seconds_since_sync_started}")
+          return []
+        end
+      end
+      
+      self.sync_started_time = DateTime.now()
+      self.save!
+      
       synced_emails = self.sync_email_partial(delay: delay)
 
       self.sync_draft_ids()
+      
+      self.sync_started_time = nil
+      self.save!
       
       return synced_emails 
     end
@@ -672,6 +687,8 @@ class GmailAccount < ActiveRecord::Base
       end
 
       self.sync_email_labels(email, gmail_data['labelIds'])
+
+      self.user.apply_email_rules_to_email(email) if gmail_data['labelIds'].include?("INBOX")
     rescue ActiveRecord::RecordNotUnique => unique_violation
       raise unique_violation if unique_violation.message !~ /index_emails_on_email_account_type_and_email_account_id_and_uid/
 

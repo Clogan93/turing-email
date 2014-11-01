@@ -6,7 +6,10 @@ describe 'api/v1/users/show', :type => :view do
     render
     user_rendered = JSON.parse(rendered)
 
-    expected_attributes = %w(email)
-    spec_validate_attributes(expected_attributes, user, user_rendered)
+    expected_attributes = %w(email has_genie_report_ran num_emails)
+    expected_attributes_to_skip = %w(num_emails)
+    
+    spec_validate_attributes(expected_attributes, user, user_rendered, expected_attributes_to_skip)
+    expect(user_rendered["num_emails"]).to eq(user.emails.count)
   end
 end
