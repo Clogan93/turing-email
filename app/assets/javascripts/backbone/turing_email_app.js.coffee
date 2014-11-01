@@ -300,6 +300,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
       emailThread = new TuringEmailApp.Models.EmailThread(undefined,
         app: TuringEmailApp
         emailThreadUID: emailThreadUID
+        demoMode: @models.userSettings.get("demo_mode_enabled")
       )
       emailThread.fetch(
         success: (model, response, options) =>
@@ -621,13 +622,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
       emailThread = listItemView.model
       
       if emailThread.get("subject") is "Turing Email - Your daily Genie Report!"
-        emailThreadsListView.collection.remove(emailThread)
-        emailThreadsListView.collection.unshift(emailThread)
-
-        trReportEmail = listItemView.$el
-        trReportEmail.remove()
-        emailThreadsListView.$el.prepend(trReportEmail)
-
+        emailThreadsListView.moveItemToTop(emailThread)
         return
 
   showEmails: ->
