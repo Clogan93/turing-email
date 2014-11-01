@@ -178,6 +178,9 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
   initialize: (attributes, options) ->
     @app = options.app
     @emailThreadUID = options.emailThreadUID
+    @set("demoMode", if options.demoMode? then options.demoMode else true)
+
+    @url = "/api/v1/email_threads/show/" + options.emailThreadUID if options?.emailThreadUID
     
     @listenTo(this, "change:seen", @seenChanged)
 
@@ -220,7 +223,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
       @fetch(options)
 
   sync: (method, model, options) ->
-    if method != "read"
+    if method != "read" || @get("demoMode")
       super(method, model, options)
     else
       googleRequest(
