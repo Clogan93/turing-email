@@ -28,6 +28,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
   
           @setupEmailExpandAndCollapse()
           @setupButtons()
+          @setupTooltips()
       )
     else
       @$el.empty()
@@ -129,10 +130,13 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     @$el.find(".email_forward_button").click =>
       @trigger("forwardClicked", this)
 
+  setupTooltips: ->
+    @$el.find(".email-to").tooltip()
+
   # TODO write tests
   insertHtmlIntoIframe: (email, index) ->
     iframe = @$el.find("#email_iframe" + index.toString())
-    
+
     iframeHTML = iframe.contents().find("html")
     iframeHTML.html("<div>" + email.html_part + "</div>")
 
