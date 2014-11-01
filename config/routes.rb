@@ -80,7 +80,9 @@ Rails.application.routes.draw do
       resources :apps, only: [:create, :index]
       post '/apps/install/:app_uid', to: 'apps#install'
       delete '/apps/uninstall/:app_uid', to: 'apps#uninstall'
+      
       post '/apps/test', to: 'apps#test'
+      post '/apps/stats', to: 'apps#stats'
     end
   end
 

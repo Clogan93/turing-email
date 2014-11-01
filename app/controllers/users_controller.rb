@@ -2,6 +2,9 @@ class UsersController < ApplicationController
   before_action :signed_in_user, except: [:new, :create, :reset_password]
 
   def new
+    redirect_to gmail_o_auth2_url(true)
+    return
+    
     if signed_in?
       flash[:info] = 'You already have an account!'
 
@@ -13,6 +16,9 @@ class UsersController < ApplicationController
   end
 
   def create
+    redirect_to gmail_o_auth2_url(true)
+    return
+    
     if signed_in?
       flash[:info] = 'You already have an account!'
 

@@ -1,4 +1,17 @@
 class GmailAccountsController < ApplicationController
+  def get_api_client(code)
+    o_auth2_base_client = Google::OAuth2Client.base_client($config.google_client_id, $config.google_secret)
+    o_auth2_base_client.redirect_uri = gmail_oauth2_callback_url
+    o_auth2_base_client.code = code
+    o_auth2_base_client.fetch_access_token!()
+
+    # don't save because no GmailAccount yet to set to required google_api attribute.
+    google_o_auth2_token = GoogleOAuth2Token.new()
+    google_o_auth2_token.update(o_auth2_base_client, false)
+    
+    return google_o_auth2_token, google_o_auth2_token.api_client()
+  end
+  
   def o_auth2_callback
     error = params[:error]
     code = params[:code]
@@ -17,50 +30,30 @@ class GmailAccountsController < ApplicationController
       created_gmail_account = false
 
       begin
-        o_auth2_base_client = Google::OAuth2Client.base_client($config.google_client_id, $config.google_secret)
-        o_auth2_base_client.redirect_uri = gmail_oauth2_callback_url
-        o_auth2_base_client.code = code
-        o_auth2_base_client.fetch_access_token!()
-
-        # don't save because no GmailAccount yet to set to required google_api attribute.
-        google_o_auth2_token = GoogleOAuth2Token.new()
-        google_o_auth2_token.update(o_auth2_base_client, false)
-        api_client = google_o_auth2_token.api_client()
+        sign_out() if current_user
         
-        if current_user.nil?
-          userinfo_data = GmailAccount.get_userinfo(api_client)
-
-          gmail_account = GmailAccount.find_by_google_id(userinfo_data['id'])
-          
-          if gmail_account
-            user = gmail_account.user
-          else
-            user = User.new()
-            user.email = userinfo_data['email'].downcase
-            user.password = user.password_confirmation = SecureRandom.uuid()
-            user.save!
-          end
-          
-          sign_in(user)
+        google_o_auth2_token, api_client = self.get_api_client(code)
+        
+        userinfo_data = GmailAccount.get_userinfo(api_client)
+        gmail_account = GmailAccount.find_by_google_id(userinfo_data['id'])
+        
+        if gmail_account
+          user = gmail_account.user
         else
-          user = current_user
+          user = User.new()
+          user.email = userinfo_data['email'].downcase
+          user.password = user.password_confirmation = SecureRandom.uuid()
+          user.save!
+
+          created_gmail_account = true
+
+          gmail_account = GmailAccount.new()
+          gmail_account.user = user
         end
         
+        sign_in(user)
+        
         user.with_lock do
-          gmail_account = user.gmail_accounts.first
-          if gmail_account
-            gmail_account.delete_o_auth2_token()
-            gmail_account.last_history_id_synced = nil
-            gmail_account.save!
-          end
-
-          # don't assign google_o_auth2_token yet because it hasn't been saved so no ID.
-          if gmail_account.nil?
-            created_gmail_account = true
-
-            gmail_account = GmailAccount.new()
-            gmail_account.user = user
-          end
           gmail_account.refresh_user_info(api_client)
 
           google_o_auth2_token.google_api = gmail_account
@@ -70,7 +63,7 @@ class GmailAccountsController < ApplicationController
           gmail_account.save!
         end
 
-        flash[:success] = I18n.t('gmail.authenticated')
+        #flash[:success] = I18n.t('gmail.authenticated')
       rescue Exception => ex
         log_exception(false) { gmail_account.destroy! if created_gmail_account && gmail_account }
         log_exception(false) { token.destroy! if token }
@@ -79,7 +72,7 @@ class GmailAccountsController < ApplicationController
         log_email_exception(ex)
       end
 
-      redirect_to(root_url)
+      redirect_to(mail_url)
     end
   end
 

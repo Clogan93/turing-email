@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
 
   include SessionsHelper
   include ApplicationHelper
+  include GmailAccountsHelper
 
   before_action :authenticate
 
