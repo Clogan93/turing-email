@@ -9,12 +9,14 @@ describe "InstalledPanelApp", ->
         )
 
         @emailThreadAppJSON = TuringEmailApp.Models.InstalledApps.InstalledPanelApp.GetEmailThreadAppJSON(@emailThread)
-        @keys = _.keys(@emailThreadAppJSON)
       
       it "does not return the encoded properties", ->
-        expect(@keys.indexOf("body_text_encoded")).toEqual(-1)
-        expect(@keys.indexOf("html_part_encoded")).toEqual(-1)
-        expect(@keys.indexOf("text_part_encoded")).toEqual(-1)
+        for email in @emailThread.get("emails")
+          keys = _.keys(email)
+
+          expect(keys.indexOf("body_text_encoded")).toEqual(-1)
+          expect(keys.indexOf("html_part_encoded")).toEqual(-1)
+          expect(keys.indexOf("text_part_encoded")).toEqual(-1)
   
   beforeEach ->
     installedAppJSON = FactoryGirl.create("InstalledPanelApp")

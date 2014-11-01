@@ -1,7 +1,7 @@
 class Api::V1::AppsController < ApiController
   before_action { signed_in_user(true) }
 
-  before_action :correct_user, :except => [:test, :create, :index, :install, :uninstall]
+  before_action :correct_user, :except => [:test, :stats, :create, :index, :install, :uninstall]
   before_action :with_app, :only => [:install, :uninstall]
 
   swagger_controller :apps, 'Apps Controller'
@@ -16,9 +16,23 @@ class Api::V1::AppsController < ApiController
   
   def test
     email_thread = params[:email_thread]
-    html = "<html><body>HIHIHI!!!!<br />#{email_thread[:snippet]}</body></html>"
+    emails = email_thread[:emails]
+
+    html = "<html><body>HIHIHI!!!!<br />#{emails[(emails.length - 1).to_s]["snippet"]}</body></html>"
     
     render :html => html.html_safe
+  end
+
+  swagger_api :stats do
+    summary 'Stats app.'
+
+    param :form, :email_thread, :string, false, 'Email Thread'
+
+    response :ok
+  end
+  
+  def stats
+    render :html => 'stats'
   end
   
   swagger_api :create do

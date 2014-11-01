@@ -197,8 +197,8 @@ ActiveRecord::Schema.define(version: 20141026223435) do
   end
 
   add_index "gmail_accounts", ["email"], name: "index_gmail_accounts_on_email", using: :btree
+  add_index "gmail_accounts", ["google_id"], name: "index_gmail_accounts_on_google_id", unique: true, using: :btree
   add_index "gmail_accounts", ["user_id", "email"], name: "index_gmail_accounts_on_user_id_and_email", unique: true, using: :btree
-  add_index "gmail_accounts", ["user_id", "google_id"], name: "index_gmail_accounts_on_user_id_and_google_id", unique: true, using: :btree
 
   create_table "gmail_labels", force: true do |t|
     t.integer  "gmail_account_id"

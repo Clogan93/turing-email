@@ -58,7 +58,7 @@ class GoogleOAuth2Token < ActiveRecord::Base
     self.access_token = o_auth2_base_client.access_token
     self.expires_in = o_auth2_base_client.expires_in
     self.issued_at = o_auth2_base_client.issued_at
-    self.refresh_token = o_auth2_base_client.refresh_token
+    self.refresh_token = o_auth2_base_client.refresh_token if !o_auth2_base_client.refresh_token.blank?
 
     self.expires_at = Time.at(self.issued_at).to_datetime + self.expires_in.seconds
 
