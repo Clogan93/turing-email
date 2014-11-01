@@ -7,6 +7,8 @@ class TuringEmailApp.Models.InstalledApps.InstalledPanelApp extends TuringEmailA
       delete email["body_text_encoded"]
       delete email["html_part_encoded"]
       delete email["text_part_encoded"]
+      
+    return emailThreadAppJSON
     
   run: (iframe, emailThread) ->
     emailThread.load(
