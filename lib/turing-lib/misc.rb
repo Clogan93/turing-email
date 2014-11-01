@@ -146,3 +146,9 @@ def benchmark_time(message)
 
   log_console("benchmark_time: #{message} TOOK #{delta}")
 end
+
+def most_common_value(a)
+  a.group_by do |e|
+    e
+  end.values.max_by(&:size).first
+end
