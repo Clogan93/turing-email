@@ -31,12 +31,12 @@ describe "TuringEmailApp", ->
     for setupFunction in setupFunctions  
       it "calls the " + setupFunction + " function", ->
         spy = sinon.spy(TuringEmailApp, setupFunction)
-        TuringEmailApp.start()
+        TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserSettings"))
         expect(spy).toHaveBeenCalled()
         spy.restore()
         
     it "starts the backbone history", ->
-      TuringEmailApp.start()
+      TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserSettings"))
       expect(Backbone.History.started).toBeTruthy()
 
   describe "setup functions", ->
@@ -282,7 +282,7 @@ describe "TuringEmailApp", ->
   
   describe "after start", ->
     beforeEach ->
-      TuringEmailApp.start()
+      TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserSettings"))
       TuringEmailApp.showEmails()
       
       @server.restore()
