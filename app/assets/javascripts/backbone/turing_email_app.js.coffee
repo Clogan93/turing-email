@@ -105,6 +105,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
   setupKeyboardHandler: ->
     @keyboardHandler = new TuringEmailAppKeyboardHandler(this)
+    @keyboardHandler.start() if @models.userSettings.get("keyboard_shortcuts_enabled")
   
   setupMainView: ->
     @views.mainView = new TuringEmailApp.Views.Main(
