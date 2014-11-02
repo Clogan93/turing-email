@@ -295,6 +295,7 @@ describe "TuringEmailApp", ->
           @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadAttributes,
             app: TuringEmailApp
             emailThreadUID: emailThreadAttributes.uid
+            demoMode: false
           )
     
           TuringEmailApp.views.emailThreadsListView.collection.add(@emailThread)
@@ -646,6 +647,7 @@ describe "TuringEmailApp", ->
             @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadAttributes,
               app: TuringEmailApp
               emailThreadUID: emailThreadAttributes.uid
+              demoMode: false
             )
 
           afterEach ->

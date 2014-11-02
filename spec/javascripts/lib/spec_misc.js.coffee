@@ -24,6 +24,9 @@ window.specStartTuringEmailApp = ->
   TuringEmailApp.routers = {}
 
   $("<div />", {id: "main"}).appendTo("body")
+
+  TuringEmailApp.models.user = new TuringEmailApp.Models.User()
+  TuringEmailApp.models.userSettings = new TuringEmailApp.Models.UserSettings()
   
   TuringEmailApp.views.mainView = new TuringEmailApp.Views.Main(
     app: TuringEmailApp
@@ -34,9 +37,6 @@ window.specStartTuringEmailApp = ->
   TuringEmailApp.views.toolbarView = new TuringEmailApp.Views.ToolbarView(
     app: TuringEmailApp
   )
-
-  TuringEmailApp.models.user = new TuringEmailApp.Models.User()
-  TuringEmailApp.models.userSettings = new TuringEmailApp.Models.UserSettings()
   
   TuringEmailApp.collections.emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(undefined,
     app: TuringEmailApp

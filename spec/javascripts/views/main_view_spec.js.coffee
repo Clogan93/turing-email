@@ -275,6 +275,7 @@ describe "MainView", ->
           @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadAttributes.toJSON(),
             app: TuringEmailApp
             emailThreadUID: emailThreadAttributes.uid
+            demoMode: false
           )
           
         describe "with apps", ->

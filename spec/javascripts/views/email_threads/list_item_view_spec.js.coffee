@@ -6,6 +6,7 @@ describe "ListItemView", ->
     @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadAttributes,
       app: TuringEmailApp
       emailThreadUID: emailThreadAttributes.uid
+      demoMode: false
     )
     
     @listItemView = new TuringEmailApp.Views.EmailThreads.ListItemView(

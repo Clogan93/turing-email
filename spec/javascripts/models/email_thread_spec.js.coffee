@@ -4,6 +4,7 @@ describe "EmailThread", ->
     @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadAttributes,
       app: TuringEmailApp
       emailThreadUID: emailThreadAttributes.uid
+      demoMode: false
     )
     
     @emailThreads = FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE)
@@ -264,6 +265,7 @@ describe "EmailThread", ->
       @emailThreadTemp = new TuringEmailApp.Models.EmailThread(undefined,
         app: TuringEmailApp
         emailThreadUID: "1"
+        demoMode: false
       )
 
     it "initializes the variables", ->

@@ -6,6 +6,7 @@ describe "EmbeddedComposeView", ->
     @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadAttributes,
       app: TuringEmailApp
       emailThreadUID: emailThreadAttributes.uid
+      demoMode: false
     )
 
     @embeddedComposeView = new TuringEmailApp.Views.App.EmbeddedComposeView(app: TuringEmailApp)

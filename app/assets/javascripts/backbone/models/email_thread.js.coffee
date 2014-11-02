@@ -178,10 +178,10 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
   initialize: (attributes, options) ->
     @app = options.app
     @emailThreadUID = options.emailThreadUID
-    @set("demoMode", if options.demoMode? then options.demoMode else (if attributes.demoMode? then attributes.demoMode else true))
+    @set("demoMode", if options.demoMode? then options.demoMode else (if attributes?.demoMode? then attributes.demoMode else true))
 
     @url = "/api/v1/email_threads/show/" + options.emailThreadUID if options?.emailThreadUID
-    @url = "/api/v1/email_threads/show/" + attributes.uid if attributes?.uid
+    @url = "/api/v1/email_threads/show/" + attributes.uid if attributes?.uid?
     
     @listenTo(this, "change:seen", @seenChanged)
 
