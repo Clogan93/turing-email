@@ -34,7 +34,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     gapi.client.gmail.users.messages.list(params)
   
   renderSyncingEmailsMessage: (numEmailsToSync) ->
-    $("#main").html("Your emails are syncing! " + @models.user.get("num_emails") + " of " + numEmailsToSync)
+    $("#main").html("<div class='col-md-offset-2 col-md-8 emails-syncing-information'>Your emails are syncing! " + @models.user.get("num_emails") + " of " + numEmailsToSync * 15 + "<br /><div class='progress'><div class='progress-bar progress-bar-success' role='progressbar' aria-valuenow='" + @models.user.get("num_emails") + "' aria-valuemin='0' aria-valuemax='" + numEmailsToSync * 15 + "' style='width: " + (@models.user.get("num_emails") / (numEmailsToSync * 15)) * 100 + "%;'></div></div></div>")
     
   start: (userJSON, userSettingsJSON) ->
     @models = {}
@@ -53,7 +53,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
         (response) => @renderSyncingEmailsMessage(response.result.resultSizeEstimate)
       )
       
-      $("#main").html("Your emails are syncing!")
+      $("#main").html("<div class='col-md-offset-2 col-md-8 emails-syncing-information'>Your emails are syncing!</div>")
       return
     
     @setupKeyboardHandler()
