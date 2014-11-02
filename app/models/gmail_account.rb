@@ -5,7 +5,7 @@ class GmailAccount < ActiveRecord::Base
   DRAFTS_BATCH_SIZE = 100
   HISTORY_BATCH_SIZE = 100
   SEARCH_RESULTS_PER_PAGE = 50
-  NUM_SYNC_DYNOS = 2
+  NUM_SYNC_DYNOS = 4
 
   SCOPES = %w(https://www.googleapis.com/auth/userinfo.email
               https://www.googleapis.com/auth/gmail.readonly
