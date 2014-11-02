@@ -447,6 +447,14 @@ class GmailAccount < ActiveRecord::Base
   end
 
   def sync_email(labelIds: nil, delay: true)
+    Signal.trap 'TERM' do
+      # send INT so DJ gets it because there doesn't seem to be chaining of traps
+      Process.kill 'INT', Process.pid
+
+      # raise so this job will be retried
+      raise TermException
+    end
+    
     log_console("SYNCING Gmail #{self.email}")
     
     self.process_sync_failed_emails(delay: delay)
@@ -490,6 +498,11 @@ class GmailAccount < ActiveRecord::Base
       self.save!
       
       return synced_emails 
+    end
+  ensure
+    # rehook TERM and proxy up to DJ
+    Signal.trap 'TERM' do
+      Process.kill 'INT', Process.pid
     end
   end
 
