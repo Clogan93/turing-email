@@ -142,6 +142,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @listenTo(@views.toolbarView, "searchClicked", (toolbarView, query) => @searchClicked(query))
     @listenTo(@views.toolbarView, "createNewLabelClicked", @createNewLabelClicked)
     @listenTo(@views.toolbarView, "createNewEmailFolderClicked", @createNewEmailFolderClicked)
+    @listenTo(@views.toolbarView, "demoModeSwitchClicked", @demoModeSwitchClicked)
 
     @trigger("change:toolbarView", this, @views.toolbarView)
 
@@ -152,9 +153,11 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @listenTo(@models.userSettings, "change:demo_mode_enabled", =>
       @collections.emailFolders.demoMode = @models.userSettings.get("demo_mode_enabled")
       @collections.emailThreads.demoMode = @models.userSettings.get("demo_mode_enabled")
+      @views.toolbarView.demoMode = @models.userSettings.get("demo_mode_enabled")
       
       @reloadEmailThreads()
       @loadEmailFolders()
+      @views.toolbarView.render()
     )
     
     @listenTo(@models.userSettings, "change:keyboard_shortcuts_enabled", =>
@@ -308,6 +311,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
       success: (collection, response, options) =>
         @trigger("change:emailFolders", this, collection)
+        @trigger("change:currentEmailFolder", this, @selectedEmailFolder(), @collections.emailThreads.pageTokenIndex + 1)
     )
 
   ##############################
@@ -502,6 +506,24 @@ window.TuringEmailApp = new(Backbone.View.extend(
   createNewEmailFolderClicked: ->
     @views.createFolderView.show("folder")
 
+  demoModeSwitchClicked: (demoMode) ->
+    @models.userSettings.set("demo_mode_enabled", demoMode)
+    @showAlert("Changing mode... just a minute please", "alert-success")
+
+    @models.userSettings.save(null, {
+        patch: true
+        success: (model, response) =>
+          if demoMode
+            token = @showAlert("You are now viewing Turing mode - look how few emails there are!", "alert-success")
+          else
+            token = @showAlert("You are now viewing your live Gmail account - look how many emails there are!", "alert-success")
+
+          setTimeout (=>
+            @removeAlert(token)
+          ), 15000
+      }
+    )
+    
   installAppClicked: (view, appID) ->
     TuringEmailApp.Models.App.Install(appID)
     @models.userSettings.fetch(reset: true)

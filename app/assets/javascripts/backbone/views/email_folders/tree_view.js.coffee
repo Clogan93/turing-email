@@ -92,12 +92,12 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
 
   updateBadgeCount: (emailFolder) ->
     emailFolderID = emailFolder.get("label_id")
-
+    
     if emailFolderID is "INBOX"
       @$el.find('.inbox-count-badge').html(emailFolder.badgeString())
     else
       @$el.find('a[href="' + emailFolderID + '"]>.badge').html(emailFolder.badgeString())
-      
+
   #############################
   ### TuringEmailApp Events ###
   #############################

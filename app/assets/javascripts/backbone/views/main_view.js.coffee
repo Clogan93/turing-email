@@ -8,6 +8,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
 
     @toolbarView = new TuringEmailApp.Views.ToolbarView(
       app: @app
+      demoMode: @app.models.userSettings.get("demo_mode_enabled")
     )
 
     @miniatureToolbarView = new TuringEmailApp.Views.MiniatureToolbarView(

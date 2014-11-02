@@ -7,6 +7,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   initialize: (options) ->
     @app = options.app
     @currentEmailFolders = options.emailFolders if options.emailFolders?
+    @demoMode = if options.demoMode? then options.demoMode else true
     
     @listenTo(options.app, "change:currentEmailFolder", @currentEmailFolderChanged)
     @listenTo(options.app, "change:emailFolders", @emailFoldersChanged)
@@ -16,12 +17,13 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
   render: ->
     emailFolders = @currentEmailFolders?.toJSON() ? []
-    @$el.html(@template({'emailFolders' : emailFolders}))
+    @$el.html(@template({emailFolders : emailFolders, demoMode: @demoMode}))
     
     @setupAllCheckbox()
     @divAllCheckbox = @$el.find("div.icheckbox_square-green")
     
     @setupButtons()
+    @setupDemoModeSwitch()
     @renderReportToolbarDropdown()
 
     if @currentEmailFolder?
@@ -107,6 +109,13 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @$el.find(".settings-button").click ->
       $(this).tooltip('hide')
 
+  setupDemoModeSwitch: ->
+    @$el.find(".demo_mode_switch").bootstrapSwitch()
+
+    @$el.find(".demo_mode_switch").on "switch-change", (event, state) =>
+      @demoMode = !@demoMode
+      @trigger("demoModeSwitchClicked", @demoMode)
+      
   setupBulkActionButtons: ->
     @$el.find(".all-bulk-action").click =>
       @divAllCheckbox.iCheck("check")
@@ -145,8 +154,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       firstThreadNumber = if numThreads is 0 then 0 else (page - 1) * TuringEmailApp.Models.UserSettings.EmailThreadsPerPage + 1
       
       lastThreadNumber = page * TuringEmailApp.Models.UserSettings.EmailThreadsPerPage
-      if lastThreadNumber > parseInt(numThreads)
-        lastThreadNumber = numThreads
+      lastThreadNumber = numThreads if lastThreadNumber > parseInt(numThreads)
     else
       numThreads = 0
       firstThreadNumber = 0
