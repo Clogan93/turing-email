@@ -6,6 +6,7 @@ describe "InstalledPanelApp", ->
         @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadAttributes.toJSON(),
           app: TuringEmailApp
           emailThreadUID: emailThreadAttributes.uid
+          demoMode: false
         )
 
         @emailThreadAppJSON = TuringEmailApp.Models.InstalledApps.InstalledPanelApp.GetEmailThreadAppJSON(@emailThread)
@@ -34,6 +35,7 @@ describe "InstalledPanelApp", ->
       @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadAttributes.toJSON(),
         app: TuringEmailApp
         emailThreadUID: emailThreadAttributes.uid
+        demoMode: false
       )
 
       @emailThreadAppJSON = TuringEmailApp.Models.InstalledApps.InstalledPanelApp.GetEmailThreadAppJSON(@emailThread)

@@ -1,3 +1,6 @@
+class TermException < Exception
+end
+
 class Integer
   N_BYTES = [0].pack('i').size
   N_BITS = N_BYTES * 8

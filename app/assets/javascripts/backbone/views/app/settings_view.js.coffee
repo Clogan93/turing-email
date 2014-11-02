@@ -34,11 +34,11 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
       
       confirm_response = confirm("Are you sure you want to declare email bankruptcy?")
       if confirm_response
-        @showSettingsAlert('You have successfully declared email bankruptcy!')
+        token = TuringEmailApp.showAlert("You have successfully declared email bankruptcy!", "alert-success")
         $.post "/api/v1/users/declare_email_bankruptcy"
 
         setTimeout (=>
-          @removeSettingsAlert()
+          TuringEmailApp.removeAlert(token)
         ), 3000
 
   setupSwitches: ->
@@ -75,10 +75,10 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     @model.save(null, {
       patch: true
       success: (model, response) =>
-        @showSettingsAlert('You have successfully saved your settings!')
+        token = TuringEmailApp.showAlert("You have successfully saved your settings!", "alert-success")
 
         setTimeout (=>
-          @removeSettingsAlert()
+          TuringEmailApp.removeAlert(token)
         ), 3000
       }
     )
@@ -114,13 +114,3 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
         type: "DELETE"
 
       $(@).parent().parent().remove()
-
-  showSettingsAlert: (alertMessage) ->
-    @removeSettingsAlert() if @currentAlertToken?
-
-    @currentAlertToken = TuringEmailApp.showAlert(alertMessage, "alert-success")
-
-  removeSettingsAlert: ->
-    if @currentAlertToken?
-      TuringEmailApp.removeAlert(@currentAlertToken)
-      @currentAlertToken = null

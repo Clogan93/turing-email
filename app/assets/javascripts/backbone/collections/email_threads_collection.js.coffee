@@ -178,6 +178,8 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
   parse: (threadsJSON, options) ->
     if @demoMode
       TuringEmailApp.Models.EmailThread.SetThreadPropertiesFromJSON(threadJSON, @demoMode) for threadJSON in threadsJSON
+    else
+      threadJSON.demoMode = false for threadJSON in threadsJSON
 
     return threadsJSON
     

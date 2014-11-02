@@ -7,6 +7,7 @@ describe "EmailThreadView", ->
     @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadAttributes,
       app: TuringEmailApp
       emailThreadUID: emailThreadAttributes.uid
+      demoMode: false
     )
     
     @emailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(

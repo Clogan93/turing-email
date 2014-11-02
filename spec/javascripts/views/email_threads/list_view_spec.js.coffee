@@ -16,6 +16,7 @@ describe "ListView", ->
     @emailThread = new TuringEmailApp.Models.EmailThread(emailThreadAttributes,
       app: TuringEmailApp
       emailThreadUID: emailThreadAttributes.uid
+      demoMode: false
     )
 
   afterEach ->
