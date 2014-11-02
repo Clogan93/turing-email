@@ -19,6 +19,10 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     emailFolders = @currentEmailFolders?.toJSON() ? []
     @$el.html(@template({emailFolders : emailFolders, demoMode: @demoMode}))
     
+    emailFolders = _.sortBy(emailFolders, (emailFolder) ->
+      emailFolder.name
+    )
+
     @setupAllCheckbox()
     @divAllCheckbox = @$el.find("div.icheckbox_square-green")
     

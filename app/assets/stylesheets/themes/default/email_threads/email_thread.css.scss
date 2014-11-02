@@ -88,7 +88,6 @@ pre.email-body {
   .row {
     padding: 15px 10px;
   }
-
 }
 
 .email-iframe {
@@ -101,4 +100,11 @@ pre.email-body {
 
 .mail-tools {
   margin-top: 10px;
+}
+
+.email-to {
+  padding-left: 10px;
+  position: relative;
+  bottom: 10px;
+  cursor: pointer;
 }
