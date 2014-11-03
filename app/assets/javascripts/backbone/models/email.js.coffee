@@ -33,8 +33,9 @@ class TuringEmailApp.Models.Email extends Backbone.Model
         parsedPrefix = emailHeadersMap[headerName]
         if parsedPrefix?
           parsedEmail = EmailAddressParser.parseOneAddress(header.value)
-          emailParsed[parsedPrefix + "name"] = parsedEmail.name
-          emailParsed[parsedPrefix + "address"] = parsedEmail.address
+          if parsedEmail?
+            emailParsed[parsedPrefix + "name"] = parsedEmail.name
+            emailParsed[parsedPrefix + "address"] = parsedEmail.address
 
   @parseBody: (emailParsed, parts) ->
     return if not parts?
