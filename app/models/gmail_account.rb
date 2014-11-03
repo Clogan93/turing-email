@@ -480,7 +480,7 @@ class GmailAccount < ActiveRecord::Base
     
     job_ids = self.process_sync_failed_emails(delay: delay)
 
-    if self.last_history_id_synced.nil?
+    if self.last_history_id_synced.nil? || !self.user.has_genie_report_ran
       log_console ("INITIAL SYNC!!")
       
       job_ids.concat(self.sync_email_full(labelIds: labelIds, delay: delay))
