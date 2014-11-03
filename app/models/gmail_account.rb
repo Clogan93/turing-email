@@ -477,7 +477,26 @@ class GmailAccount < ActiveRecord::Base
   
   def sync_email(labelIds: nil, delay: true)
     log_console("SYNCING Gmail #{self.email}")
-    
+
+    started_sync = false
+
+    self.with_lock do
+      if self.sync_started_time
+        seconds_since_sync_started = ((DateTime.now() - self.sync_started_time.to_datetime()) * 24 * 60 * 60).to_i
+
+        if seconds_since_sync_started < 3.hours
+          log_console("SKIPPING SYNC because seconds_since_sync_started=#{seconds_since_sync_started}")
+          return []
+        else
+          log_console("DOING SYNC! with seconds_since_sync_started=#{seconds_since_sync_started}")
+        end
+      end
+
+      started_sync = true
+      self.sync_started_time = DateTime.now()
+      self.save!
+    end
+
     job_ids = self.process_sync_failed_emails(delay: delay)
 
     if self.last_history_id_synced.nil? || !self.user.has_genie_report_ran
@@ -492,44 +511,21 @@ class GmailAccount < ActiveRecord::Base
         log_console("#{self.user.email} queueing check_initial_sync with #{job_ids.length} job IDs!")
         self.delay(num_dynos: GmailAccount::NUM_SYNC_DYNOS).check_initial_sync(job_ids)
       end
-
-      log_console("#{self.user.email} sync_email INITIAL got #{job_ids.length} job IDs!")
-      
-      return job_ids
     else
       log_console ("SUBSEQUENT SYNC!!")
-      
-      begin
-        if self.sync_started_time
-          seconds_since_sync_started = ((DateTime.now() - self.sync_started_time.to_datetime()) * 24 * 60 * 60).to_i
-  
-          if seconds_since_sync_started < 60 * 5
-            log_console("SKIPPING SYNC because seconds_since_sync_started=#{seconds_since_sync_started}")
-            return job_ids
-          else
-            log_console("DOING SYNC! with seconds_since_sync_started=#{seconds_since_sync_started}")
-          end
-        end
-        
-        self.sync_started_time = DateTime.now()
-        self.save!
-  
-        job_ids.concat(self.sync_email_partial(delay: delay))
-  
-        self.sync_draft_ids()
-        
-        self.sync_started_time = nil
-        self.save!
-  
-        log_console("#{self.user.email} sync_email subsequent got #{job_ids.length} job IDs!")
-        
-        return job_ids 
-      rescue SignalException => ex
-        self.sync_started_time = nil
-        self.save!
-        
-        raise ex
-      end
+
+      job_ids.concat(self.sync_email_partial(delay: delay))
+
+      self.sync_draft_ids()
+    end
+
+    log_console("#{self.user.email} sync_email got #{job_ids.length} job IDs!")
+
+    return job_ids
+  ensure
+    if started_sync
+      self.sync_started_time = nil
+      self.save!
     end
   end
 
