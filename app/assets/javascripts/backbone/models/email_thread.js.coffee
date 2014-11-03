@@ -5,20 +5,22 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     threadJSON.loaded = true
     threadJSON.demoMode = demoMode
 
-    lastEmail = _.last(threadJSON.emails)
+    lastEmail = threadJSON.emails[0]
     
     threadJSON.num_messages = threadJSON.emails.length
     threadJSON.snippet = lastEmail.snippet
 
     threadJSON.from_name = lastEmail.from_name
     threadJSON.from_address = lastEmail.from_address
-    threadJSON.date = lastEmail.date
+    threadJSON.date = new Date(lastEmail.date)
     threadJSON.subject = lastEmail.subject
 
     folderIDs = []
 
     threadJSON.seen = true
     for email in threadJSON.emails
+      email.date = new Date(email.date)
+
       threadJSON.seen = false if !email.seen
       folderIDs = folderIDs.concat(email.folder_ids) if email.folder_ids?
 
