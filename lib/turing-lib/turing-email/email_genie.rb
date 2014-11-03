@@ -74,7 +74,7 @@ class EmailGenie
     inbox_label = gmail_account.inbox_folder
     return if inbox_label.nil?
 
-    emails = demo ? inbox_label.emails : inbox_label.emails.where('date < ?', Time.now - 7.hours)
+    where_clause = demo ? '' : ['date < ?', Time.now - 7.hours]
 
     sent_label = gmail_account.sent_folder
     top_lists_email_daily_average = Email.lists_email_daily_average(gmail_account.user, limit: 10).transpose()[0]
@@ -84,7 +84,7 @@ class EmailGenie
       gmail_client = gmail_account.gmail_client
     end
     
-    emails.each do |email|
+    inbox_label.emails.where(where_clause).find_each do |email|
       log_console("PROCESSING #{email.uid}")
 
       if EmailGenie.email_is_unimportant(email, sent_label: sent_label)
