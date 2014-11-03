@@ -82,7 +82,7 @@ class Email < ActiveRecord::Base
     email = Email.new
     
     ip = Email.get_sender_ip(email_raw)
-    email.ip_info = IpInfo.from_ip(ip) if ip
+    #email.ip_info = IpInfo.from_ip(ip) if ip
 
     email.message_id = email_raw.message_id
 
