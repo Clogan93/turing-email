@@ -484,7 +484,7 @@ class GmailAccount < ActiveRecord::Base
       log_console ("INITIAL SYNC!!")
       
       job_ids.concat(self.sync_email_full(labelIds: labelIds, delay: delay))
-      job_ids.concat(self.sync_email_partial(delay: delay))
+      job_ids.concat(self.sync_email_partial(delay: delay)) if labelIds.blank?
       
       self.sync_draft_ids()
 
@@ -628,7 +628,7 @@ class GmailAccount < ActiveRecord::Base
   
           gmail_ids = messages_data.map { |message_data| message_data['id'] }
     
-          if last_history_id_synced.nil?
+          if labelIds.blank? && last_history_id_synced.nil?
             gmail_data = self.gmail_client.messages_get('me', gmail_ids.first, format: 'minimal', fields: 'historyId')
             last_history_id_synced = gmail_data['historyId']
           end
@@ -657,7 +657,7 @@ class GmailAccount < ActiveRecord::Base
       break if nextPageToken.blank?
     end
 
-    self.set_last_history_id_synced(last_history_id_synced)
+    self.set_last_history_id_synced(last_history_id_synced) if last_history_id_synced
 
     return job_ids
   rescue Exception => ex
@@ -708,8 +708,16 @@ class GmailAccount < ActiveRecord::Base
           nextPageToken = history_list_data['nextPageToken']
         end
       rescue Google::APIClient::ClientError => ex
-        attempts = Google::GmailClient.handle_client_error(ex, attempts)
-        retry
+        if ex.result.status == 404
+          log_console("HISTORY ID #{self.last_history_id_synced} NOT FOUND!!!!!!!!!!!!!")
+          self.set_last_history_id_synced(nil)
+
+          full_sync_job_ids = sync_email_full(delay: delay)
+          return job_ids.concat(full_sync_job_ids)
+        else
+          attempts = Google::GmailClient.handle_client_error(ex, attempts)
+          retry
+        end
       end
 
       sleep(1)
@@ -836,7 +844,7 @@ class GmailAccount < ActiveRecord::Base
   rescue Exception => ex
     result = ex.result
     
-    if result.response.status == 404
+    if result.status == 404
       log_console("DELETED = #{result.request.parameters['id']}")
       Email.destroy_all(:email_account => self,
                         :uid => gmail_id)
