@@ -30,7 +30,7 @@
         <% end %>
       </td>
       <td><%= link_to(truncate(email.subject, :length => max_subject_len), "#email_thread/#{email.email_thread.uid}", :style => "color: #4ab59c;") %></td>
-      <td><%= email.date.to_s_local() %></td>
+      <td><%= email.date.to_s_local() if email.date %></td>
       <% if include_auto_filed_folder %>
         <td><%= email.auto_filed_folder.name %></td>
         <td style="color: #4ab59c;">
