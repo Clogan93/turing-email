@@ -1,7 +1,7 @@
 Delayed::Worker.destroy_failed_jobs = false
 Delayed::Worker.sleep_delay = 5
 Delayed::Worker.max_attempts = 5
-Delayed::Worker.max_run_time = 12.hours
+Delayed::Worker.max_run_time = 3.hours
 Delayed::Worker.default_queue_name = 'worker'
 Delayed::Worker.raise_signal_exceptions = :term
 
