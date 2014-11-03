@@ -3,6 +3,7 @@ Delayed::Worker.sleep_delay = 5
 Delayed::Worker.max_attempts = 5
 Delayed::Worker.max_run_time = 12.hours
 Delayed::Worker.default_queue_name = 'worker'
+Delayed::Worker.raise_signal_exceptions = :term
 
 module WorkerExtensions
   protected
@@ -19,7 +20,7 @@ module WorkerExtensions
     super(job, error)
   end
 end
-Delayed::MessageSending
+
 module Delayed
   module DelayMail
     def delay(options = {}, heroku_scale: true)
