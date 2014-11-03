@@ -39,8 +39,8 @@ def log_console(message, job = nil)
   else
     Rails.logger.info(message)
   end
-rescue
-  log_email('log_console ERROR!!', message, false)
+rescue Exception => ex
+  log_email('log_console ERROR!!', "#{ex.log_message}\r\n\r\n#{message}", false)
 end
 
 def log_console_exception(ex)

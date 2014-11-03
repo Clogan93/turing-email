@@ -41,7 +41,7 @@ namespace :jobs do
 
       while true
         worker_pid = Process.wait()
-        Rails.logger.info "worker #{workers[worker_pid]} exited - #{$?.to_s }"
+        Rails.logger.info "worker #{workers[worker_pid]} exited - #{$?.to_s } STOP=#{stop}"
         break if stop
 
         worker_name, worker_pid = fork_delayed(worker_index)

@@ -3,6 +3,7 @@ Delayed::Worker.sleep_delay = 5
 Delayed::Worker.max_attempts = 5
 Delayed::Worker.max_run_time = 12.hours
 Delayed::Worker.default_queue_name = 'worker'
+Delayed::Worker.raise_signal_exceptions = :term
 
 module WorkerExtensions
   protected
@@ -19,19 +20,25 @@ module WorkerExtensions
     super(job, error)
   end
 end
-Delayed::MessageSending
+
 module Delayed
   module DelayMail
-    def delay(options = {}, heroku_scale: true)
-      HerokuTools::HerokuTools.scale_dynos('worker', 1) if heroku_scale
+    def delay(options = {}, heroku_scale: true, dyno: 'worker', num_dynos: 1)
+      if heroku_scale
+        current_num_dynos = HerokuTools::HerokuTools.count_dynos(dyno)
+        HerokuTools::HerokuTools.scale_dynos(dyno, num_dynos) if current_num_dynos < num_dynos
+      end
 
       DelayProxy.new(PerformableMailer, self, options)
     end
   end
 
   module MessageSending
-    def delay(options = {}, heroku_scale: true)
-      HerokuTools::HerokuTools.scale_dynos('worker', 1) if heroku_scale
+    def delay(options = {}, heroku_scale: true, dyno: 'worker', num_dynos: 1)
+      if heroku_scale
+        current_num_dynos = HerokuTools::HerokuTools.count_dynos(dyno)
+        HerokuTools::HerokuTools.scale_dynos(dyno, num_dynos) if current_num_dynos < num_dynos
+      end
 
       DelayProxy.new(PerformableMethod, self, options)
     end
