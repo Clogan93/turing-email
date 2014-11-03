@@ -493,7 +493,7 @@ class GmailAccount < ActiveRecord::Base
       
       begin
         if self.sync_started_time
-          seconds_since_sync_started = ((DateTime.now() - self.sync_started_time) * 24 * 60 * 60).to_i
+          seconds_since_sync_started = ((DateTime.now() - self.sync_started_time.to_datetime) * 24 * 60 * 60).to_i
   
           if seconds_since_sync_started < 60 * 5
             log_console("SKIPPING SYNC because seconds_since_sync_started=#{seconds_since_sync_started}")
