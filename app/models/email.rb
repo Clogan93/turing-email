@@ -135,21 +135,21 @@ class Email < ActiveRecord::Base
         m = header.value.match(/\[(#{$config.ip_regex})\]/)
         
         if m
-          log_console("FOUND IP #{m[1]} IN X-Originating-IP=#{header.value}")
+          #log_console("FOUND IP #{m[1]} IN X-Originating-IP=#{header.value}")
           return m[1]
         end
       elsif header.name.downcase == 'received'
         m = header.value.match(/from.*\[(#{$config.ip_regex})\]/)
         
         if m
-          log_console("FOUND IP #{m[1]} IN RECEIVED=#{header.value}")
+          #log_console("FOUND IP #{m[1]} IN RECEIVED=#{header.value}")
           return m[1]
         end
       elsif header.name.downcase == 'received-spf'
         m = header.value.match(/client-ip=(#{$config.ip_regex})/)
 
         if m
-          log_console("FOUND IP #{m[1]} IN RECEIVED-SPF=#{header.value}")
+          #log_console("FOUND IP #{m[1]} IN RECEIVED-SPF=#{header.value}")
           return m[1]
         end
       end
