@@ -623,7 +623,14 @@ class GmailAccount < ActiveRecord::Base
             last_history_id_synced = gmail_data['historyId']
           end
     
-          job_ids.concat(self.sync_gmail_ids(gmail_ids, delay: delay))
+          #job_ids.concat(self.sync_gmail_ids(gmail_ids, delay: delay))
+          if delay
+            job = self.delay.sync_gmail_ids(gmail_ids, delay: false)
+            job_ids.push(job.id)
+          else
+            self.sync_gmail_ids(gmail_ids, delay: false)
+          end
+          
           num_emails_synced += gmail_ids.length
           
           nextPageToken = messages_list_data['nextPageToken']
@@ -676,7 +683,12 @@ class GmailAccount < ActiveRecord::Base
           
           log_console("GOT #{gmail_ids.length} messages\n")
     
-          job_ids.concat(self.sync_gmail_ids(gmail_ids, delay: delay))
+          if delay
+            job = self.delay.sync_gmail_ids(gmail_ids, delay: false)
+            job_ids.push(job.id)
+          else
+            self.sync_gmail_ids(gmail_ids, delay: false)
+          end
           num_emails_synced += gmail_ids.length
           
           self.set_last_history_id_synced(historys_data.last['id']) if !historys_data.empty?
@@ -792,6 +804,35 @@ class GmailAccount < ActiveRecord::Base
     end
   end
 
+  def sync_gmail_id(gmail_id)
+    log_console("sync_gmail_id PROCESSING message.id = #{gmail_id}")
+    
+    email = Email.find_by_uid(gmail_id)
+    format = email ? 'minimal' : 'raw'
+    
+    retry_block do
+      gmail_data = gmail_client.messages_get('me', gmail_id, format: format)
+      
+      if gmail_data['raw']
+        self.create_email_from_gmail_data(JSON.parse(gmail_data.to_json))
+      else
+        self.update_email_from_gmail_data(JSON.parse(gmail_data.to_json))
+      end
+    end
+  rescue SignalException => ex
+    raise ex
+  rescue Exception => ex
+    result = ex.result
+    
+    if result.response.status == 404
+      log_console("DELETED = #{result.request.parameters['id']}")
+      Email.destroy_all(:email_account => self,
+                        :uid => gmail_id)
+    else
+      SyncFailedEmail.create_retry(self, gmail_id, result: result)
+    end
+  end
+  
   def sync_gmail_ids(gmail_ids, delay: false)
     gmail_id_index = 0
     job_ids = []
@@ -799,20 +840,29 @@ class GmailAccount < ActiveRecord::Base
     while gmail_id_index < gmail_ids.length
       retry_block do
         current_gmail_ids = gmail_ids[gmail_id_index ... (gmail_id_index + GmailAccount::MESSAGE_BATCH_SIZE)]
-        email_uids = Email.where(:uid => current_gmail_ids).pluck(:uid)
-  
-        batch_request = self.sync_gmail_ids_batch_request(delay: delay, job_ids: job_ids)
-        gmail_client = self.gmail_client
-  
-        current_gmail_ids.each do |gmail_id|
-          format = email_uids.include?(gmail_id) ? 'minimal' : 'raw'
-          #log_console("QUEUEING message SYNC format=#{format} gmail_id = #{gmail_id}")
-  
-          call = gmail_client.messages_get_call('me', gmail_id, format: format)
-          batch_request.add(call)
+        
+        if !delay
+          email_uids = Email.where(:uid => current_gmail_ids).pluck(:uid)
+    
+          batch_request = self.sync_gmail_ids_batch_request(delay: delay, job_ids: job_ids)
+          gmail_client = self.gmail_client
+    
+          current_gmail_ids.each do |gmail_id|
+            format = email_uids.include?(gmail_id) ? 'minimal' : 'raw'
+            #log_console("QUEUEING message SYNC format=#{format} gmail_id = #{gmail_id}")
+    
+            call = gmail_client.messages_get_call('me', gmail_id, format: format)
+            batch_request.add(call)
+          end
+    
+          self.google_o_auth2_token.api_client.execute!(batch_request)
+        else
+          current_gmail_ids.each do |gmail_id|
+            job = self.delay(heroku_scale: false).sync_gmail_id(gmail_id)
+
+            job_ids.push(job.id)
+          end
         end
-  
-        self.google_o_auth2_token.api_client.execute!(batch_request)
   
         gmail_id_index += GmailAccount::MESSAGE_BATCH_SIZE
       end
