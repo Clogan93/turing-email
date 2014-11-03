@@ -433,7 +433,7 @@ class GmailAccount < ActiveRecord::Base
 
     gmail_ids = self.sync_failed_emails.pluck(:email_uid)
     self.sync_failed_emails.where(:email_uid => gmail_ids).destroy_all()
-    self.sync_gmail_ids(gmail_ids, delay: delay)
+    return self.sync_gmail_ids(gmail_ids, delay: delay)
   end
 
   def sync_reset
@@ -446,50 +446,82 @@ class GmailAccount < ActiveRecord::Base
     self.save!
   end
 
+  def check_initial_sync(job_ids)
+    num_jobs_pending = Delayed::Job.where(:id => job_ids, :failed_at => nil).count
+
+    if num_jobs_pending == 0
+      log_console("#{self.user.email} INITIAL SYNC DONE!!")
+      
+      EmailGenie.process_gmail_account(self, true)
+      EmailGenie.send_user_report_email(self.user, true)
+      GenieMailer.email_synced_email(user).deliver()
+  
+      self.last_history_id_synced = nil
+      self.save!
+  
+      self.delay({run_at: 1.minute.from_now}, num_dynos: GmailAccount::NUM_SYNC_DYNOS).sync_email()
+    else
+      log_console("#{self.user.email} initial sync NOT DONE num_jobs_pending=#{num_jobs_pending}!!")
+      
+      self.delay({run_at: 1.minute.from_now}, num_dynos: GmailAccount::NUM_SYNC_DYNOS).check_initial_sync(job_ids)
+    end
+  end
+  
   def sync_email(labelIds: nil, delay: true)
     log_console("SYNCING Gmail #{self.email}")
     
-    self.process_sync_failed_emails(delay: delay)
+    job_ids = self.process_sync_failed_emails(delay: delay)
 
     if self.last_history_id_synced.nil?
-      synced_emails = self.sync_email_full(labelIds: labelIds, delay: delay)
-      synced_emails = self.sync_email_partial(delay: delay) || synced_emails
+      log_console ("INITIAL SYNC!!")
+      
+      job_ids.concat(self.sync_email_full(labelIds: labelIds, delay: delay))
+      job_ids.concat(self.sync_email_partial(delay: delay))
       
       self.sync_draft_ids()
 
       if !self.user.has_genie_report_ran
-        EmailGenie.process_gmail_account(self, true)
-        EmailGenie.send_user_report_email(self.user, true)
-        GenieMailer.email_synced_email(user).deliver()
-    
-        self.last_history_id_synced = nil
-        self.save!
-
-        self.delay(num_dynos: GmailAccount::NUM_SYNC_DYNOS).sync_email()
+        log_console("#{self.user.email} queueing check_initial_sync with #{job_ids.length} job IDs!")
+        self.delay(num_dynos: GmailAccount::NUM_SYNC_DYNOS).check_initial_sync(job_ids)
       end
+
+      log_console("#{self.user.email} sync_email INITIAL got #{job_ids.length} job IDs!")
       
-      return synced_emails
+      return job_ids
     else
-      if self.sync_started_time
-        seconds_since_sync_started = ((DateTime.now() - self.sync_started_time) * 24 * 60 * 60).to_i
-
-        if seconds_since_sync_started < 60 * 5
-          log_console("SKIPPING SYNC because seconds_since_sync_started=#{seconds_since_sync_started}")
-          return []
+      log_console ("SUBSEQUENT SYNC!!")
+      
+      begin
+        if self.sync_started_time
+          seconds_since_sync_started = ((DateTime.now() - self.sync_started_time) * 24 * 60 * 60).to_i
+  
+          if seconds_since_sync_started < 60 * 5
+            log_console("SKIPPING SYNC because seconds_since_sync_started=#{seconds_since_sync_started}")
+            return job_ids
+          else
+            log_console("DOING SYNC! with seconds_since_sync_started=#{seconds_since_sync_started}")
+          end
         end
+        
+        self.sync_started_time = DateTime.now()
+        self.save!
+  
+        job_ids.concat(self.sync_email_partial(delay: delay))
+  
+        self.sync_draft_ids()
+        
+        self.sync_started_time = nil
+        self.save!
+  
+        log_console("#{self.user.email} sync_email subsequent got #{job_ids.length} job IDs!")
+        
+        return job_ids 
+      rescue SignalException => ex
+        self.sync_started_time = nil
+        self.save!
+        
+        raise ex
       end
-      
-      self.sync_started_time = DateTime.now()
-      self.save!
-      
-      synced_emails = self.sync_email_partial(delay: delay)
-
-      self.sync_draft_ids()
-      
-      self.sync_started_time = nil
-      self.save!
-      
-      return synced_emails 
     end
   end
 
@@ -568,6 +600,7 @@ class GmailAccount < ActiveRecord::Base
   def sync_email_full(labelIds: nil, delay: true)
     log_console("FULL SYNC with last_history_id_synced = #{self.last_history_id_synced}\n")
 
+    job_ids = []
     num_emails_synced = 0
     nextPageToken = nil
     last_history_id_synced = nil
@@ -590,7 +623,7 @@ class GmailAccount < ActiveRecord::Base
             last_history_id_synced = gmail_data['historyId']
           end
     
-          self.sync_gmail_ids(gmail_ids, delay: delay)
+          job_ids.concat(self.sync_gmail_ids(gmail_ids, delay: delay))
           num_emails_synced += gmail_ids.length
           
           nextPageToken = messages_list_data['nextPageToken']
@@ -607,7 +640,7 @@ class GmailAccount < ActiveRecord::Base
 
     self.set_last_history_id_synced(last_history_id_synced)
 
-    return num_emails_synced > 0
+    return job_ids
   rescue Exception => ex
     log_console('AHHHHHHH sync_email_full self.gmail_client.messages_list FAILED')
     raise ex
@@ -616,6 +649,7 @@ class GmailAccount < ActiveRecord::Base
   def sync_email_partial(delay: true)
     log_console("PARTIAL SYNC with last_history_id_synced = #{self.last_history_id_synced}\n")
 
+    job_ids = []
     num_emails_synced = 0
     nextPageToken = nil
 
@@ -640,7 +674,7 @@ class GmailAccount < ActiveRecord::Base
           
           log_console("GOT #{gmail_ids.length} messages\n")
     
-          self.sync_gmail_ids(gmail_ids, delay: delay)
+          job_ids.concat(self.sync_gmail_ids(gmail_ids, delay: delay))
           num_emails_synced += gmail_ids.length
           
           self.set_last_history_id_synced(historys_data.last['id']) if !historys_data.empty?
@@ -657,7 +691,7 @@ class GmailAccount < ActiveRecord::Base
       break if nextPageToken.blank?
     end
     
-    return num_emails_synced > 0
+    return job_ids
   rescue Exception => ex
     log_console('AHHHHHHH sync_email_partial self.gmail_client.history_list FAILED')
     raise ex
@@ -697,12 +731,10 @@ class GmailAccount < ActiveRecord::Base
 
       self.sync_email_labels(email, gmail_data['labelIds'])
     end
+  rescue SignalException => ex
+    raise ex
   rescue Exception => ex
-    if ex.class == SignalException
-      raise ex
-    else
-      SyncFailedEmail.create_retry(self, gmail_data['id'], ex: ex)
-    end
+    SyncFailedEmail.create_retry(self, gmail_data['id'], ex: ex)
   end
 
   def update_email_from_gmail_data(gmail_data)
@@ -715,7 +747,7 @@ class GmailAccount < ActiveRecord::Base
     self.sync_email_labels(email, gmail_data['labelIds'])
   end
 
-  def sync_gmail_ids_batch_request(delay: false)
+  def sync_gmail_ids_batch_request(delay: false, job_ids: [])
     return Google::APIClient::BatchRequest.new() do |result|
       if result.error?
         if result.response.status == 404
@@ -735,11 +767,13 @@ class GmailAccount < ActiveRecord::Base
       begin
         if delay
           if gmail_data['raw']
-            self.delay(heroku_scale: false).create_email_from_gmail_data(JSON.parse(gmail_data.to_json))
+            job = self.delay(heroku_scale: false).create_email_from_gmail_data(JSON.parse(gmail_data.to_json))
           else
             #log_console('EXISTS - minimal update!')
-            self.delay(heroku_scale: false).update_email_from_gmail_data(JSON.parse(gmail_data.to_json))
+            job = self.delay(heroku_scale: false).update_email_from_gmail_data(JSON.parse(gmail_data.to_json))
           end
+          
+          job_ids.push(job.id)
         else
           if gmail_data['raw']
             self.create_email_from_gmail_data(JSON.parse(gmail_data.to_json))
@@ -748,25 +782,24 @@ class GmailAccount < ActiveRecord::Base
             self.update_email_from_gmail_data(JSON.parse(gmail_data.to_json))
           end
         end
+      rescue SignalException => ex
+        raise ex
       rescue Exception => ex
-        if ex.class == SignalException
-          raise ex
-        else
-          SyncFailedEmail.create_retry(self, gmail_data['id'], ex: ex)
-        end
+        SyncFailedEmail.create_retry(self, gmail_data['id'], ex: ex)
       end
     end
   end
 
   def sync_gmail_ids(gmail_ids, delay: false)
     gmail_id_index = 0
+    job_ids = []
 
     while gmail_id_index < gmail_ids.length
       retry_block do
         current_gmail_ids = gmail_ids[gmail_id_index ... (gmail_id_index + GmailAccount::MESSAGE_BATCH_SIZE)]
         email_uids = Email.where(:uid => current_gmail_ids).pluck(:uid)
   
-        batch_request = self.sync_gmail_ids_batch_request(delay: delay)
+        batch_request = self.sync_gmail_ids_batch_request(delay: delay, job_ids: job_ids)
         gmail_client = self.gmail_client
   
         current_gmail_ids.each do |gmail_id|
@@ -784,6 +817,8 @@ class GmailAccount < ActiveRecord::Base
     end
 
     HerokuTools::HerokuTools.scale_dynos('worker', GmailAccount::NUM_SYNC_DYNOS) if delay
+    
+    return job_ids
   end
 
   def sync_gmail_thread(gmail_thread_id)
