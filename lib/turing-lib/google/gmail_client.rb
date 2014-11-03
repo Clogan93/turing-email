@@ -10,6 +10,9 @@ module Google
       if ex.result.data.error.nil? ||
          ex.result.data.error['errors'].nil? || ex.result.data.error['errors'].empty? ||
          ex.result.data.error['errors'][0]['reason'] != 'userRateLimitExceeded'
+        
+        log_email_exception(ex)
+        
         raise ex
       end
 

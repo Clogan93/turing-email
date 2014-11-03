@@ -433,7 +433,15 @@ class GmailAccount < ActiveRecord::Base
 
     gmail_ids = self.sync_failed_emails.pluck(:email_uid)
     self.sync_failed_emails.where(:email_uid => gmail_ids).destroy_all()
-    return self.sync_gmail_ids(gmail_ids, delay: delay)
+
+    if delay
+      job = self.delay.sync_gmail_ids(gmail_ids, delay: false)
+      
+      return [job.id]
+    else
+      self.sync_gmail_ids(gmail_ids, delay: false)
+      return []
+    end
   end
 
   def sync_reset
@@ -459,7 +467,7 @@ class GmailAccount < ActiveRecord::Base
       self.last_history_id_synced = nil
       self.save!
   
-      self.delay({run_at: 1.minute.from_now}, num_dynos: GmailAccount::NUM_SYNC_DYNOS).sync_email()
+      self.delay(num_dynos: GmailAccount::NUM_SYNC_DYNOS).sync_email()
     else
       log_console("#{self.user.email} initial sync NOT DONE num_jobs_pending=#{num_jobs_pending}!!")
       
