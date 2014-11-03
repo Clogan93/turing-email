@@ -635,6 +635,8 @@ class GmailAccount < ActiveRecord::Base
       
       sleep(1)
       
+      log_console("SYNCED #{num_emails_synced} TOTAL so far!")
+      
       break if nextPageToken.blank?
     end
 
