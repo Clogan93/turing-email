@@ -30,12 +30,12 @@ describe "MainView", ->
     beforeEach ->
       @clock = sinon.useFakeTimers()
       @resizeSpy = sinon.spy(@mainView, "resize")
-      @showTourSpy = sinon.spy(@mainView, "showTour")
+      @showTourStub = sinon.stub(@mainView, "showTour")
       @mainView.render()
       
     afterEach ->
       @resizeSpy.restore()
-      @showTourSpy.restore()
+      @showTourStub.restore()
       @clock.restore()
       
     it "creates the primary_pane", ->
@@ -52,7 +52,7 @@ describe "MainView", ->
 
     it "show the tour", ->  
       @clock.tick(5000)
-      expect(@showTourSpy).toHaveBeenCalled()
+      expect(@showTourStub).toHaveBeenCalled()
 
     it "creates the create folder view", ->
       expect(@mainView.createFolderView).toBeDefined()

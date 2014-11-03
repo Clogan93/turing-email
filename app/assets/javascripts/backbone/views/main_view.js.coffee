@@ -282,24 +282,24 @@ class TuringEmailApp.Views.Main extends Backbone.View
     return emailThreadView
 
   showTour: ->
-    console.log "tour called"
-
-    # Instance the tour
-    @tour = new Tour(steps: [
-      {
-        element: ".settings-switch"
-        placement: "right"
-        title: "Welcome to demo mode"
-        content: "Toggle to see your emails after the brain has done it's work vs. normal."
-      }
-    ],
-    template: "<div class='popover tour'>
-      <div class='arrow'></div>
-      <h3 class='popover-title'></h3>
-      <div class='popover-content'></div>
-      <button class='btn btn-default end-tour' data-role='end'>End tour</button>
-      </nav>
-    </div>"
+    # create the tour
+    @tour = new Tour(
+      steps: [
+        {
+          element: ".settings-switch"
+          placement: "right"
+          title: "Welcome to demo mode"
+          content: "Toggle to see your emails after the brain has done it's work vs. normal."
+        }
+      ],
+    
+      template: "<div class='popover tour'>
+                   <div class='arrow'></div>
+                   <h3 class='popover-title'></h3>
+                   <div class='popover-content'></div>
+                   <button class='btn btn-default end-tour' data-role='end'>End tour</button>
+                   </nav>
+                 </div>"
     )
 
     # Initialize the tour
