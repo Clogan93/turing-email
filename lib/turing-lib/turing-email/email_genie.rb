@@ -59,11 +59,6 @@ class EmailGenie
     GenieMailer.user_report_email(user, important_emails, auto_filed_emails, sent_emails_not_replied_to).deliver()
 
     auto_filed_emails.update_all(:auto_filed_reported => true)
-
-    if !user.has_genie_report_ran
-      user.has_genie_report_ran = true
-      user.save!
-    end
   end
 
   def EmailGenie.new_gmail_batch_request()

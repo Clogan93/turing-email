@@ -11,6 +11,11 @@ class GenieMailer < ActionMailer::Base
     #email.header['X-MC-Important'] = 'true'
     #email.header['X-MC-Tags'] = 'welcome_email'
 
+    if !user.has_genie_report_ran
+      user.has_genie_report_ran = true
+      user.save!
+    end
+
     return email
   rescue Exception => ex
     log_email('GenieMailer.user_report_email FAILED!', "#{user.id} #{user.email}\r\n\r\n#{ex.log_message}")
