@@ -21,6 +21,12 @@ module WorkerExtensions
   end
 end
 
+def dj_reset(dj)
+  dj.attempts = 0
+  dj.last_error = dj.run_at = dj.locked_at = dj.failed_at = dj.locked_by = nil
+  dj.save!
+end
+
 module Delayed
   module DelayMail
     def delay(options = {}, heroku_scale: true, dyno: 'worker', num_dynos: 1)
