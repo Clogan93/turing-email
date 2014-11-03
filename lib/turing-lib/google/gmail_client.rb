@@ -12,7 +12,10 @@ module Google
          ex.result.data.error['errors'][0]['reason'] != 'userRateLimitExceeded'
         
         log_email_exception(ex)
-        log_email('gmail client error!!!!', ex.result)
+        log_email('gmail client error!!!!', ex.result.data.error['errors'][0]['reason'])
+        log_email('gmail client error!!!!', ex.result.data.error['errors'][0].to_s)
+        log_email('gmail client error!!!!', ex.result.data.error['errors'].to_s)
+        log_email('gmail client error!!!!', ex.result.to_s)
         
         raise ex
       end
