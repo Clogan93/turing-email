@@ -357,6 +357,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
             @views.emailThreadsListView.select(emailThreadToSelect)
             @ignoreListItemSelected = false
         
+        @views.mainView.resize()
         myOptions.success(collection, response, options) if myOptions?.success?
         
       error: myOptions?.error
