@@ -116,8 +116,10 @@ class Email < ActiveRecord::Base
 
     email.text_part = email_raw.text_part.decoded.force_utf8(true) if email_raw.text_part
     email.html_part = premailer_html(email_raw.html_part.decoded).force_utf8(true) if email_raw.html_part
-    
-    email.body_text = email_raw.decoded.force_utf8(true) if !email_raw.multipart? && email_raw.content_type =~ /text/i
+
+    if !email_raw.multipart? && (email_raw.content_type.nil? || email_raw.content_type =~ /text/i)
+      email.body_text = email_raw.decoded.force_utf8(true)
+    end
 
     email.has_calendar_attachment = Email.part_has_calendar_attachment(email_raw)
 
