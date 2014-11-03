@@ -435,7 +435,7 @@ class GmailAccount < ActiveRecord::Base
     self.sync_failed_emails.where(:email_uid => gmail_ids).destroy_all()
 
     if delay
-      job = self.delay.sync_gmail_ids(gmail_ids, delay: false)
+      job = self.delay(num_dynos: GmailAccount::NUM_SYNC_DYNOS).sync_gmail_ids(gmail_ids, delay: false)
       
       return [job.id]
     else
@@ -613,6 +613,8 @@ class GmailAccount < ActiveRecord::Base
     nextPageToken = nil
     last_history_id_synced = nil
 
+    HerokuTools::HerokuTools.scale_dynos('worker', GmailAccount::NUM_SYNC_DYNOS) if delay
+    
     while true
       log_console("SYNCING page = #{nextPageToken}")
 
@@ -633,7 +635,7 @@ class GmailAccount < ActiveRecord::Base
     
           #job_ids.concat(self.sync_gmail_ids(gmail_ids, delay: delay))
           if delay
-            job = self.delay.sync_gmail_ids(gmail_ids, delay: false)
+            job = self.delay(heroku_scale: false).sync_gmail_ids(gmail_ids, delay: false)
             job_ids.push(job.id)
           else
             self.sync_gmail_ids(gmail_ids, delay: false)
@@ -670,6 +672,8 @@ class GmailAccount < ActiveRecord::Base
     num_emails_synced = 0
     nextPageToken = nil
 
+    HerokuTools::HerokuTools.scale_dynos('worker', GmailAccount::NUM_SYNC_DYNOS) if delay
+
     while true
       log_console("SYNCING page = #{nextPageToken}")
 
@@ -692,7 +696,7 @@ class GmailAccount < ActiveRecord::Base
           log_console("GOT #{gmail_ids.length} messages\n")
     
           if delay
-            job = self.delay.sync_gmail_ids(gmail_ids, delay: false)
+            job = self.delay(heroku_scale: false).sync_gmail_ids(gmail_ids, delay: false)
             job_ids.push(job.id)
           else
             self.sync_gmail_ids(gmail_ids, delay: false)
@@ -784,7 +788,7 @@ class GmailAccount < ActiveRecord::Base
       end
 
       gmail_data = result.data
-      log_console("SYNC PROCESSING message.id = #{gmail_data['id']}")
+      #log_console("SYNC PROCESSING message.id = #{gmail_data['id']}")
 
       begin
         if delay
@@ -845,6 +849,10 @@ class GmailAccount < ActiveRecord::Base
     gmail_id_index = 0
     job_ids = []
 
+    log_console("sync_gmail_ids with #{gmail_ids.length} gmail ids and delay=#{delay}!")
+
+    HerokuTools::HerokuTools.scale_dynos('worker', GmailAccount::NUM_SYNC_DYNOS) if delay
+    
     while gmail_id_index < gmail_ids.length
       retry_block do
         current_gmail_ids = gmail_ids[gmail_id_index ... (gmail_id_index + GmailAccount::MESSAGE_BATCH_SIZE)]
@@ -875,8 +883,6 @@ class GmailAccount < ActiveRecord::Base
         gmail_id_index += GmailAccount::MESSAGE_BATCH_SIZE
       end
     end
-
-    HerokuTools::HerokuTools.scale_dynos('worker', GmailAccount::NUM_SYNC_DYNOS) if delay
     
     return job_ids
   end
