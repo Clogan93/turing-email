@@ -23,16 +23,22 @@ end
 
 module Delayed
   module DelayMail
-    def delay(options = {}, heroku_scale: true)
-      HerokuTools::HerokuTools.scale_dynos('worker', 1) if heroku_scale
+    def delay(options = {}, heroku_scale: true, dyno: 'worker', num_dynos: 1)
+      if heroku_scale
+        current_num_dynos = HerokuTools::HerokuTools.count_dynos(dyno)
+        HerokuTools::HerokuTools.scale_dynos(dyno, num_dynos) if current_num_dynos < num_dynos
+      end
 
       DelayProxy.new(PerformableMailer, self, options)
     end
   end
 
   module MessageSending
-    def delay(options = {}, heroku_scale: true)
-      HerokuTools::HerokuTools.scale_dynos('worker', 1) if heroku_scale
+    def delay(options = {}, heroku_scale: true, dyno: 'worker', num_dynos: 1)
+      if heroku_scale
+        current_num_dynos = HerokuTools::HerokuTools.count_dynos(dyno)
+        HerokuTools::HerokuTools.scale_dynos(dyno, num_dynos) if current_num_dynos < num_dynos
+      end
 
       DelayProxy.new(PerformableMethod, self, options)
     end
