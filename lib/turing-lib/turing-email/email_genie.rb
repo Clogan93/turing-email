@@ -79,7 +79,7 @@ class EmailGenie
     sent_label = gmail_account.sent_folder
     top_lists_email_daily_average = Email.lists_email_daily_average(gmail_account.user, limit: 10).transpose()[0]
 
-    if !gmail_account.user.user_configuration.demo_mode_enabled
+    if !gmail_account.user.user_configuration.demo_mode_enabled && $config.gmail_live
       batch_request = EmailGenie.new_gmail_batch_request()
       gmail_client = gmail_account.gmail_client
     end
@@ -94,7 +94,7 @@ class EmailGenie
                                                  top_lists_email_daily_average: top_lists_email_daily_average,
                                                  batch_request: true, gmail_client: gmail_client)
         
-        if !gmail_account.user.user_configuration.demo_mode_enabled
+        if !gmail_account.user.user_configuration.demo_mode_enabled && $config.gmail_live
           batch_request.add(call)
           
           if batch_request.calls.length == 5
@@ -106,7 +106,9 @@ class EmailGenie
       end 
     end
 
-    gmail_account.google_o_auth2_token.api_client.execute!(batch_request) if !gmail_account.user.user_configuration.demo_mode_enabled
+    if !gmail_account.user.user_configuration.demo_mode_enabled && $config.gmail_live
+      gmail_account.google_o_auth2_token.api_client.execute!(batch_request)
+    end
   end
 
   def EmailGenie.is_no_reply_address(address)
