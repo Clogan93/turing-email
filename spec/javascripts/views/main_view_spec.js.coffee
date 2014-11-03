@@ -28,11 +28,15 @@ describe "MainView", ->
 
   describe "#render", ->
     beforeEach ->
+      @clock = sinon.useFakeTimers()
       @resizeSpy = sinon.spy(@mainView, "resize")
+      @showTourSpy = sinon.spy(@mainView, "showTour")
       @mainView.render()
       
     afterEach ->
       @resizeSpy.restore()
+      @showTourSpy.restore()
+      @clock.restore()
       
     it "creates the primary_pane", ->
       expect(@mainView.primaryPaneDiv).toBeDefined()
@@ -45,6 +49,10 @@ describe "MainView", ->
       
     it "resized", ->
       expect(@resizeSpy).toHaveBeenCalled()
+
+    it "show the tour", ->  
+      @clock.tick(5000)
+      expect(@showTourSpy).toHaveBeenCalled()
 
     it "creates the create folder view", ->
       expect(@mainView.createFolderView).toBeDefined()
@@ -337,3 +345,20 @@ describe "MainView", ->
             it "renders the email thread in the primary pane", ->
               emailThreadView = $(@primaryPane.children()[0])
               expect(emailThreadView.html()).toEqual(@emailThreadView.$el.html())
+
+      describe "#showTour", ->
+        beforeEach ->
+          @mainView.tour = null
+          @mainView.showTour()
+
+        it "create a tour object", ->
+          expect(@mainView.tour).toBeDefined()
+
+        it "sets the step attributes on the tour", ->
+          expect(@mainView.tour._options.steps[0].element).toEqual ".settings-switch"
+          expect(@mainView.tour._options.steps[0].placement).toEqual "right"
+          expect(@mainView.tour._options.steps[0].title).toEqual "Welcome to demo mode"
+          expect(@mainView.tour._options.steps[0].content).toEqual "Toggle to see your emails after the brain has done it's work vs. normal."
+
+        it "the tour is initialized", ->
+          expect(@mainView.tour._inited).toBeTruthy()
