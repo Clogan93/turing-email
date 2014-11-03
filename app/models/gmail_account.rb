@@ -465,7 +465,7 @@ class GmailAccount < ActiveRecord::Base
         self.last_history_id_synced = nil
         self.save!
 
-        self.delay.sync_email()
+        self.delay(num_dynos: GmailAccount::NUM_SYNC_DYNOS).sync_email()
       end
       
       return synced_emails
