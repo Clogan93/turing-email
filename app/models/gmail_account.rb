@@ -960,6 +960,8 @@ class GmailAccount < ActiveRecord::Base
     draft_email.draft_id = draft_id
     draft_email.save!
 
+    EmailFolderMapping.where(:email => draft_email).update_all(:folder_email_draft_id => draft_id)
+
     return draft_email
   end
 
