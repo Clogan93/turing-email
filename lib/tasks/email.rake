@@ -98,6 +98,9 @@ task :email_genie_reports_reset => :environment do
       log_console("FOUND #{email_ids_auto_filed.length} AUTO FILED!!")
     
       Email.where(:id => email_ids_auto_filed).update_all(:auto_filed_reported => false)
+        
+      user.has_genie_report_ran = false
+      user.save!
     rescue Exception => ex
       log_email_exception(ex)
     end

@@ -69,46 +69,106 @@ class EmailGenie
       end
     end
   end
+
+  def EmailGenie.send_report_if_jobs_done(gmail_account, demo, job_ids)
+    num_jobs_pending = Delayed::Job.where(:id => job_ids, :failed_at => nil).count
+
+    if num_jobs_pending == 0
+      log_console("#{gmail_account.email} brain DONE!! sending report")
+      
+      if !gmail_account.user.has_genie_report_ran
+        log_console("#{gmail_account.user.email} FIRST report - sending alert and queuing full sync")
+        
+        GenieMailer.email_synced_email(gmail_account.user).deliver()
+        
+        gmail_account.last_history_id_synced = nil
+        gmail_account.save!
+
+        gmail_account.delay(num_dynos: GmailAccount::NUM_SYNC_DYNOS).sync_email()
+      end
+  
+      EmailGenie.send_user_report_email(gmail_account.user, demo)
+    else
+      log_console("#{gmail_account.email} brain jobs left=#{num_jobs_pending}!!")
+
+      EmailGenie.delay({run_at: 1.minute.from_now}, num_dynos: GmailAccount::NUM_SYNC_DYNOS).send_report_if_jobs_done(gmail_account, demo, job_ids)
+    end
+  end
+    
+  def EmailGenie.run_brain_and_report(gmail_account, demo = false)
+    job_ids = EmailGenie.process_gmail_account(gmail_account, demo)
+    EmailGenie.delay(num_dynos: GmailAccount::NUM_SYNC_DYNOS).send_report_if_jobs_done(gmail_account, demo, job_ids)
+  end
   
   def EmailGenie.process_gmail_account(gmail_account, demo = false)
     inbox_label = gmail_account.inbox_folder
-    return if inbox_label.nil?
+    if inbox_label.nil?
+      log_console("#{gmail_account.email}: process_gmail_account exiting! NO inbox!!")
+      return
+    end
 
+    log_console("#{gmail_account.email}: STARTING process_gmail_account!")
+    
+    HerokuTools::HerokuTools.scale_dynos('worker', GmailAccount::NUM_SYNC_DYNOS)
+    
+    job_ids = []
+
+    top_lists_email_daily_average = Email.lists_email_daily_average(gmail_account.user, limit: 10).transpose()[0]
+    
     where_clause = demo ? '' : ['date < ?', Time.now - 7.hours]
 
+    inbox_label.emails.where(where_clause).select(:id).find_in_batches(:batch_size => 250) do |emails|
+      log_console("QUEUEING #{emails.length} emails for brain!")
+
+      email_ids = emails.map { |email| email.id }
+      
+      job = EmailGenie.delay(heroku_scale: false).process_emails(gmail_account, top_lists_email_daily_average, email_ids)
+      job_ids.push(job.id)
+    end
+
+    log_console("#{gmail_account.email}: process_gmail_account DONE with #{job_ids.length} jobs!")
+    
+    return job_ids
+  end
+  
+  def EmailGenie.process_emails(gmail_account, top_lists_email_daily_average, email_ids)
+    log_console("#{gmail_account.email}: process_emails #{email_ids.length} emails!")
+    
+    inbox_label = gmail_account.inbox_folder
     sent_label = gmail_account.sent_folder
-    top_lists_email_daily_average = Email.lists_email_daily_average(gmail_account.user, limit: 10).transpose()[0]
 
     if !gmail_account.user.user_configuration.demo_mode_enabled && $config.gmail_live
       batch_request = EmailGenie.new_gmail_batch_request()
       gmail_client = gmail_account.gmail_client
+      batch_empty = true
     end
     
-    inbox_label.emails.where(where_clause).find_each do |email|
-      log_console("PROCESSING #{email.uid}")
-
+    Email.where(:id => email_ids).find_each do |email|
       if EmailGenie.email_is_unimportant(email, sent_label: sent_label)
-        log_console("#{email.uid} is UNIMPORTANT!!")
-    
         gmail_label, call = EmailGenie.auto_file(email, inbox_label, sent_label: sent_label,
                                                  top_lists_email_daily_average: top_lists_email_daily_average,
                                                  batch_request: true, gmail_client: gmail_client)
-        
+  
         if !gmail_account.user.user_configuration.demo_mode_enabled && $config.gmail_live
           batch_request.add(call)
-          
+          batch_empty = false
+  
           if batch_request.calls.length == 5
             gmail_account.google_o_auth2_token.api_client.execute!(batch_request)
             batch_request = EmailGenie.new_gmail_batch_request()
+            batch_empty = true
+            
             sleep(1)
           end
         end
-      end 
+      end
     end
 
-    if !gmail_account.user.user_configuration.demo_mode_enabled && $config.gmail_live
+    if !batch_empty && !gmail_account.user.user_configuration.demo_mode_enabled && $config.gmail_live
       gmail_account.google_o_auth2_token.api_client.execute!(batch_request)
     end
+
+    log_console("#{gmail_account.email}: process_emails DONE!")
   end
 
   def EmailGenie.is_no_reply_address(address)

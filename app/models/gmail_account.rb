@@ -460,14 +460,7 @@ class GmailAccount < ActiveRecord::Base
     if num_jobs_pending == 0
       log_console("#{self.user.email} INITIAL SYNC DONE!!")
       
-      EmailGenie.process_gmail_account(self, true)
-      EmailGenie.send_user_report_email(self.user, true)
-      GenieMailer.email_synced_email(user).deliver()
-  
-      self.last_history_id_synced = nil
-      self.save!
-  
-      self.delay(num_dynos: GmailAccount::NUM_SYNC_DYNOS).sync_email()
+      EmailGenie.run_brain_and_report(self, true)
     else
       log_console("#{self.user.email} initial sync NOT DONE num_jobs_pending=#{num_jobs_pending}!!")
       
