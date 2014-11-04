@@ -43,7 +43,9 @@ WITH RECURSIVE recent_email_threads AS (
                                   email_folder_mappings_inner."email_folder_id" = #{self.id.to_i} AND
                                   email_folder_mappings_inner."email_folder_type" = '#{self.class.to_s}' AND
                                   email_folder_mappings_inner.email_thread_id <> ALL (recent_email_threads.seen)
-                            ORDER BY email_folder_mappings_inner."folder_email_date" DESC, email_folder_mappings_inner."email_id" DESC LIMIT 1) AS email_folder_mappings_lateral
+                            ORDER BY email_folder_mappings_inner."folder_email_date" DESC,
+                                     email_folder_mappings_inner."email_id" DESC LIMIT 1)
+                    AS email_folder_mappings_lateral
             WHERE array_upper(recent_email_threads.seen, 1) < #{num_rows})
 )
 SELECT email_threads.*

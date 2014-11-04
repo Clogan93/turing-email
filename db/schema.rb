@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141104090651) do
+ActiveRecord::Schema.define(version: 20141104220523) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -70,6 +70,7 @@ ActiveRecord::Schema.define(version: 20141104090651) do
   add_index "email_folder_mappings", ["email_folder_id", "email_folder_type"], name: "index_email_folder_mappings_on_email_folder", using: :btree
   add_index "email_folder_mappings", ["email_id", "email_folder_id", "email_folder_type"], name: "index_email_folder_mappings_on_email_and_email_folder", unique: true, using: :btree
   add_index "email_folder_mappings", ["email_thread_id"], name: "index_email_folder_mappings_on_email_thread_id", using: :btree
+  add_index "email_folder_mappings", ["folder_email_date", "email_id"], name: "index_email_folder_mappings_on_folder_email_date_and_email_id", using: :btree
   add_index "email_folder_mappings", ["folder_email_date"], name: "index_email_folder_mappings_on_folder_email_date", using: :btree
   add_index "email_folder_mappings", ["folder_email_draft_id"], name: "index_email_folder_mappings_on_folder_email_draft_id", using: :btree
 
