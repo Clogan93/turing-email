@@ -706,6 +706,11 @@ class GmailAccount < ActiveRecord::Base
 
           full_sync_job_ids = sync_email_full(delay: delay)
           return job_ids.concat(full_sync_job_ids)
+        elsif ex.result.data.error &&
+              !ex.result.data.error['errors'].empty? &&
+              ex.result.data.error['errors'][0]['reason'] == 'authError'
+          log_email("sync_email_partial #{self.email} EMAIL AUTH ERROR")
+          break
         else
           attempts = Google::GmailClient.handle_client_error(ex, attempts)
           retry
