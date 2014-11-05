@@ -16,7 +16,7 @@ class EmailGenie
 
     inbox_label = user.gmail_accounts.first.inbox_folder
     if inbox_label
-      where_clause = demo ? ['date > ?', Time.now - 24.hours] :
+      where_clause = demo ? '' :
                             ['date < ? AND date > ?', Time.now - 7.hours, Time.now - 7.hours - 24.hours]
                      
       important_emails = inbox_label.emails.where(where_clause).order(:date => :desc).limit(100)

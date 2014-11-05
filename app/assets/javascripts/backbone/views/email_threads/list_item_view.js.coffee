@@ -25,6 +25,9 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     
     @check(silent: true) if checked
     
+    @setupClick()
+    @setupCheckbox()
+    
     return this
 
   escapeHtml: (data) ->

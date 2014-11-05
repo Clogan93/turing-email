@@ -25,6 +25,11 @@ class Email < ActiveRecord::Base
 
   validates_presence_of(:email_account, :uid, :email_thread_id)
 
+  after_create {
+    EmailFolderMapping.where(:email_thread => self.email_thread).
+                       update_all(:folder_email_thread_date => self.email_thread.emails.maximum(:date))
+  }
+  
   def Email.lists_email_daily_average(user, limit: nil, where: nil)
     return user.emails.where("list_id IS NOT NULL").where(where).
                 group(:list_name, :list_id).order('daily_average DESC').limit(limit).

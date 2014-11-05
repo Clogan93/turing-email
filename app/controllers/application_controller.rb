@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
   include ApplicationHelper
   include GmailAccountsHelper
 
-  before_action :authenticate
+  #before_action :authenticate
 
   rescue_from(Exception, :with => :render_exception) unless $config.consider_all_requests_local
 
