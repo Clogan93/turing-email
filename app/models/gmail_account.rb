@@ -39,6 +39,9 @@ class GmailAccount < ActiveRecord::Base
 
   validates_presence_of(:user, :google_id, :email, :verified_email)
 
+
+  before_destroy :sync_reset, prepend: true
+  
   # TODO write tests
   def GmailAccount.mime_data_from_gmail_data(gmail_data)
     gmail_json = JSON.parse(gmail_data.to_json())
