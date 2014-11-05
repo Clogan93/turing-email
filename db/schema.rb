@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141026223435) do
+ActiveRecord::Schema.define(version: 20141104090651) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -61,11 +61,17 @@ ActiveRecord::Schema.define(version: 20141026223435) do
     t.string   "email_folder_type"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "folder_email_date"
+    t.text     "folder_email_draft_id"
+    t.integer  "email_thread_id"
   end
 
   add_index "email_folder_mappings", ["email_folder_id", "email_folder_type", "email_id"], name: "index_email_folder_mappings_on_email_folder_type_and_email", using: :btree
   add_index "email_folder_mappings", ["email_folder_id", "email_folder_type"], name: "index_email_folder_mappings_on_email_folder", using: :btree
   add_index "email_folder_mappings", ["email_id", "email_folder_id", "email_folder_type"], name: "index_email_folder_mappings_on_email_and_email_folder", unique: true, using: :btree
+  add_index "email_folder_mappings", ["email_thread_id"], name: "index_email_folder_mappings_on_email_thread_id", using: :btree
+  add_index "email_folder_mappings", ["folder_email_date"], name: "index_email_folder_mappings_on_folder_email_date", using: :btree
+  add_index "email_folder_mappings", ["folder_email_draft_id"], name: "index_email_folder_mappings_on_folder_email_draft_id", using: :btree
 
   create_table "email_in_reply_tos", force: true do |t|
     t.integer  "email_id"

@@ -76,7 +76,9 @@ task :email_genie_reset => :environment do
       
       email_ids_auto_filed.each do |email_id|
         begin
-          EmailFolderMapping.find_or_create_by!(:email_folder => inbox_label, :email_id => email_id)
+          EmailFolderMapping.find_or_create_by!(:email_folder => inbox_label, :email_id => email_id,
+                                                :folder_email_date => email.date, :folder_email_draft_id => email.draft_id,
+                                                :email_thread => email.email_thread)
         rescue ActiveRecord::RecordNotUnique
         end
       end
@@ -98,6 +100,9 @@ task :email_genie_reports_reset => :environment do
       log_console("FOUND #{email_ids_auto_filed.length} AUTO FILED!!")
     
       Email.where(:id => email_ids_auto_filed).update_all(:auto_filed_reported => false)
+        
+      user.has_genie_report_ran = false
+      user.save!
     rescue Exception => ex
       log_email_exception(ex)
     end
