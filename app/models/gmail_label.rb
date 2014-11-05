@@ -22,7 +22,7 @@ class GmailLabel < ActiveRecord::Base
     return EmailFolderMapping.joins(:email).where(:email_folder => self).where('"emails"."seen" = ?',false).count('DISTINCT "emails"."email_thread_id"')
   end
   
-  def get_sorted_paginated_threads(last_email_thread: nil, dir: 'DESC', threads_per_page: 50)
+  def get_sorted_paginated_threads(last_email_thread: nil, dir: 'DESC', threads_per_page: 50, log: false)
     num_rows = threads_per_page
     dir = 'DESC' if dir.blank?
 
@@ -94,13 +94,18 @@ SELECT email_threads.*
                     FROM recent_email_threads
                     LIMIT #{threads_per_page})
 sql
-    
+
+    if log
+      log_console(sql)
+      log_console(query_params)
+    end
+
     query_params.unshift(sql)
     email_threads = EmailThread.find_by_sql(query_params)
     email_threads = EmailThread.joins(:emails => :gmail_labels).
                                 includes(:emails => :gmail_labels).
                                 where(:id => email_threads).order('"emails"."draft_id" NULLS FIRST, "emails"."date" DESC, "email_threads"."id" DESC')
-    
+
     return email_threads
   end
   
