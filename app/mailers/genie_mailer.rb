@@ -7,7 +7,7 @@ class GenieMailer < ActionMailer::Base
     @auto_filed_emails = auto_filed_emails
     @sent_emails_not_replied_to = sent_emails_not_replied_to
 
-    email = mail(to: user.email, subject: "#{$config.service_name} - Your daily Genie Report!")
+    email = mail(to: user.email, subject: "#{$config.service_name} - Your daily Brain Report!")
     #email.header['X-MC-Important'] = 'true'
     #email.header['X-MC-Tags'] = 'welcome_email'
 
