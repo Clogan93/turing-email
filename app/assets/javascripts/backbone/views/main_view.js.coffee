@@ -284,6 +284,8 @@ class TuringEmailApp.Views.Main extends Backbone.View
   showTour: ->
     # create the tour
     @tour = new Tour(
+      onEnd: ->
+        $(".popover.tour").remove()
       steps: [
         {
           element: ".settings-switch"
