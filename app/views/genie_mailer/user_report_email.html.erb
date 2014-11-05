@@ -738,16 +738,16 @@
                               Good morning! I am Turing, the Email Brain. Every night I work to help you keep your inbox clean
                               by organizing it and alerting you to important emails that you missed.
                               <br /><br />
-                              Last night I found <span style="font-weight: bold;"><%= @auto_filed_emails.length %> unimportant emails</span>
+                              Last night I found <span style="font-weight: bold;"><%= @num_auto_filed_emails %> unimportant emails</span>
                               clogging your inbox so I neatly filed them away into folders (see below for details).
-                              I also found <span style="font-weight: bold;"><%= @important_emails.length %> important emails</span>
+                              I also found <span style="font-weight: bold;"><%= @num_important_emails %> important emails</span>
                               received yesterday that you have not replied to yet and
-                              <span style="font-weight: bold;"><%= @sent_emails_not_replied_to.length %>emails that you sent that have not
+                              <span style="font-weight: bold;"><%= @num_sent_emails_not_replied_to %>emails that you sent that have not
                                 received a reply yet</span> - you might want to follow up! You can find additional information below.
                                 If you have any questions please feel free to contact me anytime at <%= mail_to($config.genie_email) %>.
                             <% else %>
-                              Good morning! Last night I found <span style="font-weight: bold;"><%= @important_emails.count %></span> important emails
-                              that require action and filed away <span style="font-weight: bold;"><%= @auto_filed_emails.count %></span>
+                              Good morning! Last night I found <span style="font-weight: bold;"><%= @num_important_emails %></span> important emails
+                              that require action and filed away <span style="font-weight: bold;"><%= @num_auto_filed_emails %></span>
                               unimportant emails!
                             <% end %>
 
@@ -763,7 +763,7 @@
                                 </div>
                               </div>
 
-                              You have <span style="font-weight: bold;"><%= @important_emails.count %></span> important emails
+                              You have <span style="font-weight: bold;"><%= @num_important_emails %></span> important emails
                               from yesterday that need replied to!
 
                               <%= render('emails_table', :emails => @important_emails,
@@ -782,7 +782,7 @@
                                 </div>
                               </div>
 
-                              You sent <span style="font-weight: bold;"><%= @sent_emails_not_replied_to.count %></span> emails
+                              You sent <span style="font-weight: bold;"><%= @num_sent_emails_not_replied_to %></span> emails
                               in the last week that have not been replied to.
 
                               <%= render('emails_table', :emails => @sent_emails_not_replied_to,
@@ -801,7 +801,7 @@
                                 </div>
                               </div>
 
-                              The Brain found <span style="font-weight: bold;"><%= @auto_filed_emails.count %></span>
+                              The Brain found <span style="font-weight: bold;"><%= @num_auto_filed_emails %></span>
                               unimportant emails in your Inbox and neatly filed them away!
 
                               <%= render('emails_table', :emails => @auto_filed_emails,

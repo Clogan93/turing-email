@@ -18,9 +18,11 @@ class EmailGenie
     if inbox_label
       where_clause = demo ? '' :
                             ['date < ? AND date > ?', Time.now - 7.hours, Time.now - 7.hours - 24.hours]
-                     
+
+      num_important_emails = inbox_label.emails.where(where_clause).order(:date => :desc).count
       important_emails = inbox_label.emails.where(where_clause).order(:date => :desc).limit(100)
     else
+      num_important_emails = 0
       important_emails = []
     end
 
@@ -45,18 +47,24 @@ class EmailGenie
             pluck(:in_reply_to_message_id)
         not_replied_to_message_ids = sent_emails_message_ids - replied_to_message_ids
 
+        num_sent_emails_not_replied_to = user.emails.where(:message_id => not_replied_to_message_ids).order('date DESC').count
         sent_emails_not_replied_to = user.emails.where(:message_id => not_replied_to_message_ids).order('date DESC').limit(100)
       end
     else
+      num_sent_emails_not_replied_to  = 0
       sent_emails_not_replied_to = []
     end
 
     log_console("FOUND #{sent_emails_not_replied_to.count} SENT emails AWAITING reply")
 
+    num_auto_filed_emails = user.emails.where(:auto_filed => true, :auto_filed_reported => false).order(:date => :desc).count
     auto_filed_emails = user.emails.where(:auto_filed => true, :auto_filed_reported => false).order(:date => :desc).limit(100)
     log_console("FOUND #{auto_filed_emails.count} AUTO FILED emails")
 
-    GenieMailer.user_report_email(user, important_emails, auto_filed_emails, sent_emails_not_replied_to).deliver()
+    GenieMailer.user_report_email(user,
+                                  num_important_emails, important_emails,
+                                  num_auto_filed_emails, auto_filed_emails,
+                                  num_sent_emails_not_replied_to, sent_emails_not_replied_to).deliver()
 
     auto_filed_emails.update_all(:auto_filed_reported => true)
   end
