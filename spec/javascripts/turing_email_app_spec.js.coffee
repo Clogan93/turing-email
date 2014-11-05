@@ -1822,7 +1822,7 @@ describe "TuringEmailApp", ->
           turingEmailThread = _.values(TuringEmailApp.views.emailThreadsListView.listItemViews)[0].model
 
           TuringEmailApp.views.emailThreadsListView.collection.remove turingEmailThread
-          turingEmailThread.set("subject", "Turing Email - Your daily Genie Report!")
+          turingEmailThread.set("subject", "Turing Email - Your daily Brain Report!")
           TuringEmailApp.views.emailThreadsListView.collection.add turingEmailThread
           TuringEmailApp.views.emailThreadsListView.render()
 

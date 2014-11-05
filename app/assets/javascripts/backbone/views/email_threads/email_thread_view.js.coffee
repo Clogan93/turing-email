@@ -61,7 +61,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
   # TODO write tests
   renderGenieReport: ->
     for email, index in @model.get("emails")
-      if email.subject is "Turing Email - Your daily Genie Report!"
+      if email.subject is "Turing Email - Your daily Brain Report!"
         @insertHtmlIntoIframe email, index
         iframe = @$el.find("#email_iframe" + index.toString())
 
