@@ -842,10 +842,12 @@ class GmailAccount < ActiveRecord::Base
     end
   end
   
-  def sync_gmail_ids(gmail_ids, delay: false)
+  def sync_gmail_ids(gmail_ids_orig, delay: false)
+    gmail_ids = gmail_ids_orig.dup.uniq
     gmail_id_index = 0
     job_ids = []
 
+    
     log_console("sync_gmail_ids with #{gmail_ids.length} gmail ids and delay=#{delay}!")
 
     HerokuTools::HerokuTools.scale_dynos('worker', GmailAccount::NUM_SYNC_DYNOS) if delay
