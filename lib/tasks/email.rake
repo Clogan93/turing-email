@@ -68,23 +68,25 @@ desc 'Reset the genie for testing purposes'
 task :email_genie_reset => :environment do
   User.all.each do |user|
     begin
-      email_ids_auto_filed = user.emails.where(:auto_filed => true).pluck(:id)
-      log_console("FOUND #{email_ids_auto_filed.length} AUTO FILED!!")
+      emails_auto_filed = user.emails.where(:auto_filed => true)
+      log_console("FOUND #{emails_auto_filed.length} AUTO FILED!!")
 
-      EmailFolderMapping.where(:email => email_ids_auto_filed).destroy_all
+      EmailFolderMapping.where(:email => emails_auto_filed).destroy_all
       inbox_label = user.gmail_accounts.first.inbox_folder
       
-      email_ids_auto_filed.each do |email_id|
+      emails_auto_filed.each do |email|
         begin
-          EmailFolderMapping.find_or_create_by!(:email_folder => inbox_label, :email_id => email_id,
-                                                :folder_email_date => email.date, :folder_email_draft_id => email.draft_id,
+          EmailFolderMapping.find_or_create_by!(:email_folder => inbox_label, :email => email,
+                                                :folder_email_thread_date => email.email_thread.emails.maximum(:date),
+                                                :folder_email_date => email.date,
+                                                :folder_email_draft_id => email.draft_id,
                                                 :email_thread => email.email_thread)
         rescue ActiveRecord::RecordNotUnique
         end
       end
       
-      Email.where(:id => email_ids_auto_filed).update_all(:auto_filed => false, :auto_filed_reported => false,
-                                                          :auto_filed_folder_id => nil, :auto_filed_folder_type => nil)
+      emails_auto_filed.update_all(:auto_filed => false, :auto_filed_reported => false,
+                                   :auto_filed_folder_id => nil, :auto_filed_folder_type => nil)
     rescue Exception => ex
       log_email_exception(ex)
     end

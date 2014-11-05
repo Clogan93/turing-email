@@ -247,9 +247,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
       
       @trigger "change:selectedEmailThread", this, null
 
-  currentEmailFolderIs: (emailFolderID, pageTokenIndex) ->
+  currentEmailFolderIs: (emailFolderID, pageTokenIndex, lastEmailThreadUID=null, dir="DESC") ->
     @collections.emailThreads.folderIDIs(emailFolderID)
-    @collections.emailThreads.pageTokenIndexIs(parseInt(pageTokenIndex)) if pageTokenIndex?
+    @collections.emailThreads.pageTokenIndexIs(parseInt(pageTokenIndex))  if pageTokenIndex?
+    @collections.emailThreads.setupURL(lastEmailThreadUID, dir) if @models.userSettings.get("demo_mode_enabled")
 
     @reloadEmailThreads(
       success: (collection, response, options) =>
@@ -432,15 +433,19 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
   leftArrowClicked: ->
     if @collections.emailThreads.hasPreviousPage()
-      @routers.emailFoldersRouter.navigate("#email_folder/" + @selectedEmailFolderID() + "/" +
-                                           (@collections.emailThreads.pageTokenIndex - 1),
-                                           trigger: true)
+      url = "#email_folder/" + @selectedEmailFolderID()
+      url += "/" + (@collections.emailThreads.pageTokenIndex - 1)
+      url += "/" + @collections.emailThreads.at(0).get("uid") + "/ASC" if @models.userSettings.get("demo_mode_enabled")
+      
+      @routers.emailFoldersRouter.navigate(url, trigger: true)
 
   rightArrowClicked: ->
     if @collections.emailThreads.hasNextPage()
-      @routers.emailFoldersRouter.navigate("#email_folder/" + @selectedEmailFolderID() + "/" +
-                                           (@collections.emailThreads.pageTokenIndex + 1),
-                                           trigger: true)
+      url = "#email_folder/" + @selectedEmailFolderID()
+      url += "/" + (@collections.emailThreads.pageTokenIndex + 1)
+      url += "/" + @collections.emailThreads.last().get("uid") + "/DESC" if @models.userSettings.get("demo_mode_enabled")
+      
+      @routers.emailFoldersRouter.navigate(url, trigger: true)
 
   labelAsClicked: (labelID, labelName) ->
     @applyActionToSelectedThreads(

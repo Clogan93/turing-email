@@ -12,17 +12,21 @@ class Api::V1::EmailThreadsController < ApiController
   swagger_api :inbox do
     summary 'Return email threads in the inbox.'
 
+    param :query, :last_email_thread_uid, :string, :required, 'Last Email Thread UID'
+    param :query, :dir, :string, :required, 'Query Direction'
+
     response :ok
   end
 
   def inbox
     inbox_label = @email_account.inbox_folder
+    last_email_thread = EmailThread.find_by(:email_account => @email_account,
+                                            :uid => params[:last_email_thread_uid])
 
     if inbox_label.nil?
       @email_threads = []
     else
-      page = params[:page] ? params[:page].to_i : 1
-      @email_threads = inbox_label.get_sorted_paginated_threads(page: page)
+      @email_threads = inbox_label.get_sorted_paginated_threads(last_email_thread: last_email_thread, dir: params[:dir])
     end
 
     render 'api/v1/email_threads/index'
@@ -32,6 +36,8 @@ class Api::V1::EmailThreadsController < ApiController
     summary 'Return email threads in folder.'
 
     param :query, :folder_id, :string, :required, 'Email Folder ID'
+    param :query, :last_email_thread_uid, :string, :required, 'Last Email Thread UID'
+    param :query, :dir, :string, :required, 'Query Direction'
 
     response :ok
     response $config.http_errors[:email_folder_not_found][:status_code],
@@ -41,15 +47,16 @@ class Api::V1::EmailThreadsController < ApiController
   def in_folder
     email_folder = GmailLabel.find_by(:gmail_account => @email_account,
                                        :label_id => params[:folder_id])
-
+    last_email_thread = EmailThread.find_by(:email_account => @email_account,
+                                            :uid => params[:last_email_thread_uid])
+    
     if email_folder.nil?
       render :status => $config.http_errors[:email_folder_not_found][:status_code],
              :json => $config.http_errors[:email_folder_not_found][:description]
       return
     end
 
-    page = params[:page] ? params[:page].to_i : 1
-    @email_threads = email_folder.get_sorted_paginated_threads(page: page)
+    @email_threads = email_folder.get_sorted_paginated_threads(last_email_thread: last_email_thread, dir: params[:dir])
 
     render 'api/v1/email_threads/index'
   end

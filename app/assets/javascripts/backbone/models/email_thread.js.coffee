@@ -24,6 +24,8 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
       threadJSON.seen = false if !email.seen
       folderIDs = folderIDs.concat(email.folder_ids) if email.folder_ids?
 
+    threadJSON.emails.sort (a, b) => a.date - b.date
+
     threadJSON.folder_ids = _.uniq(folderIDs)
   
   @setThreadParsedProperties: (threadParsed, messages, messageInfo) ->
@@ -314,7 +316,8 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
 
   sortedEmails: ->
     emails = @get("emails")
-    return emails.sort (a, b) => a.date - b.date
+    return emails
+    #return emails.sort (a, b) => a.date - b.date
 
   ###############
   ### Actions ###  

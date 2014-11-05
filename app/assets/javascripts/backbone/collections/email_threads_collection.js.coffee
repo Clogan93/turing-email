@@ -203,14 +203,13 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
     @pageTokenIndex = parseInt(pageTokenIndex)
     @pageTokenIndex = Math.min(@pageTokens.length - 1, @pageTokenIndex) if !@demoMode
 
-    @setupURL() if @demoMode
-
     @trigger("change:pageTokenIndex", this, @pageTokenIndex)
-  
+
   # TODO write tests
-  setupURL: ->
+  setupURL: (lastEmailThreadUID, dir) ->
     @url = "/api/v1/email_threads/in_folder?folder_id=" + @folderID if @folderID
-    @url += "&page=" + (@pageTokenIndex + 1) if @pageTokenIndex
+    @url += "&last_email_thread_uid=" + lastEmailThreadUID if lastEmailThreadUID
+    @url += "&dir=" + dir if dir
     
   ###############
   ### Getters ###
