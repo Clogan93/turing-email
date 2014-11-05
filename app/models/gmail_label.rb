@@ -28,6 +28,8 @@ class GmailLabel < ActiveRecord::Base
 
     last_email_sql = ''
     query_params = []
+    dir_op = dir.upcase == 'DESC' ? '<=' : '>='
+    
     if last_email_thread
       emails = last_email_thread.emails.order(:date => :desc)
       
@@ -41,21 +43,22 @@ class GmailLabel < ActiveRecord::Base
       last_email = emails[0] if last_email.nil?
 
       query_params.push(last_email.date, last_email_thread.id, last_email.date, last_email_thread.id)
+    else
+      max_date = self.emails.maximum(:date)
+      query_params.push(max_date, -1, max_date, -1)
+    end
       
-      dir_op = dir.upcase == 'DESC' ? '<=' : '>='
-      
-      last_email_sql = <<last_email_sql
+    last_email_sql = <<last_email_sql
 AND
 email_folder_mappings."folder_email_thread_date" #{dir_op} ? AND
 email_folder_mappings."email_thread_id" != ?
 last_email_sql
       
-      last_email_sql_inner = <<last_email_sql_inner
+    last_email_sql_inner = <<last_email_sql_inner
 AND 
 email_folder_mappings_inner."folder_email_thread_date" #{dir_op} ? AND
 email_folder_mappings_inner."email_thread_id" != ?
 last_email_sql_inner
-    end
     
     sql = <<sql
 WITH RECURSIVE recent_email_threads AS (
