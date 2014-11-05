@@ -8,20 +8,32 @@
 }
 
 li.contains-unread-emails {
+
   font-weight: bold;
+
+  a {
+    position: relative;
+    right: 5px;
+  }
+
 }
 
 li.contains-no-unread-emails {
-  font-weight: normal;;
+  font-weight: normal;
 }
 
 .email-folders {
+
+  margin-left: 13px;
+
   li {
     padding: 0px;
   }
+
   ul ul {
-    padding-left: 30px;
+    padding-left: 20px;
   }
+
 }
 
 .bullet-span {
@@ -29,7 +41,11 @@ li.contains-no-unread-emails {
   float: left;
   padding-top: 4px;
   padding-right: 7px;
-  font-size: 14px;
+  font-size: 12px;
+  width: 0px;
+  position: relative;
+  right: 13px;
+  top: 3px;
 }
 
 .label-without-children {

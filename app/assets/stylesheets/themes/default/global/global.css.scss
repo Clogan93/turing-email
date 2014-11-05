@@ -16,6 +16,7 @@ h3 {
 
 #page-wrapper {
   margin: 0px 0px 0px 0px;
+  padding-left: 0px;
   padding-right: 0px;
   min-height: 0px;
 }
@@ -25,6 +26,7 @@ h3 {
   float: left;
   overflow-x: auto;
   overflow-y: hidden;
+  padding-left: 2px;
 }
 
 .fixed:hover {
