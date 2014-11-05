@@ -42,7 +42,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
       )
     else
       @$el.empty()
-    
+
     return this
 
   addPreviewDataToTheModelJSON: (modelJSON) ->

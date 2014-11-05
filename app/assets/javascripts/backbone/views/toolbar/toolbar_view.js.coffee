@@ -32,7 +32,9 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
     if @currentEmailFolder?
       @updatePaginationText(@currentEmailFolder, @currentEmailFolderPage)
-    
+
+    $(".tooltip").remove()
+
     return this
 
   #######################
