@@ -13,9 +13,9 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     
     modelJSON = {}
     modelJSON["fromPreview"] = @model.fromPreview()
-    modelJSON["subjectPreview"] = @model.subjectPreview()
+    modelJSON["subjectPreview"] = @escapeHtml(@model.subjectPreview())
     modelJSON["datePreview"] = @model.datePreview()
-    modelJSON["snippet"] = @model.get("snippet")
+    modelJSON["snippet"] = @escapeHtml(@model.get("snippet"))
     @$el.html(@template(modelJSON))
 
     if @model.get("seen")
@@ -29,6 +29,9 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     @setupCheckbox()
     
     return this
+
+  escapeHtml: (data) ->
+    return $('<div/>').text(data).html()
 
   #######################
   ### Setup Functions ###

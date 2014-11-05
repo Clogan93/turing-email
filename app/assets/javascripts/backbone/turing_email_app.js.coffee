@@ -671,7 +671,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     for listItemView in _.values(emailThreadsListView.listItemViews)
       emailThread = listItemView.model
       
-      if emailThread.get("subject") is "Turing Email - Your daily Genie Report!"
+      if emailThread.get("subject") is "Turing Email - Your daily Brain Report!"
         emailThreadsListView.moveItemToTop(emailThread)
         return
 

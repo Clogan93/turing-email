@@ -16,6 +16,7 @@ h3 {
 
 #page-wrapper {
   margin: 0px 0px 0px 0px;
+  padding-left: 0px;
   padding-right: 0px;
   min-height: 0px;
 }
@@ -25,6 +26,8 @@ h3 {
   float: left;
   overflow-x: auto;
   overflow-y: hidden;
+  padding-left: 2px;
+  font-family: Roboto,Open Sans, Arial,Tahoma, Helvetica, sans-serif;
 }
 
 .fixed:hover {
@@ -76,4 +79,13 @@ h3 {
 
 .welcome-title {
   font-weight: bold;
+}
+
+.has-switch span.switch-left, .has-switch span.switch-primary {
+  background: #1ab394;
+}
+
+.has-switch {
+  border-color: #e7eaec;
+  border-radius: 3px;
 }
