@@ -172,7 +172,7 @@ describe "SettingsView", ->
         expect(request.url).toEqual "/api/v1/users/declare_email_bankruptcy"
 
       it "show the settings alert", ->
-        spy = sinon.spy(@settingsView, "showSettingsAlert")
+        spy = sinon.spy(TuringEmailApp, "showAlert")
         emailBankruptcyButton = @settingsDiv.find(".email-bankruptcy-button")
         emailBankruptcyButton.click()
         expect(spy).toHaveBeenCalled()
@@ -216,25 +216,25 @@ describe "SettingsView", ->
       it "displays a success alert after the save button is clicked and then hides it", ->
         @clock = sinon.useFakeTimers()
 
-        showSettingsAlertSpy = sinon.spy(@settingsView, "showSettingsAlert")
-        removeSettingsAlertSpy = sinon.spy(@settingsView, "removeSettingsAlert")
+        showAlertSpy = sinon.spy(TuringEmailApp, "showAlert")
+        removeAlertSpy = sinon.spy(TuringEmailApp, "removeAlert")
 
         @settingsView.saveSettings()
 
         @server.respondWith "PATCH", @userSettings.url, stringifyUserSettings(@userSettings)
         @server.respond()
 
-        expect(showSettingsAlertSpy).toHaveBeenCalled()
+        expect(showAlertSpy).toHaveBeenCalled()
 
         @clock.tick(5000)
 
-        expect(removeSettingsAlertSpy).toHaveBeenCalled()
+        expect(removeAlertSpy).toHaveBeenCalled()
 
         @clock.restore()
         @server.restore()
 
-        showSettingsAlertSpy.restore()
-        removeSettingsAlertSpy.restore()
+        showAlertSpy.restore()
+        removeAlertSpy.restore()
 
   describe "#setupUninstallAppButtons", ->
     it "binds the uninstall button's click event", ->

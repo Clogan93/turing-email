@@ -45,13 +45,14 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
       @trigger("click", this)
 
   setupCheckbox: ->
+    @$el.find("div.icheckbox_square-green ins").off("click")
+
     @$el.find(".i-checks").iCheck
       checkboxClass: "icheckbox_square-green"
       radioClass: "iradio_square-green"
 
     @diviCheck = @$el.find("div.icheckbox_square-green")
-
-    @$el.find("div.icheckbox_square-green ins").off("click")
+    
     @$el.find("div.icheckbox_square-green ins").click (event) =>
       @updateCheckStyles()
 

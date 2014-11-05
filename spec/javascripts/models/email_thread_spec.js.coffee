@@ -547,14 +547,6 @@ describe "EmailThread", ->
         expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
         specCompareFunctions((=> @threadsModifyUnreadRequest(seenValue)), @googleRequestStub.args[0][1])
           
-  describe "Getters", ->
-    describe "#sortedEmails", ->
-      beforeEach ->
-        @sortedEmails = @emailThread.get("emails").sort (a, b) -> a.date - b.date
-
-      it "returns the emails sorted by date", ->
-        expect(@emailThread.sortedEmails()).toEqual(@sortedEmails)
-  
   describe "Actions", ->
     describe "#removeFromFolder", ->
       beforeEach ->

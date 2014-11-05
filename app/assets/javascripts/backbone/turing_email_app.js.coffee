@@ -654,15 +654,15 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @loadEmailThread(emailThreadUID, (emailThread) =>
       @currentEmailThreadIs emailThread.get("uid")
 
-      sortedEmails = emailThread.sortedEmails()
+      emails = emailThread.get("emails")
       
       switch mode
         when "forward"
-          @views.composeView.loadEmailAsForward(_.last(sortedEmails), emailThread)
+          @views.composeView.loadEmailAsForward(_.last(emails), emailThread)
         when "reply"
-          @views.composeView.loadEmailAsReply(_.last(sortedEmails), emailThread)
+          @views.composeView.loadEmailAsReply(_.last(emails), emailThread)
         else
-          @views.composeView.loadEmailDraft(_.last(sortedEmails), emailThread)
+          @views.composeView.loadEmailDraft(_.last(emails), emailThread)
 
       @views.composeView.show()
     )

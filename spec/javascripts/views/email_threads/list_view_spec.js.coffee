@@ -380,7 +380,7 @@ describe "ListView", ->
             @listView.scrollListItemIntoView(@listItemView, "bottom")
 
           it "to have scrolled the list item into view", ->
-            expect(@scrollTopSpy).toHaveBeenCalledWith(@bottom - @parent.height())
+            expect(@scrollTopSpy).toHaveBeenCalledWith(@bottom - @parent.outerHeight(true))
 
         describe "position=top", ->
           beforeEach ->

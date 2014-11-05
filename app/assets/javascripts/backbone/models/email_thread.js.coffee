@@ -311,15 +311,6 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
       )
 
   ###############
-  ### Getters ###
-  ###############
-
-  sortedEmails: ->
-    emails = @get("emails")
-    return emails
-    #return emails.sort (a, b) => a.date - b.date
-
-  ###############
   ### Actions ###  
   ###############
     
