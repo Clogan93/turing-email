@@ -892,6 +892,15 @@ class GmailAccount < ActiveRecord::Base
     end
     
     return job_ids
+  rescue Google::APIClient::ClientError => ex
+    if ex.result.data.error &&
+        !ex.result.data.error['errors'].empty? &&
+        ex.result.data.error['errors'][0]['reason'] == 'authError'
+      log_console("sync_email_partial #{self.email} EMAIL AUTH ERROR")
+      return job_ids
+    else
+      raise ex
+    end
   end
 
   def sync_gmail_thread(gmail_thread_id)
