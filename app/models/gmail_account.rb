@@ -662,6 +662,15 @@ class GmailAccount < ActiveRecord::Base
     self.set_last_history_id_synced(last_history_id_synced) if last_history_id_synced
 
     return job_ids
+  rescue Google::APIClient::ClientError => ex
+    if ex.result.data.error &&
+        !ex.result.data.error['errors'].empty? &&
+        ex.result.data.error['errors'][0]['reason'] == 'authError'
+      log_console("sync_email_partial #{self.email} EMAIL AUTH ERROR")
+      return job_ids
+    else
+      raise ex
+    end
   rescue Exception => ex
     log_console('AHHHHHHH sync_email_full self.gmail_client.messages_list FAILED')
     raise ex
