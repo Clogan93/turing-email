@@ -8,7 +8,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
 
     @toolbarView = new TuringEmailApp.Views.ToolbarView(
       app: @app
-      demoMode: @app.models.userSettings.get("demo_mode_enabled")
+      demoMode: @app.models.userConfiguration.get("demo_mode_enabled")
     )
 
     @miniatureToolbarView = new TuringEmailApp.Views.MiniatureToolbarView(
@@ -175,7 +175,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
     apps.fetch()
     appsLibraryView = new TuringEmailApp.Views.AppsLibrary.AppsLibraryView({
       collection: apps,
-      developer_enabled: @app.models.userSettings.get("developer_enabled")
+      developer_enabled: @app.models.userConfiguration.get("developer_enabled")
     })
     appsLibraryView.render()
     
@@ -188,7 +188,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
     return false if not @primaryPaneDiv?
     
     settingsView = new TuringEmailApp.Views.SettingsView(
-      model: @app.models.userSettings
+      model: @app.models.userConfiguration
       emailRules: @app.collections.emailRules
       brainRules: @app.collections.brainRules
     )
@@ -245,7 +245,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
 
     emailThreadViewDiv.html("")
 
-    if @app.models.userSettings?.get("installed_apps")?.length > 0
+    if @app.models.userConfiguration?.get("installed_apps")?.length > 0
       appsSplitPane = $("<div />", {class: "apps_split_pane"}).appendTo(emailThreadViewDiv)
       
       emailThreadView.$el.addClass("ui-layout-center")
@@ -256,7 +256,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
       appsDiv.addClass("ui-layout-east")
 
       if emailThread?
-        for installedAppJSON in @app.models.userSettings.get("installed_apps")
+        for installedAppJSON in @app.models.userConfiguration.get("installed_apps")
           appIframe = $("<iframe></iframe>").appendTo(appsDiv)
           appIframe.css("width", "178px")
           appIframe.css("border", "solid 1px black")

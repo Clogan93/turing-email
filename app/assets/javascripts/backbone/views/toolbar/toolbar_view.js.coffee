@@ -157,9 +157,9 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     if emailFolder? && page?
       numThreads = emailFolder.get("num_threads")
       
-      firstThreadNumber = if numThreads is 0 then 0 else (page - 1) * TuringEmailApp.Models.UserSettings.EmailThreadsPerPage + 1
+      firstThreadNumber = if numThreads is 0 then 0 else (page - 1) * TuringEmailApp.Models.UserConfiguration.EmailThreadsPerPage + 1
       
-      lastThreadNumber = page * TuringEmailApp.Models.UserSettings.EmailThreadsPerPage
+      lastThreadNumber = page * TuringEmailApp.Models.UserConfiguration.EmailThreadsPerPage
       lastThreadNumber = numThreads if lastThreadNumber > parseInt(numThreads)
     else
       numThreads = 0

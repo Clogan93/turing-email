@@ -1,4 +1,4 @@
-FactoryGirl.define "UserSettings", ->
+FactoryGirl.define "UserConfiguration", ->
   @sequence("id", "id");
   @demo_mode_enabled = false
   @keyboard_shortcuts_enabled = true

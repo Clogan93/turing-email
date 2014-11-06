@@ -1,6 +1,6 @@
-describe "UserSettings", ->
+describe "UserConfiguration", ->
   beforeEach ->
-    @userSettings = new TuringEmailApp.Models.UserSettings()
+    @userConfiguration = new TuringEmailApp.Models.UserConfiguration()
     
   it "has the right url", ->
-    expect(@userSettings.url).toEqual("/api/v1/user_configurations")
+    expect(@userConfiguration.url).toEqual("/api/v1/user_configurations")

@@ -26,7 +26,7 @@ window.specStartTuringEmailApp = ->
   $("<div />", {id: "main"}).appendTo("body")
 
   TuringEmailApp.models.user = new TuringEmailApp.Models.User()
-  TuringEmailApp.models.userSettings = new TuringEmailApp.Models.UserSettings()
+  TuringEmailApp.models.userConfiguration = new TuringEmailApp.Models.UserConfiguration()
   
   TuringEmailApp.views.mainView = new TuringEmailApp.Views.Main(
     app: TuringEmailApp
@@ -145,10 +145,10 @@ window.verifyReportsRendered = (parent) ->
     expect(reportDiv.length).toEqual(1)
     expect(reportDiv.html()).not.toEqual("")
 
-window.stringifyUserSettings = (userSettings) ->
-  userSettingsJSON = userSettings.toJSON()
+window.stringifyUserConfiguration = (userConfiguration) ->
+  userConfigurationJSON = userConfiguration.toJSON()
   
-  for installedApp in userSettingsJSON.installed_apps
+  for installedApp in userConfigurationJSON.installed_apps
     installedApp.app = JSON.stringify(installedApp.app)
     
-  return JSON.stringify(userSettingsJSON)
+  return JSON.stringify(userConfigurationJSON)

@@ -45,7 +45,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
   threadsListRequest: (options) ->
     params =
       userId: "me"
-      maxResults: TuringEmailApp.Models.UserSettings.EmailThreadsPerPage
+      maxResults: TuringEmailApp.Models.UserConfiguration.EmailThreadsPerPage
 
     params["pageToken"] = @pageTokens[@pageTokenIndex] if @pageTokens[@pageTokenIndex]?
       
@@ -217,7 +217,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
 
   hasNextPage: ->
     if @demoMode
-      return @length % TuringEmailApp.Models.UserSettings.EmailThreadsPerPage == 0
+      return @length % TuringEmailApp.Models.UserConfiguration.EmailThreadsPerPage == 0
     else
       return @pageTokenIndex < @pageTokens.length - 1
 

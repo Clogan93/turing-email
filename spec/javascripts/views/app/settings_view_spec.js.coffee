@@ -20,17 +20,17 @@ describe "SettingsView", ->
     TuringEmailApp.collections.emailRules.fetch()
     @server.respond()
 
-    @userSettings = new TuringEmailApp.Models.UserSettings()
+    @userConfiguration = new TuringEmailApp.Models.UserConfiguration()
     
     @settingsDiv = $("<div />", {id: "settings"}).appendTo("body")
     @settingsView = new TuringEmailApp.Views.SettingsView(
       el: @settingsDiv
-      model: @userSettings
+      model: @userConfiguration
       emailRules: TuringEmailApp.collections.emailRules
       brainRules: TuringEmailApp.collections.brainRules
     )
     
-    @userSettings.set(FactoryGirl.create("UserSettings"))
+    @userConfiguration.set(FactoryGirl.create("UserConfiguration"))
 
   afterEach ->
     @server.restore()
@@ -63,27 +63,27 @@ describe "SettingsView", ->
     it "renders the demo mode switch", ->
       demoModeSwitch = $(".demo_mode_switch")
       expect(@settingsDiv).toContain(demoModeSwitch)
-      expect(demoModeSwitch.is(":checked")).toEqual(@userSettings.get("demo_mode_enabled"))
+      expect(demoModeSwitch.is(":checked")).toEqual(@userConfiguration.get("demo_mode_enabled"))
       
     it "renders the keyboard shortcuts switch", ->
       keyboardShortcutsSwitch = $(".keyboard_shortcuts_switch")
       expect(@settingsDiv).toContain(keyboardShortcutsSwitch)
-      expect(keyboardShortcutsSwitch.is(":checked")).toEqual(@userSettings.get("keyboard_shortcuts_enabled"))
+      expect(keyboardShortcutsSwitch.is(":checked")).toEqual(@userConfiguration.get("keyboard_shortcuts_enabled"))
       
     it "renders the email genie switch", ->
       genieSwitch = $(".genie-switch")
       expect(@settingsDiv).toContain(genieSwitch)
-      expect(genieSwitch.is(":checked")).toEqual(@userSettings.get("genie_enabled"))
+      expect(genieSwitch.is(":checked")).toEqual(@userConfiguration.get("genie_enabled"))
 
     it "renders the split pane switch", ->
       splitPaneSwitch = $(".split-pane-switch")
       expect(@settingsDiv).toContain(splitPaneSwitch)
-      expect(splitPaneSwitch.is(":checked")).toEqual(@userSettings.get("split_pane_mode") == "horizontal")
+      expect(splitPaneSwitch.is(":checked")).toEqual(@userConfiguration.get("split_pane_mode") == "horizontal")
 
     it "renders the developer switch", ->
       developerSwitch = $(".developer_switch")
       expect(@settingsDiv).toContain(developerSwitch)
-      expect(developerSwitch.is(":checked")).toEqual(@userSettings.get("developer_enabled"))
+      expect(developerSwitch.is(":checked")).toEqual(@userConfiguration.get("developer_enabled"))
       
     describe "with selected tab", ->
       beforeEach ->
@@ -130,7 +130,7 @@ describe "SettingsView", ->
 
     it "renders the installed apps information", ->
       installedAppsTable = $(".installed-apps-table")
-      for installedApp, index in @userSettings.toJSON().installed_apps
+      for installedApp, index in @userConfiguration.toJSON().installed_apps
         expect(@settingsDiv.find(".installed-app")[index]).toContainHtml('<td>' + installedApp.app.name + '</td>')
         expect(@settingsDiv.find(".installed-app")[index]).toContainHtml('<td>' + installedApp.app.description + '</td>')
 
@@ -215,14 +215,14 @@ describe "SettingsView", ->
         expect(request.url).toEqual "/api/v1/user_configurations"
 
       it "updates the user settings model with the correct values", ->
-        expect(@userSettings.get("genie_enabled")).toEqual(true)
-        expect(@userSettings.get("split_pane_mode")).toEqual("horizontal")
+        expect(@userConfiguration.get("genie_enabled")).toEqual(true)
+        expect(@userConfiguration.get("split_pane_mode")).toEqual("horizontal")
 
         splitPaneSwitch = $(".split-pane-switch")
         splitPaneSwitch.click()
 
-        expect(@userSettings.get("genie_enabled")).toEqual(true)
-        expect(@userSettings.get("split_pane_mode")).toEqual("off")
+        expect(@userConfiguration.get("genie_enabled")).toEqual(true)
+        expect(@userConfiguration.get("split_pane_mode")).toEqual("off")
 
       it "displays a success alert after the save button is clicked and then hides it", ->
         @clock = sinon.useFakeTimers()
@@ -232,7 +232,7 @@ describe "SettingsView", ->
 
         @settingsView.saveSettings()
 
-        @server.respondWith "PATCH", @userSettings.url, stringifyUserSettings(@userSettings)
+        @server.respondWith "PATCH", @userConfiguration.url, stringifyUserConfiguration(@userConfiguration)
         @server.respond()
 
         expect(showAlertSpy).toHaveBeenCalled()

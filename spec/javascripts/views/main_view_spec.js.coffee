@@ -288,7 +288,7 @@ describe "MainView", ->
           
         describe "with apps", ->
           beforeEach ->
-            TuringEmailApp.models.userSettings.set(FactoryGirl.create("UserSettings"))
+            TuringEmailApp.models.userConfiguration.set(FactoryGirl.create("UserConfiguration"))
 
             @server = sinon.fakeServer.create()
             
@@ -321,10 +321,10 @@ describe "MainView", ->
             expect(@appsDiv).toHaveClass("ui-layout-east")
             
           it "adds the app iframes to the split pane", ->
-            expect(@appsDiv.children().length).toEqual(TuringEmailApp.models.userSettings.get("installed_apps").length)
+            expect(@appsDiv.children().length).toEqual(TuringEmailApp.models.userConfiguration.get("installed_apps").length)
             
           it "runs all the apps", ->
-            expect(@runStub.callCount).toEqual(TuringEmailApp.models.userSettings.get("installed_apps").length)
+            expect(@runStub.callCount).toEqual(TuringEmailApp.models.userConfiguration.get("installed_apps").length)
             
           it "resizes the apps split pane", ->
             expect(@resizeAppsSplitPaneStub).toHaveBeenCalled()

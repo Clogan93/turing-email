@@ -83,7 +83,7 @@ describe "EmailThreadsCollection", ->
 
         @params =
           userId: "me"
-          maxResults: TuringEmailApp.Models.UserSettings.EmailThreadsPerPage
+          maxResults: TuringEmailApp.Models.UserConfiguration.EmailThreadsPerPage
           fields: "nextPageToken,threads(id)"
 
       afterEach ->
