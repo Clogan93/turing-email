@@ -222,7 +222,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     
   selectedEmailFolderID: ->
     return @views.emailFoldersTreeView.selectedItem()?.get("label_id")
-    
+
   ###############
   ### Setters ###
   ###############
@@ -234,7 +234,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
         @views.emailThreadsListView.select(emailThread, silent: true)
         @showEmailThread(emailThread)
-        
+
         @views.toolbarView.uncheckAllCheckbox()
         
         @trigger "change:selectedEmailThread", this, emailThread
