@@ -518,7 +518,8 @@ class GmailAccount < ActiveRecord::Base
     log_console("#{self.user.email} sync_email got #{job_ids.length} job IDs!")
 
     return job_ids
-
+  rescue Signet::AuthorizationError => ex
+    return job_ids
   rescue Google::APIClient::ClientError => ex
     if ex.result.data.error &&
         !ex.result.data.error['errors'].empty? &&
@@ -662,6 +663,8 @@ class GmailAccount < ActiveRecord::Base
     self.set_last_history_id_synced(last_history_id_synced) if last_history_id_synced
 
     return job_ids
+  rescue Signet::AuthorizationError => ex
+    return job_ids
   rescue Google::APIClient::ClientError => ex
     if ex.result.data.error &&
         !ex.result.data.error['errors'].empty? &&
@@ -718,6 +721,8 @@ class GmailAccount < ActiveRecord::Base
           
           nextPageToken = history_list_data['nextPageToken']
         end
+      rescue Signet::AuthorizationError => ex
+        return job_ids
       rescue Google::APIClient::ClientError => ex
         if ex.result.status == 404
           log_console("HISTORY ID #{self.last_history_id_synced} NOT FOUND!!!!!!!!!!!!!")
@@ -910,6 +915,8 @@ class GmailAccount < ActiveRecord::Base
       end
     end
     
+    return job_ids
+  rescue Signet::AuthorizationError => ex
     return job_ids
   rescue Google::APIClient::ClientError => ex
     if ex.result.data.error &&
