@@ -37,7 +37,7 @@ describe "CreateAppView", ->
 
     describe "#show", ->
       beforeEach ->
-        @dropdownSpy = spyOnEvent('.dropdown a', 'click.bs.dropdown')
+        spyOnEvent('.dropdown a', 'click.bs.dropdown')
         @createAppView.show()
 
       it "triggers the click.bs.dropdown event on the dropdown link", ->
@@ -45,7 +45,7 @@ describe "CreateAppView", ->
 
     describe "#hide", ->
       beforeEach ->
-        @dropdownSpy = spyOnEvent('.dropdown a', 'click.bs.dropdown')
+        spyOnEvent('.dropdown a', 'click.bs.dropdown')
         @createAppView.hide()
 
       it "triggers the click.bs.dropdown event on the dropdown link", ->

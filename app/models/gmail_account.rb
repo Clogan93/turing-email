@@ -39,6 +39,9 @@ class GmailAccount < ActiveRecord::Base
 
   validates_presence_of(:user, :google_id, :email, :verified_email)
 
+
+  before_destroy :sync_reset, prepend: true
+  
   # TODO write tests
   def GmailAccount.mime_data_from_gmail_data(gmail_data)
     gmail_json = JSON.parse(gmail_data.to_json())
@@ -515,6 +518,17 @@ class GmailAccount < ActiveRecord::Base
     log_console("#{self.user.email} sync_email got #{job_ids.length} job IDs!")
 
     return job_ids
+  rescue Signet::AuthorizationError => ex
+    return job_ids
+  rescue Google::APIClient::ClientError => ex
+    if ex.result.data.error &&
+        !ex.result.data.error['errors'].empty? &&
+        ex.result.data.error['errors'][0]['reason'] == 'authError'
+      log_console("sync_email_partial #{self.email} EMAIL AUTH ERROR")
+      return job_ids
+    else
+      raise ex
+    end
   ensure
     if started_sync
       self.sync_started_time = nil
@@ -649,6 +663,17 @@ class GmailAccount < ActiveRecord::Base
     self.set_last_history_id_synced(last_history_id_synced) if last_history_id_synced
 
     return job_ids
+  rescue Signet::AuthorizationError => ex
+    return job_ids
+  rescue Google::APIClient::ClientError => ex
+    if ex.result.data.error &&
+        !ex.result.data.error['errors'].empty? &&
+        ex.result.data.error['errors'][0]['reason'] == 'authError'
+      log_console("sync_email_partial #{self.email} EMAIL AUTH ERROR")
+      return job_ids
+    else
+      raise ex
+    end
   rescue Exception => ex
     log_console('AHHHHHHH sync_email_full self.gmail_client.messages_list FAILED')
     raise ex
@@ -696,6 +721,8 @@ class GmailAccount < ActiveRecord::Base
           
           nextPageToken = history_list_data['nextPageToken']
         end
+      rescue Signet::AuthorizationError => ex
+        return job_ids
       rescue Google::APIClient::ClientError => ex
         if ex.result.status == 404
           log_console("HISTORY ID #{self.last_history_id_synced} NOT FOUND!!!!!!!!!!!!!")
@@ -703,6 +730,11 @@ class GmailAccount < ActiveRecord::Base
 
           full_sync_job_ids = sync_email_full(delay: delay)
           return job_ids.concat(full_sync_job_ids)
+        elsif ex.result.data.error &&
+              !ex.result.data.error['errors'].empty? &&
+              ex.result.data.error['errors'][0]['reason'] == 'authError'
+          log_console("sync_email_partial #{self.email} EMAIL AUTH ERROR")
+          return job_ids
         else
           attempts = Google::GmailClient.handle_client_error(ex, attempts)
           retry
@@ -747,8 +779,8 @@ class GmailAccount < ActiveRecord::Base
 
       self.user.apply_email_rules_to_email(email) if gmail_data['labelIds'].include?("INBOX")
     rescue ActiveRecord::RecordNotUnique => unique_violation
-      raise unique_violation if unique_violation.message !~ /index_emails_on_email_account_type_and_email_account_id_and_uid/
-
+      raise unique_violation if unique_violation.message !~ /index_emails_on_email_account_type_and_email_account_id_and_uid/ &&
+                                unique_violation.message !~ /index_emails_on_email_account_id_and_email_account_type_and_uid/
       email = Email.find_by_uid(gmail_data['id'])
       raise 'AHHHHHHHHHH unique_violation but NO email?!' if email.nil?
 
@@ -842,10 +874,12 @@ class GmailAccount < ActiveRecord::Base
     end
   end
   
-  def sync_gmail_ids(gmail_ids, delay: false)
+  def sync_gmail_ids(gmail_ids_orig, delay: false)
+    gmail_ids = gmail_ids_orig.dup.uniq
     gmail_id_index = 0
     job_ids = []
 
+    
     log_console("sync_gmail_ids with #{gmail_ids.length} gmail ids and delay=#{delay}!")
 
     HerokuTools::HerokuTools.scale_dynos('worker', GmailAccount::NUM_SYNC_DYNOS) if delay
@@ -882,6 +916,17 @@ class GmailAccount < ActiveRecord::Base
     end
     
     return job_ids
+  rescue Signet::AuthorizationError => ex
+    return job_ids
+  rescue Google::APIClient::ClientError => ex
+    if ex.result.data.error &&
+        !ex.result.data.error['errors'].empty? &&
+        ex.result.data.error['errors'][0]['reason'] == 'authError'
+      log_console("sync_email_partial #{self.email} EMAIL AUTH ERROR")
+      return job_ids
+    else
+      raise ex
+    end
   end
 
   def sync_gmail_thread(gmail_thread_id)

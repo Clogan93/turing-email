@@ -1,10 +1,19 @@
 class GenieMailer < ActionMailer::Base
   layout 'email'
 
-  def user_report_email(user, important_emails, auto_filed_emails, sent_emails_not_replied_to)
+  def user_report_email(user,
+                        num_important_emails, important_emails,
+                        num_auto_filed_emails, auto_filed_emails,
+                        num_sent_emails_not_replied_to, sent_emails_not_replied_to)
     @user = user
+
+    @num_important_emails = num_important_emails
     @important_emails = important_emails
+
+    @num_auto_filed_emails = num_auto_filed_emails
     @auto_filed_emails = auto_filed_emails
+    
+    @num_sent_emails_not_replied_to = num_sent_emails_not_replied_to
     @sent_emails_not_replied_to = sent_emails_not_replied_to
 
     email = mail(to: user.email, subject: "#{$config.service_name} - Your daily Brain Report!")

@@ -5,8 +5,31 @@ describe "EmailFoldersCollection", ->
       demoMode: false
     )
 
+  it "has the right url", ->
+    expect(@emailFoldersCollection.url).toEqual("/api/v1/email_folders")
+    
   it "should use the EmailFolder model", ->
     expect(@emailFoldersCollection.model).toEqual TuringEmailApp.Models.EmailFolder
+    
+  describe "#initialize", ->
+    describe "demo mode defaults to true", ->
+      beforeEach ->
+        @emailFoldersCollectionTemp = new TuringEmailApp.Collections.EmailFoldersCollection(undefined,
+          app: TuringEmailApp
+        )
+        
+      it "demoMode=true", ->
+        expect(@emailFoldersCollectionTemp.demoMode).toEqual(true)
+
+    describe "assigns demoMode from the parameter", ->
+      beforeEach ->
+        @emailFoldersCollectionTemp = new TuringEmailApp.Collections.EmailFoldersCollection(undefined,
+          app: TuringEmailApp
+          demoMode: false
+        )
+
+      it "demoMode=false", ->
+        expect(@emailFoldersCollectionTemp.demoMode).toEqual(false)
     
   describe "Network", ->
     describe "#sync", ->
@@ -35,25 +58,47 @@ describe "EmailFoldersCollection", ->
           expect(@googleRequestStub).not.toHaveBeenCalled()
 
         it "does not trigger the request event", ->
-          expect(@triggerStub).not.toHaveBeenCalled()
-        
+          expect(@triggerStub).not.toHaveBeenCalled()          
+      
       describe "read", ->
         beforeEach ->
+          @method = "read"
           @collection = {}
-          @options = error: sinon.stub()
-          @emailFoldersCollection.sync("read", @collection, @options)
-  
-        it "does not call super", ->
-          expect(@superStub).not.toHaveBeenCalled()
-          
-        it "calls googleRequest", ->
-          expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
-          specCompareFunctions((=> @labelsListRequest()), @googleRequestStub.args[0][1])
-          specCompareFunctions(((response) => @loadLabels(response.result.labels, options)), @googleRequestStub.args[0][2])
-          expect(@googleRequestStub.args[0][3]).toEqual(@options.error)
 
-        it "triggers the request event", ->
-          expect(@triggerStub).toHaveBeenCalledWith("request", @collection, null, @options)
+        describe "demoMode=true", ->
+          beforeEach ->
+            @options = error: sinon.stub()
+          
+            @emailFoldersCollection.demoMode = true
+            @emailFoldersCollection.sync(@method, @collection, @options)
+            
+          it "calls super", ->
+            expect(@superStub).toHaveBeenCalledWith(@method, @collection, @options)
+
+          it "does NOT call googleRequest", ->
+            expect(@googleRequestStub).not.toHaveBeenCalled()
+  
+          it "does not trigger the request event", ->
+            expect(@triggerStub).not.toHaveBeenCalled()
+
+        describe "demoMode=false", ->
+          beforeEach ->
+            @options = error: sinon.stub()
+            
+            @emailFoldersCollection.demoMode = false
+            @emailFoldersCollection.sync(@method, @collection, @options)
+            
+          it "does not call super", ->
+            expect(@superStub).not.toHaveBeenCalled()
+            
+          it "calls googleRequest", ->
+            expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
+            specCompareFunctions((=> @labelsListRequest()), @googleRequestStub.args[0][1])
+            specCompareFunctions(((response) => @loadLabels(response.result.labels, options)), @googleRequestStub.args[0][2])
+            expect(@googleRequestStub.args[0][3]).toEqual(@options.error)
+  
+          it "triggers the request event", ->
+            expect(@triggerStub).toHaveBeenCalledWith("request", @collection, null, @options)
 
     describe "#labelsListRequest", ->
       beforeEach ->
@@ -130,13 +175,24 @@ describe "EmailFoldersCollection", ->
         
     describe "#parse", ->
       beforeEach ->
-        labelsInfo = fixture.load("gmail_api/users.labels.get.fixture.json")[0]
+        @labelsInfo = fixture.load("gmail_api/users.labels.get.fixture.json")[0]
         @labelsParsed = fixture.load("gmail_api/users.labels.parsed.fixture.json")[0]
-        
-        @returned = @emailFoldersCollection.parse(labelsInfo)
 
-      it "returns the parsed labels", ->
-        expect(@returned).toEqual(@labelsParsed)
+      describe "demoMode=true", ->
+        beforeEach ->
+          @emailFoldersCollection.demoMode = true
+          @returned = @emailFoldersCollection.parse(@labelsInfo)
+          
+        it "returns the unparsed labels", ->
+          expect(@returned).toEqual(@labelsInfo)
+          
+      describe "demoMode=false", ->
+        beforeEach ->
+          @emailFoldersCollection.demoMode = false
+          @returned = @emailFoldersCollection.parse(@labelsInfo)
+          
+        it "returns the parsed labels", ->
+          expect(@returned).toEqual(@labelsParsed)
         
   describe "with models", ->
     beforeEach ->

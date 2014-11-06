@@ -22,12 +22,14 @@ class GmailLabel < ActiveRecord::Base
     return EmailFolderMapping.joins(:email).where(:email_folder => self).where('"emails"."seen" = ?',false).count('DISTINCT "emails"."email_thread_id"')
   end
   
-  def get_sorted_paginated_threads(last_email_thread: nil, dir: 'DESC', threads_per_page: 50)
+  def get_sorted_paginated_threads(last_email_thread: nil, dir: 'DESC', threads_per_page: 50, log: false)
     num_rows = threads_per_page
     dir = 'DESC' if dir.blank?
 
     last_email_sql = ''
     query_params = []
+    dir_op = dir.upcase == 'DESC' ? '<=' : '>='
+    
     if last_email_thread
       emails = last_email_thread.emails.order(:date => :desc)
       
@@ -41,21 +43,22 @@ class GmailLabel < ActiveRecord::Base
       last_email = emails[0] if last_email.nil?
 
       query_params.push(last_email.date, last_email_thread.id, last_email.date, last_email_thread.id)
+    else
+      max_date = self.emails.maximum(:date)
+      query_params.push(max_date, -1, max_date, -1)
+    end
       
-      dir_op = dir.upcase == 'DESC' ? '<=' : '>='
-      
-      last_email_sql = <<last_email_sql
+    last_email_sql = <<last_email_sql
 AND
 email_folder_mappings."folder_email_thread_date" #{dir_op} ? AND
 email_folder_mappings."email_thread_id" != ?
 last_email_sql
       
-      last_email_sql_inner = <<last_email_sql_inner
+    last_email_sql_inner = <<last_email_sql_inner
 AND 
 email_folder_mappings_inner."folder_email_thread_date" #{dir_op} ? AND
 email_folder_mappings_inner."email_thread_id" != ?
 last_email_sql_inner
-    end
     
     sql = <<sql
 WITH RECURSIVE recent_email_threads AS (
@@ -91,13 +94,18 @@ SELECT email_threads.*
                     FROM recent_email_threads
                     LIMIT #{threads_per_page})
 sql
-    
+
+    if log
+      log_console(sql)
+      log_console(query_params)
+    end
+
     query_params.unshift(sql)
     email_threads = EmailThread.find_by_sql(query_params)
     email_threads = EmailThread.joins(:emails => :gmail_labels).
                                 includes(:emails => :gmail_labels).
                                 where(:id => email_threads).order('"emails"."draft_id" NULLS FIRST, "emails"."date" DESC, "email_threads"."id" DESC')
-    
+
     return email_threads
   end
   
