@@ -84,6 +84,17 @@ describe "SettingsView", ->
       developerSwitch = $(".developer_switch")
       expect(@settingsDiv).toContain(developerSwitch)
       expect(developerSwitch.is(":checked")).toEqual(@userSettings.get("developer_enabled"))
+      
+    describe "with selected tab", ->
+      beforeEach ->
+        @selectedTabID = "tab-3"
+        @selector = "a[href=#" + @selectedTabID + "]"
+        $(@selector).click()
+
+        @newSelectedTabID = $(".tab-pane.active").attr("id")
+        
+      it "selects the tab", ->
+        expect(@newSelectedTabID).toEqual(@selectedTabID)
 
   describe "email bankruptcy button", ->
     it "renders the email rules table", ->
