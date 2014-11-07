@@ -38,7 +38,7 @@ describe "EmailThreadView", ->
       describe "when the email is not a draft", ->
 
         it "should render the attributes of all the email threads", ->
-          #Set up lists
+          # Set up lists
           fromNames = []
           textParts = []
 
@@ -51,7 +51,7 @@ describe "EmailThreadView", ->
             emailBody = $($(@).find(".email-body .col-md-11")).text().trim()
             if emailBody.length is 0 then textParts.push(undefined) else textParts.push(emailBody)
 
-          #Run expectations
+          # Run expectations
           for email, index in @emailThread.get("emails")
             if email.draft_id is null
               expect(fromNames[index]).toEqual email.from_name

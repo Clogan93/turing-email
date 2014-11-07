@@ -59,13 +59,13 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
   @removeGmailLabelRequest: (emailThreadUID, labelID) ->
     gapi.client.gmail.users.threads.modify({userId: "me", id: emailThreadUID}, {removeLabelIds: [labelID]})
     
-  @removeFromFolder: (app, emailThreadUIDs, emailFolderID, success, error, demoMode) ->
+  @removeFromFolder: (app, emailThreadUIDs, emailFolderID, success, error, demoMode=false) ->
     if demoMode
       postData =
         email_thread_uids:  emailThreadUIDs
         email_folder_id: emailFolderID
   
-      $.post("/api/v1/email_threads/remove_from_folder", postData).done(success?()).fail(error?())
+      $.post("/api/v1/email_threads/remove_from_folder", postData).done(=> success?()).fail(=> error?())
     else
       if emailFolderID == "SENT"
         error?()
@@ -85,7 +85,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
   @trash: (app, emailThreadUIDs, demoMode=false) ->
     if demoMode
       postData = email_thread_uids:  emailThreadUIDs
-      $.post "/api/v1/email_threads/trash", postData
+      $.post("/api/v1/email_threads/trash", postData)
     else
       for emailThreadUID in emailThreadUIDs
         googleRequest(
@@ -112,7 +112,10 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
       postData.gmail_label_id = labelID if labelID?
       postData.gmail_label_name = labelName if labelName?
   
-      return $.post("/api/v1/email_threads/apply_gmail_label", postData).done(succes?()).fail(error?())
+      return $.post("/api/v1/email_threads/apply_gmail_label", postData).done(
+        (data) => success?(data)).fail(
+        (data) => error?(data)
+      )
     else
       run = (response) =>
         if response?
@@ -148,7 +151,11 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
       postData.email_folder_id = folderID if folderID?
       postData.email_folder_name = folderName if folderName?
   
-      return $.post("/api/v1/email_threads/move_to_folder", postData).done(succes?()).fail(error?())
+      return $.post("/api/v1/email_threads/move_to_folder", postData).done(
+        (data) => success?(data)
+      ).fail(
+        (data) => error?(data)
+      )
     else
       run = (response) =>
         if response?
@@ -181,11 +188,16 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
 
   initialize: (attributes, options) ->
     @app = options.app
-    @emailThreadUID = options.emailThreadUID
+    
     @set("demoMode", if options.demoMode? then options.demoMode else (if attributes?.demoMode? then attributes.demoMode else true))
 
-    @url = "/api/v1/email_threads/show/" + options.emailThreadUID if options?.emailThreadUID
-    @url = "/api/v1/email_threads/show/" + attributes.uid if attributes?.uid?
+    if attributes?.uid?
+      @url = "/api/v1/email_threads/show/" + attributes.uid
+      @emailThreadUID = attributes.uid
+
+    if options?.emailThreadUID?
+      @url = "/api/v1/email_threads/show/" + options.emailThreadUID
+      @emailThreadUID = options.emailThreadUID
     
     @listenTo(this, "change:seen", @seenChanged)
 
@@ -325,16 +337,14 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
 
   applyGmailLabel: (labelID, labelName) ->
     TuringEmailApp.Models.EmailThread.applyGmailLabel(@app, [@get("uid")], labelID, labelName,
-      (data) =>
-        @trigger("change:folder", this, data)
+      (data) => @trigger("change:folder", this, data)
       undefined,
       @get("demoMode")
     )
 
   moveToFolder: (folderID, folderName) ->
     TuringEmailApp.Models.EmailThread.moveToFolder(@app, [@get("uid")], folderID, folderName, @get("folder_ids"),
-      (data, status) =>
-        @trigger("change:folder", this, data)
+      (data) => @trigger("change:folder", this, data)
       undefined,
       @get("demoMode")
     )
