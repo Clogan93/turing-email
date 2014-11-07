@@ -33,11 +33,21 @@ describe "ListItemView", ->
         expect(@listItemView.$el.find('td.mail-date').text().trim()).toEqual @emailThread.datePreview()
 
     describe "#addedToDOM", ->
-      it "calls setupCheckbox when addedToDOM is called", ->
-        @spy = sinon.spy(@listItemView, "setupCheckbox")
+      beforeEach ->
+        @setupClickStub = sinon.stub(@listItemView, "setupClick", ->)
+        @setupCheckboxStub = sinon.stub(@listItemView, "setupCheckbox", ->)
+
         @listItemView.addedToDOM()
-        expect(@spy).toHaveBeenCalled()
-        @spy.restore()
+        
+      afterEach ->
+        @setupClickStub.restore()
+        @setupCheckboxStub.restore()
+
+      it "calls setupClickStub", ->
+        expect(@setupClickStub).toHaveBeenCalled()
+        
+      it "calls setupCheckbox", ->
+        expect(@setupCheckboxStub).toHaveBeenCalled()
 
     describe "#setupClick", ->
       beforeEach ->

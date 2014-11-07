@@ -22,6 +22,45 @@ describe "EmailThread", ->
     afterEach ->
       @server.restore()
 
+    describe "#SetThreadPropertiesFromJSON", ->
+      beforeEach ->
+        @threadJSON = @emailThread.toJSON()
+
+        TuringEmailApp.Models.EmailThread.SetThreadPropertiesFromJSON(@threadJSON, true)
+        
+      it "assigns the attributes", ->
+        expect(@threadJSON.loaded).toEqual(true)
+        expect(@threadJSON.demoMode).toEqual(true)
+
+        lastEmail = @threadJSON.emails[0]
+        
+        expect(@threadJSON.num_messages).toEqual(@threadJSON.emails.length)
+        expect(@threadJSON.snippet).toEqual(lastEmail.snippet)
+        
+        expect(@threadJSON.from_name).toEqual(lastEmail.from_name)
+        expect(@threadJSON.from_address).toEqual(lastEmail.from_address)
+        expect(@threadJSON.date).toEqual(new Date(lastEmail.date))
+        expect(@threadJSON.subject).toEqual(lastEmail.subject)
+
+        folderIDs = []
+
+        threadJSONExpected = @emailThread.toJSON()
+        
+        seen = true
+        for email in threadJSONExpected.emails
+          email.date = new Date(email.date)
+
+          seen = false if !email.seen
+          folderIDs = folderIDs.concat(email.folder_ids) if email.folder_ids?
+
+        threadJSONExpected.emails.sort (a, b) => a.date - b.date
+
+        threadJSONExpected.folder_ids = _.uniq(folderIDs)
+        
+        expect(@threadJSON.seen).toEqual(threadJSONExpected.seen)
+        expect(@threadJSON.emails).toEqual(threadJSONExpected.emails)
+        expect(@threadJSON.folder_ids).toEqual(threadJSONExpected.folder_ids)
+      
     describe "#setThreadParsedProperties", ->
       beforeEach ->
         @server.restore()
@@ -91,18 +130,55 @@ describe "EmailThread", ->
         @success = sinon.stub()
         @error = sinon.stub()
 
-        @googleRequestStub = sinon.stub(window, "googleRequest", ->)
+      describe "demoMode=true", ->
+        beforeEach ->
+          @postSpy = sinon.spy($, "post")
+          
+          @url = "/api/v1/email_threads/remove_from_folder"
+          @postData =
+            email_thread_uids:  @emailThreadUIDs
+            email_folder_id: @emailFolderID
 
-        TuringEmailApp.Models.EmailThread.removeFromFolder(TuringEmailApp, @emailThreadUIDs, @emailFolderID, @success, @error)
-        
-      afterEach ->
-        @googleRequestStub.restore()
+          TuringEmailApp.Models.EmailThread.removeFromFolder(TuringEmailApp, @emailThreadUIDs, @emailFolderID,
+                                                             @success, @error, true)
+            
+        afterEach ->
+          @postSpy.restore()
+          
+        it "posts", ->
+          expect(@postSpy).toHaveBeenCalledWith(@url, @postData)
+          
+        describe "success", ->
+          beforeEach ->
+            @server.respondWith("POST", @url, "")
+            @server.respond()
+            
+          it "calls success", ->
+            expect(@success).toHaveBeenCalled()
+            expect(@error).not.toHaveBeenCalled()
 
-      it "calls googleRequest", ->
-        expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
-        specCompareFunctions((=> @removeGmailLabelRequest(emailThreadUID, labelID)), @googleRequestStub.args[0][1])
-        expect(@googleRequestStub.args[0][2]).toEqual(@success)
-        expect(@googleRequestStub.args[0][3]).toEqual(@error)
+        describe "fail", ->
+          beforeEach ->
+            @server.respond()
+
+          it "calls error", ->
+            expect(@success).not.toHaveBeenCalled()
+            expect(@error).toHaveBeenCalled()
+
+      describe "demoMode=false", ->
+        beforeEach ->
+          @googleRequestStub = sinon.stub(window, "googleRequest", ->)
+          
+          TuringEmailApp.Models.EmailThread.removeFromFolder(TuringEmailApp, @emailThreadUIDs, @emailFolderID, @success, @error, false)
+
+        afterEach ->
+          @googleRequestStub.restore()
+          
+        it "calls googleRequest", ->
+          expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
+          specCompareFunctions((=> @removeGmailLabelRequest(emailThreadUID, labelID)), @googleRequestStub.args[0][1])
+          expect(@googleRequestStub.args[0][2]).toEqual(@success)
+          expect(@googleRequestStub.args[0][3]).toEqual(@error)
 
     describe "#trashRequest", ->
       beforeEach ->
@@ -125,17 +201,33 @@ describe "EmailThread", ->
         expect(@returned).toEqual(@ret)
         
     describe "#trash", ->
-      beforeEach ->
-        @googleRequestStub = sinon.stub(window, "googleRequest", ->)
+      describe "demoMode=true", ->
+        beforeEach ->
+          @postSpy = sinon.spy($, "post")
+          
+          @url = "/api/v1/email_threads/trash"
+          @postData = email_thread_uids:  @emailThreadUIDs
 
-        TuringEmailApp.Models.EmailThread.trash(TuringEmailApp, @emailThreadUIDs)
+          TuringEmailApp.Models.EmailThread.trash(TuringEmailApp, @emailThreadUIDs, true)
 
-      afterEach ->
-        @googleRequestStub.restore()
+        afterEach ->
+          @postSpy.restore()
 
-      it "calls googleRequest", ->
-        expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
-        specCompareFunctions((=> @trashRequest(emailThreadUID)), @googleRequestStub.args[0][1])
+        it "posts", ->
+          expect(@postSpy).toHaveBeenCalledWith(@url, @postData)
+        
+      describe "demoMode=false", ->
+        beforeEach ->
+          @googleRequestStub = sinon.stub(window, "googleRequest", ->)
+          
+          TuringEmailApp.Models.EmailThread.trash(TuringEmailApp, @emailThreadUIDs, false)
+
+        afterEach ->
+          @googleRequestStub.restore()
+          
+        it "calls googleRequest", ->
+          expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
+          specCompareFunctions((=> @trashRequest(emailThreadUID)), @googleRequestStub.args[0][1])
 
     describe "#applyGmailLabelRequest", ->
       beforeEach ->
@@ -164,38 +256,112 @@ describe "EmailThread", ->
         @success = sinon.stub()
         @error = sinon.stub()
 
-        @googleRequestStub = sinon.stub(window, "googleRequest", ->)
-
-      afterEach ->
-        @googleRequestStub.restore()
-
-      describe "with labelID", ->
+      describe "demoMode=true", ->
         beforeEach ->
-          TuringEmailApp.Models.EmailThread.applyGmailLabel(TuringEmailApp, @emailThreadUIDs, "label id", undefined, @success, @error)
+          @postSpy = sinon.spy($, "post")
+          @url = "/api/v1/email_threads/apply_gmail_label"
+            
+        afterEach ->
+          @postSpy.restore()
+
+        describe "with labelID", ->
+          beforeEach ->
+            @postData =
+              email_thread_uids:  @emailThreadUIDs
+              gmail_label_id: "label id"
+
+            TuringEmailApp.Models.EmailThread.applyGmailLabel(TuringEmailApp, @emailThreadUIDs,
+                                                              @postData.gmail_label_id, undefined,
+                                                              @success, @error, true)
+          
+          it "posts", ->
+            expect(@postSpy).toHaveBeenCalledWith(@url, @postData)
+    
+          describe "success", ->
+            beforeEach ->
+              @server.respondWith("POST", @url, "")
+              @server.respond()
+    
+            it "calls success", ->
+              expect(@success).toHaveBeenCalled()
+              expect(@error).not.toHaveBeenCalled()
+                  
+          describe "fail", ->
+            beforeEach ->
+              @server.respond()
+    
+            it "calls error", ->
+              expect(@success).not.toHaveBeenCalled()
+              expect(@error).toHaveBeenCalled()
+
+        describe "without labelID", ->
+          beforeEach ->
+            @postData =
+              email_thread_uids:  @emailThreadUIDs
+              gmail_label_name: "label name"
+
+            TuringEmailApp.Models.EmailThread.applyGmailLabel(TuringEmailApp, @emailThreadUIDs,
+                                                              undefined, @postData.gmail_label_name,
+                                                              @success, @error, true)
+
+          it "posts", ->
+            expect(@postSpy).toHaveBeenCalledWith(@url, @postData)
+
+          describe "success", ->
+            beforeEach ->
+              @server.respondWith("POST", @url, "")
+              @server.respond()
+
+            it "calls success", ->
+              expect(@success).toHaveBeenCalled()
+              expect(@error).not.toHaveBeenCalled()
+
+          describe "fail", ->
+            beforeEach ->
+              @server.respond()
+
+            it "calls error", ->
+              expect(@success).not.toHaveBeenCalled()
+              expect(@error).toHaveBeenCalled()
         
-        it "calls googleRequest", ->
-          expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
-          specCompareFunctions((=> @applyGmailLabelRequest(emailThreadUID, labelID)), @googleRequestStub.args[0][1])
-          expect(@googleRequestStub.args[0][2]).toEqual(@success)
-          expect(@googleRequestStub.args[0][3]).toEqual(@error)
-          
-      describe "without labelID", ->
+      describe "demoMode=false", ->
         beforeEach ->
-          TuringEmailApp.Models.EmailThread.applyGmailLabel(TuringEmailApp, @emailThreadUIDs, undefined, "name", @success, @error)
+          @googleRequestStub = sinon.stub(window, "googleRequest", ->)
 
-        it "creates the label", ->
-          expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
-          specCompareFunctions((=> @createGmailLabelRequest(labelName)), @googleRequestStub.args[0][1])
-          specCompareFunctions(((response) => run(response)), @googleRequestStub.args[0][2])
-          expect(@googleRequestStub.args[0][3]).toEqual(@error)
+        afterEach ->
+          @googleRequestStub.restore()
+
+        describe "with labelID", ->
+          beforeEach ->
+            TuringEmailApp.Models.EmailThread.applyGmailLabel(TuringEmailApp, @emailThreadUIDs,
+                                                              "label id", undefined,
+                                                              @success, @error, false)
           
-        it "calls googleRequest", ->
-          @googleRequestStub.args[0][2](result: id: "label id")
-
-          expect(@googleRequestStub.args[1][0]).toEqual(TuringEmailApp)
-          specCompareFunctions((=> @applyGmailLabelRequest(emailThreadUID, labelID)), @googleRequestStub.args[1][1])
-          expect(@googleRequestStub.args[1][2]).toEqual(@success)
-          expect(@googleRequestStub.args[1][3]).toEqual(@error)
+          it "calls googleRequest", ->
+            expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
+            specCompareFunctions((=> @applyGmailLabelRequest(emailThreadUID, labelID)), @googleRequestStub.args[0][1])
+            expect(@googleRequestStub.args[0][2]).toEqual(@success)
+            expect(@googleRequestStub.args[0][3]).toEqual(@error)
+            
+        describe "without labelID", ->
+          beforeEach ->
+            TuringEmailApp.Models.EmailThread.applyGmailLabel(TuringEmailApp, @emailThreadUIDs,
+                                                              undefined, "name",
+                                                              @success, @error, false)
+  
+          it "creates the label", ->
+            expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
+            specCompareFunctions((=> @createGmailLabelRequest(labelName)), @googleRequestStub.args[0][1])
+            specCompareFunctions(((response) => run(response)), @googleRequestStub.args[0][2])
+            expect(@googleRequestStub.args[0][3]).toEqual(@error)
+            
+          it "calls googleRequest", ->
+            @googleRequestStub.args[0][2](result: id: "label id")
+  
+            expect(@googleRequestStub.args[1][0]).toEqual(TuringEmailApp)
+            specCompareFunctions((=> @applyGmailLabelRequest(emailThreadUID, labelID)), @googleRequestStub.args[1][1])
+            expect(@googleRequestStub.args[1][2]).toEqual(@success)
+            expect(@googleRequestStub.args[1][3]).toEqual(@error)
 
     describe "#modifyGmailLabelsRequest", ->
       beforeEach ->
@@ -226,52 +392,178 @@ describe "EmailThread", ->
       beforeEach ->
         @success = sinon.stub()
         @error = sinon.stub()
-      
-        @googleRequestStub = sinon.stub(window, "googleRequest", ->)
-      
-      afterEach ->
-        @googleRequestStub.restore()
-      
-      describe "with labelID", ->
+
+      describe "demoMode=true", ->
         beforeEach ->
-          TuringEmailApp.Models.EmailThread.moveToFolder(TuringEmailApp, @emailThreadUIDs, "label id", undefined, ["current id"], @success, @error)
-      
-        it "calls googleRequest", ->
-          expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
-          specCompareFunctions((=> @modifyGmailLabelsRequest(emailThreadUID, [folderID], currentFolderIDs)), @googleRequestStub.args[0][1])
-          expect(@googleRequestStub.args[0][2]).toEqual(@success)
-          expect(@googleRequestStub.args[0][3]).toEqual(@error)
-      
-      describe "without labelID", ->
+          @postSpy = sinon.spy($, "post")
+          @url = "/api/v1/email_threads/move_to_folder"
+
+        afterEach ->
+          @postSpy.restore()
+
+        describe "with labelID", ->
+          beforeEach ->
+            @postData =
+              email_thread_uids:  @emailThreadUIDs
+              email_folder_id: "label id"
+
+            TuringEmailApp.Models.EmailThread.moveToFolder(TuringEmailApp, @emailThreadUIDs,
+                                                           @postData.email_folder_id, undefined, ["current id"],
+                                                           @success, @error, true)
+
+          it "posts", ->
+            expect(@postSpy).toHaveBeenCalledWith(@url, @postData)
+
+          describe "success", ->
+            beforeEach ->
+              @server.respondWith("POST", @url, "")
+              @server.respond()
+
+            it "calls success", ->
+              expect(@success).toHaveBeenCalled()
+              expect(@error).not.toHaveBeenCalled()
+
+          describe "fail", ->
+            beforeEach ->
+              @server.respond()
+
+            it "calls error", ->
+              expect(@success).not.toHaveBeenCalled()
+              expect(@error).toHaveBeenCalled()
+
+        describe "without labelID", ->
+          beforeEach ->
+            @postData =
+              email_thread_uids:  @emailThreadUIDs
+              email_folder_name: "label name"
+              
+            TuringEmailApp.Models.EmailThread.moveToFolder(TuringEmailApp, @emailThreadUIDs,
+                                                           undefined, @postData.email_folder_name, ["current id"],
+                                                           @success, @error, true)
+
+          it "posts", ->
+            expect(@postSpy).toHaveBeenCalledWith(@url, @postData)
+
+          describe "success", ->
+            beforeEach ->
+              @server.respondWith("POST", @url, "")
+              @server.respond()
+
+            it "calls success", ->
+              expect(@success).toHaveBeenCalled()
+              expect(@error).not.toHaveBeenCalled()
+
+          describe "fail", ->
+            beforeEach ->
+              @server.respond()
+
+            it "calls error", ->
+              expect(@success).not.toHaveBeenCalled()
+              expect(@error).toHaveBeenCalled()
+        
+      describe "demoMode=false", ->
         beforeEach ->
-          TuringEmailApp.Models.EmailThread.moveToFolder(TuringEmailApp, @emailThreadUIDs, undefined, "name", ["current id"], @success, @error)
-      
-        it "creates the label", ->
-          expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
-          specCompareFunctions((=> @createGmailLabelRequest(folderName)), @googleRequestStub.args[0][1])
-          specCompareFunctions(((response) => run(response)), @googleRequestStub.args[0][2])
-          expect(@googleRequestStub.args[0][3]).toEqual(@error)
-      
-        it "calls googleRequest", ->
-          @googleRequestStub.args[0][2](result: id: "label id")
-      
-          expect(@googleRequestStub.args[1][0]).toEqual(TuringEmailApp)
-          specCompareFunctions((=> @modifyGmailLabelsRequest(emailThreadUID, [folderID], currentFolderIDs)), @googleRequestStub.args[1][1])
-          expect(@googleRequestStub.args[1][2]).toEqual(@success)
-          expect(@googleRequestStub.args[1][3]).toEqual(@error)
+          @googleRequestStub = sinon.stub(window, "googleRequest", ->)
+
+        afterEach ->
+          @googleRequestStub.restore()
+          
+        describe "with labelID", ->
+          beforeEach ->
+            TuringEmailApp.Models.EmailThread.moveToFolder(TuringEmailApp, @emailThreadUIDs,
+                                                           "label id", undefined, ["current id"],
+                                                           @success, @error, false)
+        
+          it "calls googleRequest", ->
+            expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
+            specCompareFunctions((=> @modifyGmailLabelsRequest(emailThreadUID, [folderID], currentFolderIDs)), @googleRequestStub.args[0][1])
+            expect(@googleRequestStub.args[0][2]).toEqual(@success)
+            expect(@googleRequestStub.args[0][3]).toEqual(@error)
+        
+        describe "without labelID", ->
+          beforeEach ->
+            TuringEmailApp.Models.EmailThread.moveToFolder(TuringEmailApp, @emailThreadUIDs,
+                                                           undefined, "name", ["current id"],
+                                                           @success, @error, false)
+        
+          it "creates the label", ->
+            expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
+            specCompareFunctions((=> @createGmailLabelRequest(folderName)), @googleRequestStub.args[0][1])
+            specCompareFunctions(((response) => run(response)), @googleRequestStub.args[0][2])
+            expect(@googleRequestStub.args[0][3]).toEqual(@error)
+        
+          it "calls googleRequest", ->
+            @googleRequestStub.args[0][2](result: id: "label id")
+        
+            expect(@googleRequestStub.args[1][0]).toEqual(TuringEmailApp)
+            specCompareFunctions((=> @modifyGmailLabelsRequest(emailThreadUID, [folderID], currentFolderIDs)), @googleRequestStub.args[1][1])
+            expect(@googleRequestStub.args[1][2]).toEqual(@success)
+            expect(@googleRequestStub.args[1][3]).toEqual(@error)
 
   describe "#initialize", ->
     beforeEach ->
       @emailThreadTemp = new TuringEmailApp.Models.EmailThread(undefined,
         app: TuringEmailApp
-        emailThreadUID: "1"
-        demoMode: false
       )
 
     it "initializes the variables", ->
       expect(@emailThreadTemp.app).toEqual(TuringEmailApp)
-      expect(@emailThreadTemp.emailThreadUID).toEqual("1")
+      
+    describe "demo mode defaults to true", ->
+      beforeEach ->
+        @emailThreadTemp = new TuringEmailApp.Models.EmailThread(undefined,
+          app: TuringEmailApp
+        )
 
+      it "demoMode=true", ->
+        expect(@emailThreadTemp.get("demoMode")).toEqual(true)
+
+    describe "assigns demoMode from the attributes parameter", ->
+      beforeEach ->
+        @emailThreadTemp = new TuringEmailApp.Models.EmailThread(demoMode: false,
+          app: TuringEmailApp
+        )
+
+      it "demoMode=false", ->
+        expect(@emailThreadTemp.get("demoMode")).toEqual(false)
+
+    describe "assigns demoMode from the options parameter", ->
+      beforeEach ->
+        @emailThreadTemp = new TuringEmailApp.Models.EmailThread(undefined,
+          app: TuringEmailApp
+          demoMode: false
+        )
+
+      it "demoMode=false", ->
+        expect(@emailThreadTemp.get("demoMode")).toEqual(false)
+        
+    describe "emailThreadUID", ->
+      describe "attributes", ->
+        beforeEach ->
+          @attributes = uid: "1"
+          @emailThreadTemp = new TuringEmailApp.Models.EmailThread(@attributes,
+            app: TuringEmailApp
+          )
+          
+        it "assigns emailThreadUID", ->
+          expect(@emailThreadTemp.emailThreadUID).toEqual(@attributes.uid)
+          
+        it "sets up the url", ->
+          expect(@emailThreadTemp.url).toEqual("/api/v1/email_threads/show/" + @attributes.uid)
+
+      describe "options", ->
+        beforeEach ->
+          @options =
+            app: TuringEmailApp
+            emailThreadUID: "1"
+          @emailThreadTemp = new TuringEmailApp.Models.EmailThread(undefined, @options)
+
+        it "assigns emailThreadUID", ->
+          expect(@emailThreadTemp.emailThreadUID).toEqual(@options.emailThreadUID)
+
+        it "sets up the url", ->
+          expect(@emailThreadTemp.url).toEqual("/api/v1/email_threads/show/" + @options.emailThreadUID)
+        
   describe "Network", ->
     describe "#load", ->
       beforeEach ->
@@ -375,8 +667,18 @@ describe "EmailThread", ->
           
         describe "loading=true", ->
           beforeEach ->
+            @setTimeoutStub = sinon.stub(window, "setTimeout")
+
             @emailThread.loading = true
-            @emailThread.load(@options)
+            @emailThread.load(@options, true)
+
+          afterEach ->
+            @setTimeoutStub.restore()
+
+          it "queues a load call", ->
+            expect(@setTimeoutStub).toHaveBeenCalled()
+            specCompareFunctions((=> @load(options, force)), @setTimeoutStub.args[0][0])
+            expect(@setTimeoutStub.args[0][1]).toEqual(250)
 
           it "returns", ->
             expect(@success).not.toHaveBeenCalled()
@@ -436,21 +738,44 @@ describe "EmailThread", ->
   
       describe "read", ->
         beforeEach ->
+          @method = "read"
           @model = {}
           @options = error: sinon.stub()
-          @emailThread.sync("read", @model, @options)
-  
-        it "does not call super", ->
-          expect(@superStub).not.toHaveBeenCalled()
-  
-        it "calls googleRequest", ->
-          expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
-          specCompareFunctions((=> @threadsGetRequest()), @googleRequestStub.args[0][1])
-          specCompareFunctions(((response) => @processThreadsGetRequest(response, options)), @googleRequestStub.args[0][2])
-          expect(@googleRequestStub.args[0][3]).toEqual(@options.error)
+          
+        describe "demoMode=true", ->
+          beforeEach ->
+            @triggerStub.restore()
+            @emailThread.set("demoMode", true)
+            @triggerStub = sinon.stub(@emailThread, "trigger", ->)
 
-        it "triggers the request event", ->
-          expect(@triggerStub).toHaveBeenCalledWith("request", @model, null, @options)
+            @emailThread.sync(@method, @model, @options)
+
+          it "calls super", ->
+            expect(@superStub).toHaveBeenCalledWith(@method, @model, @options)
+
+          it "does NOT call googleRequest", ->
+            expect(@googleRequestStub).not.toHaveBeenCalled()
+  
+          it "does not trigger the request event", ->
+            expect(@triggerStub).not.toHaveBeenCalled()
+          
+        describe "demoMode=false", ->
+          beforeEach ->
+            @emailThread.set("demoMode", false)
+            
+            @emailThread.sync(@method, @model, @options)
+    
+          it "does not call super", ->
+            expect(@superStub).not.toHaveBeenCalled()
+    
+          it "calls googleRequest", ->
+            expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
+            specCompareFunctions((=> @threadsGetRequest()), @googleRequestStub.args[0][1])
+            specCompareFunctions(((response) => @processThreadsGetRequest(response, options)), @googleRequestStub.args[0][2])
+            expect(@googleRequestStub.args[0][3]).toEqual(@options.error)
+  
+          it "triggers the request event", ->
+            expect(@triggerStub).toHaveBeenCalledWith("request", @model, null, @options)
       
     describe "#threadsGetRequest", ->
       beforeEach ->
@@ -538,14 +863,39 @@ describe "EmailThread", ->
     describe "#seenChanged", ->
       beforeEach ->
         @googleRequestStub = sinon.stub(window, "googleRequest", ->)
-        @emailThread.set("seen", !@emailThread.get("seen"))
-        
+      
       afterEach ->
         @googleRequestStub.restore()
 
-      it "calls googleRequest", ->
-        expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
-        specCompareFunctions((=> @threadsModifyUnreadRequest(seenValue)), @googleRequestStub.args[0][1])
+      describe "demoMode=true", ->
+        beforeEach ->
+          @emailThread.set("demoMode", true)
+          
+          @postStub = sinon.stub($, "post")
+          
+          @postData = {}
+          @postData.email_uids = (email.uid for email in @emailThread.get("emails"))
+          @postData.seen = !@emailThread.get("seen")
+          
+          @emailThread.set("seen", !@emailThread.get("seen"))
+
+        afterEach ->
+          @postStub.restore()
+          
+        it "does NOT call googleRequest", ->
+          expect(@googleRequestStub).not.toHaveBeenCalled()
+          
+        it "posts", ->
+          expect(@postStub).toHaveBeenCalledWith("/api/v1/emails/set_seen", @postData)
+        
+      describe "demoMode=false", ->
+        beforeEach ->
+          @emailThread.set("demoMode", false)
+          @emailThread.set("seen", !@emailThread.get("seen"))
+
+        it "calls googleRequest", ->
+          expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
+          specCompareFunctions((=> @threadsModifyUnreadRequest(seenValue)), @googleRequestStub.args[0][1])
           
   describe "Actions", ->
     describe "#removeFromFolder", ->
@@ -561,41 +911,70 @@ describe "EmailThread", ->
         @removeFromFolderStub.restore()
   
       it "calls the remove from folder class method", ->
-        expect(@removeFromFolderStub).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("uid")], @folderID)
+        expect(@removeFromFolderStub).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("uid")], @folderID,
+                                                           undefined, undefined, @emailThread.get("demoMode"))
   
     describe "#trash", ->
+      beforeEach ->
+        @stub = sinon.stub(TuringEmailApp.Models.EmailThread, "trash")
+        
+      afterEach ->
+        @stub.restore()
+        
       it "calls the remove from folder class method", ->
-        spy = sinon.spy(TuringEmailApp.Models.EmailThread, "trash")
         @emailThread.trash()
   
-        expect(spy).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("uid")])
-        spy.restore()
+        expect(@stub).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("uid")], @emailThread.get("demoMode"))
+
+    describe "#deleteDraft", ->
+      beforeEach ->
+        @stub = sinon.stub(TuringEmailApp.Models.EmailThread, "deleteDraft")
+        
+      afterEach ->
+        @stub.restore()
+        
+      it "calls the delete draft class method", ->
+        @emailThread.deleteDraft()
+
+        expect(@stub).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("draft_id")])
   
     describe "#applyGmailLabel", ->
       beforeEach ->
         emailFolder = FactoryGirl.create("EmailFolder")
         @labelID = emailFolder.label_id
         @labelName = emailFolder.name
-  
-      it "calls the apply gmail label class method", ->
-        spy = sinon.spy(TuringEmailApp.Models.EmailThread, "applyGmailLabel")
+
+        @stub = sinon.stub(TuringEmailApp.Models.EmailThread, "applyGmailLabel", ->)
+
         @emailThread.applyGmailLabel @labelID, @labelName
   
-        expect(spy).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("uid")], @labelID, @labelName)
-        spy.restore()
+      afterEach ->
+        @stub.restore()
+        
+      it "calls the apply gmail label class method", ->
+        expect(@stub).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("uid")], @labelID, @labelName)
+        specCompareFunctions(((data) => @trigger("change:folder", this, data)), @stub.args[0][4])
+        expect(@stub.args[0][5]).toEqual(undefined)
+        expect(@stub.args[0][6]).toEqual(@emailThread.get("demoMode"))
   
     describe "#moveToFolder", ->
       beforeEach ->
         emailFolder = FactoryGirl.create("EmailFolder")
         @folderID = emailFolder.label_id
         @folderName = emailFolder.name
+
+        @stub = sinon.stub(TuringEmailApp.Models.EmailThread, "moveToFolder", ->)
+        
+        @emailThread.moveToFolder(@folderID, @folderName)
   
+      afterEach ->
+        @stub.restore()
+        
       it "calls the move to folder class method", ->
-        spy = sinon.spy(TuringEmailApp.Models.EmailThread, "moveToFolder")
-        @emailThread.moveToFolder @folderID, @folderName
-  
-        expect(spy).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("uid")], @folderID, @folderName)
-        spy.restore()
+        expect(@stub).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("uid")], @folderID, @folderName)
+        specCompareFunctions(((data) => @trigger("change:folder", this, data)), @stub.args[0][5])
+        expect(@stub.args[0][6]).toEqual(undefined)
+        expect(@stub.args[0][7]).toEqual(@emailThread.get("demoMode"))
 
   describe "Formatters", ->
     beforeEach ->

@@ -4,6 +4,9 @@ describe "EmailThreadsCollection", ->
       app: TuringEmailApp
       demoMode: false
     )
+
+  it "has the right url", ->
+    expect(@emailThreadsCollection.url).toEqual("/api/v1/email_threads/in_folder?folder_id=INBOX")
     
   it "should use the EmailThread model", ->
     expect(@emailThreadsCollection.model).toEqual(TuringEmailApp.Models.EmailThread)
@@ -12,7 +15,6 @@ describe "EmailThreadsCollection", ->
     beforeEach ->
       @emailThreadsCollectionTemp = new TuringEmailApp.Collections.EmailThreadsCollection(undefined,
         app: TuringEmailApp
-        demoMode: false
         folderID: "INBOX"
       )
 
@@ -21,10 +23,33 @@ describe "EmailThreadsCollection", ->
       expect(@emailThreadsCollectionTemp.pageTokens).toEqual([null])
       expect(@emailThreadsCollectionTemp.pageTokenIndex).toEqual(0)
       expect(@emailThreadsCollectionTemp.folderID).toEqual("INBOX")
+
+    describe "demo mode defaults to true", ->
+      beforeEach ->
+        @emailThreadsCollectionTemp = new TuringEmailApp.Collections.EmailThreadsCollection(undefined,
+          app: TuringEmailApp
+          folderID: "INBOX"
+        )
+
+      it "demoMode=true", ->
+        expect(@emailThreadsCollectionTemp.demoMode).toEqual(true)
+
+    describe "assigns demoMode from the parameter", ->
+      beforeEach ->
+        @emailThreadsCollectionTemp = new TuringEmailApp.Collections.EmailThreadsCollection(undefined,
+          app: TuringEmailApp
+          demoMode: false
+          folderID: "INBOX"
+        )
+
+      it "demoMode=false", ->
+        expect(@emailThreadsCollectionTemp.demoMode).toEqual(false)
     
   describe "Network", ->
     describe "#sync", ->
       beforeEach ->
+        @emailThreadsCollection.folderIDIs("INBOX")
+        
         @superStub = sinon.stub(TuringEmailApp.Collections.EmailThreadsCollection.__super__, "sync")
         @googleRequestStub = sinon.stub(window, "googleRequest", ->)
         @triggerStub = sinon.stub(@emailThreadsCollection, "trigger", ->)
@@ -53,26 +78,46 @@ describe "EmailThreadsCollection", ->
 
       describe "read", ->
         beforeEach ->
+          @method = "read"
           @collection = {}
-          @options = error: sinon.stub()
-          
-          @emailThreadsCollection.folderIDIs("INBOX")
-          @emailThreadsCollection.sync("read", @collection, @options)
 
-        it "does not call super", ->
-          expect(@superStub).not.toHaveBeenCalled()
+        describe "demoMode=true", ->
+          beforeEach ->
+            @options = error: sinon.stub()
 
-        it "sets the folderID", ->
-          expect(@options.folderID).toEqual(@emailThreadsCollection.folderID)
+            @emailThreadsCollection.demoMode = true
+            @emailThreadsCollection.sync(@method, @collection, @options)
 
-        it "calls googleRequest", ->
-          expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
-          specCompareFunctions((=> @threadsListRequest(options)), @googleRequestStub.args[0][1])
-          specCompareFunctions(((response) => @processThreadsListRequest(response, options)), @googleRequestStub.args[0][2])
-          expect(@googleRequestStub.args[0][3]).toEqual(@options.error)
+          it "calls super", ->
+            expect(@superStub).toHaveBeenCalledWith(@method, @collection, @options)
+  
+          it "does NOT call googleRequest", ->
+            expect(@googleRequestStub).not.toHaveBeenCalled()
+  
+          it "does not trigger the request event", ->
+            expect(@triggerStub).not.toHaveBeenCalled()
 
-        it "triggers the request event", ->
-          expect(@triggerStub).toHaveBeenCalledWith("request", @collection, null, @options)
+        describe "demoMode=false", ->
+          beforeEach ->
+            @options = error: sinon.stub()
+
+            @emailThreadsCollection.demoMode = false
+            @emailThreadsCollection.sync(@method, @collection, @options)
+
+          it "does not call super", ->
+            expect(@superStub).not.toHaveBeenCalled()
+  
+          it "sets the folderID", ->
+            expect(@options.folderID).toEqual(@emailThreadsCollection.folderID)
+  
+          it "calls googleRequest", ->
+            expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
+            specCompareFunctions((=> @threadsListRequest(options)), @googleRequestStub.args[0][1])
+            specCompareFunctions(((response) => @processThreadsListRequest(response, options)), @googleRequestStub.args[0][2])
+            expect(@googleRequestStub.args[0][3]).toEqual(@options.error)
+  
+          it "triggers the request event", ->
+            expect(@triggerStub).toHaveBeenCalledWith("request", @collection, null, @options)
 
     describe "#threadsListRequest", ->
       beforeEach ->
@@ -383,6 +428,34 @@ describe "EmailThreadsCollection", ->
       
     it "parses the message into a thread", ->
       expect(JSON.stringify(@threadParsed)).toEqual(JSON.stringify(@threadsParsed[0]))
+
+  describe "#parse", ->
+    beforeEach ->
+      @threadsJSON = [[], []]
+      
+    describe "demoMode=true", ->
+      beforeEach ->
+        @setThreadPropertiesFromJSONStub = sinon.stub(TuringEmailApp.Models.EmailThread, "SetThreadPropertiesFromJSON")
+        @emailThreadsCollection.demoMode = true
+
+        @emailThreadsCollection.parse(@threadsJSON)
+        
+      afterEach ->
+        @setThreadPropertiesFromJSONStub.restore()
+
+      it "updates the threadsJSON properties", ->
+        expect(@setThreadPropertiesFromJSONStub).toHaveBeenCalledWith(threadJSON, true) for threadJSON in @threadsJSON
+
+    describe "demoMode=false", ->
+      beforeEach ->
+        @emailThreadsCollection.demoMode = false
+
+        @emailThreadsCollection.parse(@threadsJSON)
+        
+      it "sets demoMode to false on each threadJSON", ->
+        for threadJSON in @threadsJSON
+          expect(threadJSON.demoMode).toBeDefined()
+          expect(threadJSON.demoMode).toBeFalsy()
     
   describe "with models", ->
     beforeEach ->
@@ -438,11 +511,28 @@ describe "EmailThreadsCollection", ->
       describe "#folderIDIs", ->
         beforeEach ->
           @resetPageTokensStub = sinon.stub(@emailThreadsCollection, "resetPageTokens", ->)
+          @setupURLStub = sinon.stub(@emailThreadsCollection, "setupURL", ->)
           @triggerStub = sinon.stub(@emailThreadsCollection, "trigger", ->)
           
         afterEach ->
           @triggerStub.restore()
           @resetPageTokensStub.restore()
+          
+        describe "demoMode=true", ->
+          beforeEach ->
+            @emailThreadsCollection.demoMode = true
+            @emailThreadsCollection.folderIDIs(@emailThreadsCollection.folderID)
+
+          it "calls setupURL", ->
+            expect(@setupURLStub).toHaveBeenCalled()
+
+        describe "demoMode=false", ->
+          beforeEach ->
+            @emailThreadsCollection.demoMode = false
+            @emailThreadsCollection.folderIDIs(@emailThreadsCollection.folderID)
+
+        it "does NOT call setupURL", ->
+          expect(@setupURLStub).not.toHaveBeenCalled()
           
         describe "folder ID is equal to the current folder ID", ->
           beforeEach ->
@@ -491,31 +581,60 @@ describe "EmailThreadsCollection", ->
           it "triggers the change:folderID event", ->
             expect(@triggerStub).toHaveBeenCalledWith("change:pageTokenIndex", @emailThreadsCollection, 0)
             
+      describe "#setupURL", ->
+        beforeEach ->
+          @emailThreadsCollection.folderID = "test"
+          
+        it "set the correct URL", ->
+          @emailThreadsCollection.setupURL("1", "ASC")
+          expect(@emailThreadsCollection.url).toEqual("/api/v1/email_threads/in_folder?folder_id=test&last_email_thread_uid=1&dir=ASC")
+            
     describe "Getters", ->
       describe "#hasNextPage", ->
         beforeEach ->
           @oldPageTokens = @emailThreadsCollection.pageTokens
           @oldPageTokenIndex = @emailThreadsCollection.pageTokenIndex
-
-          @emailThreadsCollection.pageTokens = [null, "token"]
           
         afterEach ->
           @emailThreadsCollection.pageTokenIndex = @oldPageTokenIndex
           @emailThreadsCollection.pageTokens = @oldPageTokens
-          
-        describe "has a next page", ->
-          beforeEach ->
-            @emailThreadsCollection.pageTokenIndex = 0
-          
-          it "returns true", ->
-            expect(@emailThreadsCollection.hasNextPage()).toBeTruthy()
 
-        describe "does NOT have a next page", ->
+        describe "demoMode=true", ->
           beforeEach ->
-            @emailThreadsCollection.pageTokenIndex = 1
+            @emailThreadsCollection.demoMode = true
 
-          it "returns false", ->
-            expect(@emailThreadsCollection.hasNextPage()).toBeFalsy()
+          describe "has a next page", ->
+            beforeEach ->
+              @emailThreadsCollection.reset([])
+
+            it "returns true", ->
+              expect(@emailThreadsCollection.hasNextPage()).toBeTruthy()
+
+          describe "does NOT have a next page", ->
+            beforeEach ->
+              @emailThreadsCollection.pageTokens = [null]
+
+            it "returns false", ->
+              expect(@emailThreadsCollection.hasNextPage()).toBeFalsy()
+          
+        describe "demoMode=false", ->
+          beforeEach ->
+            @emailThreadsCollection.demoMode = false
+            @emailThreadsCollection.pageTokens = [null, "token"]
+          
+          describe "has a next page", ->
+            beforeEach ->
+              @emailThreadsCollection.pageTokenIndex = 0
+              
+            it "returns true", ->
+              expect(@emailThreadsCollection.hasNextPage()).toBeTruthy()
+  
+          describe "does NOT have a next page", ->
+            beforeEach ->
+              @emailThreadsCollection.pageTokenIndex = 1
+  
+            it "returns false", ->
+              expect(@emailThreadsCollection.hasNextPage()).toBeFalsy()
 
       describe "#hasPreviousPage", ->
         beforeEach ->

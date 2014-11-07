@@ -196,7 +196,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collect
 
     @folderID = folderID
     @setupURL() if @demoMode
-    
+
     @trigger("change:folderID", this, @folderID)
 
   pageTokenIndexIs: (pageTokenIndex) ->
