@@ -190,7 +190,6 @@ describe "SettingsView", ->
         spy.restore()
 
   describe "#saveSettings", ->
-
     it "is called by the switch change event on the switches", ->
       spy = sinon.spy(@settingsView, "saveSettings")
       @settingsView.$el.find(".genie-rules-button").click()
