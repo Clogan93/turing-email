@@ -254,12 +254,13 @@ class TuringEmailApp.Views.Main extends Backbone.View
   
       appsDiv = $("<div />").appendTo(appsSplitPane)
       appsDiv.addClass("ui-layout-east")
+      appsDiv.attr("style", "overflow: hidden !important; padding: 0px !important;")
 
       if emailThread?
         for installedAppJSON in @app.models.userConfiguration.get("installed_apps")
           appIframe = $("<iframe></iframe>").appendTo(appsDiv)
-          appIframe.css("width", "178px")
-          appIframe.css("border", "solid 1px black")
+          appIframe.css("width", "100%")
+          appIframe.css("height", "100%")
           installedApp = TuringEmailApp.Models.InstalledApps.InstalledApp.CreateFromJSON(installedAppJSON)
           installedApp.run(appIframe, emailThread)
       
