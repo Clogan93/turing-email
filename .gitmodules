@@ -1,0 +1,3 @@
+[submodule "lib/turing-lib"]
+	path = lib/turing-lib
+	url = git@github.com:turinginc/turing-lib.git
