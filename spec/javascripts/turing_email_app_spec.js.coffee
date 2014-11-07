@@ -590,6 +590,32 @@ describe "TuringEmailApp", ->
         expect(@setTimeoutStub).toHaveBeenCalled()
         specCompareFunctions((=> @syncEmail()), @setTimeoutStub.args[0][0])
         expect(@setTimeoutStub.args[0][1]).toEqual(60000)
+        
+      describe "demoMode=true", ->
+        beforeEach ->
+          @postStub = sinon.stub($, "post", ->)
+          TuringEmailApp.models.userSettings.set("demo_mode_enabled", true)
+          
+          TuringEmailApp.syncEmail()
+          
+        afterEach ->
+          @postStub.restore()
+          
+        it "posts", ->
+          expect(@postStub).toHaveBeenCalledWith("api/v1/email_accounts/sync")
+
+      describe "demoMode=false", ->
+        beforeEach ->
+          @postStub = sinon.stub($, "post", ->)
+          TuringEmailApp.models.userSettings.set("demo_mode_enabled", false)
+          
+          TuringEmailApp.syncEmail()
+
+        afterEach ->
+          @postStub.restore()
+
+        it "does NOT post", ->
+          expect(@postStub).not.toHaveBeenCalled()
 
     describe "Alert Functions", ->
       describe "#showAlert", ->
@@ -1101,6 +1127,12 @@ describe "TuringEmailApp", ->
             
       describe "#leftArrowClicked", ->
         beforeEach ->
+          TuringEmailApp.collections.emailThreads.reset(
+            _.map(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE),
+            (emailThread) => emailThread.toJSON()
+            )
+          )
+          
           @hasPreviousPageStub = sinon.stub(TuringEmailApp.collections.emailThreads, "hasPreviousPage")
           
           @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
@@ -1117,13 +1149,28 @@ describe "TuringEmailApp", ->
         describe "has a previous page", ->
           beforeEach ->
             @hasPreviousPageStub.returns(true)
-            TuringEmailApp.leftArrowClicked()
+          
+          describe "demoMode=true", ->
+            beforeEach ->
+              TuringEmailApp.models.userSettings.set("demo_mode_enabled", true)
+              TuringEmailApp.leftArrowClicked()
             
-          it "goes to the previous page", ->
-            expect(@navigateStub).toHaveBeenCalledWith("#email_folder/" + @folderID + "/" +
-              (TuringEmailApp.collections.emailThreads.pageTokenIndex - 1),
-              trigger: true
-            )
+            it "goes to the previous page", ->
+              url = "#email_folder/" + @folderID +
+                    "/" + (TuringEmailApp.collections.emailThreads.pageTokenIndex - 1) +
+                    "/" + TuringEmailApp.collections.emailThreads.at(0).get("uid") +
+                    "/ASC"
+              expect(@navigateStub).toHaveBeenCalledWith(url, trigger: true)
+
+          describe "demoMode=false", ->
+            beforeEach ->
+              TuringEmailApp.models.userSettings.set("demo_mode_enabled", false)
+              TuringEmailApp.leftArrowClicked()
+
+            it "goes to the previous page", ->
+              url = "#email_folder/" + @folderID +
+                    "/" + (TuringEmailApp.collections.emailThreads.pageTokenIndex - 1)
+              expect(@navigateStub).toHaveBeenCalledWith(url, trigger: true)
 
         describe "does NOT have a previous page", ->
           beforeEach ->
@@ -1135,6 +1182,12 @@ describe "TuringEmailApp", ->
 
       describe "#rightArrowClicked", ->
         beforeEach ->
+          TuringEmailApp.collections.emailThreads.reset(
+            _.map(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE),
+            (emailThread) => emailThread.toJSON()
+            )
+          )
+          
           @hasNextPageStub = sinon.stub(TuringEmailApp.collections.emailThreads, "hasNextPage")
 
           @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
@@ -1151,13 +1204,28 @@ describe "TuringEmailApp", ->
         describe "has a next page", ->
           beforeEach ->
             @hasNextPageStub.returns(true)
-            TuringEmailApp.rightArrowClicked()
+            
+          describe "demoMode=true", ->
+            beforeEach ->
+              TuringEmailApp.models.userSettings.set("demo_mode_enabled", true)              
+              TuringEmailApp.rightArrowClicked()
 
-          it "goes to the next page", ->
-            expect(@navigateStub).toHaveBeenCalledWith("#email_folder/" + @folderID + "/" +
-              (TuringEmailApp.collections.emailThreads.pageTokenIndex + 1),
-              trigger: true
-            )
+            it "goes to the next page", ->
+              url = "#email_folder/" + @folderID +
+                    "/" + (TuringEmailApp.collections.emailThreads.pageTokenIndex + 1) +
+                    "/" + TuringEmailApp.collections.emailThreads.last().get("uid") +
+                    "/DESC"
+              expect(@navigateStub).toHaveBeenCalledWith(url, trigger: true)
+
+          describe "demoMode=false", ->
+            beforeEach ->
+              TuringEmailApp.models.userSettings.set("demo_mode_enabled", false)
+              TuringEmailApp.rightArrowClicked()
+
+            it "goes to the next page", ->
+              url = "#email_folder/" + @folderID +
+                    "/" + (TuringEmailApp.collections.emailThreads.pageTokenIndex + 1)
+              expect(@navigateStub).toHaveBeenCalledWith(url, trigger: true)
 
         describe "does NOT have a next page", ->
           beforeEach ->
@@ -1456,6 +1524,58 @@ describe "TuringEmailApp", ->
         it "shows the create folder view", ->
           expect(@showStub).toHaveBeenCalledWith("folder")
         
+      describe "#demoModeSwitchClicked", ->
+        beforeEach ->
+          @token = {}
+          
+          @setStub = sinon.stub(TuringEmailApp.models.userSettings, "set")
+          @showAlertStub = sinon.stub(TuringEmailApp, "showAlert", => @token)
+          @saveStub = sinon.stub(TuringEmailApp.models.userSettings, "save")
+
+          TuringEmailApp.demoModeSwitchClicked(true)
+          
+        afterEach ->
+          @setStub.restore()
+          @showAlertStub.restore()
+          @saveStub.restore()
+          
+        it "updates demo_mode_enabled", ->
+          expect(@setStub).toHaveBeenCalledWith("demo_mode_enabled", true)
+          
+        it "shows the changing alert", ->
+          expect(@showAlertStub).toHaveBeenCalledWith("Changing mode... just a minute please", "alert-success")
+          
+        it "saves with patch", ->
+          expect(@saveStub.args[0][1].patch).toBeTruthy()
+          
+        describe "on success", ->
+          beforeEach ->
+            @clock = sinon.useFakeTimers()
+            @setTimeoutSpy = sinon.spy(window, "setTimeout")
+            @removeAlertStub = sinon.stub(TuringEmailApp, "removeAlert", ->)
+            
+            @showAlertStub.restore()
+            @showAlertStub = sinon.stub(TuringEmailApp, "showAlert", => @token)
+            
+            @saveStub.args[0][1].success()
+          
+          afterEach ->
+            @clock.restore()
+            @setTimeoutSpy.restore()
+            @removeAlertStub.restore()
+            
+          it "shows the alert", ->
+            expect(@showAlertStub).toHaveBeenCalled()
+
+          it "queues the remove", ->
+            expect(@setTimeoutSpy.args[0][1]).toEqual(15000)
+
+          it "removes the alert after 15 seconds", ->
+            @clock.tick(14999)
+            expect(@removeAlertStub).not.toHaveBeenCalled()
+            @clock.tick(1)
+            expect(@removeAlertStub).toHaveBeenCalledWith(@token)
+
       describe "#installAppClicked", ->
         beforeEach ->
           @installStub = sinon.stub(TuringEmailApp.Models.App, "Install")
@@ -1886,40 +2006,34 @@ describe "TuringEmailApp", ->
         @emailThreads = @listView.collection
         
         TuringEmailApp.views.emailThreadsListView = @listView
+
+        @moveItemToTopStub = sinon.stub(TuringEmailApp.views.emailThreadsListView, "moveItemToTop")
   
       afterEach ->
         @server.restore()
         @listViewDiv.remove()
-  
+        @moveItemToTopStub.restore()
+
       describe "if there is not a report email", ->
+        beforeEach ->
+          TuringEmailApp.moveTuringEmailReportToTop(TuringEmailApp.views.emailThreadsListView)
+          
         it "should leave the emails in the same order", ->
-          emailThreadsBefore = TuringEmailApp.views.emailThreadsListView.collection.toJSON()
-          emailTableBodyBefore = TuringEmailApp.views.emailThreadsListView.$el
-          
-          TuringEmailApp.moveTuringEmailReportToTop TuringEmailApp.views.emailThreadsListView
-          
-          emailTableBodyAfter = TuringEmailApp.views.emailThreadsListView.$el
-          emailThreadsAfter = TuringEmailApp.views.emailThreadsListView.collection.toJSON()
-    
-          expect(emailThreadsAfter.length).toEqual emailThreadsBefore.length
-          expect(emailThreadsAfter.models).toEqual emailThreadsBefore.models
-          expect(emailTableBodyBefore).toEqual emailTableBodyAfter
+          expect(@moveItemToTopStub).not.toHaveBeenCalled()
 
       describe "if there is a report email", ->
         beforeEach ->
-          turingEmailThread = _.values(TuringEmailApp.views.emailThreadsListView.listItemViews)[0].model
+          @turingEmailThread = _.values(TuringEmailApp.views.emailThreadsListView.listItemViews)[0].model
 
-          TuringEmailApp.views.emailThreadsListView.collection.remove turingEmailThread
-          turingEmailThread.set("subject", "Turing Email - Your daily Brain Report!")
-          TuringEmailApp.views.emailThreadsListView.collection.add turingEmailThread
+          TuringEmailApp.views.emailThreadsListView.collection.remove @turingEmailThread
+          @turingEmailThread.set("subject", "Turing Email - Your daily Brain Report!")
+          TuringEmailApp.views.emailThreadsListView.collection.add @turingEmailThread
           TuringEmailApp.views.emailThreadsListView.render()
 
+          TuringEmailApp.moveTuringEmailReportToTop(TuringEmailApp.views.emailThreadsListView)
+
         it "should move the email to the top", ->
-          expect(TuringEmailApp.views.emailThreadsListView.$el.children()[0]).not.toContainText("Turing Email")
-
-          TuringEmailApp.moveTuringEmailReportToTop TuringEmailApp.views.emailThreadsListView
-
-          expect(TuringEmailApp.views.emailThreadsListView.$el.children()[0]).toContainText("Turing Email")
+          expect(@moveItemToTopStub).toHaveBeenCalledWith(@turingEmailThread)
 
     describe "#showEmails", ->
       beforeEach ->

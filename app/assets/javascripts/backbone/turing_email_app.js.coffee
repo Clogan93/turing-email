@@ -523,9 +523,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
           else
             token = @showAlert("You are now viewing your live Gmail account - look how many emails there are!", "alert-success")
 
-          setTimeout (=>
-            @removeAlert(token)
-          ), 15000
+          setTimeout(
+            => @removeAlert(token)
+            15000
+          )
       }
     )
     
