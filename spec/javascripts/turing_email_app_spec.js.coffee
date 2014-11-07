@@ -11,13 +11,37 @@ describe "TuringEmailApp", ->
     @server.restore()
     @mainDiv.remove()
     @syncEmailStub.restore()
-
+    
   it "has the app objects defined", ->
     expect(TuringEmailApp.Models).toBeDefined()
     expect(TuringEmailApp.Views).toBeDefined()
     expect(TuringEmailApp.Collections).toBeDefined()
     expect(TuringEmailApp.Routers).toBeDefined()
     
+  describe "#threadsListInboxCountRequest", ->
+    beforeEach ->
+      window.gapi = client: gmail: users: messages: list: ->
+
+      @ret = {}
+      @messagesListStub = sinon.stub(gapi.client.gmail.users.messages, "list", => return @ret)
+
+      @params =
+        userId: "me"
+        labelIds: "INBOX"
+        fields: "resultSizeEstimate"
+
+    afterEach ->
+      @messagesListStub.restore()
+
+    it "prepares and returns the Gmail API request", ->
+      @returned = TuringEmailApp.threadsListInboxCountRequest()
+
+      expect(@messagesListStub).toHaveBeenCalledWith(@params)
+      expect(@returned).toEqual(@ret)
+    
+  # TODO change to view
+  describe "#renderSyncingEmailsMessage", ->
+      
   describe "#start", ->
     it "defines the model, view, collection, and router containers", ->
       TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserSettings"))
@@ -28,7 +52,7 @@ describe "TuringEmailApp", ->
       expect(TuringEmailApp.routers).toBeDefined()
 
     setupFunctions = ["setupKeyboardHandler", "setupMainView", "setupSearchBar", "setupComposeButton",
-                      "setupToolbar", "setupUser", "setupEmailFolders", "loadEmailFolders", "setupComposeView",
+                      "setupToolbar", "setupUser", "setupGmailAPI", "setupEmailFolders", "loadEmailFolders", "setupComposeView",
                       "setupCreateFolderView", "setupEmailThreads", "setupRouters"]
 
     for setupFunction in setupFunctions  
@@ -38,7 +62,26 @@ describe "TuringEmailApp", ->
         expect(spy).toHaveBeenCalled()
         spy.restore()
         
-    it "starts the backbone history", ->
+    it "calls syncEmail", ->
+      @syncEmailStub.restore()
+      @syncEmailStub = sinon.stub(TuringEmailApp, "syncEmail")
+      TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserSettings"))
+      expect(@syncEmailStub).toHaveBeenCalled()
+
+  it "starts the threadsListInboxCountRequest", ->
+      @googleRequestStub = sinon.stub(window, "googleRequest", ->)
+
+      userJSON = FactoryGirl.create("User")
+      userJSON.has_genie_report_ran = false
+      TuringEmailApp.start(userJSON, FactoryGirl.create("UserSettings"))
+      
+      expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
+      specCompareFunctions((=> @threadsListInboxCountRequest()), @googleRequestStub.args[0][1])
+      specCompareFunctions(((response) => @renderSyncingEmailsMessage(response.result.resultSizeEstimate)), @googleRequestStub.args[0][2])
+      
+      @googleRequestStub.restore()
+
+  it "starts the backbone history", ->
       TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserSettings"))
       expect(Backbone.History.started).toBeTruthy()
 
@@ -128,7 +171,7 @@ describe "TuringEmailApp", ->
                            "readClicked", "unreadClicked", "archiveClicked", "trashClicked",
                            "leftArrowClicked", "rightArrowClicked",
                            "labelAsClicked", "moveToFolderClicked", "refreshClicked", "searchClicked",
-                           "createNewLabelClicked", "createNewEmailFolderClicked"]
+                           "createNewLabelClicked", "createNewEmailFolderClicked", "demoModeSwitchClicked"]
       for event in toolbarViewEvents
         it "hooks the toolbar " + event + " event", ->
           spy = sinon.spy(TuringEmailApp, event)
