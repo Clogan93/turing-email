@@ -16,7 +16,7 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
   render: ->
     selectedTabID = $(".tab-pane.active").attr("id")
     
-    @$el.html(@template({'userSettings' : @model.toJSON(), 'emailRules' : @emailRules.toJSON(), 'brainRules' : @brainRules.toJSON()}))
+    @$el.html(@template({'userConfiguration' : @model.toJSON(), 'emailRules' : @emailRules.toJSON(), 'brainRules' : @brainRules.toJSON()}))
 
     @setupEmailBankruptcyButton()
     @setupUninstallAppButtons()

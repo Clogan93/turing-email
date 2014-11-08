@@ -44,7 +44,7 @@ describe "TuringEmailApp", ->
       
   describe "#start", ->
     it "defines the model, view, collection, and router containers", ->
-      TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserSettings"))
+      TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserConfiguration"))
       
       expect(TuringEmailApp.models).toBeDefined()
       expect(TuringEmailApp.views).toBeDefined()
@@ -58,14 +58,14 @@ describe "TuringEmailApp", ->
     for setupFunction in setupFunctions  
       it "calls the " + setupFunction + " function", ->
         spy = sinon.spy(TuringEmailApp, setupFunction)
-        TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserSettings"))
+        TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserConfiguration"))
         expect(spy).toHaveBeenCalled()
         spy.restore()
-        
+
     it "calls syncEmail", ->
       @syncEmailStub.restore()
       @syncEmailStub = sinon.stub(TuringEmailApp, "syncEmail")
-      TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserSettings"))
+      TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserConfiguration"))
       expect(@syncEmailStub).toHaveBeenCalled()
 
   it "starts the threadsListInboxCountRequest", ->
@@ -73,7 +73,7 @@ describe "TuringEmailApp", ->
 
       userJSON = FactoryGirl.create("User")
       userJSON.has_genie_report_ran = false
-      TuringEmailApp.start(userJSON, FactoryGirl.create("UserSettings"))
+      TuringEmailApp.start(userJSON, FactoryGirl.create("UserConfiguration"))
       
       expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
       specCompareFunctions((=> @threadsListInboxCountRequest()), @googleRequestStub.args[0][1])
@@ -82,7 +82,7 @@ describe "TuringEmailApp", ->
       @googleRequestStub.restore()
 
   it "starts the backbone history", ->
-      TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserSettings"))
+      TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserConfiguration"))
       expect(Backbone.History.started).toBeTruthy()
 
   describe "setup functions", ->
@@ -191,7 +191,7 @@ describe "TuringEmailApp", ->
     describe "#setupUser", ->
       beforeEach ->
         @listenToSpy = sinon.spy(TuringEmailApp, "listenTo")
-        TuringEmailApp.setupUser(FactoryGirl.create("User"), FactoryGirl.create("UserSettings"))
+        TuringEmailApp.setupUser(FactoryGirl.create("User"), FactoryGirl.create("UserConfiguration"))
       
       afterEach ->
         @listenToSpy.restore()
@@ -200,17 +200,17 @@ describe "TuringEmailApp", ->
         expect(TuringEmailApp.models.user instanceof TuringEmailApp.Models.User).toBeTruthy()
 
       it "create the user settings", ->
-        expect(TuringEmailApp.models.userSettings instanceof TuringEmailApp.Models.UserSettings).toBeTruthy()
+        expect(TuringEmailApp.models.userConfiguration instanceof TuringEmailApp.Models.UserConfiguration).toBeTruthy()
 
       it "listens for change:demo_mode_enabled", ->
-        expect(@listenToSpy.args[0][0] instanceof TuringEmailApp.Models.UserSettings).toBeTruthy()
+        expect(@listenToSpy.args[0][0] instanceof TuringEmailApp.Models.UserConfiguration).toBeTruthy()
         expect(@listenToSpy.args[0][1]).toEqual("change:demo_mode_enabled")
         
       it "listens for change:keyboard_shortcuts_enabled", ->
-        expect(@listenToSpy.args[1][0] instanceof TuringEmailApp.Models.UserSettings).toBeTruthy()
+        expect(@listenToSpy.args[1][0] instanceof TuringEmailApp.Models.UserConfiguration).toBeTruthy()
         expect(@listenToSpy.args[1][1]).toEqual("change:keyboard_shortcuts_enabled")
         
-      describe "the userSettings keyboard_shortcuts_enabled attribute changes", ->
+      describe "the userConfiguration keyboard_shortcuts_enabled attribute changes", ->
         beforeEach ->
           @keyboardHandlerStartStub = sinon.stub(TuringEmailApp.keyboardHandler, "start")
           @keyboardHandlerStopStub = sinon.stub(TuringEmailApp.keyboardHandler, "stop")
@@ -221,8 +221,8 @@ describe "TuringEmailApp", ->
           
         describe "to true", ->
           beforeEach ->
-            TuringEmailApp.models.userSettings.set("keyboard_shortcuts_enabled", false, silent: true)
-            TuringEmailApp.models.userSettings.set("keyboard_shortcuts_enabled", true)
+            TuringEmailApp.models.userConfiguration.set("keyboard_shortcuts_enabled", false, silent: true)
+            TuringEmailApp.models.userConfiguration.set("keyboard_shortcuts_enabled", true)
             
           it "starts the keyboard shortcuts handler", ->
             expect(@keyboardHandlerStartStub).toHaveBeenCalled()
@@ -230,8 +230,8 @@ describe "TuringEmailApp", ->
 
         describe "to false", ->
           beforeEach ->
-            TuringEmailApp.models.userSettings.set("keyboard_shortcuts_enabled", true, silent: true)
-            TuringEmailApp.models.userSettings.set("keyboard_shortcuts_enabled", false)
+            TuringEmailApp.models.userConfiguration.set("keyboard_shortcuts_enabled", true, silent: true)
+            TuringEmailApp.models.userConfiguration.set("keyboard_shortcuts_enabled", false)
             
           it "stops the keyboard shortcuts handler", ->
             expect(@keyboardHandlerStartStub).not.toHaveBeenCalled()
@@ -328,7 +328,7 @@ describe "TuringEmailApp", ->
   
   describe "after start", ->
     beforeEach ->
-      TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserSettings"))
+      TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserConfiguration"))
       TuringEmailApp.showEmails()
       
       @server.restore()
@@ -594,7 +594,7 @@ describe "TuringEmailApp", ->
       describe "demoMode=true", ->
         beforeEach ->
           @postStub = sinon.stub($, "post", ->)
-          TuringEmailApp.models.userSettings.set("demo_mode_enabled", true)
+          TuringEmailApp.models.userConfiguration.set("demo_mode_enabled", true)
           
           TuringEmailApp.syncEmail()
           
@@ -607,7 +607,7 @@ describe "TuringEmailApp", ->
       describe "demoMode=false", ->
         beforeEach ->
           @postStub = sinon.stub($, "post", ->)
-          TuringEmailApp.models.userSettings.set("demo_mode_enabled", false)
+          TuringEmailApp.models.userConfiguration.set("demo_mode_enabled", false)
           
           TuringEmailApp.syncEmail()
 
@@ -1152,7 +1152,7 @@ describe "TuringEmailApp", ->
           
           describe "demoMode=true", ->
             beforeEach ->
-              TuringEmailApp.models.userSettings.set("demo_mode_enabled", true)
+              TuringEmailApp.models.userConfiguration.set("demo_mode_enabled", true)
               TuringEmailApp.leftArrowClicked()
             
             it "goes to the previous page", ->
@@ -1164,7 +1164,7 @@ describe "TuringEmailApp", ->
 
           describe "demoMode=false", ->
             beforeEach ->
-              TuringEmailApp.models.userSettings.set("demo_mode_enabled", false)
+              TuringEmailApp.models.userConfiguration.set("demo_mode_enabled", false)
               TuringEmailApp.leftArrowClicked()
 
             it "goes to the previous page", ->
@@ -1207,7 +1207,7 @@ describe "TuringEmailApp", ->
             
           describe "demoMode=true", ->
             beforeEach ->
-              TuringEmailApp.models.userSettings.set("demo_mode_enabled", true)              
+              TuringEmailApp.models.userConfiguration.set("demo_mode_enabled", true)              
               TuringEmailApp.rightArrowClicked()
 
             it "goes to the next page", ->
@@ -1219,7 +1219,7 @@ describe "TuringEmailApp", ->
 
           describe "demoMode=false", ->
             beforeEach ->
-              TuringEmailApp.models.userSettings.set("demo_mode_enabled", false)
+              TuringEmailApp.models.userConfiguration.set("demo_mode_enabled", false)
               TuringEmailApp.rightArrowClicked()
 
             it "goes to the next page", ->
@@ -1528,9 +1528,9 @@ describe "TuringEmailApp", ->
         beforeEach ->
           @token = {}
           
-          @setStub = sinon.stub(TuringEmailApp.models.userSettings, "set")
+          @setStub = sinon.stub(TuringEmailApp.models.userConfiguration, "set")
           @showAlertStub = sinon.stub(TuringEmailApp, "showAlert", => @token)
-          @saveStub = sinon.stub(TuringEmailApp.models.userSettings, "save")
+          @saveStub = sinon.stub(TuringEmailApp.models.userConfiguration, "save")
 
           TuringEmailApp.demoModeSwitchClicked(true)
           
@@ -1579,38 +1579,38 @@ describe "TuringEmailApp", ->
       describe "#installAppClicked", ->
         beforeEach ->
           @installStub = sinon.stub(TuringEmailApp.Models.App, "Install")
-          @userSettingsFetchStub = sinon.stub(TuringEmailApp.models.userSettings, "fetch")
+          @userConfigurationFetchStub = sinon.stub(TuringEmailApp.models.userConfiguration, "fetch")
           
           @appID = "1"
           TuringEmailApp.installAppClicked(undefined, @appID)
           
         afterEach ->
-          @userSettingsFetchStub.restore()
+          @userConfigurationFetchStub.restore()
           @installStub.restore()
           
         it "installs the app", ->
           expect(@installStub).toHaveBeenCalledWith(@appID)
           
         it "refreshes the user settings", ->
-          expect(@userSettingsFetchStub).toHaveBeenCalledWith(reset: true)
+          expect(@userConfigurationFetchStub).toHaveBeenCalledWith(reset: true)
 
       describe "#uninstallAppClicked", ->
         beforeEach ->
           @uninstallStub = sinon.stub(TuringEmailApp.Models.InstalledApps.InstalledApp, "Uninstall")
-          @userSettingsFetchStub = sinon.stub(TuringEmailApp.models.userSettings, "fetch")
+          @userConfigurationFetchStub = sinon.stub(TuringEmailApp.models.userConfiguration, "fetch")
 
           @appID = "1"
           TuringEmailApp.uninstallAppClicked(undefined, @appID)
 
         afterEach ->
-          @userSettingsFetchStub.restore()
+          @userConfigurationFetchStub.restore()
           @uninstallStub.restore()
 
         it "installs the app", ->
           expect(@uninstallStub).toHaveBeenCalledWith(@appID)
 
         it "refreshes the user settings", ->
-          expect(@userSettingsFetchStub).toHaveBeenCalledWith(reset: true)
+          expect(@userConfigurationFetchStub).toHaveBeenCalledWith(reset: true)
           
     describe "#listItemSelected", ->
       beforeEach ->
@@ -1883,25 +1883,25 @@ describe "TuringEmailApp", ->
 
     describe "#isSplitPaneMode", ->
       beforeEach ->
-        TuringEmailApp.models.userSettings = new TuringEmailApp.Models.UserSettings(FactoryGirl.create("UserSettings"))
+        TuringEmailApp.models.userConfiguration = new TuringEmailApp.Models.UserConfiguration(FactoryGirl.create("UserConfiguration"))
     
       describe "when split pane mode is horizontal in the user settings", ->
         beforeEach ->
-          TuringEmailApp.models.userSettings.attributes.split_pane_mode = "horizontal"
+          TuringEmailApp.models.userConfiguration.attributes.split_pane_mode = "horizontal"
     
         it "should return true", ->
           expect(TuringEmailApp.isSplitPaneMode()).toBeTruthy()
     
       describe "when split pane mode is vertical in the user settings", ->
         beforeEach ->
-          TuringEmailApp.models.userSettings.attributes.split_pane_mode = "vertical"
+          TuringEmailApp.models.userConfiguration.attributes.split_pane_mode = "vertical"
     
         it "should return true", ->
           expect(TuringEmailApp.isSplitPaneMode()).toBeTruthy()
     
       describe "when split pane mode is off in the user settings", ->
         beforeEach ->
-          TuringEmailApp.models.userSettings.attributes.split_pane_mode = "off"
+          TuringEmailApp.models.userConfiguration.attributes.split_pane_mode = "off"
 
         it "should return false", ->
           expect(TuringEmailApp.isSplitPaneMode()).toBeFalsy()
@@ -2093,8 +2093,8 @@ describe "TuringEmailApp", ->
         @server.respondWith "GET", "/api/v1/genie_rules", JSON.stringify(@validBrainRulesFixture)
         @server.respondWith "GET", "/api/v1/email_rules", JSON.stringify(@validEmailRulesFixture)
 
-        userSettingsData = FactoryGirl.create("UserSettings")
-        TuringEmailApp.models.userSettings = new TuringEmailApp.Models.UserSettings(userSettingsData)
+        userConfigurationData = FactoryGirl.create("UserConfiguration")
+        TuringEmailApp.models.userConfiguration = new TuringEmailApp.Models.UserConfiguration(userConfigurationData)
         
         TuringEmailApp.showSettings()
 

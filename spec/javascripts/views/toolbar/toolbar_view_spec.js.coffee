@@ -253,10 +253,10 @@ describe "ToolbarView", ->
           expect(totalEmailsNumber).toEqual @emailFolder.get("num_threads")
   
           startNumber = parseInt(@toolbarView.$el.find(".start-number").text())
-          expect(startNumber).toEqual ((@page - 1) * TuringEmailApp.Models.UserSettings.EmailThreadsPerPage + 1)
+          expect(startNumber).toEqual ((@page - 1) * TuringEmailApp.Models.UserConfiguration.EmailThreadsPerPage + 1)
 
 
-          lastThreadNumber = @page * TuringEmailApp.Models.UserSettings.EmailThreadsPerPage
+          lastThreadNumber = @page * TuringEmailApp.Models.UserConfiguration.EmailThreadsPerPage
           if lastThreadNumber > totalEmailsNumber
             lastThreadNumber = totalEmailsNumber
 
@@ -274,7 +274,7 @@ describe "ToolbarView", ->
 
       describe "last page", ->
         beforeEach ->
-          @page = @emailFolder.get("num_threads") % TuringEmailApp.Models.UserSettings.EmailThreadsPerPage + 1
+          @page = @emailFolder.get("num_threads") % TuringEmailApp.Models.UserConfiguration.EmailThreadsPerPage + 1
           
           @toolbarView.updatePaginationText @emailFolder, @page
 

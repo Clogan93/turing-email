@@ -771,4 +771,8 @@ describe "ComposeView", ->
             @event.which = $.ui.keyCode.SPACE
             @composeView.$el.find(".compose-form .note-editable").trigger(@event)
 
+            websitePreviewAttributes = FactoryGirl.create("WebsitePreview")
+            @composeView.websitePreviewView.model.set(websitePreviewAttributes.toJSON())
+
             expect(@composeView.websitePreviewView).toBeDefined()
+            expect(@composeView.$el.find(".compose-form .note-editable")).toContain($(".compose-link-preview"))

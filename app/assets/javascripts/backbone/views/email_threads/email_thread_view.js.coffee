@@ -138,9 +138,11 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
         @trigger("goBackClicked", this)
 
     @$el.find(".email_reply_button").click =>
+      console.log "replyClicked"
       @trigger("replyClicked", this)
 
     @$el.find(".email_forward_button").click =>
+      console.log "forwardClicked"
       @trigger("forwardClicked", this)
 
   setupTooltips: ->

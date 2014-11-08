@@ -5,12 +5,12 @@
                                          'api/v1/users/show',
                                          :view_path => 'app/views').html_safe %>;
 
-  var userSettingsJSON = <%= Rabl::Renderer.json(current_user.user_configuration,
+  var userConfigurationJSON = <%= Rabl::Renderer.json(current_user.user_configuration,
                                                  'api/v1/user_configurations/show',
                                                  :view_path => 'app/views').html_safe %>;
   
   function onGoogleAPILoad() {
-    TuringEmailApp.start(userJSON, userSettingsJSON);
+    TuringEmailApp.start(userJSON, userConfigurationJSON);
   }
 </script>
 

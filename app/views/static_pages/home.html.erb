@@ -28,9 +28,9 @@
   <div class="row">
     <div class="text-center col-md-offset-4 col-sm-12 col-md-4">
       <% if !current_user.nil? %>
-        <a href="<%= mail_url %>">Mail</a>
+        <a class='btn btn-primary block full-width m-b' href="<%= mail_url %>">Mail</a>
         <br /><br />
-        <%= link_to('Signout', signout_path, :method => :delete, class: 'btn btn-primary block full-width m-b') %>
+        <%= link_to('Signout', signout_path, :method => :delete, class: 'btn btn-sm btn-white btn-block') %>
       <% else %>
         <%= link_to('Login', gmail_o_auth2_url(true), class: 'btn btn-primary block full-width m-b') %>
         <%= link_to('Register', gmail_o_auth2_url(true), class: 'btn btn-sm btn-white btn-block') %>

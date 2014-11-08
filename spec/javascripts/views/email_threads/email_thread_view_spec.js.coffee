@@ -57,6 +57,14 @@ describe "EmailThreadView", ->
               expect(fromNames[index]).toEqual email.from_name
               expect(textParts[index]).toEqual email.text_part
 
+        it "should render the emails in the correct order", ->
+          emails = @emailThread.get("emails")
+          for email, index in emails
+            continue if index is 0
+            date1 = new Date(emails[index - 1].date)
+            date2 = new Date(email.date)
+            expect(date1 <= date2).toBeTruthy()
+
         describe "when there are no html or text parts of the email yet there is a body part", ->
           it "should render the body part", ->
             for email, index in @emailThread.get("emails")

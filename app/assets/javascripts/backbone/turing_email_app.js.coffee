@@ -34,15 +34,15 @@ window.TuringEmailApp = new(Backbone.View.extend(
     gapi.client.gmail.users.messages.list(params)
   
   renderSyncingEmailsMessage: (numEmailsToSync) ->
-    $("#main").html("<div class='col-md-offset-2 col-md-8 emails-syncing-information'><table style='width: 100%;' border='0' align='center' cellpadding='0' cellspacing='0'><tbody><tr><td width='auto' align='center' valign='middle' height='28' style='font-size:18px;font-family:Roboto,Open Sans,Arial,Tahoma,Helvetica,sans-serif;text-align:center;color:#a3a2a2;font-weight:300;padding-left:18px;padding-right:18px'><span style='color:#a3a2a2;font-weight:300'><a href='#1496f007833f508e_' style='text-decoration:none;color:#a3a2a2;font-weight:300'>TURING <span style='color:#4ab59c;font-weight:300'>EMAIL SYNC</span></a></span></td></tr></tbody></table><br/>Your emails are syncing! " + @models.user.get("num_emails") + " of " + numEmailsToSync * 15 + "<br /><div class='progress'><div class='progress-bar progress-bar-success' role='progressbar' aria-valuenow='" + @models.user.get("num_emails") + "' aria-valuemin='0' aria-valuemax='" + numEmailsToSync * 15 + "' style='width: " + (@models.user.get("num_emails") / (numEmailsToSync * 15)) * 100 + "%;'></div></div></div>")
+    $("#main").html("<div class='col-md-offset-2 col-md-8 emails-syncing-information'><table style='width: 100%;' border='0' align='center' cellpadding='0' cellspacing='0'><tbody><tr><td width='auto' align='center' valign='middle' height='28' style='font-size:18px;font-family:Roboto,Open Sans,Arial,Tahoma,Helvetica,sans-serif;text-align:center;color:#a3a2a2;font-weight:300;padding-left:18px;padding-right:18px'><span style='color:#a3a2a2;font-weight:300'><a href='#1496f007833f508e_' style='text-decoration:none;color:#a3a2a2;font-weight:300'>TURING <span style='color:#4ab59c;font-weight:300'>EMAIL SYNC</span></a></span></td></tr></tbody></table><br/>Your emails are syncing! An email will be sent to you when your emails have finished syncing.</div>")
     
-  start: (userJSON, userSettingsJSON) ->
+  start: (userJSON, userConfigurationJSON) ->
     @models = {}
     @views = {}
     @collections = {}
     @routers = {}
 
-    @setupUser(userJSON, userSettingsJSON)
+    @setupUser(userJSON, userConfigurationJSON)
     
     @setupGmailAPI()
     
@@ -53,7 +53,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
         (response) => @renderSyncingEmailsMessage(response.result.resultSizeEstimate)
       )
       
-      $("#main").html("<div class='col-md-offset-2 col-md-8 emails-syncing-information'><table style='width: 100%;' border='0' align='center' cellpadding='0' cellspacing='0'><tbody><tr><td width='auto' align='center' valign='middle' height='28' style='font-size:18px;font-family:Roboto,Open Sans,Arial,Tahoma,Helvetica,sans-serif;text-align:center;color:#a3a2a2;font-weight:300;padding-left:18px;padding-right:18px'><span style='color:#a3a2a2;font-weight:300'><a href='#1496f007833f508e_' style='text-decoration:none;color:#a3a2a2;font-weight:300'>TURING <span style='color:#4ab59c;font-weight:300'>EMAIL SYNC</span></a></span></td></tr></tbody></table><br/>Your emails are syncing!</div>")
+      $("#main").html("<div class='col-md-offset-2 col-md-8 emails-syncing-information'><table style='width: 100%;' border='0' align='center' cellpadding='0' cellspacing='0'><tbody><tr><td width='auto' align='center' valign='middle' height='28' style='font-size:18px;font-family:Roboto,Open Sans,Arial,Tahoma,Helvetica,sans-serif;text-align:center;color:#a3a2a2;font-weight:300;padding-left:18px;padding-right:18px'><span style='color:#a3a2a2;font-weight:300'><a href='#1496f007833f508e_' style='text-decoration:none;color:#a3a2a2;font-weight:300'>TURING <span style='color:#4ab59c;font-weight:300'>EMAIL SYNC</span></a></span></td></tr></tbody></table><br/>Your emails are syncing! An email will be sent to you when your emails have finished syncing.</div>")
       return
     
     @setupKeyboardHandler()
@@ -103,7 +103,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
   setupKeyboardHandler: ->
     @keyboardHandler = new TuringEmailAppKeyboardHandler(this)
-    @keyboardHandler.start() if @models.userSettings.get("keyboard_shortcuts_enabled")
+    @keyboardHandler.start() if @models.userConfiguration.get("keyboard_shortcuts_enabled")
   
   setupMainView: ->
     @views.mainView = new TuringEmailApp.Views.Main(
@@ -145,22 +145,22 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
     @trigger("change:toolbarView", this, @views.toolbarView)
 
-  setupUser: (userJSON, userSettingsJSON) ->
+  setupUser: (userJSON, userConfigurationJSON) ->
     @models.user = new TuringEmailApp.Models.User(userJSON)
-    @models.userSettings = new TuringEmailApp.Models.UserSettings(userSettingsJSON)
+    @models.userConfiguration = new TuringEmailApp.Models.UserConfiguration(userConfigurationJSON)
   
-    @listenTo(@models.userSettings, "change:demo_mode_enabled", =>
-      @collections.emailFolders.demoMode = @models.userSettings.get("demo_mode_enabled")
-      @collections.emailThreads.demoMode = @models.userSettings.get("demo_mode_enabled")
-      @views.toolbarView.demoMode = @models.userSettings.get("demo_mode_enabled")
+    @listenTo(@models.userConfiguration, "change:demo_mode_enabled", =>
+      @collections.emailFolders.demoMode = @models.userConfiguration.get("demo_mode_enabled")
+      @collections.emailThreads.demoMode = @models.userConfiguration.get("demo_mode_enabled")
+      @views.toolbarView.demoMode = @models.userConfiguration.get("demo_mode_enabled")
       
       @reloadEmailThreads()
       @loadEmailFolders()
       @views.toolbarView.render()
     )
     
-    @listenTo(@models.userSettings, "change:keyboard_shortcuts_enabled", =>
-      if @models.userSettings.get("keyboard_shortcuts_enabled")
+    @listenTo(@models.userConfiguration, "change:keyboard_shortcuts_enabled", =>
+      if @models.userConfiguration.get("keyboard_shortcuts_enabled")
         @keyboardHandler.start()
       else
         @keyboardHandler.stop()
@@ -169,7 +169,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   setupEmailFolders: ->
     @collections.emailFolders = new TuringEmailApp.Collections.EmailFoldersCollection(undefined,
       app: TuringEmailApp
-      demoMode: @models.userSettings.get("demo_mode_enabled")
+      demoMode: @models.userConfiguration.get("demo_mode_enabled")
     )
     @views.emailFoldersTreeView = new TuringEmailApp.Views.EmailFolders.TreeView(
       app: this
@@ -192,7 +192,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   setupEmailThreads: ->
     @collections.emailThreads = new TuringEmailApp.Collections.EmailThreadsCollection(undefined,
       app: this
-      demoMode: @models.userSettings.get("demo_mode_enabled")
+      demoMode: @models.userConfiguration.get("demo_mode_enabled")
     )
     @views.emailThreadsListView = @views.mainView.createEmailThreadsListView(@collections.emailThreads)
 
@@ -222,7 +222,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     
   selectedEmailFolderID: ->
     return @views.emailFoldersTreeView.selectedItem()?.get("label_id")
-    
+
   ###############
   ### Setters ###
   ###############
@@ -234,7 +234,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
         @views.emailThreadsListView.select(emailThread, silent: true)
         @showEmailThread(emailThread)
-        
+
         @views.toolbarView.uncheckAllCheckbox()
         
         @trigger "change:selectedEmailThread", this, emailThread
@@ -250,7 +250,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   currentEmailFolderIs: (emailFolderID, pageTokenIndex, lastEmailThreadUID=null, dir="DESC") ->
     @collections.emailThreads.folderIDIs(emailFolderID)
     @collections.emailThreads.pageTokenIndexIs(parseInt(pageTokenIndex))  if pageTokenIndex?
-    @collections.emailThreads.setupURL(lastEmailThreadUID, dir) if @models.userSettings.get("demo_mode_enabled")
+    @collections.emailThreads.setupURL(lastEmailThreadUID, dir) if @models.userConfiguration.get("demo_mode_enabled")
 
     @reloadEmailThreads(
       success: (collection, response, options) =>
@@ -270,7 +270,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   ######################
 
   syncEmail: ->
-    $.post("api/v1/email_accounts/sync", undefined, undefined, "text") if @models.userSettings.get("demo_mode_enabled")
+    $.post("api/v1/email_accounts/sync", undefined, undefined, "text") if @models.userConfiguration.get("demo_mode_enabled")
     
     @reloadEmailThreads()
     @loadEmailFolders()
@@ -327,7 +327,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
       emailThread = new TuringEmailApp.Models.EmailThread(undefined,
         app: TuringEmailApp
         emailThreadUID: emailThreadUID
-        demoMode: @models.userSettings.get("demo_mode_enabled")
+        demoMode: @models.userConfiguration.get("demo_mode_enabled")
       )
       emailThread.fetch(
         success: (model, response, options) =>
@@ -435,7 +435,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     if @collections.emailThreads.hasPreviousPage()
       url = "#email_folder/" + @selectedEmailFolderID()
       url += "/" + (@collections.emailThreads.pageTokenIndex - 1)
-      url += "/" + @collections.emailThreads.at(0).get("uid") + "/ASC" if @models.userSettings.get("demo_mode_enabled")
+      url += "/" + @collections.emailThreads.at(0).get("uid") + "/ASC" if @models.userConfiguration.get("demo_mode_enabled")
       
       @routers.emailFoldersRouter.navigate(url, trigger: true)
 
@@ -443,7 +443,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     if @collections.emailThreads.hasNextPage()
       url = "#email_folder/" + @selectedEmailFolderID()
       url += "/" + (@collections.emailThreads.pageTokenIndex + 1)
-      url += "/" + @collections.emailThreads.last().get("uid") + "/DESC" if @models.userSettings.get("demo_mode_enabled")
+      url += "/" + @collections.emailThreads.last().get("uid") + "/DESC" if @models.userConfiguration.get("demo_mode_enabled")
       
       @routers.emailFoldersRouter.navigate(url, trigger: true)
 
@@ -512,10 +512,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @views.createFolderView.show("folder")
 
   demoModeSwitchClicked: (demoMode) ->
-    @models.userSettings.set("demo_mode_enabled", demoMode)
+    @models.userConfiguration.set("demo_mode_enabled", demoMode)
     @showAlert("Changing mode... just a minute please", "alert-success")
 
-    @models.userSettings.save(null, {
+    @models.userConfiguration.save(null, {
         patch: true
         success: (model, response) =>
           if demoMode
@@ -532,11 +532,11 @@ window.TuringEmailApp = new(Backbone.View.extend(
     
   installAppClicked: (view, appID) ->
     TuringEmailApp.Models.App.Install(appID)
-    @models.userSettings.fetch(reset: true)
+    @models.userConfiguration.fetch(reset: true)
     
   uninstallAppClicked: (view, appID) ->
     TuringEmailApp.Models.InstalledApps.InstalledApp.Uninstall(appID)  
-    @models.userSettings.fetch(reset: true)
+    @models.userConfiguration.fetch(reset: true)
     
   #############################
   ### EmailThreads.ListView ###
@@ -633,7 +633,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   ######################
 
   isSplitPaneMode: ->
-    splitPaneMode = @models.userSettings.get("split_pane_mode")
+    splitPaneMode = @models.userConfiguration.get("split_pane_mode")
     return splitPaneMode is "horizontal" || splitPaneMode is "vertical"
     
   showEmailThread: (emailThread) ->
@@ -686,7 +686,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @listenTo(@appsLibraryView, "installAppClicked", @installAppClicked)
     
   showSettings: ->
-    @models.userSettings.fetch(reset: true)
+    @models.userConfiguration.fetch(reset: true)
       
     @collections.emailRules = new TuringEmailApp.Collections.Rules.EmailRulesCollection()
     @collections.emailRules.fetch(reset: true)

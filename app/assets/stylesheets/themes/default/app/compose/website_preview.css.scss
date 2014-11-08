@@ -11,6 +11,8 @@
   .compose-link-preview-left-column {
     width: 20%;
     float: left;
+    min-width: 145px;
+    min-height: 98px;
   }
 
   .compose-link-preview-right-column {
@@ -21,6 +23,8 @@
 
   .compose-link-preview-image {
     width: 98px;
+    min-width: 98px;
+    min-height: 98px;
   }
 
   .compose-link-preview-title {
