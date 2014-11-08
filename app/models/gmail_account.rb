@@ -155,7 +155,8 @@ class GmailAccount < ActiveRecord::Base
 
     self.save! if do_save
   end
-  
+
+  # TODO write tests
   def recent_thread_subjects(email, max_results: 10)
     query = "from:#{email}"
     threads_list_data = self.gmail_client.threads_list('me', maxResults: max_results,

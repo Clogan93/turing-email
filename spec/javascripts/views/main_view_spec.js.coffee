@@ -284,16 +284,19 @@ describe "MainView", ->
             app: TuringEmailApp
             emailThreadUID: emailThreadAttributes.uid
             demoMode: false
-          )
+          ) 
           
         describe "with apps", ->
           beforeEach ->
             TuringEmailApp.models.userSettings.set(FactoryGirl.create("UserSettings"))
+            @oldCurrentEmailThreadView = @mainView.currentEmailThreadView = {}
 
             @server = sinon.fakeServer.create()
             
             @resizeAppsSplitPaneStub = sinon.stub(@mainView, "resizeAppsSplitPane")
-            @runStub = sinon.stub(TuringEmailApp.Models.InstalledApps.InstalledPanelApp.prototype, "run")
+            @runAppsStub = sinon.stub(@mainView, "runApps")
+            @stopListeningStub = sinon.stub(@mainView, "stopListening")
+            @listenToStub = sinon.stub(@mainView, "listenTo")
             
             @emailThreadView = TuringEmailApp.views.mainView.showEmailThread(@emailThread, true)
             @appsSplitPaneDiv = $(@primaryPane.find(".apps_split_pane"))
@@ -301,10 +304,15 @@ describe "MainView", ->
             @appsDiv = $(@appsSplitPaneDiv.children()[1])
             
           afterEach ->
-            @runStub.restore()
+            @stopListeningStub.restore()
+            @listenToStub.restore()
+            @runAppsStub.restore()
             @resizeAppsSplitPaneStub.restore()
             @server.restore()
 
+          it "stops listening on the currentEmailThreadView", ->
+            expect(@stopListeningStub).toHaveBeenCalledWith(@oldCurrentEmailThreadView)
+            
           it "creates the split pane", ->
             expect(@appsSplitPaneDiv).toBeDefined()
             
@@ -320,11 +328,14 @@ describe "MainView", ->
           it "puts the apps div in the east pane", ->
             expect(@appsDiv).toHaveClass("ui-layout-east")
             
-          it "adds the app iframes to the split pane", ->
-            expect(@appsDiv.children().length).toEqual(TuringEmailApp.models.userSettings.get("installed_apps").length)
-            
           it "runs all the apps", ->
-            expect(@runStub.callCount).toEqual(TuringEmailApp.models.userSettings.get("installed_apps").length)
+            expect(@runAppsStub).toHaveBeenCalled()
+            expect(@runAppsStub.args[0][0].html()).toEqual(@appsDiv.html())
+            expect(@runAppsStub.args[0][1]).toEqual(@emailThread)
+            
+          it "listens for expand:email", ->
+            expect(@listenToStub).toHaveBeenCalledWith(@emailThreadView, "expand:email")
+            specCompareFunctions(((emailThreadView, emailJSON) => @runApps(appsDiv, emailJSON)), @listenToStub.args[0][2])
             
           it "resizes the apps split pane", ->
             expect(@resizeAppsSplitPaneStub).toHaveBeenCalled()
@@ -346,6 +357,26 @@ describe "MainView", ->
               emailThreadView = $(@primaryPane.children()[0])
               expect(emailThreadView.html()).toEqual(@emailThreadView.$el.html())
 
+      describe "#runApps", ->
+        beforeEach ->
+          TuringEmailApp.models.userSettings.set(FactoryGirl.create("UserSettings"))
+          
+          @appsDiv = $("<div />")
+          @email = new TuringEmailApp.Models.Email(FactoryGirl.create("Email").toJSON())
+          
+          @runStub = sinon.stub(TuringEmailApp.Models.InstalledApps.InstalledPanelApp.prototype, "run")
+          
+          @mainView.runApps(@appsDiv, @email)
+          
+        afterEach ->
+          @runStub.restore()
+
+        it "runs the apps", ->
+          expect(@runStub.callCount).toEqual(TuringEmailApp.models.userSettings.get("installed_apps").length)
+
+        it "adds the app iframes to the split pane", ->
+          expect(@appsDiv.children().length).toEqual(TuringEmailApp.models.userSettings.get("installed_apps").length)
+              
       describe "#showTour", ->
         beforeEach ->
           @mainView.tour = null

@@ -118,12 +118,12 @@ describe "EmailThreadView", ->
         expect(@emailThreadView.$el).toContainHtml embeddedComposeView.$el
 
     describe "#setupEmailExpandAndCollapse", ->
-
       it "should have .email .email-information handle clicks", ->
         expect(@emailThreadView.$el.find('.email .email-information')).toHandle("click")
 
       describe "when a .email .email-information is clicked", ->
         beforeEach ->
+          @triggerStub = sinon.stub(@emailThreadView, "trigger")
           @updateIframeHeightStub = sinon.stub(@emailThreadView, "updateIframeHeight", ->)
           @emailDiv = @emailThreadView.$el.find('.email').first()
           @emailInfoDiv = @emailDiv.find(".email-information")
@@ -132,6 +132,7 @@ describe "EmailThreadView", ->
           @emailInfoDiv.click()
           
         afterEach ->
+          @triggerStub.restore()
           @updateIframeHeightStub.restore()
           @emailInfoDiv.click() # undo the expand/collapse
 
@@ -142,6 +143,10 @@ describe "EmailThreadView", ->
           iframe = @emailDiv.find("iframe")
           # TODO not working because email rendered is not an HTML email - tried to make it HTML but broke other tests.
           #expect(@updateIframeHeightStub).toHaveBeenCalledWith(iframe)
+      
+        it "triggers expand:email", ->
+          expect(@triggerStub).toHaveBeenCalledWith("expand:email", @emailThreadView,
+                                                    @emailThreadView.model.get("emails")[0])
 
       describe "when a .email .email-information is clicked twice", ->
         beforeEach ->

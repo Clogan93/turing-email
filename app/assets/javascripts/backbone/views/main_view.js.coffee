@@ -230,7 +230,8 @@ class TuringEmailApp.Views.Main extends Backbone.View
   showEmailThread: (emailThread, isSplitPaneMode) ->
     return false if not @primaryPaneDiv?
 
-    emailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
+    @stopListening(@currentEmailThreadView) if @currentEmailThreadView?
+    @currentEmailThreadView = emailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
       model: emailThread
     )
     
@@ -255,14 +256,9 @@ class TuringEmailApp.Views.Main extends Backbone.View
       appsDiv = $("<div />").appendTo(appsSplitPane)
       appsDiv.addClass("ui-layout-east")
 
-      if emailThread?
-        for installedAppJSON in @app.models.userSettings.get("installed_apps")
-          appIframe = $("<iframe></iframe>").appendTo(appsDiv)
-          appIframe.css("width", "178px")
-          appIframe.css("border", "solid 1px black")
-          installedApp = TuringEmailApp.Models.InstalledApps.InstalledApp.CreateFromJSON(installedAppJSON)
-          installedApp.run(appIframe, emailThread)
-      
+      @runApps(appsDiv, emailThread) if emailThread?
+      @listenTo(@currentEmailThreadView, "expand:email", (emailThreadView, emailJSON) => @runApps(appsDiv, emailJSON))
+          
       @resizeAppsSplitPane()
   
       appsSplitPane.layout({
@@ -281,6 +277,16 @@ class TuringEmailApp.Views.Main extends Backbone.View
 
     return emailThreadView
 
+  runApps: (appsDiv, object) ->
+    appsDiv.html("")
+    
+    for installedAppJSON in @app.models.userSettings.get("installed_apps")
+      appIframe = $("<iframe></iframe>").appendTo(appsDiv)
+      appIframe.css("width", "178px")
+      appIframe.css("border", "solid 1px black")
+      installedApp = TuringEmailApp.Models.InstalledApps.InstalledApp.CreateFromJSON(installedAppJSON)
+      installedApp.run(appIframe, object)  
+    
   showTour: ->
     # create the tour
     @tour = new Tour(

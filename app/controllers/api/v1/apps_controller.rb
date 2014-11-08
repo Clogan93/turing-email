@@ -16,9 +16,15 @@ class Api::V1::AppsController < ApiController
   
   def test
     email_thread = params[:email_thread]
-    emails = email_thread[:emails]
-
-    html = "<html><body>HIHIHI!!!!<br />#{emails[(emails.length - 1).to_s]["snippet"]}</body></html>"
+    if email_thread
+      emails = email_thread[:emails]
+      
+      html = "<html><body>HIHIHI!!!!<br />#{emails[(emails.length - 1).to_s]["snippet"]}</body></html>"
+    else
+      email = params[:email]
+      
+      html = "<html><body>HIHIHI!!!!<br />#{email["snippet"]}</body></html>"
+    end
     
     render :html => html.html_safe
   end

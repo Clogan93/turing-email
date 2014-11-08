@@ -125,6 +125,9 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
       iframe = $(event.currentTarget).parent().find("iframe")
       @updateIframeHeight(iframe)
 
+      emailIndex = @$el.find(".email .email-information").index($(event.currentTarget))
+      @trigger("expand:email", this, @model.get("emails")[emailIndex])
+
       $(event.currentTarget).parent().siblings(".email").each ->
         $(this).addClass "collapsed-email"
         $(this).find(".email-body").hide()

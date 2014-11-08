@@ -11,6 +11,7 @@ class Api::V1::PeopleController < ApiController
     response :ok
   end
   
+  # TODO write tests
   def recent_thread_subjects
     email = params[:email]
     
