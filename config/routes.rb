@@ -83,6 +83,8 @@ Rails.application.routes.draw do
       
       post '/apps/test', to: 'apps#test'
       post '/apps/stats', to: 'apps#stats'
+      
+      post 'people/recent_thread_subjects', to: 'people#recent_thread_subjects'
     end
   end
 
