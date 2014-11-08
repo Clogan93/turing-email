@@ -259,11 +259,12 @@ class TuringEmailApp.Views.Main extends Backbone.View
       if emailThread?
         for installedAppJSON in @app.models.userConfiguration.get("installed_apps")
           appIframe = $("<iframe></iframe>").appendTo(appsDiv)
+          #appIframe.css("width", "178px")
           appIframe.css("width", "100%")
           appIframe.css("height", "100%")
           installedApp = TuringEmailApp.Models.InstalledApps.InstalledApp.CreateFromJSON(installedAppJSON)
           installedApp.run(appIframe, emailThread)
-      
+
       @resizeAppsSplitPane()
   
       appsSplitPane.layout({
