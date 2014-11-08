@@ -155,6 +155,38 @@ class GmailAccount < ActiveRecord::Base
 
     self.save! if do_save
   end
+  
+  def recent_thread_subjects(email, max_results: 10)
+    query = "from:#{email}"
+    threads_list_data = self.gmail_client.threads_list('me', maxResults: max_results,
+                                                       q: query, fields: 'threads/id')
+
+    threads_data = threads_list_data['threads']
+    thread_uids = threads_data.map { |thread_data| thread_data['id'] }
+
+    thread_subjects = []
+    
+    batch_request = Google::APIClient::BatchRequest.new() do |result|
+      next if result.error?
+
+      gmail_data = result.data
+      messages = gmail_data['messages']
+      message = messages[0]
+      
+      if message['payload'] && message['payload']['headers'] && message['payload']['headers'].length > 0
+        thread_subjects.push(:email_thread_uid => gmail_data['id'], :subject => message['payload']['headers'][0]['value'])
+      end
+    end
+    
+    thread_uids.each do |thread_uid|
+      call = self.gmail_client.threads_get_call('me', thread_uid, format: 'metadata', metadataHeaders: 'subject')
+      batch_request.add(call)
+    end
+    
+    self.google_o_auth2_token.api_client.execute!(batch_request)
+    
+    return thread_subjects
+  end
 
   def find_or_create_label(label_id: nil, label_name: nil)
     attempts = 1
@@ -418,13 +450,13 @@ class GmailAccount < ActiveRecord::Base
   def search_threads(query, nextPageToken = nil, max_results = GmailAccount::SEARCH_RESULTS_PER_PAGE)
     log_console("SEARCH threads query=#{query} nextPageToken=#{nextPageToken} max_results=#{max_results}")
     
-    threds_list_data = self.gmail_client.threads_list('me', maxResults: max_results,
+    threads_list_data = self.gmail_client.threads_list('me', maxResults: max_results,
                                                             pageToken: nextPageToken,
                                                             q: query, fields: 'nextPageToken,threads/id')
 
-    threads_data = threds_list_data['threads']
+    threads_data = threads_list_data['threads']
     thread_uids = threads_data.map { |thread_data| thread_data['id'] }
-    nextPageToken = threds_list_data['nextPageToken']
+    nextPageToken = threads_list_data['nextPageToken']
 
     log_console("FOUND #{threads_data.length} threads nextPageToken=#{nextPageToken}")
 
