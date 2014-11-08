@@ -67,7 +67,10 @@ class TuringEmailApp.Collections.EmailFoldersCollection extends Backbone.Collect
   parse: (labelsInfo, options) ->
     return labelsInfo if @demoMode
 
-    labelsParsed = _.map(labelsInfo, (label) =>
+    labelsParsed = []
+    for label in labelsInfo
+      continue if label.error?
+      
       labelParsed = {}
       labelParsed.label_id = label.id
       labelParsed.name = label.name
@@ -77,7 +80,6 @@ class TuringEmailApp.Collections.EmailFoldersCollection extends Backbone.Collect
       labelParsed.num_threads = label.threadsTotal
       labelParsed.num_unread_threads = label.threadsUnread
 
-      return labelParsed
-    )
+      labelsParsed.push(labelParsed)
 
     return labelsParsed

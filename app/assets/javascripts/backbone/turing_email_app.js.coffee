@@ -93,10 +93,12 @@ window.TuringEmailApp = new(Backbone.View.extend(
       @refreshGmailAPIToken().done(=>
         @gmailAPIReady = true
       )
+      
+      return
     )
     
   refreshGmailAPIToken: ->
-    $.get("/api/v1/gmail_accounts/get_token").done(
+    $.get("/api/v1/gmail_accounts/get_token", undefined, undefined, "text").done(
       (data, status) =>
         gapi.auth.setToken(data)
     )
