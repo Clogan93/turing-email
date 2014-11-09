@@ -9,7 +9,7 @@ class GmailAccountsController < ApplicationController
     google_o_auth2_token = GoogleOAuth2Token.new()
     google_o_auth2_token.update(o_auth2_base_client, false)
     
-    return google_o_auth2_token, google_o_auth2_token.api_client()
+    return google_o_auth2_token, google_o_auth2_token.api_client(), o_auth2_base_client
   end
   
   def o_auth2_callback
@@ -32,7 +32,7 @@ class GmailAccountsController < ApplicationController
       begin
         sign_out() if current_user
         
-        google_o_auth2_token, api_client = self.get_api_client(code)
+        google_o_auth2_token, api_client, o_auth2_base_client = self.get_api_client(code)
         
         userinfo_data = GmailAccount.get_userinfo(api_client)
         gmail_account = GmailAccount.find_by_google_id(userinfo_data['id'])
@@ -40,6 +40,18 @@ class GmailAccountsController < ApplicationController
         if gmail_account
           log_console("FOUND gmail_account=#{gmail_account.email}")
           user = gmail_account.user
+
+          begin
+            GmailAccount.get_userinfo(gmail_account.google_o_auth2_token.api_client)
+          rescue Signet::AuthorizationError
+            if google_o_auth2_token.refresh_token.blank?
+              log_console("NO refresh token - redirecting to gmail login!!!")
+              redirect_to gmail_o_auth2_url(true)
+              return
+            end
+          end
+          
+          gmail_account.google_o_auth2_token.update(o_auth2_base_client, true)
         else
           log_console("NOT FOUND gmail_account!!!")
           

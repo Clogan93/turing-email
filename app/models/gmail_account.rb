@@ -537,6 +537,8 @@ class GmailAccount < ActiveRecord::Base
       self.sync_draft_ids()
 
       if !self.user.has_genie_report_ran
+        job_ids.concat(self.sync_email_full(labelIds: 'SENT', delay: delay))
+        
         log_console("#{self.user.email} queueing check_initial_sync with #{job_ids.length} job IDs!")
         self.delay(num_dynos: GmailAccount::NUM_SYNC_DYNOS).check_initial_sync(job_ids)
       end
