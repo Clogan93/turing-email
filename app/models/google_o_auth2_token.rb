@@ -69,11 +69,11 @@ class GoogleOAuth2Token < ActiveRecord::Base
   end
 
   def log()
-begin
+=begin
     log_console("access_token=#{self.access_token}\n" +
                 "expires_in=#{self.expires_in}\n" +
                 "issued_at=#{self.issued_at}\n" +
                 "refresh_token=#{self.refresh_token}\n")
-end
+=end
   end
 end

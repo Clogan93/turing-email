@@ -11,7 +11,7 @@ class GmailAccountsController < ApplicationController
     
     return google_o_auth2_token, google_o_auth2_token.api_client(), o_auth2_base_client
   end
-  
+
   def o_auth2_callback
     error = params[:error]
     code = params[:code]
