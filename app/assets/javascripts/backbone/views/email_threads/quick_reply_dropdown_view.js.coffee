@@ -12,7 +12,7 @@ class TuringEmailApp.Views.App.QuickReplyView extends Backbone.View
     @$el.parent().find(".single-click-communication-link").click (event) =>
       event.preventDefault()
       @emailThreadView.trigger("replyClicked", @emailThreadView)
-      $(".compose-modal .note-editable").prepend($(event.target).text())
+      $(".compose-modal .note-editable").prepend($(event.target).text() + "<br /><br /> - Sent with Turing Quick Response.")
       $(".compose-modal .send-button").click()
 
     return this
