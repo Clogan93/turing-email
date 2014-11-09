@@ -5,7 +5,12 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
     threadJSON.loaded = true
     threadJSON.demoMode = demoMode
 
-    lastEmail = threadJSON.emails[0]
+    for email in threadJSON.emails
+      if email.from_address != TuringEmailApp.models.user.get("email")
+        lastEmail = email
+        break
+
+    lastEmail = threadJSON.emails[0] if not lastEmail?
     
     threadJSON.num_messages = threadJSON.emails.length
     threadJSON.snippet = lastEmail.snippet
