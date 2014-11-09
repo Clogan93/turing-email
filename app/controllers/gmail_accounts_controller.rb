@@ -38,8 +38,17 @@ class GmailAccountsController < ApplicationController
         gmail_account = GmailAccount.find_by_google_id(userinfo_data['id'])
         
         if gmail_account
+          log_console("FOUND gmail_account=#{gmail_account.email}")
           user = gmail_account.user
         else
+          log_console("NOT FOUND gmail_account!!!")
+          
+          if google_o_auth2_token.refresh_token.blank?
+            log_console("NO refresh token - redirecting to gmail login!!!")
+            redirect_to gmail_o_auth2_url(true)
+            return
+          end
+          
           user = User.new()
           user.email = userinfo_data['email'].downcase
           user.password = user.password_confirmation = SecureRandom.uuid()
@@ -49,19 +58,19 @@ class GmailAccountsController < ApplicationController
 
           gmail_account = GmailAccount.new()
           gmail_account.user = user
+
+          user.with_lock do
+            gmail_account.refresh_user_info(api_client)
+
+            google_o_auth2_token.google_api = gmail_account
+            google_o_auth2_token.save!
+
+            gmail_account.google_o_auth2_token = google_o_auth2_token
+            gmail_account.save!
+          end
         end
         
         sign_in(user)
-        
-        user.with_lock do
-          gmail_account.refresh_user_info(api_client)
-
-          google_o_auth2_token.google_api = gmail_account
-          google_o_auth2_token.save!
-
-          gmail_account.google_o_auth2_token = google_o_auth2_token
-          gmail_account.save!
-        end
 
         gmail_account.delay.sync_email(labelIds: "INBOX") if created_gmail_account
 
