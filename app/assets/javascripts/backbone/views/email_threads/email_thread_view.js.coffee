@@ -33,6 +33,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
   
           @setupEmailExpandAndCollapse()
           @setupButtons()
+          @setupQuickReplyButton()
           @setupTooltips()
 
           @rendering = false
@@ -144,6 +145,14 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     @$el.find(".email_forward_button").click =>
       console.log "forwardClicked"
       @trigger("forwardClicked", this)
+
+  setupQuickReplyButton: ->
+    @$el.find(".each-email-reply-button").each ->
+      quickReplyView = new TuringEmailApp.Views.App.QuickReplyView(
+        el: $(@)
+        emailThreadView: TuringEmailApp.views.mainView.currentEmailThreadView
+      )
+      quickReplyView.render()
 
   setupTooltips: ->
     @$el.find(".email-to").tooltip()
