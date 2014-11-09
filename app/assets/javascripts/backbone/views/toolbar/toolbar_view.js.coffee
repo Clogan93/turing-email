@@ -28,6 +28,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     
     @setupButtons()
     @setupDemoModeSwitch()
+    @renderRefreshButton()
     @renderReportToolbarDropdown()
 
     if @currentEmailFolder?
@@ -36,6 +37,22 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     $(".tooltip").remove()
 
     return this
+
+  renderRefreshButton: ->
+    @refreshToolbarButtonView = new TuringEmailApp.Views.RefreshToolbarButtonView(
+      el: @$el.find(".refresh-button-placement")
+    )
+    @refreshToolbarButtonView.render()
+
+    @$el.find(".refresh-button").click =>
+      @$el.find(".refresh-button").tooltip('hide')
+      @trigger("refreshClicked", this)
+    
+  renderReportToolbarDropdown: ->
+    @reportToolbarDropdown = new TuringEmailApp.Views.ReportToolbarDropdownView(
+      el: @$el.find(".report_toolbar_dropdown")
+    )
+    @reportToolbarDropdown.render()
 
   #######################
   ### Setup Functions ###
@@ -54,6 +71,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
   setupButtons: ->
     @setupBulkActionButtons()
+    @setupSnoozeButtons()
 
     @$el.find(".mark_as_read").parent().click =>
       @trigger("readClicked", this)
@@ -62,19 +80,19 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       @trigger("unreadClicked", this)
 
     @$el.find("i.fa-archive").parent().click =>
-      @$el.find("i.fa-archive").tooltip('hide')
+      @$el.find("i.fa-archive").tooltip("hide")
       @trigger("archiveClicked", this)
 
     @$el.find("i.fa-trash-o").parent().click =>
-      @$el.find("i.fa-trash-o").tooltip('hide')
+      @$el.find("i.fa-trash-o").tooltip("hide")
       @trigger("trashClicked", this)
 
     @$el.find(".paginate-left-link").click =>
-      @$el.find(".paginate-left-link").tooltip('hide')
+      @$el.find(".paginate-left-link").tooltip("hide")
       @trigger("leftArrowClicked", this)
 
     @$el.find(".paginate-right-link").click =>
-      @$el.find(".paginate-right-link").tooltip('hide')
+      @$el.find(".paginate-right-link").tooltip("hide")
       @trigger("rightArrowClicked", this)
 
     $(window).resize =>
@@ -99,28 +117,12 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       @$el.find(".createNewEmailFolder").tooltip('hide')
       @trigger("createNewEmailFolderClicked", this)
 
-    @refreshToolbarButtonView = new TuringEmailApp.Views.RefreshToolbarButtonView(
-      el: @$el.find(".refresh-button-placement")
-    )
-    @refreshToolbarButtonView.render()
-
-    @$el.find(".refresh-button").click =>
-      @$el.find(".refresh-button").tooltip('hide')
-      @trigger("refreshClicked", this)
-
     @$el.find(".toolbar-elements, .pagination-buttons").tooltip
       selector: "[data-toggle=tooltip], .tooltip-button"
       container: "body"
 
     @$el.find(".settings-button").click ->
       $(this).tooltip('hide')
-
-  setupDemoModeSwitch: ->
-    @$el.find(".demo_mode_switch").bootstrapSwitch()
-
-    @$el.find(".demo_mode_switch").on "switch-change", (event, state) =>
-      @demoMode = !@demoMode
-      @trigger("demoModeSwitchClicked", @demoMode)
       
   setupBulkActionButtons: ->
     @$el.find(".all-bulk-action").click =>
@@ -137,15 +139,33 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @$el.find(".unread-bulk-action").click =>
       @trigger("checkAllUnreadClicked", this)
 
+  setupSnoozeButtons: ->
+    @$el.find(".snooze-dropdown .dropdown-menu .one-hour").click =>
+      @$el.find(".snooze-dropdown-menu").tooltip('hide')
+      @trigger("snoozeClicked", this, 60)
+
+    @$el.find(".snooze-dropdown .dropdown-menu .four-hours").click =>
+      @$el.find(".snooze-dropdown-menu").tooltip('hide')
+      @trigger("snoozeClicked", this, 60 * 4)
+
+    @$el.find(".snooze-dropdown .dropdown-menu .eight-hours").click =>
+      @$el.find(".snooze-dropdown-menu").tooltip('hide')
+      @trigger("snoozeClicked", this, 60 * 8)
+
+    @$el.find(".snooze-dropdown .dropdown-menu .one-day").click =>
+      @$el.find(".snooze-dropdown-menu").tooltip('hide')
+      @trigger("snoozeClicked", this, 60 * 24)
+
+  setupDemoModeSwitch: ->
+    @$el.find(".demo_mode_switch").bootstrapSwitch()
+
+    @$el.find(".demo_mode_switch").on "switch-change", (event, state) =>
+      @demoMode = !@demoMode
+      @trigger("demoModeSwitchClicked", @demoMode)
+
   #################
   ### Functions ###
   #################
-
-  renderReportToolbarDropdown: ->
-    @reportToolbarDropdown = new TuringEmailApp.Views.ReportToolbarDropdownView(
-      el: @$el.find(".report_toolbar_dropdown")
-    )
-    @reportToolbarDropdown.render()
 
   allCheckboxIsChecked: ->
     return @divAllCheckbox.hasClass "checked"

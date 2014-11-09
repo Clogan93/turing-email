@@ -55,11 +55,25 @@ function outputFolderDropdown(emailFolders, uniqueID, className) {
       </ul>
     </span>
 
-    <span class="report_toolbar_dropdown">
-    </span>
+    <span class="report_toolbar_dropdown"></span>
 
-    <span>
-      <a type="button" href="#settings" class="btn btn-white btn-sm settings-button" data-toggle="tooltip" data-placement="top" title="Settings"><i class="fa fa-cog"></i></a>
+    <a type="button" href="#settings" class="btn btn-white btn-sm settings-button"
+       data-toggle="tooltip" data-placement="top" title="Settings">
+      <i class="fa fa-cog"></i>
+    </a>
+
+    <span class="dropdown snooze-dropdown">
+      <button type="button" class="btn btn-white btn-sm dropdown-toggle tooltip-button snooze-dropdown-menu"
+              data-toggle="dropdown" data-placement="top" data-original-title="Snooze">
+        <i class="fa fa-clock-o"></i>
+      </button>
+
+      <ul class="dropdown-menu" role="menu" aria-labelledby="snooze-menu">
+        <li role="presentation"><a role="menuitem" tabindex="-1" class="dropdown-link one-hour">1 Hour</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" class="dropdown-link four-hours">4 Hour</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" class="dropdown-link eight-hours">8 Hour</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" class="dropdown-link one-day">1 Day</a></li>
+      </ul>
     </span>
 
     <span class="dropdown">

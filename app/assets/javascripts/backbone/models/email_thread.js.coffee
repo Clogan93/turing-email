@@ -98,6 +98,13 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
           => @trashRequest(emailThreadUID)
         )
 
+  @snooze: (app, emailThreadUIDs, minutes) ->
+    postData =
+      email_thread_uids:  emailThreadUIDs
+      minutes: minutes
+
+    $.post("/api/v1/email_threads/snooze", postData)
+        
   @deleteDraftRequest: (draftID) ->
     gapi.client.gmail.users.drafts.delete(userId: "me", id: draftID)
 
@@ -336,6 +343,9 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
   
   trash: ->
     TuringEmailApp.Models.EmailThread.trash(@app, [@get("uid")], @get("demoMode"))
+
+  snooze: (minutes) ->
+    TuringEmailApp.Models.EmailThread.snooze(@app, [@get("uid")], minutes)
     
   deleteDraft: ->
     TuringEmailApp.Models.EmailThread.deleteDraft(@app, [@get("draft_id")])

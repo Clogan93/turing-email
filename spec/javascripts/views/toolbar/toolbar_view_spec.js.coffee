@@ -27,7 +27,6 @@ describe "ToolbarView", ->
       @toolbarView.render()
 
     describe "#render", ->
-
       it "renders as a DIV", ->
         expect(@toolbarView.el.nodeName).toEqual "DIV"
 
@@ -40,6 +39,16 @@ describe "ToolbarView", ->
         spy = sinon.spy(@toolbarView, "setupButtons")
         @toolbarView.render()
         expect(spy).toHaveBeenCalled()
+
+      it "renders refresh button", ->
+        stub = sinon.stub(@toolbarView, "renderRefreshButton")
+        @toolbarView.render()
+        expect(stub).toHaveBeenCalled()
+
+      it "renders report toolbar dropdown", ->
+        stub = sinon.stub(@toolbarView, "renderReportToolbarDropdown")
+        @toolbarView.render()
+        expect(stub).toHaveBeenCalled()
 
       it "sets the select all checkbox element", ->
         expect(@toolbarView.divAllCheckbox).toEqual @toolbarView.$el.find("div.icheckbox_square-green")
@@ -93,8 +102,25 @@ describe "ToolbarView", ->
             expect(spy).toHaveBeenCalled()
             spy.restore()
 
+    describe "#renderRefreshButton", ->
+      it "handles click", ->
+        expect(@toolbarView.$el.find(".refresh-button")).toHandle("click")
+      
+      describe "when .refresh-button is clicked", ->
+        it "triggers refreshClicked", ->
+          @toolbarView.$el.find(".refresh-button").show()
+          spy = sinon.backbone.spy(@toolbarView, "refreshClicked")
+          @toolbarView.$el.find(".refresh-button").click()
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+            
     describe "#setupButtons", ->
-
+      beforeEach ->
+        @setupSnoozeButtonsStub = sinon.stub(@toolbarView, "setupSnoozeButtons")
+        
+      afterEach ->
+        @setupSnoozeButtonsStub.restore()
+        
       it "should handle clicks", ->
         expect(@toolbarView.$el.find(".mark_as_read").parent()).toHandle("click")
         expect(@toolbarView.$el.find(".mark_as_unread").parent()).toHandle("click")
@@ -104,12 +130,15 @@ describe "ToolbarView", ->
         expect(@toolbarView.$el.find(".paginate-right-link")).toHandle("click")
         expect(@toolbarView.$el.find(".label_as_link")).toHandle("click")
         expect(@toolbarView.$el.find(".move_to_folder_link")).toHandle("click")
-        expect(@toolbarView.$el.find(".refresh-button")).toHandle("click")
 
       it "sets up bulk action buttons", ->
         spy = sinon.spy(@toolbarView, "setupBulkActionButtons")
         @toolbarView.setupButtons()
         expect(spy).toHaveBeenCalled()
+        
+      it "sets up snooze buttons", ->
+        @toolbarView.setupButtons()
+        expect(@setupSnoozeButtonsStub).toHaveBeenCalled()
 
       describe "when i.fa-eye is clicked", ->
         it "triggers readClicked", ->
@@ -167,14 +196,6 @@ describe "ToolbarView", ->
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
-      describe "when .refresh-button is clicked", ->
-        it "triggers refreshClicked", ->
-          @toolbarView.$el.find(".refresh-button").show()
-          spy = sinon.backbone.spy(@toolbarView, "refreshClicked")
-          @toolbarView.$el.find(".refresh-button").click()
-          expect(spy).toHaveBeenCalled()
-          spy.restore()
-
     describe "#setupBulkActionButtons", ->
 
       it "should handle clicks", ->
@@ -218,6 +239,28 @@ describe "ToolbarView", ->
           @toolbarView.$el.find(".unread-bulk-action").click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
+          
+    describe "#setupSnoozeButtons", ->
+      buttons = [
+        {cssClass: "one-hour", minutes: 60},
+        {cssClass: "four-hours", minutes: 60 * 4},
+        {cssClass: "eight-hours", minutes: 60 * 8},
+        {cssClass: "one-day", minutes: 60 * 24}
+      ]
+      
+      beforeEach ->
+        @triggerStub = sinon.stub(@toolbarView, "trigger", ->)
+        
+      afterEach ->
+        @triggerStub.restore()
+      
+      for button in buttons
+        it "handles click", ->
+          expect(@toolbarView.$el.find(".snooze-dropdown .dropdown-menu ." + button.cssClass)).toHandle("click")
+          
+        it "triggers", ->
+          @toolbarView.$el.find(".snooze-dropdown .dropdown-menu ." + button.cssClass).click()
+          expect(@triggerStub).toHaveBeenCalledWith("snoozeClicked", @toolbarView, button.minutes)
 
     describe "#allCheckboxIsChecked", ->
 

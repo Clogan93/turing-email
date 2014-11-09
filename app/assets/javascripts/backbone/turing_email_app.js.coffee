@@ -135,6 +135,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @listenTo(@views.toolbarView, "unreadClicked", @unreadClicked)
     @listenTo(@views.toolbarView, "archiveClicked", @archiveClicked)
     @listenTo(@views.toolbarView, "trashClicked", @trashClicked)
+    @listenTo(@views.toolbarView, "snoozeClicked", @snoozeClicked)
     @listenTo(@views.toolbarView, "leftArrowClicked", @leftArrowClicked)
     @listenTo(@views.toolbarView, "rightArrowClicked", @rightArrowClicked)
     @listenTo(@views.toolbarView, "labelAsClicked", (toolbarView, labelID) => @labelAsClicked(labelID))
@@ -507,6 +508,15 @@ window.TuringEmailApp = new(Backbone.View.extend(
       true, true, true, true
     )
 
+  snoozeClicked: (view, minutes) ->
+    @applyActionToSelectedThreads(
+      =>
+        @selectedEmailThread()?.snooze(minutes)
+      (checkedListItemViews, selectedEmailThreadUIDs) =>
+        TuringEmailApp.Models.EmailThread.snooze(TuringEmailApp, selectedEmailThreadUIDs, minutes)
+      true, true, true, true
+    )
+    
   createNewLabelClicked: ->
     @views.createFolderView.show("label")
 

@@ -230,6 +230,24 @@ describe "EmailThread", ->
           expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
           specCompareFunctions((=> @trashRequest(emailThreadUID)), @googleRequestStub.args[0][1])
 
+    describe "#snooze", ->
+      beforeEach ->
+        @postSpy = sinon.spy($, "post")
+        @minutes = 60
+
+        @url = "/api/v1/email_threads/snooze"
+        @postData =
+          email_thread_uids:  @emailThreadUIDs
+          minutes: @minutes
+
+        TuringEmailApp.Models.EmailThread.snooze(TuringEmailApp, @emailThreadUIDs, @minutes)
+
+      afterEach ->
+        @postSpy.restore()
+
+      it "posts", ->
+        expect(@postSpy).toHaveBeenCalledWith(@url, @postData)
+          
     describe "#applyGmailLabelRequest", ->
       beforeEach ->
         window.gapi = client: gmail: users: threads: modify: ->
@@ -922,10 +940,23 @@ describe "EmailThread", ->
       afterEach ->
         @stub.restore()
         
-      it "calls the remove from folder class method", ->
+      it "calls the trash class method", ->
         @emailThread.trash()
   
         expect(@stub).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("uid")], @emailThread.get("demoMode"))
+
+    describe "#snooze", ->
+      beforeEach ->
+        @stub = sinon.stub(TuringEmailApp.Models.EmailThread, "snooze")
+
+        @minutes = 60
+        @emailThread.snooze(@minutes)
+        
+      afterEach ->
+        @stub.restore()
+
+      it "calls the snooze class method", ->
+        expect(@stub).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("uid")], @minutes)
 
     describe "#deleteDraft", ->
       beforeEach ->

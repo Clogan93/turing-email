@@ -275,6 +275,13 @@ class GmailAccount < ActiveRecord::Base
   end
 
   # polymorphic call
+  # TODO write tests
+  def wake_up(email_ids)
+    emails = Email.where(:id => email_ids)
+    self.apply_label_to_emails(emails, label_id: 'INBOX')
+  end
+
+  # polymorphic call
   def remove_emails_from_folder(emails, folder_id: nil)
     if folder_id.nil?
       log_console("REMOVING FAILED #{email.uid} FROM folder_id IS NIL!")
@@ -401,8 +408,8 @@ class GmailAccount < ActiveRecord::Base
     gmail_label = nil
     emails.each do |email|
       gmail_label, call = self.apply_label_to_email(email, label_id: label_id, label_name: label_name,
-                                                      set_auto_filed_folder: set_auto_filed_folder,
-                                                      batch_request: true, gmail_client: gmail_client)
+                                                    set_auto_filed_folder: set_auto_filed_folder,
+                                                    batch_request: true, gmail_client: gmail_client)
       
       batch_request.add(call) if !self.user.user_configuration.demo_mode_enabled && $config.gmail_live
     end
