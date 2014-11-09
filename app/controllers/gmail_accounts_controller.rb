@@ -41,11 +41,11 @@ class GmailAccountsController < ApplicationController
           log_console("FOUND gmail_account=#{gmail_account.email}")
           user = gmail_account.user
 
-          begin
-            GmailAccount.get_userinfo(gmail_account.google_o_auth2_token.api_client)
-          rescue Signet::AuthorizationError
-            if google_o_auth2_token.refresh_token.blank?
-              log_console("NO refresh token - redirecting to gmail login!!!")
+          if google_o_auth2_token.refresh_token.blank?
+            begin
+              gmail_account.google_o_auth2_token.refresh(nil, true)
+            rescue Signet::AuthorizationError
+              log_console("BAD!!! refresh token - redirecting to gmail login!!!")
               redirect_to gmail_o_auth2_url(true)
               return
             end
