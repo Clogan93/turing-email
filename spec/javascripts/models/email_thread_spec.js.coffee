@@ -25,6 +25,7 @@ describe "EmailThread", ->
     describe "#SetThreadPropertiesFromJSON", ->
       beforeEach ->
         @threadJSON = @emailThread.toJSON()
+        TuringEmailApp.models = user: new TuringEmailApp.Models.User(FactoryGirl.create("User"))
 
         TuringEmailApp.Models.EmailThread.SetThreadPropertiesFromJSON(@threadJSON, true)
         
