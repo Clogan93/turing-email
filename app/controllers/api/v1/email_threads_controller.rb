@@ -3,9 +3,9 @@ class Api::V1::EmailThreadsController < ApiController
     signed_in_user(true)
   end
 
-  before_action :correct_user, :except => [:inbox, :in_folder, :move_to_folder, :apply_gmail_label,:remove_from_folder, :trash]
+  before_action :correct_user, :except => [:inbox, :in_folder, :move_to_folder, :apply_gmail_label,:remove_from_folder, :trash, :snooze]
   before_action :correct_email_account
-  before_action :filter_email_thread_uids, :only => [:move_to_folder, :apply_gmail_label, :remove_from_folder, :trash]
+  before_action :filter_email_thread_uids, :only => [:move_to_folder, :apply_gmail_label, :remove_from_folder, :trash, :snooze]
 
   swagger_controller :email_threads, 'Email Threads Controller'
 
@@ -137,6 +137,26 @@ class Api::V1::EmailThreadsController < ApiController
   def trash
     emails = Email.where(:id => @email_ids)
     @email_account.trash_emails(emails)
+
+    render :json => {}
+  end
+
+  swagger_api :snooze do
+    summary 'Snooze the specified email threads.'
+
+    param :form, :email_thread_uids, :string, :required, 'Email Thread UIDs'
+    param :form, :minutes, :string, :required, 'Minutes to snooze'
+
+    response :ok
+  end
+
+  # TODO write tests
+  def snooze
+    minutes = params[:minutes].to_i.minutes
+    
+    emails = Email.where(:id => @email_ids)
+    @email_account.remove_emails_from_folder(emails, folder_id: 'INBOX')
+    @email_account.delay({:run_at => DateTime.now() + minutes}, num_dynos: 1).wake_up(@email_ids)
 
     render :json => {}
   end

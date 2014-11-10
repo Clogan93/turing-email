@@ -56,6 +56,7 @@ Rails.application.routes.draw do
       post '/email_threads/apply_gmail_label', to: 'email_threads#apply_gmail_label'
       post '/email_threads/remove_from_folder', to: 'email_threads#remove_from_folder'
       post '/email_threads/trash', to: 'email_threads#trash'
+      post '/email_threads/snooze', to: 'email_threads#snooze'
       
       get '/email_reports/ip_stats_report', to: 'email_reports#ip_stats_report'
       get '/email_reports/volume_report', to: 'email_reports#volume_report'

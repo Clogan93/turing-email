@@ -1,10 +1,10 @@
 class SessionsController < ApplicationController
   def new
-    redirect_to gmail_o_auth2_url(true)
+    redirect_to gmail_o_auth2_url()
   end
 
   def create
-    redirect_to gmail_o_auth2_url(true)
+    redirect_to gmail_o_auth2_url()
     #user_signin_attempt(params[:session][:email], params[:session][:password])
   end
 

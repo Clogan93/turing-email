@@ -168,7 +168,7 @@ describe "TuringEmailApp", ->
         return
   
       toolbarViewEvents = ["checkAllClicked", "checkAllReadClicked", "checkAllUnreadClicked", "uncheckAllClicked",
-                           "readClicked", "unreadClicked", "archiveClicked", "trashClicked",
+                           "readClicked", "unreadClicked", "archiveClicked", "trashClicked", "snoozeClicked",
                            "leftArrowClicked", "rightArrowClicked",
                            "labelAsClicked", "moveToFolderClicked", "refreshClicked", "searchClicked",
                            "createNewLabelClicked", "createNewEmailFolderClicked", "demoModeSwitchClicked"]
@@ -1462,12 +1462,7 @@ describe "TuringEmailApp", ->
 
           @emailThread = @emailThreads.models[0]
 
-          @origSelectedEmailFolderID = TuringEmailApp.selectedEmailFolderID
-          @folderID = "test"
-          TuringEmailApp.selectedEmailFolderID = => @folderID
-
         afterEach ->
-          TuringEmailApp.selectedEmailFolderID = => @origSelectedEmailFolderID
           @listViewDiv.remove()
 
         describe "when an email thread is selected", ->
@@ -1476,8 +1471,7 @@ describe "TuringEmailApp", ->
 
             @listView.select(@emailThread)
 
-            @folderID = "test"
-            TuringEmailApp.trashClicked(@folderID)
+            TuringEmailApp.trashClicked()
 
           afterEach ->
             @trashStub.restore()
@@ -1491,7 +1485,6 @@ describe "TuringEmailApp", ->
 
             @listView.check(@emailThread)
 
-            @folderID = "test"
             TuringEmailApp.trashClicked()
 
           afterEach ->
@@ -1499,6 +1492,48 @@ describe "TuringEmailApp", ->
 
           it "trash the checked email threads", ->
             expect(@trashStub).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("uid")])
+
+      describe "#snoozeClicked", ->
+        beforeEach ->
+          @listView = specCreateEmailThreadsListView()
+          @listViewDiv = @listView.$el
+          @emailThreads = @listView.collection
+
+          TuringEmailApp.views.emailThreadsListView = @listView
+          TuringEmailApp.collections.emailThreads = @emailThreads
+
+          @emailThread = @emailThreads.models[0]
+
+        afterEach ->
+          @listViewDiv.remove()
+
+        describe "when an email thread is selected", ->
+          beforeEach ->
+            @snoozeStub = sinon.stub(@emailThread, "snooze")
+
+            @listView.select(@emailThread)
+
+            TuringEmailApp.snoozeClicked(60)
+
+          afterEach ->
+            @snoozeStub.restore()
+
+          it "snooze the selected email", ->
+            expect(@snoozeStub).toHaveBeenCalled()
+
+        describe "when an email thread is checked", ->
+          beforeEach ->
+            @snoozeStub = sinon.stub(TuringEmailApp.Models.EmailThread, "snooze")
+
+            @listView.check(@emailThread)
+
+            TuringEmailApp.snoozeClicked(60)
+
+          afterEach ->
+            @snoozeStub.restore()
+
+          it "snooze the checked email threads", ->
+            expect(@snoozeStub).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("uid")])
 
       describe "#createNewLabelClicked", ->
         beforeEach ->

@@ -89,7 +89,7 @@ $config.heroku_dynos = ['worker']
 
 # Delayed Job
 $config.dj_queues = ['worker']
-$config.dj_queue_alert_size = 100
+$config.dj_queue_alert_size = 100000
 $config.dj_queues_heroku_dynos = {
     'worker' => 'worker'
 }

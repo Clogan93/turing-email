@@ -742,9 +742,11 @@
                               clogging your inbox so I neatly filed them away into folders (see below for details).
                               I also found <span style="font-weight: bold;"><%= @num_important_emails %> important emails</span>
                               received yesterday that you have not replied to yet and
-                              <span style="font-weight: bold;"><%= @num_sent_emails_not_replied_to %>emails that you sent that have not
-                                received a reply yet</span> - you might want to follow up! You can find additional information below.
-                                If you have any questions please feel free to contact me anytime at <%= mail_to($config.genie_email) %>.
+                              <span style="font-weight: bold;">
+                                <%= @num_sent_emails_not_replied_to %>emails that you sent that have not received a reply yet
+                              </span>
+                              - you might want to follow up! You can find additional information below.
+                              If you have any questions please feel free to contact me anytime at <%= mail_to($config.genie_email) %>.
                             <% else %>
                               Good morning! Last night I found <span style="font-weight: bold;"><%= @num_important_emails %></span> important emails
                               that require action and filed away <span style="font-weight: bold;"><%= @num_auto_filed_emails %></span>

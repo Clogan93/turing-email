@@ -5,7 +5,7 @@ class GmailAccount < ActiveRecord::Base
   DRAFTS_BATCH_SIZE = 100
   HISTORY_BATCH_SIZE = 100
   SEARCH_RESULTS_PER_PAGE = 50
-  NUM_SYNC_DYNOS = 4
+  NUM_SYNC_DYNOS = 3
 
   SCOPES = %w(https://www.googleapis.com/auth/userinfo.email
               https://www.googleapis.com/auth/gmail.readonly
@@ -275,6 +275,13 @@ class GmailAccount < ActiveRecord::Base
   end
 
   # polymorphic call
+  # TODO write tests
+  def wake_up(email_ids)
+    emails = Email.where(:id => email_ids)
+    self.apply_label_to_emails(emails, label_id: 'INBOX')
+  end
+
+  # polymorphic call
   def remove_emails_from_folder(emails, folder_id: nil)
     if folder_id.nil?
       log_console("REMOVING FAILED #{email.uid} FROM folder_id IS NIL!")
@@ -401,8 +408,8 @@ class GmailAccount < ActiveRecord::Base
     gmail_label = nil
     emails.each do |email|
       gmail_label, call = self.apply_label_to_email(email, label_id: label_id, label_name: label_name,
-                                                      set_auto_filed_folder: set_auto_filed_folder,
-                                                      batch_request: true, gmail_client: gmail_client)
+                                                    set_auto_filed_folder: set_auto_filed_folder,
+                                                    batch_request: true, gmail_client: gmail_client)
       
       batch_request.add(call) if !self.user.user_configuration.demo_mode_enabled && $config.gmail_live
     end
@@ -537,6 +544,8 @@ class GmailAccount < ActiveRecord::Base
       self.sync_draft_ids()
 
       if !self.user.has_genie_report_ran
+        job_ids.concat(self.sync_email_full(labelIds: 'SENT', delay: delay))
+        
         log_console("#{self.user.email} queueing check_initial_sync with #{job_ids.length} job IDs!")
         self.delay(num_dynos: GmailAccount::NUM_SYNC_DYNOS).check_initial_sync(job_ids)
       end

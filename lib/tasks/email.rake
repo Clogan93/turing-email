@@ -9,7 +9,7 @@ task :sync_email, [:labelIds_string] => :environment do |t, args|
     begin
       log_console("PROCESSING account #{gmail_account.email}")
       
-      gmail_account.sync_email(labelIds: labelIds)
+      gmail_account.delay.sync_email(labelIds: labelIds)
     rescue Exception => ex
       log_email_exception(ex)
     end
@@ -57,6 +57,28 @@ task :email_genie_reports, [:demo] => :environment do |t, args|
       log_console("PROCESSING user #{user.email}")
 
       EmailGenie.send_user_report_email(user, args.demo)
+    rescue Exception => ex
+      log_email_exception(ex)
+    end
+  end
+end
+
+desc 'Run brain and report for all accounts'
+
+task :brain_and_report, [:demo] => :environment do |t, args|
+  args.with_defaults(:demo => false)
+
+  User.all.each do |user|
+    begin
+      log_console("PROCESSING user #{user.email}")
+
+      gmail_account = user.gmail_accounts.first
+      if gmail_account.nil?
+        log_console("SKIPPING #{user.email} no gmail!!!!!!!")
+        next
+      end
+      
+      EmailGenie.delay(num_dynos: GmailAccount::NUM_SYNC_DYNOS).run_brain_and_report(gmail_account, args.demo)
     rescue Exception => ex
       log_email_exception(ex)
     end
