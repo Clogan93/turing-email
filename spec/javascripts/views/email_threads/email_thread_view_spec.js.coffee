@@ -199,3 +199,11 @@ describe "EmailThreadView", ->
             @emailThreadView.$el.find(".email-back-button").click()
             expect(spy).toHaveBeenCalled()
             spy.restore()
+
+    describe "#setupQuickReplyButton", ->  
+      beforeEach ->
+        @emailThreadView.setupQuickReplyButton()
+      
+      it "renders a quick reply view on next to each reply button", ->
+        @emailThreadView.$el.find(".each-email-reply-button").each ->
+          expect($(@).parent()).toContain($(".quick-reply-dropdown-div"))
