@@ -366,7 +366,6 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
         websitePreview.fetch()
 
   setupEmojis: ->
-    console.log "setupEmoljis called"
     @emojiDropdownView = new TuringEmailApp.Views.App.EmojiDropdownView(
       el: @$el.find(".note-toolbar.btn-toolbar")
     )

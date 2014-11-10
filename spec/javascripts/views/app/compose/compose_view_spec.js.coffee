@@ -776,3 +776,25 @@ describe "ComposeView", ->
 
             expect(@composeView.websitePreviewView).toBeDefined()
             expect(@composeView.$el.find(".compose-form .note-editable")).toContain($(".compose-link-preview"))
+
+    describe "#setupEmojis", ->
+      beforeEach ->
+        @composeView.emojiDropdownView = null
+        @composeView.setupEmojis()
+
+      it "creates an emoji dropdown view", ->
+        expect(@composeView.emojiDropdownView).toBeDefined()
+
+      it "renders the emoji dropdown view onto the compose toolbar view", ->
+        expect(@composeView.$el.find(".note-toolbar.btn-toolbar")).toContain($(".emoji-dropdown-div"))
+
+      it "attaches click handlers to the emojis in the dropdown", ->
+        expect(@composeView.$el.find(".emoji-dropdown span")).toHandle("click")
+
+      describe "when one of the emojis is clicked", ->
+        beforeEach ->
+          @anEmoji = @composeView.$el.find(".emoji-dropdown span").first()
+          @anEmoji.click()
+
+        it "renders the emoji into the compose email body input", ->
+          expect(@composeView.$el.find(".compose-form .note-editable")).toContain($(".emoji"))
