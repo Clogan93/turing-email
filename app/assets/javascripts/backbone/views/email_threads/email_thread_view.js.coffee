@@ -156,9 +156,9 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
       quickReplyView.render()
 
   setupHoverPreviews: ->
+    return
     # @$el.find("iframe").each ->
     #   $(@).contents().find("body").find("a").livePreview()
-    return
 
   setupTooltips: ->
     @$el.find(".email-to").tooltip()
