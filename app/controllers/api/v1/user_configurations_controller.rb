@@ -30,6 +30,9 @@ class Api::V1::UserConfigurationsController < ApiController
     permitted_params = params.permit(:demo_mode_enabled, :genie_enabled, :split_pane_mode, :keyboard_shortcuts_enabled, :developer_enabled)
     @user_configuration.update_attributes!(permitted_params)
     
+    @user_configuration.skin = Skin.find_by_uid(params[:skin_uid])
+    @user_configuration.save!
+    
     render 'api/v1/user_configurations/show'
   end
 end

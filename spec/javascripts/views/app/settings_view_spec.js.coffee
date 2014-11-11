@@ -19,6 +19,8 @@ describe "SettingsView", ->
     TuringEmailApp.collections.emailRules = new TuringEmailApp.Collections.Rules.EmailRulesCollection()
     TuringEmailApp.collections.emailRules.fetch()
     @server.respond()
+    
+    skins = new TuringEmailApp.Collections.SkinsCollection(FactoryGirl.createLists("Skin", FactoryGirl.SMALL_LIST_SIZE))
 
     @userConfiguration = new TuringEmailApp.Models.UserConfiguration()
     
@@ -28,6 +30,7 @@ describe "SettingsView", ->
       model: @userConfiguration
       emailRules: TuringEmailApp.collections.emailRules
       brainRules: TuringEmailApp.collections.brainRules
+      skins: skins
     )
     
     @userConfiguration.set(FactoryGirl.create("UserConfiguration"))
@@ -84,6 +87,10 @@ describe "SettingsView", ->
       developerSwitch = $(".developer_switch")
       expect(@settingsDiv).toContain(developerSwitch)
       expect(developerSwitch.is(":checked")).toEqual(@userConfiguration.get("developer_enabled"))
+
+    it "renders the skin select", ->
+      skinSelect = $(".skin-select")
+      expect(@settingsDiv).toContain(skinSelect)
       
     describe "with selected tab", ->
       beforeEach ->

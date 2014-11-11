@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141110071119) do
+ActiveRecord::Schema.define(version: 20141111084603) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -318,6 +318,13 @@ ActiveRecord::Schema.define(version: 20141110071119) do
 
   add_index "people", ["email_account_id", "email_account_type", "email_address"], name: "index_people_on_email_account_and_email_address", unique: true, using: :btree
 
+  create_table "skins", force: true do |t|
+    t.text     "uid"
+    t.text     "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "sync_failed_emails", force: true do |t|
     t.integer  "email_account_id"
     t.string   "email_account_type"
@@ -349,6 +356,7 @@ ActiveRecord::Schema.define(version: 20141110071119) do
     t.boolean  "developer_enabled",          default: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "skin_id"
   end
 
   add_index "user_configurations", ["user_id"], name: "index_user_configurations_on_user_id", unique: true, using: :btree

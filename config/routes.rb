@@ -86,6 +86,8 @@ Rails.application.routes.draw do
       post '/apps/install/:app_uid', to: 'apps#install'
       delete '/apps/uninstall/:app_uid', to: 'apps#uninstall'
 
+      resources :skins, only: [:index]
+
       post '/apps/test', to: 'apps#test'
 
       post 'people/recent_thread_subjects', to: 'people#recent_thread_subjects'

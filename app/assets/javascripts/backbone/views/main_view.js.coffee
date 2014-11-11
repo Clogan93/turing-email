@@ -202,10 +202,14 @@ class TuringEmailApp.Views.Main extends Backbone.View
   showSettings: ->
     return false if not @primaryPaneDiv?
     
+    skins = new TuringEmailApp.Collections.SkinsCollection()
+    skins.fetch(reset: true)
+    
     settingsView = new TuringEmailApp.Views.SettingsView(
       model: @app.models.userConfiguration
       emailRules: @app.collections.emailRules
       brainRules: @app.collections.brainRules
+      skins: skins
     )
     settingsView.render()
 

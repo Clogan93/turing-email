@@ -76,6 +76,26 @@
               <input type="checkbox" class="developer_switch" <%= userConfiguration.developer_enabled ? "checked" : "" %>>
             </div>
           </div>
+
+          <br />
+
+          <div class="row">
+            <div class="col-md-3">
+              <h4 class="h4">Skin</h4>
+            </div>
+            <div class="col-md-3">
+              <select class="form-control skin-select">
+                <option value="default">Default</option>
+                <% for (var i = 0; i < skins.length; i++ ) { %>
+                  <option value="<%= skins[i].uid %>"
+                          <% if (skins[i].uid == userConfiguration.skin_uid) { %>
+                            selected
+                          <% } %>
+                  ><%= skins[i].name %></option>
+                <% } %>
+              </select>
+            </div>
+          </div>
         </div>
 
         <div id="tab-2" class="tab-pane settings-rules-pane">

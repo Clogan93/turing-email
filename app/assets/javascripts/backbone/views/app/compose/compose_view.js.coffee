@@ -43,7 +43,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     
     @setupComposeView()
     @setupLinkPreviews()
-    @setupEmojis()
+    #@setupEmojis()
     
     @$el.find(".send-later-datetimepicker").datetimepicker(
       format: "m/d/Y g:i a"
