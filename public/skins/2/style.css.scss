@@ -2,28 +2,12 @@
 ******** Skin Two *******
 *************************/
 
-@import "../default/main/main";
-@import "../default/settings/settings";
-@import "../default/toolbar/toolbar";
-@import "../default/search_nav_bar/search_nav_bar";
-@import "../default/reports/reports";
-@import "../default/global/global";
-@import "../default/email_threads/email_thread";
-@import "../default/email_threads/list";
-@import "../default/email_threads/list_item";
-@import "../default/email_folders/tree";
-@import "../default/email_filter_dropdown/email_filter_dropdown";
-@import "../default/app/sidebar";
-@import "../default/app/compose/compose";
-@import "../default/app/compose/website_preview";
-@import "../default/alerts/alerts";
-
 .gray-bg {
   background-color: transparent;
 }
 
 body {
-  background-image: url(/assets/noise.png), url(/assets/background1.jpg);
+  background-image: url(images/noise.png), url(images/background.jpg);
   background-repeat: repeat, no-repeat;
   background-position: left top;
   background-size: auto, cover;
@@ -166,7 +150,7 @@ a.label-link:hover {
 }
 
 .icheckbox_square-green, .iradio_square-green {
-  background: url(/assets/red.png) no-repeat;
+  background: url(images/red.png) no-repeat;
 }
 
 .mail-box {
