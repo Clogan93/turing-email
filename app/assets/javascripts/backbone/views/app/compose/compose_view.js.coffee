@@ -43,6 +43,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     
     @setupComposeView()
     @setupLinkPreviews()
+    @setupEmojis()
     
     @$el.find(".send-later-datetimepicker").datetimepicker(
       format: "m/d/Y g:i a"
@@ -73,9 +74,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       @saveDraft(false)
 
   setupLinkPreviews: ->
-    console.log "setupLinkPreviews called"
     @$el.find(".compose-form .note-editable").bind "keydown", "space return shift+return", =>
-      console.log "information entered"
       emailHtml = @$el.find(".compose-form .note-editable").html()
       indexOfUrl = emailHtml.search(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/)
 
@@ -94,6 +93,16 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
         )
         websitePreview.fetch()
 
+  setupEmojis: ->
+    @emojiDropdownView = new TuringEmailApp.Views.App.EmojiDropdownView(
+      el: @$el.find(".note-toolbar.btn-toolbar")
+    )
+    @emojiDropdownView.render()
+
+    noteEditable = @$el.find(".compose-form .note-editable")
+    @$el.find(".emoji-dropdown span").click ->
+      noteEditable.append($(@).html())
+        
   #########################
   ### Display Functions ###
   #########################

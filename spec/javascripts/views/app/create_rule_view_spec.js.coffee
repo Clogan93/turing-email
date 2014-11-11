@@ -44,7 +44,7 @@ describe "CreateRuleView", ->
       afterEach ->
         @showSpy.restore()
         @hideSpy.restore()
-        
+
       describe "for email_rule", ->
         beforeEach ->
           @createRuleView.show("email_rule")
