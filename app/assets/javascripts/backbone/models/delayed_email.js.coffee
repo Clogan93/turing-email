@@ -1,4 +1,4 @@
-class TuringEmailApp.Models.DelayedEmail extends Backbone.Model
+class TuringEmailApp.Models.DelayedEmail extends TuringEmailApp.Models.Email
   idAttribute: "uid"
   
   @Delete: (delayedEmailUID) ->
