@@ -52,9 +52,12 @@ body {
   background-color: rgba(0, 0, 0, 0.3);
   box-shadow: 0 3px 0 rgba(0, 0, 0, 0.05);
   border: 1px solid transparent;
+  padding-left: 0px;
+  border-left-width: 0px;
 
   .inbox-count-badge {
     background-color: #ff7b76;
+    margin-top: 4px;
   }
 
   .compose-mail.compose-button {
@@ -66,6 +69,8 @@ body {
     background-color: #ff7b76;
     border-color: #ff7b76;
     font-weight: normal;
+    margin-left: 0px;
+    width: 105%;
   }
 
   .category-list li a {
@@ -81,6 +86,7 @@ body {
     color: white !important;
     font-size: 22px !important;
     font-weight: normal !important;
+    background-color: rgba(0, 0, 0, 0.2);
   }
 
 }
@@ -137,5 +143,42 @@ body {
 }
 
 a.label-link:hover {
-  background-color: transparent !important;
+  background-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+.mailbox-content {
+  padding: 10px 0px 0px 0px;
+}
+
+.email-folders {
+  margin-left: 0px;
+}
+
+.fixed .category-list li a {
+  padding-right: 13px;
+  padding-left: 13px;
+}
+
+.icheckbox_square-green {
+  background-color: rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: inset 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 0 10px 0 rgba(0, 0, 0, 0.1);
+}
+
+.icheckbox_square-green, .iradio_square-green {
+  background: url(/assets/red.png) no-repeat;
+}
+
+.mail-box {
+  border-radius: 0px 0px 4px 4px;
+}
+
+.ui-layout-center.ui-layout-pane.ui-layout-pane-center {
+  background: transparent !important;
+}
+
+.alert-success {
+  background-color: rgba(255,123,118, 0.2) !important;
+  border-color: rgba(255,123,118, 0.2) !important;
+  color: white !important;
 }
