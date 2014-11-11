@@ -1,0 +1,26 @@
+<div class="page-header">
+  <h1 class="h1">Delayed Emails</h1>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <table class="table table-striped delayed-emails-table">
+      <thead>
+      <tr>
+        <th>Subject</th>
+        <th>Send At</th>
+        <th>Delete</th>
+      </tr>
+      </thead>
+      <tbody>
+      <% for(var i = 0; i < delayed_emails.length; i++) { %>
+        <tr>
+          <td><%= delayed_emails[i].subject %></td>
+          <td><%= new Date(delayed_emails[i].send_at).toLocaleString() %></td>
+          <td><button type="button" class="btn btn-block delete-delayed-email-button">Delete</button></td>
+        </tr>
+      <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>

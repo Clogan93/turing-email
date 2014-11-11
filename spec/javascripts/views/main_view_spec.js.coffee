@@ -251,6 +251,14 @@ describe "MainView", ->
           expect(@primaryPane.children().length).toEqual(1)
           expect($(@primaryPane.children()[0]).html()).toEqual(@appsLibraryView.$el.html())
 
+      describe "#showDelayedEmails", ->
+        beforeEach ->
+          @delayedEmailsView = @mainView.showDelayedEmails()
+
+        it "shows the apps library view", ->
+          expect(@primaryPane.children().length).toEqual(1)
+          expect($(@primaryPane.children()[0]).html()).toEqual(@delayedEmailsView.$el.html())
+
       describe "#showAnalytics", ->
         beforeEach ->
           @server.restore()

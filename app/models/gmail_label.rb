@@ -121,7 +121,8 @@ sql
                                                                          :folder_email_date => email.date, :folder_email_draft_id => email.draft_id,
                                                                          :email_thread => email.email_thread)
         else
-          email = Email.find(email_id)
+          email = Email.find_by(:id => email_id)
+          next if email.nil?
           email_folder_mappings << EmailFolderMapping.find_or_create_by!(:email_id => email_id, :email_folder => self,
                                                                          :folder_email_thread_date => email.email_thread.emails.maximum(:date),
                                                                          :folder_email_date => email.date, :folder_email_draft_id => email.draft_id,

@@ -25,10 +25,10 @@ class TuringEmailApp.Views.AppsLibrary.AppsLibraryView extends Backbone.View
     )
     @createAppView.render()
     
-    @$el.find(".create_app_button").click (event) =>
+    @$el.find(".create-app-button").click (event) =>
       @onCreateAppButtonClick(event)
 
-    @$el.find(".install_app_button").click (event) =>
+    @$el.find(".install-app-button").click (event) =>
       @onInstallAppButtonClick(event)
 
   onCreateAppButtonClick: (event) ->
@@ -37,7 +37,7 @@ class TuringEmailApp.Views.AppsLibrary.AppsLibraryView extends Backbone.View
     return false
 
   onInstallAppButtonClick: (event) ->
-    index = @$el.find(".install_app_button").index(event.currentTarget)
+    index = @$el.find(".install-app-button").index(event.currentTarget)
     app = @collection.at(index)
 
     @trigger("installAppClicked", this, app.get("uid"))

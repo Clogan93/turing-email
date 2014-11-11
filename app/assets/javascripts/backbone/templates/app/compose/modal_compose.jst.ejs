@@ -7,16 +7,23 @@
       </div>
       <form class="compose-form">
         <div class="modal-body">
-            <input type="text" class="form-control to-input" placeholder="To"/><br />
-            <input type="text" class="form-control cc-input" placeholder="CC"/><br />
-            <input type="text" class="form-control bcc-input" placeholder="BCC"/><br />
-            <input type="text" class="form-control subject-input" placeholder="Subject"/><br />
-            <label class="compose-form-attachments-label">Attachments</label><input class="compose-form-attachments-input" type="file" name="attachment" multiple />
-            <br />
-            <br />
-            <div contenteditable="true" class="form-control summernote compose-email-body" rows="15"></div>
+          <input type="text" class="form-control to-input" placeholder="To" /><br />
+          <input type="text" class="form-control cc-input" placeholder="CC" /><br />
+          <input type="text" class="form-control bcc-input" placeholder="BCC" /><br />
+          <input type="text" class="form-control subject-input" placeholder="Subject" /><br />
+          
+          <label class="compose-form-attachments-label">Attachments</label>
+          <input class="compose-form-attachments-input" type="file" name="attachment" multiple />
+        
+          <br /><br />
+        
+          <div contenteditable="true" class="form-control summernote compose-email-body" rows="15"></div>
         </div>
+
         <div class="modal-footer">
+          <input class="send-later-datetimepicker" type="text" />
+          <button type="button" class="btn btn-info send-later-button">Send Later</button>
+          
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <button type="button" class="btn btn-info save-button">Save</button>
           <button type="submit" class="btn btn-primary">Send</button>

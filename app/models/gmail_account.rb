@@ -37,6 +37,10 @@ class GmailAccount < ActiveRecord::Base
            :as => :email_account,
            :dependent => :destroy
 
+  has_many :delayed_emails,
+           :as => :email_account,
+           :dependent => :destroy
+
   validates_presence_of(:user, :google_id, :email, :verified_email)
 
 

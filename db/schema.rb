@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141105025047) do
+ActiveRecord::Schema.define(version: 20141110071119) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -29,6 +29,25 @@ ActiveRecord::Schema.define(version: 20141105025047) do
 
   add_index "apps", ["name"], name: "index_apps_on_name", unique: true, using: :btree
   add_index "apps", ["uid"], name: "index_apps_on_uid", unique: true, using: :btree
+
+  create_table "delayed_emails", force: true do |t|
+    t.integer  "email_account_id"
+    t.string   "email_account_type"
+    t.integer  "delayed_job_id"
+    t.text     "uid"
+    t.text     "tos"
+    t.text     "ccs"
+    t.text     "bccs"
+    t.text     "subject"
+    t.text     "html_part"
+    t.text     "text_part"
+    t.text     "email_in_reply_to_uid"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "delayed_emails", ["delayed_job_id"], name: "index_delayed_emails_on_delayed_job_id", using: :btree
+  add_index "delayed_emails", ["uid"], name: "index_delayed_emails_on_uid", unique: true, using: :btree
 
   create_table "delayed_jobs", force: true do |t|
     t.integer  "priority",   default: 0, null: false

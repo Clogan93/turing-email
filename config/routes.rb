@@ -34,8 +34,12 @@ Rails.application.routes.draw do
       delete '/signout', to: 'sessions#destroy'
 
       post '/email_accounts/send_email', to: 'email_accounts#send_email'
+      post '/email_accounts/send_email_delayed', to: 'email_accounts#send_email_delayed'
       post '/email_accounts/sync', to: 'email_accounts#sync'
       post '/email_accounts/search_threads', to: 'email_accounts#search_threads'
+
+      resources :delayed_emails, only: [:index]
+      delete '/delayed_emails/:delayed_email_uid', :to => 'delayed_emails#destroy'
       
       post '/email_accounts/drafts', to: 'email_accounts#create_draft'
       put '/email_accounts/drafts', to: 'email_accounts#update_draft'

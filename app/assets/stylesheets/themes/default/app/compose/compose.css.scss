@@ -36,3 +36,11 @@ div[contenteditable]:focus {
 .compose-modal .note-editable {
   min-height: 200px;
 }
+
+.compose-modal .send-later-button {
+  float: left;
+}
+
+.compose-modal .send-later-datetimepicker {
+  float: left;
+}

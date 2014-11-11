@@ -325,6 +325,7 @@ describe "TuringEmailApp", ->
         expect(TuringEmailApp.routers.settingsRouter).toBeDefined()
         expect(TuringEmailApp.routers.searchResultsRouter).toBeDefined()
         expect(TuringEmailApp.routers.appsLibraryRouter).toBeDefined()
+        expect(TuringEmailApp.routers.delayedEmailsRouter).toBeDefined()
   
   describe "after start", ->
     beforeEach ->
@@ -625,6 +626,7 @@ describe "TuringEmailApp", ->
           @alertSelector = "." + @alertClass
 
           @removeAlertSpy = sinon.spy(TuringEmailApp, "removeAlert")
+          @setTimeoutStub = sinon.stub(window, "setTimeout", ->)
 
           if TuringEmailApp.currentAlert?
             TuringEmailApp.currentAlert.remove()
@@ -633,6 +635,7 @@ describe "TuringEmailApp", ->
         afterEach ->
           TuringEmailApp.removeAlert(@token)
           @removeAlertSpy.restore()
+          @setTimeoutStub.restore()
           
         describe "when there is no current alert", ->
           beforeEach ->
@@ -657,6 +660,9 @@ describe "TuringEmailApp", ->
           it "dismisses the alert when the dismiss alert link is clicked", ->
             $(".dismiss-alert-link").click()
             expect(@removeAlertSpy).toHaveBeenCalledWith(@token)
+            
+          it "does not queue remove", ->
+            expect(@setTimeoutStub).not.toHaveBeenCalled()
       
         describe "when an alert is displayed", ->
           beforeEach ->
@@ -665,6 +671,20 @@ describe "TuringEmailApp", ->
 
           it "removes the alert", ->
             expect(@removeAlertSpy).toHaveBeenCalled()
+
+          it "does not queue remove", ->
+            expect(@setTimeoutStub).not.toHaveBeenCalled()
+            
+        describe "when removeAfterSeconds is specified", ->
+          beforeEach ->
+            @removeAfterSeconds = 500
+            TuringEmailApp.showAlert("a", "b", @removeAfterSeconds)
+            TuringEmailApp.showAlert(@alertText, @alertClass)
+
+          it "queues alert removal", ->
+            expect(@setTimeoutStub).toHaveBeenCalled()
+            specCompareFunctions((=> @removeAlert(token)), @setTimeoutStub.args[0][0])
+            expect(@setTimeoutStub.args[0][1]).toEqual(@removeAfterSeconds)
       
       describe "#removeAlert", ->
         beforeEach ->
@@ -1646,6 +1666,33 @@ describe "TuringEmailApp", ->
 
         it "refreshes the user settings", ->
           expect(@userConfigurationFetchStub).toHaveBeenCalledWith(reset: true)
+
+      describe "#deleteDelayedEmailClicked", ->
+        beforeEach ->
+          @deleteStub = sinon.stub(TuringEmailApp.Models.DelayedEmail, "Delete", ->)
+
+          @delayedEmailUID = "1"
+          
+          @delayedEmail = {}
+          @view =
+            collection:
+              get: sinon.stub()
+              remove: sinon.stub()
+
+          sinon.stub
+          @view.collection.get.returns(@delayedEmail)
+              
+          TuringEmailApp.deleteDelayedEmailClicked(@view, @delayedEmailUID)
+
+        afterEach ->
+          @deleteStub.restore()
+
+        it "deletes the delayed email", ->
+          expect(@deleteStub).toHaveBeenCalledWith(@delayedEmailUID)
+
+        it "removes the delayed email from the collection", ->
+          expect(@view.collection.get).toHaveBeenCalledWith(@delayedEmailUID)
+          expect(@view.collection.remove).toHaveBeenCalledWith(@delayedEmail)
           
     describe "#listItemSelected", ->
       beforeEach ->
@@ -2106,6 +2153,31 @@ describe "TuringEmailApp", ->
         
       it "listens for installAppClicked on the apps library view", ->
         expect(@listenToStub).toHaveBeenCalledWith(@appsLibraryView, "installAppClicked", TuringEmailApp.installAppClicked)
+
+    describe "#showDelayedEmails", ->
+      beforeEach ->
+        @oldDelayedEmailsView = TuringEmailApp.delayedEmailsView = {}
+
+        @delayedEmailsView = {}
+        @showDelayedEmailsStub = sinon.stub(TuringEmailApp.views.mainView, "showDelayedEmails", => @delayedEmailsView)
+        @listenToStub = sinon.stub(TuringEmailApp, "listenTo", ->)
+        @stopListeningStub = sinon.stub(TuringEmailApp, "stopListening", ->)
+
+        TuringEmailApp.showDelayedEmails()
+
+      afterEach ->
+        @stopListeningStub.restore()
+        @listenToStub.restore()
+        @showDelayedEmailsStub.restore()
+
+      it "shows the delayed emails on the main view", ->
+        expect(@showDelayedEmailsStub).toHaveBeenCalled()
+
+      it "stops listening on the old delayed emails view", ->
+        expect(@stopListeningStub).toHaveBeenCalledWith(@oldDelayedEmailsView)
+
+      it "listens for deleteDelayedEmailClicked on the delayed emails view", ->
+        expect(@listenToStub).toHaveBeenCalledWith(@delayedEmailsView, "deleteDelayedEmailClicked", TuringEmailApp.deleteDelayedEmailClicked)
         
     describe "#showSettings", ->
       beforeEach ->

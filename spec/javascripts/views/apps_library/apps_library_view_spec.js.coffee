@@ -78,7 +78,7 @@ describe "AppsLibrary", ->
         @appsLibraryView.render()
         
       it "renders the create button", ->
-        expect(@appsLibraryView.$el.find(".create_app_button").length).toEqual(1)
+        expect(@appsLibraryView.$el.find(".create-app-button").length).toEqual(1)
       
     describe "developer_enabled=false", ->
       beforeEach ->
@@ -86,7 +86,7 @@ describe "AppsLibrary", ->
         @appsLibraryView.render()
 
       it "does NOT render the create button", ->
-        expect(@appsLibraryView.$el.find(".create_app_button").length).toEqual(0)
+        expect(@appsLibraryView.$el.find(".create-app-button").length).toEqual(0)
         
   describe "after render", ->
     beforeEach ->
@@ -109,18 +109,18 @@ describe "AppsLibrary", ->
       it "renders the create app view", ->
         expect(@appsLibraryView.$el.find(".create_app_view").html()).toEqual(@appsLibraryView.createAppView.$el.html())
         
-      it "handles create_app_button click", ->
-        expect(@appsLibraryView.$el.find(".create_app_button")).toHandle("click")
+      it "handles create-app-button click", ->
+        expect(@appsLibraryView.$el.find(".create-app-button")).toHandle("click")
         
-      it "create_app_button click", ->
-        @appsLibraryView.$el.find(".create_app_button").click()
+      it "create-app-button click", ->
+        @appsLibraryView.$el.find(".create-app-button").click()
         expect(@onCreateAppButtonClickStub).toHaveBeenCalled()
         
-      it "handles install_app_button click", ->
-        expect(@appsLibraryView.$el.find(".install_app_button")).toHandle("click")
+      it "handles install-app-button click", ->
+        expect(@appsLibraryView.$el.find(".install-app-button")).toHandle("click")
 
-      it "install_app_button click", ->
-        @appsLibraryView.$el.find(".install_app_button").click()
+      it "install-app-button click", ->
+        @appsLibraryView.$el.find(".install-app-button").click()
         expect(@onInstallAppButtonClickStub).toHaveBeenCalled()
 
     describe "after setupButtons", ->
@@ -144,12 +144,12 @@ describe "AppsLibrary", ->
           @clock = sinon.useFakeTimers()
         
           @event =
-            currentTarget: $(@appsLibraryView.$el.find(".install_app_button")[0])
+            currentTarget: $(@appsLibraryView.$el.find(".install-app-button")[0])
 
           @alertToken = {}
           @showAlertStub = sinon.stub(TuringEmailApp, "showAlert", => @alertToken)
           @removeAlertStub = sinon.stub(TuringEmailApp, "removeAlert")
-          @triggerStub = sinon.stub(@appsLibraryView, "trigger")
+          @triggerStub = sinon.stub(@appsLibraryView, "trigger", ->)
 
           @appsLibraryView.onInstallAppButtonClick(@event)
 

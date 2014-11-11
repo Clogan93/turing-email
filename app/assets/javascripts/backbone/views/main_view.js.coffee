@@ -183,6 +183,21 @@ class TuringEmailApp.Views.Main extends Backbone.View
     @primaryPaneDiv.append(appsLibraryView.$el)
     
     return appsLibraryView
+
+  showDelayedEmails: ->
+    return false if not @primaryPaneDiv?
+
+    delayedEmails = new TuringEmailApp.Collections.DelayedEmailsCollection()
+    delayedEmails.fetch()
+    delayedEmailsView = new TuringEmailApp.Views.App.DelayedEmailsView({
+      collection: delayedEmails
+    })
+    delayedEmailsView.render()
+
+    @primaryPaneDiv.html("")
+    @primaryPaneDiv.append(delayedEmailsView.$el)
+
+    return delayedEmailsView
     
   showSettings: ->
     return false if not @primaryPaneDiv?

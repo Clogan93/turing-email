@@ -156,7 +156,7 @@ class Api::V1::EmailThreadsController < ApiController
     
     emails = Email.where(:id => @email_ids)
     @email_account.remove_emails_from_folder(emails, folder_id: 'INBOX')
-    @email_account.delay({:run_at => DateTime.now() + minutes}, num_dynos: 1).wake_up(@email_ids)
+    @email_account.delay({:run_at => DateTime.now() + minutes}, heroku_scale: false).wake_up(@email_ids)
 
     render :json => {}
   end

@@ -1,6 +1,7 @@
 class TuringEmailApp.Models.Email extends Backbone.Model
   idAttribute: "uid"
-  
+
+  # TODO write tests
   @parseHeaders: (emailParsed, headers) ->
     headersMap =
       "message-id": "message_id"
@@ -37,6 +38,7 @@ class TuringEmailApp.Models.Email extends Backbone.Model
             emailParsed[parsedPrefix + "name"] = parsedEmail.name
             emailParsed[parsedPrefix + "address"] = parsedEmail.address
 
+  # TODO write tests
   @parseBody: (emailParsed, parts) ->
     return if not parts?
 
@@ -75,12 +77,13 @@ class TuringEmailApp.Models.Email extends Backbone.Model
       return ""
 
   sendEmail: ->
-    $.ajax({
-      url: "/api/v1/email_accounts/send_email"
-      type: "POST"
-      data: @toJSON()
-      dataType : "json"
-    })
+    $.post("/api/v1/email_accounts/send_email", @toJSON(), undefined, "json")
+
+  sendLater: (sendAtDateTime) ->
+    data = @toJSON()
+    data["sendAtDateTime"] = sendAtDateTime
+
+    $.post("/api/v1/email_accounts/send_email_delayed", data, undefined, "json")
 
   localDateString: ->
     TuringEmailApp.Models.Email.localDateString(@get("date"))

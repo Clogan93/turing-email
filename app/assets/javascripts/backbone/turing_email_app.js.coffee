@@ -212,6 +212,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @routers.settingsRouter = new TuringEmailApp.Routers.SettingsRouter()
     @routers.searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()
     @routers.appsLibraryRouter = new TuringEmailApp.Routers.AppsLibraryRouter()
+    @routers.delayedEmailsRouter = new TuringEmailApp.Routers.DelayedEmailsRouter()
 
   ###############
   ### Getters ###
@@ -286,7 +287,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   ### Alert Functions ###
   #######################
 
-  showAlert: (text, classType) ->
+  showAlert: (text, classType, removeAfterSeconds) ->
     @removeAlert(@currentAlert.token) if @currentAlert?
     
     @currentAlert = new TuringEmailApp.Views.App.AlertView(
@@ -296,6 +297,12 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @currentAlert.render()
 
     $(@currentAlert.el).prependTo("body")
+    
+    token = @currentAlert.token
+    setTimeout(
+      => @removeAlert(token)
+      removeAfterSeconds
+    ) if removeAfterSeconds?
 
     return @currentAlert.token
 
@@ -549,6 +556,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
   uninstallAppClicked: (view, appID) ->
     TuringEmailApp.Models.InstalledApps.InstalledApp.Uninstall(appID)  
     @models.userConfiguration.fetch(reset: true)
+
+  deleteDelayedEmailClicked: (view, delayedEmailUID) ->
+    TuringEmailApp.Models.DelayedEmail.Delete(delayedEmailUID)
+    view.collection.remove(view.collection.get(delayedEmailUID))
     
   #############################
   ### EmailThreads.ListView ###
@@ -696,6 +707,12 @@ window.TuringEmailApp = new(Backbone.View.extend(
     
     @appsLibraryView = @views.mainView.showAppsLibrary()
     @listenTo(@appsLibraryView, "installAppClicked", @installAppClicked)
+
+  showDelayedEmails: ->
+    @stopListening(@delayedEmailsView) if @delayedEmailsView
+
+    @delayedEmailsView = @views.mainView.showDelayedEmails()
+    @listenTo(@delayedEmailsView, "deleteDelayedEmailClicked", @deleteDelayedEmailClicked)
     
   showSettings: ->
     @models.userConfiguration.fetch(reset: true)

@@ -31,6 +31,53 @@ class Api::V1::EmailAccountsController < ApiController
     render 'api/v1/emails/show'
   end
 
+  swagger_api :send_email_delayed do
+    summary 'Send email delayed.'
+
+    param :form, :sendAtDateTime, :string, false, 'Date to send the email'
+
+    param :form, :tos, :string, false, 'Array of recipient email addresses'
+    param :form, :ccs, :string, false, 'Array of recipient email addresses'
+    param :form, :bccs, :string, false, 'Array of recipient email addresses'
+
+    param :form, :subject, :string, false, 'Subject'
+    param :form, :html_part, :string, false, 'HTML Part'
+    param :form, :text_part, :string, false, 'Text Part'
+
+    param :form, :email_in_reply_to_uid, :string, false, 'Email UID being replied to.'
+
+    response :ok
+  end
+
+  # TODO write tests
+  def send_email_delayed
+    @email_account.with_lock do
+      delayed_email = DelayedEmail.new
+      delayed_email.email_account = @email_account
+  
+      delayed_email.tos = params[:tos]
+      delayed_email.ccs = params[:ccs]
+      delayed_email.bccs = params[:bccs]
+  
+      delayed_email.subject = params[:subject]
+  
+      delayed_email.html_part = params[:html_part]
+      delayed_email.text_part = params[:text_part]
+  
+      delayed_email.email_in_reply_to_uid = params[:email_in_reply_to_uid]
+      
+      delayed_email.save!
+
+      delayed_job = delayed_email.delay({:run_at => params[:sendAtDateTime]}, heroku_scale: false).send_and_destroy()
+      delayed_email.delayed_job_id = delayed_job.id
+      delayed_email.save!
+    end
+
+    @email_account.delete_draft(params[:draft_id]) if params[:draft_id]
+
+    render :json => {}
+  end
+
   swagger_api :sync do
     summary 'Queues email sync.'
 
