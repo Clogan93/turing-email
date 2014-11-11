@@ -67,7 +67,6 @@
 .settings-switch label {
   font-weight: bold;
   position: relative;
-  top: 2px;
 }
 
 .tour .end-tour
@@ -75,4 +74,8 @@
   float: right;
   margin-right: 25px;
   margin-bottom: 5px;
+}
+
+.icheckbox_square-green, .iradio_square-green {
+
 }

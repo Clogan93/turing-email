@@ -12,12 +12,12 @@
  *
  *= require_self
  *= require reset
- *= require style
+ *= require themes/default/style
  *= require_tree ../../../vendor/assets/stylesheets/
  *
  *= require jquery-ui/draggable
  *
- *= require themes/default/default
+ *= require themes/skin_two/skin_two
  */
 
 @import "bootstrap-sprockets";

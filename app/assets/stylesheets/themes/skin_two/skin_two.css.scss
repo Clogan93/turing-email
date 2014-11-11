@@ -1,0 +1,141 @@
+/************************ 
+******** Skin Two *******
+*************************/
+
+@import "../default/main/main";
+@import "../default/settings/settings";
+@import "../default/toolbar/toolbar";
+@import "../default/search_nav_bar/search_nav_bar";
+@import "../default/reports/reports";
+@import "../default/global/global";
+@import "../default/email_threads/email_thread";
+@import "../default/email_threads/list";
+@import "../default/email_threads/list_item";
+@import "../default/email_folders/tree";
+@import "../default/email_filter_dropdown/email_filter_dropdown";
+@import "../default/app/sidebar";
+@import "../default/app/compose/compose";
+@import "../default/app/compose/website_preview";
+@import "../default/alerts/alerts";
+
+.gray-bg {
+  background-color: transparent;
+}
+
+body {
+  background-image: url(/assets/noise.png), url(/assets/background1.jpg);
+  background-repeat: repeat, no-repeat;
+  background-position: left top;
+  background-size: auto, cover;
+}
+
+.navbar.navbar-static-top {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.border-bottom.search-nav-bar {
+  border-bottom: none !important;
+}
+
+.m-r-sm.text-muted.welcome-message {
+  color: rgba(0, 0, 0, 0.4);
+  font-family: "Ubuntu Mono", sans-serif;
+  font-size: 16px;
+}
+
+.nav.navbar-right > li > a {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.fixed
+{
+  background-color: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.05);
+  border: 1px solid transparent;
+
+  .inbox-count-badge {
+    background-color: #ff7b76;
+  }
+
+  .compose-mail.compose-button {
+    color: white;
+    font-size: 13px;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    font-weight: 700;
+    background-color: #ff7b76;
+    border-color: #ff7b76;
+    font-weight: normal;
+  }
+
+  .category-list li a {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 16px;
+  }
+
+  .folder-list li {
+    border-bottom: 1px solid transparent;
+  }
+
+  .selected-tree-folder {
+    color: white !important;
+    font-size: 22px !important;
+    font-weight: normal !important;
+  }
+
+}
+
+.mail-box-header.toolbar {
+  background-color: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 4px solid rgba(255, 255, 255, 0.8);
+  -webkit-border-radius: 0 4px 4px 0;
+  -moz-border-radius: 0 4px 4px 0;
+  -ms-border-radius: 0 4px 4px 0;
+  -o-border-radius: 0 4px 4px 0;
+  border-radius: 0 4px 4px 0;
+}
+
+.mail-box.email-threads-list-view {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.read.currently-being-read td {
+  background-color: rgba(255,123,118, 0.2) !important;
+}
+
+.read {
+
+  background-color: transparent;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+
+  td {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+  }
+}
+
+.unread td {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.email_thread_view {
+  background-color: transparent !important;
+}
+
+.mail-box-header.email-thread-header {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid transparent;
+  border-radius: 4px 4px 0px 0px;
+  color: white;
+  font-size: 26px !important;
+  font-weight: normal;
+}
+
+.has-switch span.switch-left, .has-switch span.switch-primary {
+  background-color: #ff7b76 !important;
+}
+
+a.label-link:hover {
+  background-color: transparent !important;
+}
