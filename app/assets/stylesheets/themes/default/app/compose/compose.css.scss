@@ -48,3 +48,12 @@ div[contenteditable]:focus {
 .emolji-dropdown span {
   cursor: pointer;
 }
+
+.dropdown-menu.emoji-dropdown {
+  width: 20.5%;
+  left: 56.5%;
+  height: 240px !important;
+  span {
+    cursor: pointer;
+  }
+}
