@@ -1,5 +1,4 @@
 class EmailTrackerRecipientsController < ApplicationController
-  before_action :signed_in_user
   before_action :set_cache_control
 
   def confirmation
