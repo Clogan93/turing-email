@@ -9,11 +9,12 @@ class TuringEmailApp.Views.App.EmojiDropdownView extends Backbone.View
     @$el.find(".emoji-dropdown .initial-load").emoji()
 
     # TODO figure out how to test this, and test it.
-    @emojiDropdownHeight = $(".dropdown-menu.emoji-dropdown").height()
+    @emojiDropdownHeight = @$el.find(".emoji-dropdown").height()
     @$el.find(".emoji-dropdown").scroll (event) =>
       @$el.find(".emoji-dropdown span.subsequent-load").each (index, element) =>
-        emojiScrollTop = $(".dropdown-menu.emoji-dropdown").scrollTop()
+        emojiScrollTop = @$el.find(".emoji-dropdown").scrollTop()
         topPosition = $(element).position()["top"]
+
         if topPosition > 0 and topPosition < (@emojiDropdownHeight - 10)
           $(element).emoji()
           $(element).removeClass("subsequent-load")
