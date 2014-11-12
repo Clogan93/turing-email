@@ -578,6 +578,11 @@ describe "ComposeView", ->
   
         it "updates the email model with the email in reply to UID from the compose view", ->
           expect(@email.get("email_in_reply_to_uid")).toEqual @composeView.emailInReplyToUID
+
+        it "updates the email model with the value from the tracking_enabled switch", ->
+          expect(@email.get("tracking_enabled")).toEqual(
+            @composeView.$el.find(".compose-form .tracking-switch").parent().parent().hasClass("switch-on")
+          )
   
         it "updates the email model with the to input value from the compose form", ->
           expect(@email.get("tos")[0]).toEqual @composeView.$el.find(".compose-form .to-input").val()

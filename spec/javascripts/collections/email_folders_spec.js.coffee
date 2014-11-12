@@ -193,37 +193,3 @@ describe "EmailFoldersCollection", ->
           
         it "returns the parsed labels", ->
           expect(@returned).toEqual(@labelsParsed)
-        
-  describe "with models", ->
-    beforeEach ->
-      @emailFoldersCollection.add(FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE))
-
-    describe "Events", ->
-      describe "#modelRemoved", ->
-        beforeEach ->
-          @emailFolder = @emailFoldersCollection.at(0)
-          @triggerStub = sinon.spy(@emailFolder, "trigger")
-          
-          @emailFoldersCollection.remove(@emailFolder)
-          
-        afterEach ->
-          @triggerStub.restore()
-          
-        it "triggers removedFromCollection on the emailFolder", ->
-          expect(@triggerStub).toHaveBeenCalledWith("removedFromCollection", @emailFoldersCollection)
-  
-      describe "#modelsReset", ->
-        beforeEach ->
-          @modelRemovedStub = sinon.stub(@emailFoldersCollection, "modelRemoved", ->)
-          
-          @oldEmailFolders = @emailFoldersCollection.models
-          @emailFolders = FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE)
-          @emailFoldersCollection.reset(@emailFolders)
-          
-        afterEach ->
-          @modelRemovedStub.restore()
-          
-        it "calls modelRemoved for each model model removed", ->
-          for emailFolder in @oldEmailFolders
-            expect(@modelRemovedStub).toHaveBeenCalledWith(emailFolder)
- 

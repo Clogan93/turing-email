@@ -13,10 +13,10 @@
       </tr>
       </thead>
       <tbody>
-      <% for(var i = 0; i < delayed_emails.length; i++) { %>
+      <% for(var i = 0; i < delayedEmails.length; i++) { %>
         <tr>
-          <td><%= delayed_emails[i].subject %></td>
-          <td><%= new Date(delayed_emails[i].send_at).toLocaleString() %></td>
+          <td><%= delayedEmails[i].subject %></td>
+          <td><%= new Date(delayedEmails[i].send_at).toLocaleString() %></td>
           <td><button type="button" class="btn btn-block delete-delayed-email-button">Delete</button></td>
         </tr>
       <% } %>

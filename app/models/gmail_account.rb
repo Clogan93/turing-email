@@ -1,5 +1,7 @@
 require 'base64'
 
+require 'gmail_xoauth'
+
 class GmailAccount < ActiveRecord::Base
   MESSAGE_BATCH_SIZE = 100
   DRAFTS_BATCH_SIZE = 100
@@ -7,7 +9,8 @@ class GmailAccount < ActiveRecord::Base
   SEARCH_RESULTS_PER_PAGE = 50
   NUM_SYNC_DYNOS = 3
 
-  SCOPES = %w(https://www.googleapis.com/auth/userinfo.email
+  SCOPES = %w(https://mail.google.com/
+              https://www.googleapis.com/auth/userinfo.email
               https://www.googleapis.com/auth/gmail.readonly
               https://www.googleapis.com/auth/gmail.compose
               https://www.googleapis.com/auth/gmail.modify)
@@ -40,6 +43,16 @@ class GmailAccount < ActiveRecord::Base
   has_many :delayed_emails,
            :as => :email_account,
            :dependent => :destroy
+  
+  has_many :email_trackers,
+           :as => :email_account,
+           :dependent => :destroy
+
+  has_many :email_tracker_recipients,
+           :through => :email_trackers
+
+  has_many :email_tracker_views,
+           :through => :email_tracker_recipients
 
   validates_presence_of(:user, :google_id, :email, :verified_email)
 
@@ -986,20 +999,92 @@ class GmailAccount < ActiveRecord::Base
     self.sync_gmail_ids(gmail_ids)
   end
 
-  def send_email(tos, ccs, bccs, subject, html_part, text_part, email_in_reply_to_uid = nil)
-    email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, html_part, text_part,
-                                                               self, email_in_reply_to_uid)
-
+  def send_email_raw(email_raw, email_in_reply_to)
     if email_in_reply_to
-      gmail_data =
-          self.gmail_client.messages_send('me', :threadId => email_in_reply_to.email_thread.uid, :email_raw => email_raw)
+      gmail_data = self.gmail_client.messages_send('me', :threadId => email_in_reply_to.email_thread.uid,
+                                                   :email_raw => email_raw)
     else
       gmail_data = self.gmail_client.messages_send('me', :email_raw => email_raw)
     end
 
     gmail_id = gmail_data['id']
-    sync_gmail_ids([gmail_id])
+    self.sync_gmail_ids([gmail_id])
     email = self.emails.find_by(:uid => gmail_id)
+    
+    return email
+  end
+  
+  def send_email(tos, ccs, bccs,
+                 subject,
+                 html_part, text_part,
+                 email_in_reply_to_uid = nil,
+                 tracking_enabled = false)
+    email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, html_part, text_part,
+                                                               self, email_in_reply_to_uid)
+
+    email = nil
+    
+    if tracking_enabled
+      log_console('tracking_enabled = true!!!!!!')
+
+      self.google_o_auth2_token.refresh()
+      
+      email_raw.From = self.email
+      email_raw.delivery_method.settings = {
+          :enable_starttls_auto => true,
+          :address              => 'smtp.gmail.com',
+          :port                 => 587,
+          :domain               => $config.smtp_helo_domain,
+          :user_name            => self.email,
+          :password             => self.google_o_auth2_token.access_token,
+          :authentication       => :xoauth2,
+          :enable_starttls      => true
+      }
+      
+      email_uids = []
+      
+      email_tracker = EmailTracker.new()
+      email_tracker.uid = SecureRandom.uuid()
+      email_tracker.email_account = self
+      email_tracker.email_subject = subject
+      email_tracker.email_date = DateTime.now()
+      email_tracker.save!()
+
+      tos.each do |rcpt_to|
+        next if rcpt_to.blank?
+        
+        log_console("rcpt_to = #{rcpt_to}")
+        
+        email_tracker_recipient = EmailTrackerRecipient.new()
+        email_tracker_recipient.email_tracker = email_tracker
+        email_tracker_recipient.uid = SecureRandom.uuid()
+        email_tracker_recipient.email_address = rcpt_to
+        
+        email_raw.html_part = Mail::Part.new do
+          content_type 'text/html; charset=UTF-8'
+          body html_part + "<img src=\"#{$url_helpers.confirmation_url(email_tracker_recipient.uid)}\" />"
+        end
+        
+        email_raw.smtp_envelope_to = rcpt_to
+
+        retry_block do
+          email_raw.deliver!
+        end
+
+        email_tracker_recipient.email = email
+        email_tracker_recipient.save!()
+        
+        # TODO figure out how to get email after sync since sending via SMTP
+        #email_uids.push(email.uid)
+      end
+
+      email_tracker.email_uids = email_uids
+      email_tracker.save!()
+    else
+      log_console('NO tracking_enabled')
+      
+      email = self.send_email_raw(email_raw, email_in_reply_to)
+    end
     
     return email
   end

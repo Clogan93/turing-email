@@ -19,6 +19,8 @@ describe "SettingsView", ->
     TuringEmailApp.collections.emailRules = new TuringEmailApp.Collections.Rules.EmailRulesCollection()
     TuringEmailApp.collections.emailRules.fetch()
     @server.respond()
+    
+    skins = new TuringEmailApp.Collections.SkinsCollection(FactoryGirl.createLists("Skin", FactoryGirl.SMALL_LIST_SIZE))
 
     @userConfiguration = new TuringEmailApp.Models.UserConfiguration()
     
@@ -28,6 +30,7 @@ describe "SettingsView", ->
       model: @userConfiguration
       emailRules: TuringEmailApp.collections.emailRules
       brainRules: TuringEmailApp.collections.brainRules
+      skins: skins
     )
     
     @userConfiguration.set(FactoryGirl.create("UserConfiguration"))
@@ -61,12 +64,12 @@ describe "SettingsView", ->
       expect(@settingsDiv).toContainHtml('<button type="button" class="btn btn-block btn-danger email-bankruptcy-button">Declare Email Bankruptcy</button>')
 
     it "renders the demo mode switch", ->
-      demoModeSwitch = $(".demo_mode_switch")
+      demoModeSwitch = $(".demo-mode-switch")
       expect(@settingsDiv).toContain(demoModeSwitch)
       expect(demoModeSwitch.is(":checked")).toEqual(@userConfiguration.get("demo_mode_enabled"))
       
     it "renders the keyboard shortcuts switch", ->
-      keyboardShortcutsSwitch = $(".keyboard_shortcuts_switch")
+      keyboardShortcutsSwitch = $(".keyboard-shortcuts-switch")
       expect(@settingsDiv).toContain(keyboardShortcutsSwitch)
       expect(keyboardShortcutsSwitch.is(":checked")).toEqual(@userConfiguration.get("keyboard_shortcuts_enabled"))
       
@@ -84,6 +87,10 @@ describe "SettingsView", ->
       developerSwitch = $(".developer_switch")
       expect(@settingsDiv).toContain(developerSwitch)
       expect(developerSwitch.is(":checked")).toEqual(@userConfiguration.get("developer_enabled"))
+
+    it "renders the skin select", ->
+      skinSelect = $(".skin-select")
+      expect(@settingsDiv).toContain(skinSelect)
       
     describe "with selected tab", ->
       beforeEach ->
@@ -138,11 +145,11 @@ describe "SettingsView", ->
 
     it "sets up the demo mode switch", ->
       @settingsView.setupSwitches()
-      expect(@settingsDiv.find(".demo_mode_switch").parent().parent()).toHaveClass "has-switch"
+      expect(@settingsDiv.find(".demo-mode-switch").parent().parent()).toHaveClass "has-switch"
 
     it "sets up the keyboard shortcuts switch", ->
       @settingsView.setupSwitches()
-      expect(@settingsDiv.find(".keyboard_shortcuts_switch").parent().parent()).toHaveClass "has-switch"
+      expect(@settingsDiv.find(".keyboard-shortcuts-switch").parent().parent()).toHaveClass "has-switch"
 
       @settingsView.setupSwitches()
     it "sets up the genie switch", ->

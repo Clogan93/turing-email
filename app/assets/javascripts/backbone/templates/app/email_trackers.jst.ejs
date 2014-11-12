@@ -1,0 +1,93 @@
+<div class="page-header">
+  <h1 class="h1">Email Trackers</h1>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <table class="table table-striped email-trackers-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Subject</th>
+          <th>Opens</th>
+        </tr>
+      </thead>
+      
+      <tbody>
+      <% for(var i = 0; i < emailTrackers.length; i++) { %>
+        <%
+          var emailTracker = emailTrackers[i];
+          var hasViews = false;
+
+          for(var j = 0; j < emailTracker.email_tracker_recipients.length; j++) {
+            emailTrackerRecipient = emailTracker.email_tracker_recipients[j];
+            
+            if (emailTrackerRecipient.email_tracker_views.length > 0) {
+              hasViews = true;
+              break;
+            }
+          }
+        %>
+      
+        <tr>
+          <td><%= new Date(emailTracker.email_date).toLocaleString() %></td>
+          <td><%= emailTracker.email_subject %></td>
+        
+          <td>
+            <% if (hasViews) { %>
+            <table class="table table-striped email-trackers-table">
+              <thead>
+                <tr>
+                  <th>Recipient</th>
+                  <th></th>
+                </tr>
+              </thead>
+              
+              <tbody>
+              <% for(var j = 0; j < emailTracker.email_tracker_recipients.length; j++) { %>
+                <%
+                  var emailTrackerRecipient = emailTracker.email_tracker_recipients[j];
+                  if (emailTrackerRecipient.email_tracker_views.length == 0) {
+                    continue;
+                  }
+                %>
+                
+                <tr>
+                  <td><%= emailTrackerRecipient.email_address %></td>
+                  <td>
+                    
+                    <table class="table table-striped email-trackers-table">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>IP Address</th>
+                          <th>User Agent</th>
+                        </tr>
+                      </thead>
+                      
+                      <tbody>
+                      <% for(var k = 0; k < emailTrackerRecipient.email_tracker_views.length; k++) { %>
+                        <% var emailTrackerView = emailTrackerRecipient.email_tracker_views[k]; %>
+                        
+                        <tr>
+                          <td><%= new Date(emailTrackerView.created_at).toLocaleString() %></td>
+                          <td><%= emailTrackerView.ip_address %></td>
+                          <td><%= emailTrackerView.user_agent %></td>
+                        </tr>
+                      <% } %>
+                      </tbody>
+                    </table>
+                    
+                  </td>
+                </tr>
+              <% } %>
+              </tbody>
+            </table>
+            <% } %>
+          </td>
+        </tr>
+      <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>

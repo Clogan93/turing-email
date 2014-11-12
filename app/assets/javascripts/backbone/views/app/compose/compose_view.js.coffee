@@ -50,6 +50,8 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       formatTime: "g:i a"
     );
 
+    @$el.find(".tracking-switch").bootstrapSwitch()
+
     return this
 
   #######################
@@ -297,10 +299,11 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
   updateEmail: (email) ->
     console.log "ComposeView updateEmail!"
     email.set("email_in_reply_to_uid", @emailInReplyToUID)
+    email.set("tracking_enabled", @$el.find(".compose-form .tracking-switch").parent().parent().hasClass("switch-on"))
 
-    email.set("tos", @$el.find(".compose-form .to-input").val().split(","))
-    email.set("ccs", @$el.find(".compose-form .cc-input").val().split(","))
-    email.set("bccs",  @$el.find(".compose-form .bcc-input").val().split(","))
+    email.set("tos", @$el.find(".compose-form .to-input").val().split(/[;, ]/))
+    email.set("ccs", @$el.find(".compose-form .cc-input").val().split(/[;, ]/))
+    email.set("bccs",  @$el.find(".compose-form .bcc-input").val().split(/[;, ]/))
 
     email.set("subject", @$el.find(".compose-form .subject-input").val())
     email.set("html_part", @$el.find(".compose-form .note-editable").html())

@@ -67,6 +67,7 @@ window.specStartTuringEmailApp = ->
   TuringEmailApp.routers.searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()
   TuringEmailApp.routers.appsLibraryRouter = new TuringEmailApp.Routers.AppsLibraryRouter()
   TuringEmailApp.routers.delayedEmailsRouter = new TuringEmailApp.Routers.DelayedEmailsRouter()
+  TuringEmailApp.routers.emailTrackersRouter = new TuringEmailApp.Routers.EmailTrackersRouter()
 
   if not specStartedHistory
     Backbone.history.start(silent: true)

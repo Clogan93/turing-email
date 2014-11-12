@@ -29,7 +29,7 @@
               <h4 class="h4">Demo Mode</h4>
             </div>
             <div class="col-md-3 settings-switch">
-              <input type="checkbox" class="demo_mode_switch" <%= userConfiguration.demo_mode_enabled ? "checked" : "" %>>
+              <input type="checkbox" class="demo-mode-switch" <%= userConfiguration.demo_mode_enabled ? "checked" : "" %>>
             </div>
           </div>
 
@@ -40,7 +40,7 @@
               <h4 class="h4">Keyboard Shortcuts</h4>
             </div>
             <div class="col-md-3 settings-switch">
-              <input type="checkbox" class="keyboard_shortcuts_switch" <%= userConfiguration.keyboard_shortcuts_enabled ? "checked" : "" %>>
+              <input type="checkbox" class="keyboard-shortcuts-switch" <%= userConfiguration.keyboard_shortcuts_enabled ? "checked" : "" %>>
             </div>
           </div>
 
@@ -74,6 +74,26 @@
             </div>
             <div class="col-md-3 settings-switch">
               <input type="checkbox" class="developer_switch" <%= userConfiguration.developer_enabled ? "checked" : "" %>>
+            </div>
+          </div>
+
+          <br />
+
+          <div class="row">
+            <div class="col-md-3">
+              <h4 class="h4">Skin</h4>
+            </div>
+            <div class="col-md-3">
+              <select class="form-control skin-select">
+                <option value="default">Default</option>
+                <% for (var i = 0; i < skins.length; i++ ) { %>
+                  <option value="<%= skins[i].uid %>"
+                          <% if (skins[i].uid == userConfiguration.skin_uid) { %>
+                            selected
+                          <% } %>
+                  ><%= skins[i].name %></option>
+                <% } %>
+              </select>
             </div>
           </div>
         </div>

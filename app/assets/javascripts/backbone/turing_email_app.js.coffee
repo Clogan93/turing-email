@@ -3,7 +3,9 @@
 #= require ./models/email
 #= require ./models/installed_apps/installed_app
 #= require_tree ./models
+#= require ./collections/base_collection
 #= require_tree ./collections
+#= require ./views/collection_view
 #= require ./views/email_threads/list_item_view
 #= require ./views/email_threads/list_view
 #= require ./views/app/compose/compose_view
@@ -213,6 +215,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @routers.searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()
     @routers.appsLibraryRouter = new TuringEmailApp.Routers.AppsLibraryRouter()
     @routers.delayedEmailsRouter = new TuringEmailApp.Routers.DelayedEmailsRouter()
+    @routers.emailTrackersRouter = new TuringEmailApp.Routers.EmailTrackersRouter()
 
   ###############
   ### Getters ###
@@ -713,6 +716,9 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
     @delayedEmailsView = @views.mainView.showDelayedEmails()
     @listenTo(@delayedEmailsView, "deleteDelayedEmailClicked", @deleteDelayedEmailClicked)
+
+  showEmailTrackers: ->
+    @views.mainView.showEmailTrackers()
     
   showSettings: ->
     @models.userConfiguration.fetch(reset: true)

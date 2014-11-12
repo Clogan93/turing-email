@@ -22,6 +22,12 @@ class Email < ActiveRecord::Base
   
   has_many :email_attachments,
            :dependent => :destroy
+  
+  has_many :email_tracker_recipients,
+           :dependent => :destroy
+  
+  has_many :email_tracker_views,
+           :through => :email_tracker_recipients
 
   validates_presence_of(:email_account, :uid, :email_thread_id)
 

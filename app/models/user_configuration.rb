@@ -1,5 +1,6 @@
 class UserConfiguration < ActiveRecord::Base
   belongs_to :user
+  belongs_to :skin
 
   validates_presence_of(:user)
 

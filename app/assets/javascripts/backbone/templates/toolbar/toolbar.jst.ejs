@@ -85,12 +85,13 @@ function outputFolderDropdown(emailFolders, uniqueID, className) {
         <li role="presentation"><a role="menuitem" tabindex="-1" class="dropdown-link mark_as_unread">Mark as unread</a></li>
         <li role="presentation"><a role="menuitem" href="#apps" tabindex="-1" class="dropdown-link apps-link">Apps</a></li>
         <li role="presentation"><a role="menuitem" href="#delayed_emails" tabindex="-1" class="dropdown-link delayed-emails-link">Delayed Emails</a></li>
+        <li role="presentation"><a role="menuitem" href="#email_trackers" tabindex="-1" class="dropdown-link email-trackers-link">Email Trackers</a></li>
       </ul>
     </span>
 
     <span class="settings-switch" style="display:inline-block">
       <label>Demo Mode</label>
-      <input type="checkbox" class="demo_mode_switch" <%= demoMode ? "checked" : "" %>>
+      <input type="checkbox" class="demo-mode-switch" <%= demoMode ? "checked" : "" %>>
     </span>
 
     <span class="btn-group pull-right pagination-buttons">
