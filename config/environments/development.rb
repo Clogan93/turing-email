@@ -6,6 +6,8 @@ Rails.application.configure do
   config.http_host = config.domain
   config.http_host += ":#{config.http_port}" if config.http_port != '80'
 
+  config.smtp_helo_domain = 'localhost'
+
   config.url = "http://#{config.http_host}"
   config.api_url = "http://#{config.http_host}"
 

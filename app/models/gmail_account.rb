@@ -1,5 +1,7 @@
 require 'base64'
 
+require 'gmail_xoauth'
+
 class GmailAccount < ActiveRecord::Base
   MESSAGE_BATCH_SIZE = 100
   DRAFTS_BATCH_SIZE = 100
@@ -7,7 +9,8 @@ class GmailAccount < ActiveRecord::Base
   SEARCH_RESULTS_PER_PAGE = 50
   NUM_SYNC_DYNOS = 3
 
-  SCOPES = %w(https://www.googleapis.com/auth/userinfo.email
+  SCOPES = %w(https://mail.google.com/
+              https://www.googleapis.com/auth/userinfo.email
               https://www.googleapis.com/auth/gmail.readonly
               https://www.googleapis.com/auth/gmail.compose
               https://www.googleapis.com/auth/gmail.modify)
@@ -1024,6 +1027,20 @@ class GmailAccount < ActiveRecord::Base
     if tracking_enabled
       log_console('tracking_enabled = true!!!!!!')
 
+      self.google_o_auth2_token.refresh()
+      
+      email_raw.From = self.email
+      email_raw.delivery_method.settings = {
+          :enable_starttls_auto => true,
+          :address              => 'smtp.gmail.com',
+          :port                 => 587,
+          :domain               => $config.smtp_helo_domain,
+          :user_name            => self.email,
+          :password             => self.google_o_auth2_token.access_token,
+          :authentication       => :xoauth2,
+          :enable_starttls      => true
+      }
+      
       email_uids = []
       
       email_tracker = EmailTracker.new()
@@ -1049,13 +1066,16 @@ class GmailAccount < ActiveRecord::Base
         end
         
         email_raw.smtp_envelope_to = rcpt_to
-        
-        email = self.send_email_raw(email_raw, email_in_reply_to)
+
+        retry_block do
+          email_raw.deliver!
+        end
 
         email_tracker_recipient.email = email
         email_tracker_recipient.save!()
         
-        email_uids.push(email.uid)
+        # TODO figure out how to get email after sync since sending via SMTP
+        #email_uids.push(email.uid)
       end
 
       email_tracker.email_uids = email_uids
