@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= page_title(yield(:title)) %></title>
+    <link rel="shortcut icon" href="favicon.ico"/>
+    <%= stylesheet_link_tag    'application-home', media: 'all', 'data-turbolinks-track' => true %>
+
+    <%= javascript_include_tag 'application-home', 'data-turbolinks-track' => true %>
+    <%= csrf_meta_tags %>
+
+    <% stylesheet_link_tag '/skins/2/style.css', media: 'all', 'data-turbolinks-track' => true %>
+
+    <!-- GOOGLE WEB FONTS INCLUDE -->
+    <link href='http://fonts.googleapis.com/css?family=Oswald|Open+Sans:400,600' rel='stylesheet' type='text/css'>
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', '<%= $config.google_analytics_key %>', 'auto');
+    ga('send', 'pageview');
+  </script>
+
+  </head>
+
+  <body class="gray-bg">
+    <% if flash.keys.length > 0 %>
+      <div class="container">
+        <% flash.each do |key, value| %>
+          <div class="alert alert-<%= key %>"><%= value %></div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%= yield %>
+
+  </body>
+</html>

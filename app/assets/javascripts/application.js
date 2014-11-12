@@ -27,7 +27,10 @@
 //= require backbone_datalink
 //= require backbone-validation
 //
+//= require backbone/turing_email_app_keyboard_handler
 //= require backbone/turing_email_app
 //
 //= require_tree ../../../vendor/assets/javascripts/
-//= require_tree .
+//= require_tree ./lib/
+//= require google_api
+//= require misc
