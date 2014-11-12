@@ -157,9 +157,9 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       @trigger("snoozeClicked", this, 60 * 24)
 
   setupDemoModeSwitch: ->
-    @$el.find(".demo_mode_switch").bootstrapSwitch()
+    @$el.find(".demo-mode-switch").bootstrapSwitch()
 
-    @$el.find(".demo_mode_switch").on "switch-change", (event, state) =>
+    @$el.find(".demo-mode-switch").on "switch-change", (event, state) =>
       @demoMode = !@demoMode
       @trigger("demoModeSwitchClicked", @demoMode)
 

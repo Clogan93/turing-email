@@ -20,6 +20,8 @@ class Api::V1::EmailAccountsController < ApiController
 
     param :form, :email_in_reply_to_uid, :string, false, 'Email UID being replied to.'
 
+    param :form, :tracking_enabled, :boolean, false, 'Tracking Enabled'
+
     response :ok
   end
 
@@ -27,7 +29,8 @@ class Api::V1::EmailAccountsController < ApiController
   def send_email
     @email = @email_account.send_email(params[:tos], params[:ccs], params[:bccs],
                                        params[:subject], params[:html_part], params[:text_part],
-                                       params[:email_in_reply_to_uid])
+                                       params[:email_in_reply_to_uid],
+                                       params[:tracking_enabled])
     render 'api/v1/emails/show'
   end
 
@@ -45,6 +48,8 @@ class Api::V1::EmailAccountsController < ApiController
     param :form, :text_part, :string, false, 'Text Part'
 
     param :form, :email_in_reply_to_uid, :string, false, 'Email UID being replied to.'
+
+    param :form, :tracking_enabled, :boolean, false, 'Tracking Enabled'
 
     response :ok
   end
@@ -65,6 +70,8 @@ class Api::V1::EmailAccountsController < ApiController
       delayed_email.text_part = params[:text_part]
   
       delayed_email.email_in_reply_to_uid = params[:email_in_reply_to_uid]
+      
+      delayed_email.tracking_enabled = params[:tracking_enabled]
       
       delayed_email.save!
 

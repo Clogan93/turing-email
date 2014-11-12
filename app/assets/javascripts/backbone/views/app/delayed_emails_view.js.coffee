@@ -10,7 +10,7 @@ class TuringEmailApp.Views.App.DelayedEmailsView extends Backbone.View
     @listenTo(@collection, "destroy", => @render())
 
   render: ->
-    @$el.html(@template(delayed_emails: @collection.toJSON()))
+    @$el.html(@template(delayedEmails: @collection.toJSON()))
 
     @setupButtons()
     

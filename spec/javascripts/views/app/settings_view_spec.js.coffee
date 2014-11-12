@@ -64,12 +64,12 @@ describe "SettingsView", ->
       expect(@settingsDiv).toContainHtml('<button type="button" class="btn btn-block btn-danger email-bankruptcy-button">Declare Email Bankruptcy</button>')
 
     it "renders the demo mode switch", ->
-      demoModeSwitch = $(".demo_mode_switch")
+      demoModeSwitch = $(".demo-mode-switch")
       expect(@settingsDiv).toContain(demoModeSwitch)
       expect(demoModeSwitch.is(":checked")).toEqual(@userConfiguration.get("demo_mode_enabled"))
       
     it "renders the keyboard shortcuts switch", ->
-      keyboardShortcutsSwitch = $(".keyboard_shortcuts_switch")
+      keyboardShortcutsSwitch = $(".keyboard-shortcuts-switch")
       expect(@settingsDiv).toContain(keyboardShortcutsSwitch)
       expect(keyboardShortcutsSwitch.is(":checked")).toEqual(@userConfiguration.get("keyboard_shortcuts_enabled"))
       
@@ -145,11 +145,11 @@ describe "SettingsView", ->
 
     it "sets up the demo mode switch", ->
       @settingsView.setupSwitches()
-      expect(@settingsDiv.find(".demo_mode_switch").parent().parent()).toHaveClass "has-switch"
+      expect(@settingsDiv.find(".demo-mode-switch").parent().parent()).toHaveClass "has-switch"
 
     it "sets up the keyboard shortcuts switch", ->
       @settingsView.setupSwitches()
-      expect(@settingsDiv.find(".keyboard_shortcuts_switch").parent().parent()).toHaveClass "has-switch"
+      expect(@settingsDiv.find(".keyboard-shortcuts-switch").parent().parent()).toHaveClass "has-switch"
 
       @settingsView.setupSwitches()
     it "sets up the genie switch", ->

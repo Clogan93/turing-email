@@ -49,13 +49,13 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
         ), 3000
 
   setupSwitches: ->
-    @$el.find(".demo_mode_switch").bootstrapSwitch()
-    @$el.find(".keyboard_shortcuts_switch").bootstrapSwitch()
+    @$el.find(".demo-mode-switch").bootstrapSwitch()
+    @$el.find(".keyboard-shortcuts-switch").bootstrapSwitch()
     @$el.find(".genie-switch").bootstrapSwitch()
     @$el.find(".split-pane-switch").bootstrapSwitch()
     @$el.find(".developer_switch").bootstrapSwitch()
 
-    @$el.find(".demo_mode_switch, .keyboard_shortcuts_switch, .genie-switch, .split-pane-switch, .developer_switch").
+    @$el.find(".demo-mode-switch, .keyboard-shortcuts-switch, .genie-switch, .split-pane-switch, .developer_switch").
          on("switch-change", (event, state) =>
       @saveSettings()
     )
@@ -72,8 +72,8 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
       $(event.currentTarget).parent().parent().remove()
       
   saveSettings: (refresh=false) ->
-    demo_mode_enabled = @$el.find(".demo_mode_switch").parent().parent().hasClass("switch-on")
-    keyboard_shortcuts_enabled = @$el.find(".keyboard_shortcuts_switch").parent().parent().hasClass("switch-on")
+    demo_mode_enabled = @$el.find(".demo-mode-switch").parent().parent().hasClass("switch-on")
+    keyboard_shortcuts_enabled = @$el.find(".keyboard-shortcuts-switch").parent().parent().hasClass("switch-on")
     genie_enabled = @$el.find(".genie-switch").parent().parent().hasClass("switch-on")
     split_pane_mode = if @$el.find(".split-pane-switch").parent().parent().hasClass("switch-on") then "horizontal" else "off"
     developer_enabled = @$el.find(".developer_switch").parent().parent().hasClass("switch-on")

@@ -213,6 +213,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @routers.searchResultsRouter = new TuringEmailApp.Routers.SearchResultsRouter()
     @routers.appsLibraryRouter = new TuringEmailApp.Routers.AppsLibraryRouter()
     @routers.delayedEmailsRouter = new TuringEmailApp.Routers.DelayedEmailsRouter()
+    @routers.emailTrackersRouter = new TuringEmailApp.Routers.EmailTrackersRouter()
 
   ###############
   ### Getters ###
@@ -713,6 +714,9 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
     @delayedEmailsView = @views.mainView.showDelayedEmails()
     @listenTo(@delayedEmailsView, "deleteDelayedEmailClicked", @deleteDelayedEmailClicked)
+
+  showEmailTrackers: ->
+    @views.mainView.showEmailTrackers()
     
   showSettings: ->
     @models.userConfiguration.fetch(reset: true)

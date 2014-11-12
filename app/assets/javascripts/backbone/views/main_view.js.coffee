@@ -198,6 +198,21 @@ class TuringEmailApp.Views.Main extends Backbone.View
     @primaryPaneDiv.append(delayedEmailsView.$el)
 
     return delayedEmailsView
+
+  showEmailTrackers: ->
+    return false if not @primaryPaneDiv?
+
+    emailTrackers = new TuringEmailApp.Collections.EmailTrackersCollection()
+    emailTrackers.fetch()
+    emailTrackersView = new TuringEmailApp.Views.App.EmailTrackersView({
+      collection: emailTrackers
+    })
+    emailTrackersView.render()
+
+    @primaryPaneDiv.html("")
+    @primaryPaneDiv.append(emailTrackersView.$el)
+
+    return emailTrackersView
     
   showSettings: ->
     return false if not @primaryPaneDiv?

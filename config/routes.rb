@@ -1,3 +1,5 @@
+Rails.application.routes.default_url_options[:host] = $config.http_host
+
 Rails.application.routes.draw do
   root 'static_pages#home'
   get '/mail', to: 'static_pages#mail'
@@ -14,6 +16,8 @@ Rails.application.routes.draw do
   get '/signup',  to: 'users#new'
   get '/signin',  to: 'sessions#new'
   delete '/signout', to: 'sessions#destroy'
+
+  get '/confirmation/:email_tracker_recipient_uid', :to => 'email_tracker_recipients#confirmation', :as => :confirmation
 
   namespace :api, :defaults => {:format => :json} do
     namespace :v1 do
@@ -40,6 +44,8 @@ Rails.application.routes.draw do
 
       resources :delayed_emails, only: [:index]
       delete '/delayed_emails/:delayed_email_uid', :to => 'delayed_emails#destroy'
+
+      resources :email_trackers, only: [:index]
       
       post '/email_accounts/drafts', to: 'email_accounts#create_draft'
       put '/email_accounts/drafts', to: 'email_accounts#update_draft'
