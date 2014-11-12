@@ -31,7 +31,11 @@ class Api::V1::EmailAccountsController < ApiController
                                        params[:subject], params[:html_part], params[:text_part],
                                        params[:email_in_reply_to_uid],
                                        params[:tracking_enabled])
-    render 'api/v1/emails/show'
+    if @email
+      render 'api/v1/emails/show'
+    else
+      render :json => {}
+    end
   end
 
   swagger_api :send_email_delayed do
