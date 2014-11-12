@@ -84,7 +84,7 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
       genie_enabled: genie_enabled,
       split_pane_mode: split_pane_mode,
       keyboard_shortcuts_enabled: keyboard_shortcuts_enabled,
-      developer_enabled: developer_enabled
+      developer_enabled: developer_enabled,
       skin_uid: skin_uid
     })
 
