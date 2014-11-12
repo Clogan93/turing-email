@@ -326,6 +326,7 @@ describe "TuringEmailApp", ->
         expect(TuringEmailApp.routers.searchResultsRouter).toBeDefined()
         expect(TuringEmailApp.routers.appsLibraryRouter).toBeDefined()
         expect(TuringEmailApp.routers.delayedEmailsRouter).toBeDefined()
+        expect(TuringEmailApp.routers.emailTrackersRouter).toBeDefined()
   
   describe "after start", ->
     beforeEach ->
@@ -2178,6 +2179,19 @@ describe "TuringEmailApp", ->
 
       it "listens for deleteDelayedEmailClicked on the delayed emails view", ->
         expect(@listenToStub).toHaveBeenCalledWith(@delayedEmailsView, "deleteDelayedEmailClicked", TuringEmailApp.deleteDelayedEmailClicked)
+
+    describe "#showEmailTrackers", ->
+      beforeEach ->
+        @emailTrackersView = {}
+        @showEmailTrackersStub = sinon.stub(TuringEmailApp.views.mainView, "showEmailTrackers", => @emailTrackersView)
+        
+        TuringEmailApp.showEmailTrackers()
+
+      afterEach ->
+        @showEmailTrackersStub.restore()
+
+      it "shows the email trackers on the main view", ->
+        expect(@showEmailTrackersStub).toHaveBeenCalled()
         
     describe "#showSettings", ->
       beforeEach ->

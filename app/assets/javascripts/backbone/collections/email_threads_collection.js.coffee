@@ -1,26 +1,15 @@
-class TuringEmailApp.Collections.EmailThreadsCollection extends Backbone.Collection
+class TuringEmailApp.Collections.EmailThreadsCollection extends TuringEmailApp.Collections.BaseCollection
   model: TuringEmailApp.Models.EmailThread
   url: "/api/v1/email_threads/in_folder?folder_id=INBOX"
 
   initialize: (models, options) ->
+    super(models, options)
+    
     @app = options.app
     @demoMode = if options.demoMode? then options.demoMode else true
 
-    @listenTo(this, "remove", @modelRemoved)
-    @listenTo(this, "reset", @modelsReset)
-
     @resetPageTokens()
     @folderIDIs(options?.folderID) if options?.folderID?
-  
-  ##############
-  ### Events ###
-  ##############
-    
-  modelRemoved: (model) ->
-    model.trigger("removedFromCollection", this)
-
-  modelsReset: (models, options) ->
-    options.previousModels.forEach(@modelRemoved, this)
 
   ###############
   ### Network ###

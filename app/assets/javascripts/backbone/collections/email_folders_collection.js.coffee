@@ -1,23 +1,12 @@
-class TuringEmailApp.Collections.EmailFoldersCollection extends Backbone.Collection
+class TuringEmailApp.Collections.EmailFoldersCollection extends TuringEmailApp.Collections.BaseCollection
   model: TuringEmailApp.Models.EmailFolder
   url: "/api/v1/email_folders"
   
   initialize: (models, options) ->
+    super(models, options)
+
     @app = options.app
     @demoMode = if options.demoMode? then options.demoMode else true
-
-    @listenTo(this, "remove", @modelRemoved)
-    @listenTo(this, "reset", @modelsReset)
-
-  ##############
-  ### Events ###
-  ##############
-
-  modelRemoved: (model) ->
-    model.trigger("removedFromCollection", this)
-
-  modelsReset: (models, options) ->
-    options.previousModels.forEach(@modelRemoved, this)
 
   ###############
   ### Network ###

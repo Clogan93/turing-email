@@ -3,7 +3,9 @@
 #= require ./models/email
 #= require ./models/installed_apps/installed_app
 #= require_tree ./models
+#= require ./collections/base_collection
 #= require_tree ./collections
+#= require ./views/collection_view
 #= require ./views/email_threads/list_item_view
 #= require ./views/email_threads/list_view
 #= require ./views/app/compose/compose_view

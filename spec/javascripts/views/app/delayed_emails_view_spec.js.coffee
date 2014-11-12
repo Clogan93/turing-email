@@ -1,4 +1,4 @@
-describe "DelayedEmails", ->
+describe "DelayedEmailsView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
@@ -10,56 +10,6 @@ describe "DelayedEmails", ->
 
   it "has the right template", ->
     expect(@delayedEmailsView.template).toEqual JST["backbone/templates/app/delayed_emails"]
-
-  describe "#initialize", ->
-    describe "Collection Event Hooks", ->
-      beforeEach ->
-        @renderStub = sinon.stub(@delayedEmailsView, "render")
-        
-      afterEach ->
-        @renderStub.restore()
-        
-      describe "#add", ->
-        beforeEach ->
-          @delayedEmails.add(FactoryGirl.create("DelayedEmail"))
-          
-        afterEach ->
-          @delayedEmails.reset()
-        
-        it "calls render", ->
-          expect(@renderStub).toHaveBeenCalled()
-
-      describe "#remove", ->
-        beforeEach ->
-          @delayedEmails.remove(@delayedEmails.at(0))
-
-        afterEach ->
-          @delayedEmails.reset()
-
-        it "calls render", ->
-          expect(@renderStub).toHaveBeenCalled()
-
-      describe "#reset", ->
-        beforeEach ->
-          @delayedEmails.reset()
-
-        afterEach ->
-          @delayedEmails.reset()
-
-        it "calls render", ->
-          expect(@renderStub).toHaveBeenCalled()
-
-      describe "#destroy", ->
-        beforeEach ->
-          @server = sinon.fakeServer.create()
-          @delayedEmails.at(0).destroy()
-
-        afterEach ->
-          @delayedEmails.reset()
-          @server.restore()
-
-        it "calls render", ->
-          expect(@renderStub).toHaveBeenCalled()
   
   describe "#render", ->
     beforeEach ->

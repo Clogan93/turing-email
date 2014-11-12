@@ -461,35 +461,6 @@ describe "EmailThreadsCollection", ->
     beforeEach ->
       @emailThreadsCollection.add(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE))
 
-    describe "Events", ->
-      describe "#modelRemoved", ->
-        beforeEach ->
-          @emailThread = @emailThreadsCollection.at(0)
-          @triggerStub = sinon.spy(@emailThread, "trigger")
-
-          @emailThreadsCollection.remove(@emailThread)
-
-        afterEach ->
-          @triggerStub.restore()
-
-        it "triggers removedFromCollection on the emailThread", ->
-          expect(@triggerStub).toHaveBeenCalledWith("removedFromCollection", @emailThreadsCollection)
-
-      describe "#modelsReset", ->
-        beforeEach ->
-          @modelRemovedStub = sinon.stub(@emailThreadsCollection, "modelRemoved", ->)
-
-          @oldEmailThreads = @emailThreadsCollection.models
-          @emailThreads = FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE)
-          @emailThreadsCollection.reset(@emailThreads)
-
-        afterEach ->
-          @modelRemovedStub.restore()
-
-        it "calls modelRemoved for each model model removed", ->
-          for emailThread in @oldEmailThreads
-            expect(@modelRemovedStub).toHaveBeenCalledWith(emailThread)
-
     describe "Setters", ->
       describe "#resetPageTokens", ->
         beforeEach ->

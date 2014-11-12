@@ -1,14 +1,8 @@
 TuringEmailApp.Views.App ||= {}
 
-class TuringEmailApp.Views.App.DelayedEmailsView extends Backbone.View
+class TuringEmailApp.Views.App.DelayedEmailsView extends TuringEmailApp.Views.CollectionView
   template: JST["backbone/templates/app/delayed_emails"]
   
-  initialize: (options) ->
-    @listenTo(@collection, "add", => @render())
-    @listenTo(@collection, "remove", => @render())
-    @listenTo(@collection, "reset", => @render())
-    @listenTo(@collection, "destroy", => @render())
-
   render: ->
     @$el.html(@template(delayedEmails: @collection.toJSON()))
 
