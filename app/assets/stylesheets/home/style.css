@@ -614,7 +614,7 @@ p.quote {
 --------------------------------------------------------*/
 	
 .bg2 {
-	background-image: url(/assets/home/parallax/parallax2.jpg);
+	background-image: url(/assets/home/parallax/parallax5.jpg);
 }
 .twitter-slider {
 	width: 85%;
@@ -838,7 +838,7 @@ p.quote {
 	background: radial-gradient(center center, circle cover, #FFD600 0%, #E2BE01 100%);
 }
 .home-parallax {
-	background: url(/assets/home/parallax/parallax2.jpg) fixed;
+	background: url(/assets/home/parallax/parallax5.jpg) fixed;
 	background-size: cover;
 	background-position: center top;
 	background-color: #FFD600;
