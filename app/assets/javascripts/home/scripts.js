@@ -679,8 +679,8 @@ $(document).ready(function()
 /*----------------------------------------------------*/  
     $(".main-menu a, .logo a, .home-logo-text a, .home-logo a, .scroll-to").bind('click',function(event){
 		
-		$(".main-menu a").removeClass('active');
-		$(this).addClass('active');			
+		$(".main-menu li").removeClass('active');
+		$(this).parent().addClass('active');
 		var headerH = $('.navigation').outerHeight();
 	
         $("html, body").animate({

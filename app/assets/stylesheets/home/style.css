@@ -1914,6 +1914,7 @@ a#button-newsletter {
     position: absolute;
 }
 
-
-
-
+.authentication-buttons {
+	position: relative;
+	top: 60px;
+}

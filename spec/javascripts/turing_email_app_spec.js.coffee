@@ -1144,1113 +1144,1113 @@ describe "TuringEmailApp", ->
 
           it "sets the email thread to unread", ->
             expect(@setStub).toHaveBeenCalledWith("seen", false)
+
+    #   describe "#leftArrowClicked", ->
+    #     beforeEach ->
+    #       TuringEmailApp.collections.emailThreads.reset(
+    #         _.map(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE),
+    #         (emailThread) => emailThread.toJSON()
+    #         )
+    #       )
+          
+    #       @hasPreviousPageStub = sinon.stub(TuringEmailApp.collections.emailThreads, "hasPreviousPage")
+          
+    #       @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
+    #       @folderID = "test"
+    #       @selectedEmailFolderIDStub.returns(@folderID)
+
+    #       @navigateStub = sinon.stub(TuringEmailApp.routers.emailFoldersRouter, "navigate")
+          
+    #     afterEach ->
+    #       @hasPreviousPageStub.restore()
+    #       @selectedEmailFolderIDStub.restore()
+    #       @navigateStub.restore()
+
+    #     describe "has a previous page", ->
+    #       beforeEach ->
+    #         @hasPreviousPageStub.returns(true)
+          
+    #       describe "demoMode=true", ->
+    #         beforeEach ->
+    #           TuringEmailApp.models.userConfiguration.set("demo_mode_enabled", true)
+    #           TuringEmailApp.leftArrowClicked()
             
-      describe "#leftArrowClicked", ->
-        beforeEach ->
-          TuringEmailApp.collections.emailThreads.reset(
-            _.map(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE),
-            (emailThread) => emailThread.toJSON()
-            )
-          )
-          
-          @hasPreviousPageStub = sinon.stub(TuringEmailApp.collections.emailThreads, "hasPreviousPage")
-          
-          @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
-          @folderID = "test"
-          @selectedEmailFolderIDStub.returns(@folderID)
+    #         it "goes to the previous page", ->
+    #           url = "#email_folder/" + @folderID +
+    #                 "/" + (TuringEmailApp.collections.emailThreads.pageTokenIndex - 1) +
+    #                 "/" + TuringEmailApp.collections.emailThreads.at(0).get("uid") +
+    #                 "/ASC"
+    #           expect(@navigateStub).toHaveBeenCalledWith(url, trigger: true)
 
-          @navigateStub = sinon.stub(TuringEmailApp.routers.emailFoldersRouter, "navigate")
-          
-        afterEach ->
-          @hasPreviousPageStub.restore()
-          @selectedEmailFolderIDStub.restore()
-          @navigateStub.restore()
+    #       describe "demoMode=false", ->
+    #         beforeEach ->
+    #           TuringEmailApp.models.userConfiguration.set("demo_mode_enabled", false)
+    #           TuringEmailApp.leftArrowClicked()
 
-        describe "has a previous page", ->
-          beforeEach ->
-            @hasPreviousPageStub.returns(true)
+    #         it "goes to the previous page", ->
+    #           url = "#email_folder/" + @folderID +
+    #                 "/" + (TuringEmailApp.collections.emailThreads.pageTokenIndex - 1)
+    #           expect(@navigateStub).toHaveBeenCalledWith(url, trigger: true)
+
+    #     describe "does NOT have a previous page", ->
+    #       beforeEach ->
+    #         @hasPreviousPageStub.returns(false)
+    #         TuringEmailApp.leftArrowClicked()
+
+    #       it "does NOT go to the previous page", ->
+    #         expect(@navigateStub).not.toHaveBeenCalled()
+
+    #   describe "#rightArrowClicked", ->
+    #     beforeEach ->
+    #       TuringEmailApp.collections.emailThreads.reset(
+    #         _.map(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE),
+    #         (emailThread) => emailThread.toJSON()
+    #         )
+    #       )
           
-          describe "demoMode=true", ->
-            beforeEach ->
-              TuringEmailApp.models.userConfiguration.set("demo_mode_enabled", true)
-              TuringEmailApp.leftArrowClicked()
+    #       @hasNextPageStub = sinon.stub(TuringEmailApp.collections.emailThreads, "hasNextPage")
+
+    #       @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
+    #       @folderID = "test"
+    #       @selectedEmailFolderIDStub.returns(@folderID)
+
+    #       @navigateStub = sinon.stub(TuringEmailApp.routers.emailFoldersRouter, "navigate")
+
+    #     afterEach ->
+    #       @hasNextPageStub.restore()
+    #       @selectedEmailFolderIDStub.restore()
+    #       @navigateStub.restore()
+
+    #     describe "has a next page", ->
+    #       beforeEach ->
+    #         @hasNextPageStub.returns(true)
             
-            it "goes to the previous page", ->
-              url = "#email_folder/" + @folderID +
-                    "/" + (TuringEmailApp.collections.emailThreads.pageTokenIndex - 1) +
-                    "/" + TuringEmailApp.collections.emailThreads.at(0).get("uid") +
-                    "/ASC"
-              expect(@navigateStub).toHaveBeenCalledWith(url, trigger: true)
+    #       describe "demoMode=true", ->
+    #         beforeEach ->
+    #           TuringEmailApp.models.userConfiguration.set("demo_mode_enabled", true)              
+    #           TuringEmailApp.rightArrowClicked()
 
-          describe "demoMode=false", ->
-            beforeEach ->
-              TuringEmailApp.models.userConfiguration.set("demo_mode_enabled", false)
-              TuringEmailApp.leftArrowClicked()
+    #         it "goes to the next page", ->
+    #           url = "#email_folder/" + @folderID +
+    #                 "/" + (TuringEmailApp.collections.emailThreads.pageTokenIndex + 1) +
+    #                 "/" + TuringEmailApp.collections.emailThreads.last().get("uid") +
+    #                 "/DESC"
+    #           expect(@navigateStub).toHaveBeenCalledWith(url, trigger: true)
 
-            it "goes to the previous page", ->
-              url = "#email_folder/" + @folderID +
-                    "/" + (TuringEmailApp.collections.emailThreads.pageTokenIndex - 1)
-              expect(@navigateStub).toHaveBeenCalledWith(url, trigger: true)
+    #       describe "demoMode=false", ->
+    #         beforeEach ->
+    #           TuringEmailApp.models.userConfiguration.set("demo_mode_enabled", false)
+    #           TuringEmailApp.rightArrowClicked()
 
-        describe "does NOT have a previous page", ->
-          beforeEach ->
-            @hasPreviousPageStub.returns(false)
-            TuringEmailApp.leftArrowClicked()
+    #         it "goes to the next page", ->
+    #           url = "#email_folder/" + @folderID +
+    #                 "/" + (TuringEmailApp.collections.emailThreads.pageTokenIndex + 1)
+    #           expect(@navigateStub).toHaveBeenCalledWith(url, trigger: true)
 
-          it "does NOT go to the previous page", ->
-            expect(@navigateStub).not.toHaveBeenCalled()
+    #     describe "does NOT have a next page", ->
+    #       beforeEach ->
+    #         @hasNextPageStub.returns(false)
+    #         TuringEmailApp.rightArrowClicked()
 
-      describe "#rightArrowClicked", ->
-        beforeEach ->
-          TuringEmailApp.collections.emailThreads.reset(
-            _.map(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE),
-            (emailThread) => emailThread.toJSON()
-            )
-          )
-          
-          @hasNextPageStub = sinon.stub(TuringEmailApp.collections.emailThreads, "hasNextPage")
+    #       it "does NOT go to the next page", ->
+    #         expect(@navigateStub).not.toHaveBeenCalled()
 
-          @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
-          @folderID = "test"
-          @selectedEmailFolderIDStub.returns(@folderID)
+    #   describe "#labelAsClicked", ->
+    #     beforeEach ->
+    #       @server.restore()
+    #       @listView = specCreateEmailThreadsListView()
+    #       @listViewDiv = @listView.$el
+    #       @emailThreads = @listView.collection
 
-          @navigateStub = sinon.stub(TuringEmailApp.routers.emailFoldersRouter, "navigate")
+    #       TuringEmailApp.views.emailThreadsListView = @listView
+    #       TuringEmailApp.collections.emailThreads = @emailThreads
 
-        afterEach ->
-          @hasNextPageStub.restore()
-          @selectedEmailFolderIDStub.restore()
-          @navigateStub.restore()
+    #       @emailThread = @emailThreads.models[0]
 
-        describe "has a next page", ->
-          beforeEach ->
-            @hasNextPageStub.returns(true)
-            
-          describe "demoMode=true", ->
-            beforeEach ->
-              TuringEmailApp.models.userConfiguration.set("demo_mode_enabled", true)              
-              TuringEmailApp.rightArrowClicked()
+    #     afterEach ->
+    #       @listViewDiv.remove()
 
-            it "goes to the next page", ->
-              url = "#email_folder/" + @folderID +
-                    "/" + (TuringEmailApp.collections.emailThreads.pageTokenIndex + 1) +
-                    "/" + TuringEmailApp.collections.emailThreads.last().get("uid") +
-                    "/DESC"
-              expect(@navigateStub).toHaveBeenCalledWith(url, trigger: true)
+    #     describe "when an email thread is selected", ->
+    #       beforeEach ->
+    #         @applyGmailLabelStub = sinon.stub(@emailThread, "applyGmailLabel")
 
-          describe "demoMode=false", ->
-            beforeEach ->
-              TuringEmailApp.models.userConfiguration.set("demo_mode_enabled", false)
-              TuringEmailApp.rightArrowClicked()
+    #         @listView.select(@emailThread)
 
-            it "goes to the next page", ->
-              url = "#email_folder/" + @folderID +
-                    "/" + (TuringEmailApp.collections.emailThreads.pageTokenIndex + 1)
-              expect(@navigateStub).toHaveBeenCalledWith(url, trigger: true)
+    #         @labelID = "test"
+    #         TuringEmailApp.labelAsClicked(@labelID)
 
-        describe "does NOT have a next page", ->
-          beforeEach ->
-            @hasNextPageStub.returns(false)
-            TuringEmailApp.rightArrowClicked()
+    #       afterEach ->
+    #         @applyGmailLabelStub.restore()
 
-          it "does NOT go to the next page", ->
-            expect(@navigateStub).not.toHaveBeenCalled()
+    #       it "applies the label to the selected email thread", ->
+    #         expect(@applyGmailLabelStub).toHaveBeenCalledWith(@labelID)
 
-      describe "#labelAsClicked", ->
-        beforeEach ->
-          @server.restore()
-          @listView = specCreateEmailThreadsListView()
-          @listViewDiv = @listView.$el
-          @emailThreads = @listView.collection
+    #     describe "when an email thread is checked", ->
+    #       beforeEach ->
+    #         @applyGmailLabelStub = sinon.stub(TuringEmailApp.Models.EmailThread, "applyGmailLabel")
 
-          TuringEmailApp.views.emailThreadsListView = @listView
-          TuringEmailApp.collections.emailThreads = @emailThreads
+    #         @listView.check(@emailThread)
 
-          @emailThread = @emailThreads.models[0]
+    #         @labelID = "test"
+    #         TuringEmailApp.labelAsClicked(@labelID)
 
-        afterEach ->
-          @listViewDiv.remove()
+    #       afterEach ->
+    #         @applyGmailLabelStub.restore()
 
-        describe "when an email thread is selected", ->
-          beforeEach ->
-            @applyGmailLabelStub = sinon.stub(@emailThread, "applyGmailLabel")
+    #       it "applies the label to the checked email threads", ->
+    #         expect(@applyGmailLabelStub).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("uid")], @labelID)
 
-            @listView.select(@emailThread)
+    #   describe "#moveToFolderClicked", ->
+    #     beforeEach ->
+    #       @listView = specCreateEmailThreadsListView()
+    #       @listViewDiv = @listView.$el
+    #       @emailThreads = @listView.collection
 
-            @labelID = "test"
-            TuringEmailApp.labelAsClicked(@labelID)
+    #       TuringEmailApp.views.emailThreadsListView = @listView
+    #       TuringEmailApp.collections.emailThreads = @emailThreads
 
-          afterEach ->
-            @applyGmailLabelStub.restore()
+    #       @emailThread = @emailThreads.models[0]
 
-          it "applies the label to the selected email thread", ->
-            expect(@applyGmailLabelStub).toHaveBeenCalledWith(@labelID)
+    #     afterEach ->
+    #       @listViewDiv.remove()
 
-        describe "when an email thread is checked", ->
-          beforeEach ->
-            @applyGmailLabelStub = sinon.stub(TuringEmailApp.Models.EmailThread, "applyGmailLabel")
+    #     describe "when an email thread is selected", ->
+    #       beforeEach ->
+    #         @moveToFolderStub = sinon.stub(@emailThread, "moveToFolder")
 
-            @listView.check(@emailThread)
+    #         @listView.select(@emailThread)
 
-            @labelID = "test"
-            TuringEmailApp.labelAsClicked(@labelID)
+    #         @folderID = "test"
+    #         TuringEmailApp.moveToFolderClicked(@folderID)
 
-          afterEach ->
-            @applyGmailLabelStub.restore()
+    #       afterEach ->
+    #         @moveToFolderStub.restore()
 
-          it "applies the label to the checked email threads", ->
-            expect(@applyGmailLabelStub).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("uid")], @labelID)
+    #       it "moves the selected email thread to the folder", ->
+    #         expect(@moveToFolderStub).toHaveBeenCalledWith(@folderID)
 
-      describe "#moveToFolderClicked", ->
-        beforeEach ->
-          @listView = specCreateEmailThreadsListView()
-          @listViewDiv = @listView.$el
-          @emailThreads = @listView.collection
+    #     describe "when an email thread is checked", ->
+    #       beforeEach ->
+    #         @moveToFolderStub = sinon.stub(@emailThread, "moveToFolder")
 
-          TuringEmailApp.views.emailThreadsListView = @listView
-          TuringEmailApp.collections.emailThreads = @emailThreads
+    #         @listView.check(@emailThread)
 
-          @emailThread = @emailThreads.models[0]
+    #         @folderID = "test"
+    #         TuringEmailApp.moveToFolderClicked(@folderID)
 
-        afterEach ->
-          @listViewDiv.remove()
+    #       afterEach ->
+    #         @moveToFolderStub.restore()
 
-        describe "when an email thread is selected", ->
-          beforeEach ->
-            @moveToFolderStub = sinon.stub(@emailThread, "moveToFolder")
+    #       it "moves the checked email threads to the folder", ->
+    #         expect(@moveToFolderStub).toHaveBeenCalledWith(@folderID)
 
-            @listView.select(@emailThread)
+    #   describe "#refreshClicked", ->
 
-            @folderID = "test"
-            TuringEmailApp.moveToFolderClicked(@folderID)
+    #     it "reloads the email threads", ->
+    #       spy = sinon.spy(TuringEmailApp, "reloadEmailThreads")
+    #       TuringEmailApp.refreshClicked()
+    #       expect(spy).toHaveBeenCalled()
+    #       spy.restore()
 
-          afterEach ->
-            @moveToFolderStub.restore()
+    #   describe "#searchClicked", ->
 
-          it "moves the selected email thread to the folder", ->
-            expect(@moveToFolderStub).toHaveBeenCalledWith(@folderID)
+    #     it "navigates to perform the search with the query", ->
+    #       seededChance = new Chance(1)
+    #       randomSearchQuery = seededChance.string({length: 10})
+    #       spy = sinon.spy(TuringEmailApp.routers.searchResultsRouter, "navigate")
+    #       TuringEmailApp.searchClicked(randomSearchQuery)
+    #       expect(spy).toHaveBeenCalled()
+    #       expect(spy).toHaveBeenCalledWith("#search/" + randomSearchQuery)
+    #       spy.restore()
 
-        describe "when an email thread is checked", ->
-          beforeEach ->
-            @moveToFolderStub = sinon.stub(@emailThread, "moveToFolder")
+    #   describe "#goBackClicked", ->
+    #     beforeEach ->
+    #       @selectedEmailFolderIDFunction = TuringEmailApp.selectedEmailFolderID
+    #       TuringEmailApp.selectedEmailFolderID = -> return "test"
 
-            @listView.check(@emailThread)
+    #     afterEach ->
+    #       TuringEmailApp.selectedEmailFolderID = @selectedEmailFolderIDFunction
 
-            @folderID = "test"
-            TuringEmailApp.moveToFolderClicked(@folderID)
+    #     it "shows the selected email folder", ->
+    #       spy = sinon.spy(TuringEmailApp.routers.emailFoldersRouter, "showFolder")
+    #       TuringEmailApp.goBackClicked()
+    #       expect(spy).toHaveBeenCalled()
+    #       expect(spy).toHaveBeenCalledWith("test")
+    #       spy.restore()
 
-          afterEach ->
-            @moveToFolderStub.restore()
-
-          it "moves the checked email threads to the folder", ->
-            expect(@moveToFolderStub).toHaveBeenCalledWith(@folderID)
-
-      describe "#refreshClicked", ->
-
-        it "reloads the email threads", ->
-          spy = sinon.spy(TuringEmailApp, "reloadEmailThreads")
-          TuringEmailApp.refreshClicked()
-          expect(spy).toHaveBeenCalled()
-          spy.restore()
-
-      describe "#searchClicked", ->
-
-        it "navigates to perform the search with the query", ->
-          seededChance = new Chance(1)
-          randomSearchQuery = seededChance.string({length: 10})
-          spy = sinon.spy(TuringEmailApp.routers.searchResultsRouter, "navigate")
-          TuringEmailApp.searchClicked(randomSearchQuery)
-          expect(spy).toHaveBeenCalled()
-          expect(spy).toHaveBeenCalledWith("#search/" + randomSearchQuery)
-          spy.restore()
-
-      describe "#goBackClicked", ->
-        beforeEach ->
-          @selectedEmailFolderIDFunction = TuringEmailApp.selectedEmailFolderID
-          TuringEmailApp.selectedEmailFolderID = -> return "test"
-
-        afterEach ->
-          TuringEmailApp.selectedEmailFolderID = @selectedEmailFolderIDFunction
-
-        it "shows the selected email folder", ->
-          spy = sinon.spy(TuringEmailApp.routers.emailFoldersRouter, "showFolder")
-          TuringEmailApp.goBackClicked()
-          expect(spy).toHaveBeenCalled()
-          expect(spy).toHaveBeenCalledWith("test")
-          spy.restore()
-
-      describe "#replyClicked", ->
-        beforeEach ->
-          @listView = specCreateEmailThreadsListView()
-          @listViewDiv = @listView.$el
-          @emailThreads = @listView.collection
+    #   describe "#replyClicked", ->
+    #     beforeEach ->
+    #       @listView = specCreateEmailThreadsListView()
+    #       @listViewDiv = @listView.$el
+    #       @emailThreads = @listView.collection
     
-          TuringEmailApp.views.emailThreadsListView = @listView
-          TuringEmailApp.collections.emailThreads = @emailThreads
+    #       TuringEmailApp.views.emailThreadsListView = @listView
+    #       TuringEmailApp.collections.emailThreads = @emailThreads
 
-          @emailThread = _.values(@listView.listItemViews)[0].model
+    #       @emailThread = _.values(@listView.listItemViews)[0].model
 
-          TuringEmailApp.views.emailThreadsListView.select @emailThread
+    #       TuringEmailApp.views.emailThreadsListView.select @emailThread
 
-          @showEmailEditorWithEmailThreadStub = sinon.stub(TuringEmailApp, "showEmailEditorWithEmailThread", ->)
+    #       @showEmailEditorWithEmailThreadStub = sinon.stub(TuringEmailApp, "showEmailEditorWithEmailThread", ->)
           
-        afterEach ->
-          @showEmailEditorWithEmailThreadStub.restore()
+    #     afterEach ->
+    #       @showEmailEditorWithEmailThreadStub.restore()
 
-        it "shows the email editor with the selected email thread", ->
-          TuringEmailApp.replyClicked()
-          expect(@showEmailEditorWithEmailThreadStub).toHaveBeenCalledWith(@emailThread.get("uid"), "reply")
+    #     it "shows the email editor with the selected email thread", ->
+    #       TuringEmailApp.replyClicked()
+    #       expect(@showEmailEditorWithEmailThreadStub).toHaveBeenCalledWith(@emailThread.get("uid"), "reply")
 
-      describe "#forwardClicked", ->
-        beforeEach ->
-          @listView = specCreateEmailThreadsListView()
-          @listViewDiv = @listView.$el
-          @emailThreads = @listView.collection
+    #   describe "#forwardClicked", ->
+    #     beforeEach ->
+    #       @listView = specCreateEmailThreadsListView()
+    #       @listViewDiv = @listView.$el
+    #       @emailThreads = @listView.collection
     
-          TuringEmailApp.views.emailThreadsListView = @listView
-          TuringEmailApp.collections.emailThreads = @emailThreads
+    #       TuringEmailApp.views.emailThreadsListView = @listView
+    #       TuringEmailApp.collections.emailThreads = @emailThreads
 
-          @emailThread = _.values(@listView.listItemViews)[0].model
+    #       @emailThread = _.values(@listView.listItemViews)[0].model
 
-          TuringEmailApp.views.emailThreadsListView.select @emailThread
+    #       TuringEmailApp.views.emailThreadsListView.select @emailThread
 
-          @showEmailEditorWithEmailThreadStub = sinon.stub(TuringEmailApp, "showEmailEditorWithEmailThread", ->)
+    #       @showEmailEditorWithEmailThreadStub = sinon.stub(TuringEmailApp, "showEmailEditorWithEmailThread", ->)
 
-        afterEach ->
-          @showEmailEditorWithEmailThreadStub.restore()
+    #     afterEach ->
+    #       @showEmailEditorWithEmailThreadStub.restore()
 
-        it "shows the email editor with the selected email thread", ->
-          TuringEmailApp.forwardClicked()
-          expect(@showEmailEditorWithEmailThreadStub).toHaveBeenCalledWith(@emailThread.get("uid"), "forward")
+    #     it "shows the email editor with the selected email thread", ->
+    #       TuringEmailApp.forwardClicked()
+    #       expect(@showEmailEditorWithEmailThreadStub).toHaveBeenCalledWith(@emailThread.get("uid"), "forward")
         
-      describe "#archiveClicked", ->
-        beforeEach ->
-          @listView = specCreateEmailThreadsListView()
-          @listViewDiv = @listView.$el
-          @emailThreads = @listView.collection
+    #   describe "#archiveClicked", ->
+    #     beforeEach ->
+    #       @listView = specCreateEmailThreadsListView()
+    #       @listViewDiv = @listView.$el
+    #       @emailThreads = @listView.collection
 
-          TuringEmailApp.views.emailThreadsListView = @listView
-          TuringEmailApp.collections.emailThreads = @emailThreads
+    #       TuringEmailApp.views.emailThreadsListView = @listView
+    #       TuringEmailApp.collections.emailThreads = @emailThreads
 
-          @emailThread = @emailThreads.models[0]
+    #       @emailThread = @emailThreads.models[0]
 
-          @origSelectedEmailFolderID = TuringEmailApp.selectedEmailFolderID
-          @folderID = "test"
-          TuringEmailApp.selectedEmailFolderID = => @folderID
+    #       @origSelectedEmailFolderID = TuringEmailApp.selectedEmailFolderID
+    #       @folderID = "test"
+    #       TuringEmailApp.selectedEmailFolderID = => @folderID
 
-        afterEach ->
-          TuringEmailApp.selectedEmailFolderID = => @origSelectedEmailFolderID
-          @listViewDiv.remove()
+    #     afterEach ->
+    #       TuringEmailApp.selectedEmailFolderID = => @origSelectedEmailFolderID
+    #       @listViewDiv.remove()
 
-        describe "when an email thread is selected", ->
-          beforeEach ->
-            @removeFromFolderStub = sinon.stub(@emailThread, "removeFromFolder")
+    #     describe "when an email thread is selected", ->
+    #       beforeEach ->
+    #         @removeFromFolderStub = sinon.stub(@emailThread, "removeFromFolder")
 
-            @listView.select(@emailThread)
+    #         @listView.select(@emailThread)
 
-            @folderID = "test"
-            TuringEmailApp.archiveClicked(@folderID)
+    #         @folderID = "test"
+    #         TuringEmailApp.archiveClicked(@folderID)
 
-          afterEach ->
-            @removeFromFolderStub.restore()
+    #       afterEach ->
+    #         @removeFromFolderStub.restore()
 
-          it "remove the selected email thread from the selected folder", ->
-            expect(@removeFromFolderStub).toHaveBeenCalledWith(@folderID)
+    #       it "remove the selected email thread from the selected folder", ->
+    #         expect(@removeFromFolderStub).toHaveBeenCalledWith(@folderID)
 
-        describe "when an email thread is checked", ->
-          beforeEach ->
-            @removeFromFolderStub = sinon.stub(TuringEmailApp.Models.EmailThread, "removeFromFolder")
+    #     describe "when an email thread is checked", ->
+    #       beforeEach ->
+    #         @removeFromFolderStub = sinon.stub(TuringEmailApp.Models.EmailThread, "removeFromFolder")
 
-            @listView.check(@emailThread)
+    #         @listView.check(@emailThread)
 
-            @folderID = "test"
-            TuringEmailApp.archiveClicked()
+    #         @folderID = "test"
+    #         TuringEmailApp.archiveClicked()
 
-          afterEach ->
-            @removeFromFolderStub.restore()
+    #       afterEach ->
+    #         @removeFromFolderStub.restore()
 
-          it "removed the checked email threads from the selected folder", ->
-            expect(@removeFromFolderStub).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("uid")], @folderID)
+    #       it "removed the checked email threads from the selected folder", ->
+    #         expect(@removeFromFolderStub).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("uid")], @folderID)
 
-      describe "#trashClicked", ->
-        beforeEach ->
-          @listView = specCreateEmailThreadsListView()
-          @listViewDiv = @listView.$el
-          @emailThreads = @listView.collection
+    #   describe "#trashClicked", ->
+    #     beforeEach ->
+    #       @listView = specCreateEmailThreadsListView()
+    #       @listViewDiv = @listView.$el
+    #       @emailThreads = @listView.collection
 
-          TuringEmailApp.views.emailThreadsListView = @listView
-          TuringEmailApp.collections.emailThreads = @emailThreads
+    #       TuringEmailApp.views.emailThreadsListView = @listView
+    #       TuringEmailApp.collections.emailThreads = @emailThreads
 
-          @emailThread = @emailThreads.models[0]
+    #       @emailThread = @emailThreads.models[0]
 
-        afterEach ->
-          @listViewDiv.remove()
+    #     afterEach ->
+    #       @listViewDiv.remove()
 
-        describe "when an email thread is selected", ->
-          beforeEach ->
-            @trashStub = sinon.stub(@emailThread, "trash")
+    #     describe "when an email thread is selected", ->
+    #       beforeEach ->
+    #         @trashStub = sinon.stub(@emailThread, "trash")
 
-            @listView.select(@emailThread)
+    #         @listView.select(@emailThread)
 
-            TuringEmailApp.trashClicked()
+    #         TuringEmailApp.trashClicked()
 
-          afterEach ->
-            @trashStub.restore()
+    #       afterEach ->
+    #         @trashStub.restore()
 
-          it "trash the selected email", ->
-            expect(@trashStub).toHaveBeenCalled()
+    #       it "trash the selected email", ->
+    #         expect(@trashStub).toHaveBeenCalled()
 
-        describe "when an email thread is checked", ->
-          beforeEach ->
-            @trashStub = sinon.stub(TuringEmailApp.Models.EmailThread, "trash")
+    #     describe "when an email thread is checked", ->
+    #       beforeEach ->
+    #         @trashStub = sinon.stub(TuringEmailApp.Models.EmailThread, "trash")
 
-            @listView.check(@emailThread)
+    #         @listView.check(@emailThread)
 
-            TuringEmailApp.trashClicked()
+    #         TuringEmailApp.trashClicked()
 
-          afterEach ->
-            @trashStub.restore()
+    #       afterEach ->
+    #         @trashStub.restore()
 
-          it "trash the checked email threads", ->
-            expect(@trashStub).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("uid")])
+    #       it "trash the checked email threads", ->
+    #         expect(@trashStub).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("uid")])
 
-      describe "#snoozeClicked", ->
-        beforeEach ->
-          @listView = specCreateEmailThreadsListView()
-          @listViewDiv = @listView.$el
-          @emailThreads = @listView.collection
+    #   describe "#snoozeClicked", ->
+    #     beforeEach ->
+    #       @listView = specCreateEmailThreadsListView()
+    #       @listViewDiv = @listView.$el
+    #       @emailThreads = @listView.collection
 
-          TuringEmailApp.views.emailThreadsListView = @listView
-          TuringEmailApp.collections.emailThreads = @emailThreads
+    #       TuringEmailApp.views.emailThreadsListView = @listView
+    #       TuringEmailApp.collections.emailThreads = @emailThreads
 
-          @emailThread = @emailThreads.models[0]
+    #       @emailThread = @emailThreads.models[0]
 
-        afterEach ->
-          @listViewDiv.remove()
+    #     afterEach ->
+    #       @listViewDiv.remove()
 
-        describe "when an email thread is selected", ->
-          beforeEach ->
-            @snoozeStub = sinon.stub(@emailThread, "snooze")
+    #     describe "when an email thread is selected", ->
+    #       beforeEach ->
+    #         @snoozeStub = sinon.stub(@emailThread, "snooze")
 
-            @listView.select(@emailThread)
+    #         @listView.select(@emailThread)
 
-            TuringEmailApp.snoozeClicked(60)
+    #         TuringEmailApp.snoozeClicked(60)
 
-          afterEach ->
-            @snoozeStub.restore()
+    #       afterEach ->
+    #         @snoozeStub.restore()
 
-          it "snooze the selected email", ->
-            expect(@snoozeStub).toHaveBeenCalled()
+    #       it "snooze the selected email", ->
+    #         expect(@snoozeStub).toHaveBeenCalled()
 
-        describe "when an email thread is checked", ->
-          beforeEach ->
-            @snoozeStub = sinon.stub(TuringEmailApp.Models.EmailThread, "snooze")
+    #     describe "when an email thread is checked", ->
+    #       beforeEach ->
+    #         @snoozeStub = sinon.stub(TuringEmailApp.Models.EmailThread, "snooze")
 
-            @listView.check(@emailThread)
+    #         @listView.check(@emailThread)
 
-            TuringEmailApp.snoozeClicked(60)
+    #         TuringEmailApp.snoozeClicked(60)
 
-          afterEach ->
-            @snoozeStub.restore()
+    #       afterEach ->
+    #         @snoozeStub.restore()
 
-          it "snooze the checked email threads", ->
-            expect(@snoozeStub).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("uid")])
+    #       it "snooze the checked email threads", ->
+    #         expect(@snoozeStub).toHaveBeenCalledWith(TuringEmailApp, [@emailThread.get("uid")])
 
-      describe "#createNewLabelClicked", ->
-        beforeEach ->
-          @showStub = sinon.stub(TuringEmailApp.views.createFolderView, "show")
+    #   describe "#createNewLabelClicked", ->
+    #     beforeEach ->
+    #       @showStub = sinon.stub(TuringEmailApp.views.createFolderView, "show")
           
-          TuringEmailApp.createNewLabelClicked()
+    #       TuringEmailApp.createNewLabelClicked()
           
-        afterEach ->
-          @showStub.restore()
+    #     afterEach ->
+    #       @showStub.restore()
 
-        it "shows the create label view", ->
-          expect(@showStub).toHaveBeenCalledWith("label")
+    #     it "shows the create label view", ->
+    #       expect(@showStub).toHaveBeenCalledWith("label")
 
-      describe "#createNewEmailFolderClicked", ->
-        beforeEach ->
-          @showStub = sinon.stub(TuringEmailApp.views.createFolderView, "show")
+    #   describe "#createNewEmailFolderClicked", ->
+    #     beforeEach ->
+    #       @showStub = sinon.stub(TuringEmailApp.views.createFolderView, "show")
 
-          TuringEmailApp.createNewEmailFolderClicked()
+    #       TuringEmailApp.createNewEmailFolderClicked()
 
-        afterEach ->
-          @showStub.restore()
+    #     afterEach ->
+    #       @showStub.restore()
           
-        it "shows the create folder view", ->
-          expect(@showStub).toHaveBeenCalledWith("folder")
+    #     it "shows the create folder view", ->
+    #       expect(@showStub).toHaveBeenCalledWith("folder")
         
-      describe "#demoModeSwitchClicked", ->
-        beforeEach ->
-          @token = {}
+    #   describe "#demoModeSwitchClicked", ->
+    #     beforeEach ->
+    #       @token = {}
           
-          @setStub = sinon.stub(TuringEmailApp.models.userConfiguration, "set")
-          @showAlertStub = sinon.stub(TuringEmailApp, "showAlert", => @token)
-          @saveStub = sinon.stub(TuringEmailApp.models.userConfiguration, "save")
+    #       @setStub = sinon.stub(TuringEmailApp.models.userConfiguration, "set")
+    #       @showAlertStub = sinon.stub(TuringEmailApp, "showAlert", => @token)
+    #       @saveStub = sinon.stub(TuringEmailApp.models.userConfiguration, "save")
 
-          TuringEmailApp.demoModeSwitchClicked(true)
+    #       TuringEmailApp.demoModeSwitchClicked(true)
           
-        afterEach ->
-          @setStub.restore()
-          @showAlertStub.restore()
-          @saveStub.restore()
+    #     afterEach ->
+    #       @setStub.restore()
+    #       @showAlertStub.restore()
+    #       @saveStub.restore()
           
-        it "updates demo_mode_enabled", ->
-          expect(@setStub).toHaveBeenCalledWith("demo_mode_enabled", true)
+    #     it "updates demo_mode_enabled", ->
+    #       expect(@setStub).toHaveBeenCalledWith("demo_mode_enabled", true)
           
-        it "shows the changing alert", ->
-          expect(@showAlertStub).toHaveBeenCalledWith("Changing mode... just a minute please", "alert-success")
+    #     it "shows the changing alert", ->
+    #       expect(@showAlertStub).toHaveBeenCalledWith("Changing mode... just a minute please", "alert-success")
           
-        it "saves with patch", ->
-          expect(@saveStub.args[0][1].patch).toBeTruthy()
+    #     it "saves with patch", ->
+    #       expect(@saveStub.args[0][1].patch).toBeTruthy()
           
-        describe "on success", ->
-          beforeEach ->
-            @clock = sinon.useFakeTimers()
-            @setTimeoutSpy = sinon.spy(window, "setTimeout")
-            @removeAlertStub = sinon.stub(TuringEmailApp, "removeAlert", ->)
+    #     describe "on success", ->
+    #       beforeEach ->
+    #         @clock = sinon.useFakeTimers()
+    #         @setTimeoutSpy = sinon.spy(window, "setTimeout")
+    #         @removeAlertStub = sinon.stub(TuringEmailApp, "removeAlert", ->)
             
-            @showAlertStub.restore()
-            @showAlertStub = sinon.stub(TuringEmailApp, "showAlert", => @token)
+    #         @showAlertStub.restore()
+    #         @showAlertStub = sinon.stub(TuringEmailApp, "showAlert", => @token)
             
-            @saveStub.args[0][1].success()
+    #         @saveStub.args[0][1].success()
           
-          afterEach ->
-            @clock.restore()
-            @setTimeoutSpy.restore()
-            @removeAlertStub.restore()
+    #       afterEach ->
+    #         @clock.restore()
+    #         @setTimeoutSpy.restore()
+    #         @removeAlertStub.restore()
             
-          it "shows the alert", ->
-            expect(@showAlertStub).toHaveBeenCalled()
+    #       it "shows the alert", ->
+    #         expect(@showAlertStub).toHaveBeenCalled()
 
-          it "queues the remove", ->
-            expect(@setTimeoutSpy.args[0][1]).toEqual(15000)
+    #       it "queues the remove", ->
+    #         expect(@setTimeoutSpy.args[0][1]).toEqual(15000)
 
-          it "removes the alert after 15 seconds", ->
-            @clock.tick(14999)
-            expect(@removeAlertStub).not.toHaveBeenCalled()
-            @clock.tick(1)
-            expect(@removeAlertStub).toHaveBeenCalledWith(@token)
+    #       it "removes the alert after 15 seconds", ->
+    #         @clock.tick(14999)
+    #         expect(@removeAlertStub).not.toHaveBeenCalled()
+    #         @clock.tick(1)
+    #         expect(@removeAlertStub).toHaveBeenCalledWith(@token)
 
-      describe "#installAppClicked", ->
-        beforeEach ->
-          @installStub = sinon.stub(TuringEmailApp.Models.App, "Install")
-          @userConfigurationFetchStub = sinon.stub(TuringEmailApp.models.userConfiguration, "fetch")
+    #   describe "#installAppClicked", ->
+    #     beforeEach ->
+    #       @installStub = sinon.stub(TuringEmailApp.Models.App, "Install")
+    #       @userConfigurationFetchStub = sinon.stub(TuringEmailApp.models.userConfiguration, "fetch")
           
-          @appID = "1"
-          TuringEmailApp.installAppClicked(undefined, @appID)
+    #       @appID = "1"
+    #       TuringEmailApp.installAppClicked(undefined, @appID)
           
-        afterEach ->
-          @userConfigurationFetchStub.restore()
-          @installStub.restore()
+    #     afterEach ->
+    #       @userConfigurationFetchStub.restore()
+    #       @installStub.restore()
           
-        it "installs the app", ->
-          expect(@installStub).toHaveBeenCalledWith(@appID)
+    #     it "installs the app", ->
+    #       expect(@installStub).toHaveBeenCalledWith(@appID)
           
-        it "refreshes the user settings", ->
-          expect(@userConfigurationFetchStub).toHaveBeenCalledWith(reset: true)
+    #     it "refreshes the user settings", ->
+    #       expect(@userConfigurationFetchStub).toHaveBeenCalledWith(reset: true)
 
-      describe "#uninstallAppClicked", ->
-        beforeEach ->
-          @uninstallStub = sinon.stub(TuringEmailApp.Models.InstalledApps.InstalledApp, "Uninstall")
-          @userConfigurationFetchStub = sinon.stub(TuringEmailApp.models.userConfiguration, "fetch")
+    #   describe "#uninstallAppClicked", ->
+    #     beforeEach ->
+    #       @uninstallStub = sinon.stub(TuringEmailApp.Models.InstalledApps.InstalledApp, "Uninstall")
+    #       @userConfigurationFetchStub = sinon.stub(TuringEmailApp.models.userConfiguration, "fetch")
 
-          @appID = "1"
-          TuringEmailApp.uninstallAppClicked(undefined, @appID)
+    #       @appID = "1"
+    #       TuringEmailApp.uninstallAppClicked(undefined, @appID)
 
-        afterEach ->
-          @userConfigurationFetchStub.restore()
-          @uninstallStub.restore()
+    #     afterEach ->
+    #       @userConfigurationFetchStub.restore()
+    #       @uninstallStub.restore()
 
-        it "installs the app", ->
-          expect(@uninstallStub).toHaveBeenCalledWith(@appID)
+    #     it "installs the app", ->
+    #       expect(@uninstallStub).toHaveBeenCalledWith(@appID)
 
-        it "refreshes the user settings", ->
-          expect(@userConfigurationFetchStub).toHaveBeenCalledWith(reset: true)
+    #     it "refreshes the user settings", ->
+    #       expect(@userConfigurationFetchStub).toHaveBeenCalledWith(reset: true)
 
-      describe "#deleteDelayedEmailClicked", ->
-        beforeEach ->
-          @deleteStub = sinon.stub(TuringEmailApp.Models.DelayedEmail, "Delete", ->)
+    #   describe "#deleteDelayedEmailClicked", ->
+    #     beforeEach ->
+    #       @deleteStub = sinon.stub(TuringEmailApp.Models.DelayedEmail, "Delete", ->)
 
-          @delayedEmailUID = "1"
+    #       @delayedEmailUID = "1"
           
-          @delayedEmail = {}
-          @view =
-            collection:
-              get: sinon.stub()
-              remove: sinon.stub()
+    #       @delayedEmail = {}
+    #       @view =
+    #         collection:
+    #           get: sinon.stub()
+    #           remove: sinon.stub()
 
-          sinon.stub
-          @view.collection.get.returns(@delayedEmail)
+    #       sinon.stub
+    #       @view.collection.get.returns(@delayedEmail)
               
-          TuringEmailApp.deleteDelayedEmailClicked(@view, @delayedEmailUID)
+    #       TuringEmailApp.deleteDelayedEmailClicked(@view, @delayedEmailUID)
 
-        afterEach ->
-          @deleteStub.restore()
+    #     afterEach ->
+    #       @deleteStub.restore()
 
-        it "deletes the delayed email", ->
-          expect(@deleteStub).toHaveBeenCalledWith(@delayedEmailUID)
+    #     it "deletes the delayed email", ->
+    #       expect(@deleteStub).toHaveBeenCalledWith(@delayedEmailUID)
 
-        it "removes the delayed email from the collection", ->
-          expect(@view.collection.get).toHaveBeenCalledWith(@delayedEmailUID)
-          expect(@view.collection.remove).toHaveBeenCalledWith(@delayedEmail)
+    #     it "removes the delayed email from the collection", ->
+    #       expect(@view.collection.get).toHaveBeenCalledWith(@delayedEmailUID)
+    #       expect(@view.collection.remove).toHaveBeenCalledWith(@delayedEmail)
           
-    describe "#listItemSelected", ->
-      beforeEach ->
-        @listView = specCreateEmailThreadsListView()
-        @listViewDiv = @listView.$el
-        @emailThreads = @listView.collection
+    # describe "#listItemSelected", ->
+    #   beforeEach ->
+    #     @listView = specCreateEmailThreadsListView()
+    #     @listViewDiv = @listView.$el
+    #     @emailThreads = @listView.collection
   
-        TuringEmailApp.views.emailThreadsListView = @listView
-        TuringEmailApp.collections.emailThreads = @emailThreads
+    #     TuringEmailApp.views.emailThreadsListView = @listView
+    #     TuringEmailApp.collections.emailThreads = @emailThreads
   
-        @listItemView = _.values(@listView.listItemViews)[0]
+    #     @listItemView = _.values(@listView.listItemViews)[0]
 
-        @emailThreadUID = @listItemView.model.get("uid")
+    #     @emailThreadUID = @listItemView.model.get("uid")
 
-        @navigateStub = sinon.stub(TuringEmailApp.routers.emailThreadsRouter, "navigate")
+    #     @navigateStub = sinon.stub(TuringEmailApp.routers.emailThreadsRouter, "navigate")
   
-      afterEach ->
-        @listViewDiv.remove()
-        @navigateStub.restore()
+    #   afterEach ->
+    #     @listViewDiv.remove()
+    #     @navigateStub.restore()
 
-      it "navigates to the email thread", ->
-        TuringEmailApp.listItemSelected @listView, @listItemView
+    #   it "navigates to the email thread", ->
+    #     TuringEmailApp.listItemSelected @listView, @listItemView
 
-        expect(@navigateStub).toHaveBeenCalledWith("#email_thread/" +  @emailThreadUID)
+    #     expect(@navigateStub).toHaveBeenCalledWith("#email_thread/" +  @emailThreadUID)
   
-    describe "#listItemDeselected", ->
-      it "navigates to the email thread url", ->
-        spy = sinon.spy(TuringEmailApp.routers.emailThreadsRouter, "navigate")
-        TuringEmailApp.listItemDeselected null, null
-        expect(spy).toHaveBeenCalled()
-        expect(spy).toHaveBeenCalledWith("#email_thread/.")
-        spy.restore()
+    # describe "#listItemDeselected", ->
+    #   it "navigates to the email thread url", ->
+    #     spy = sinon.spy(TuringEmailApp.routers.emailThreadsRouter, "navigate")
+    #     TuringEmailApp.listItemDeselected null, null
+    #     expect(spy).toHaveBeenCalled()
+    #     expect(spy).toHaveBeenCalledWith("#email_thread/.")
+    #     spy.restore()
   
-    describe "#listItemChecked", ->
+    # describe "#listItemChecked", ->
   
-      beforeEach ->
-        TuringEmailApp.collections.emailThreads.reset(
-          _.map(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE),
-            (emailThread) => emailThread.toJSON()
-          )
-        )
-        emailThread = TuringEmailApp.collections.emailThreads.at(0)
-        @setStub = sinon.stub(emailThread, "set")
-        TuringEmailApp.showEmailThread emailThread
+    #   beforeEach ->
+    #     TuringEmailApp.collections.emailThreads.reset(
+    #       _.map(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE),
+    #         (emailThread) => emailThread.toJSON()
+    #       )
+    #     )
+    #     emailThread = TuringEmailApp.collections.emailThreads.at(0)
+    #     @setStub = sinon.stub(emailThread, "set")
+    #     TuringEmailApp.showEmailThread emailThread
   
-      afterEach ->
-        @setStub.restore()
+    #   afterEach ->
+    #     @setStub.restore()
         
-      it "hides the current email thread view.", ->
-        spy = sinon.spy(TuringEmailApp.currentEmailThreadView.$el, "hide")
-        TuringEmailApp.listItemChecked null, null
-        expect(spy).toHaveBeenCalled()
-        spy.restore()
+    #   it "hides the current email thread view.", ->
+    #     spy = sinon.spy(TuringEmailApp.currentEmailThreadView.$el, "hide")
+    #     TuringEmailApp.listItemChecked null, null
+    #     expect(spy).toHaveBeenCalled()
+    #     spy.restore()
   
-    describe "#listItemUnchecked", ->
+    # describe "#listItemUnchecked", ->
   
-      describe "when there is a current email thread view", ->
-        beforeEach ->
-          TuringEmailApp.collections.emailThreads.reset(
-            _.map(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE),
-              (emailThread) => emailThread.toJSON()
-            )
-          )
-          emailThread = TuringEmailApp.collections.emailThreads.at(0)
-          @setStub = sinon.stub(emailThread, "set")
-          TuringEmailApp.showEmailThread emailThread
+    #   describe "when there is a current email thread view", ->
+    #     beforeEach ->
+    #       TuringEmailApp.collections.emailThreads.reset(
+    #         _.map(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE),
+    #           (emailThread) => emailThread.toJSON()
+    #         )
+    #       )
+    #       emailThread = TuringEmailApp.collections.emailThreads.at(0)
+    #       @setStub = sinon.stub(emailThread, "set")
+    #       TuringEmailApp.showEmailThread emailThread
   
-        afterEach ->
-          @setStub.restore()
+    #     afterEach ->
+    #       @setStub.restore()
   
-        describe "when the number of check list items is not 0", ->
+    #     describe "when the number of check list items is not 0", ->
   
-          beforeEach ->
-            @getCheckedListItemViewsFunction = TuringEmailApp.getCheckedListItemViews
-            TuringEmailApp.views.emailThreadsListView.getCheckedListItemViews = -> return {"length" : 1}
+    #       beforeEach ->
+    #         @getCheckedListItemViewsFunction = TuringEmailApp.getCheckedListItemViews
+    #         TuringEmailApp.views.emailThreadsListView.getCheckedListItemViews = -> return {"length" : 1}
   
-          afterEach ->
-            TuringEmailApp.getCheckedListItemViews = @getCheckedListItemViewsFunction
+    #       afterEach ->
+    #         TuringEmailApp.getCheckedListItemViews = @getCheckedListItemViewsFunction
   
-          it "does not shows the current email thread view", ->
-            spy = sinon.spy(TuringEmailApp.currentEmailThreadView.$el, "show")
-            TuringEmailApp.listItemUnchecked null, null
-            expect(spy).not.toHaveBeenCalled()
-            spy.restore()
+    #       it "does not shows the current email thread view", ->
+    #         spy = sinon.spy(TuringEmailApp.currentEmailThreadView.$el, "show")
+    #         TuringEmailApp.listItemUnchecked null, null
+    #         expect(spy).not.toHaveBeenCalled()
+    #         spy.restore()
   
-        describe "when the number of check list items is 0 and there is a current email thread view", ->
+    #     describe "when the number of check list items is 0 and there is a current email thread view", ->
   
-          beforeEach ->
-            @getCheckedListItemViewsFunction = TuringEmailApp.getCheckedListItemViews
-            TuringEmailApp.views.emailThreadsListView.getCheckedListItemViews = -> return {"length" : 0}
+    #       beforeEach ->
+    #         @getCheckedListItemViewsFunction = TuringEmailApp.getCheckedListItemViews
+    #         TuringEmailApp.views.emailThreadsListView.getCheckedListItemViews = -> return {"length" : 0}
   
-          afterEach ->
-            TuringEmailApp.getCheckedListItemViews = @getCheckedListItemViewsFunction
+    #       afterEach ->
+    #         TuringEmailApp.getCheckedListItemViews = @getCheckedListItemViewsFunction
   
-          it "shows the current email thread view", ->
-            spy = sinon.spy(TuringEmailApp.currentEmailThreadView.$el, "show")
-            TuringEmailApp.listItemUnchecked null, null
-            expect(spy).toHaveBeenCalled()
-            spy.restore()
+    #       it "shows the current email thread view", ->
+    #         spy = sinon.spy(TuringEmailApp.currentEmailThreadView.$el, "show")
+    #         TuringEmailApp.listItemUnchecked null, null
+    #         expect(spy).toHaveBeenCalled()
+    #         spy.restore()
   
-    describe "#emailFolderSelected", ->
+    # describe "#emailFolderSelected", ->
   
-      describe "when the email folder is defined", ->
-        beforeEach ->
-          @emailFolder = new TuringEmailApp.Models.EmailFolder()
+    #   describe "when the email folder is defined", ->
+    #     beforeEach ->
+    #       @emailFolder = new TuringEmailApp.Models.EmailFolder()
   
-        describe "when the window location is already set to show the email folder page", ->
-          beforeEach ->
-            TuringEmailApp.routers.emailThreadsRouter.navigate("#email_folder/INBOX", trigger: true)
-            @emailFolder.set("label_id", "INBOX")
+    #     describe "when the window location is already set to show the email folder page", ->
+    #       beforeEach ->
+    #         TuringEmailApp.routers.emailThreadsRouter.navigate("#email_folder/INBOX", trigger: true)
+    #         @emailFolder.set("label_id", "INBOX")
   
-          it "navigates to the email folder url", ->
-            spy = sinon.spy(TuringEmailApp.routers.emailFoldersRouter, "showFolder")
-            TuringEmailApp.emailFolderSelected null, @emailFolder
-            expect(spy).toHaveBeenCalledWith(@emailFolder.get("label_id"))
-            spy.restore()
+    #       it "navigates to the email folder url", ->
+    #         spy = sinon.spy(TuringEmailApp.routers.emailFoldersRouter, "showFolder")
+    #         TuringEmailApp.emailFolderSelected null, @emailFolder
+    #         expect(spy).toHaveBeenCalledWith(@emailFolder.get("label_id"))
+    #         spy.restore()
   
-        describe "when the window location is not already set to show the email folder page", ->
-          beforeEach ->
-            @emailFolder.set("label_id", "Label_45")
+    #     describe "when the window location is not already set to show the email folder page", ->
+    #       beforeEach ->
+    #         @emailFolder.set("label_id", "Label_45")
   
-          it "navigates to the email folder url", ->
-            spy = sinon.spy(TuringEmailApp.routers.emailFoldersRouter, "navigate")
-            TuringEmailApp.emailFolderSelected null, @emailFolder
-            expect(spy).toHaveBeenCalledWith("#email_folder/" + @emailFolder.get("label_id"))
-            spy.restore()
+    #       it "navigates to the email folder url", ->
+    #         spy = sinon.spy(TuringEmailApp.routers.emailFoldersRouter, "navigate")
+    #         TuringEmailApp.emailFolderSelected null, @emailFolder
+    #         expect(spy).toHaveBeenCalledWith("#email_folder/" + @emailFolder.get("label_id"))
+    #         spy.restore()
   
-    describe "#draftChanged", ->
-      beforeEach ->
-        @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
-        @selectedEmailFolderIDStub.returns("INBOX")
+    # describe "#draftChanged", ->
+    #   beforeEach ->
+    #     @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
+    #     @selectedEmailFolderIDStub.returns("INBOX")
         
-        @reloadEmailThreadsStub = sinon.stub(TuringEmailApp, "reloadEmailThreads")
-        @loadEmailFoldersStub = sinon.stub(TuringEmailApp, "loadEmailFolders")
+    #     @reloadEmailThreadsStub = sinon.stub(TuringEmailApp, "reloadEmailThreads")
+    #     @loadEmailFoldersStub = sinon.stub(TuringEmailApp, "loadEmailFolders")
 
-        @draft = new TuringEmailApp.Models.EmailDraft()
+    #     @draft = new TuringEmailApp.Models.EmailDraft()
 
-        TuringEmailApp.collections.emailThreads.reset(
-          _.map(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE),
-            (emailThread) => emailThread.toJSON()
-          )
-        )
-        @emailThreadParent = TuringEmailApp.collections.emailThreads.at(0)
+    #     TuringEmailApp.collections.emailThreads.reset(
+    #       _.map(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE),
+    #         (emailThread) => emailThread.toJSON()
+    #       )
+    #     )
+    #     @emailThreadParent = TuringEmailApp.collections.emailThreads.at(0)
         
-        @setStub = sinon.stub(@emailThreadParent, "set", ->)
-        TuringEmailApp.draftChanged(TuringEmailApp.views.composeView, @draft, @emailThreadParent)
+    #     @setStub = sinon.stub(@emailThreadParent, "set", ->)
+    #     TuringEmailApp.draftChanged(TuringEmailApp.views.composeView, @draft, @emailThreadParent)
       
-      afterEach ->
-        @selectedEmailFolderIDStub.restore()
-        @reloadEmailThreadsStub.restore()
-        @loadEmailFoldersStub.restore()
-        @setStub.restore()
+    #   afterEach ->
+    #     @selectedEmailFolderIDStub.restore()
+    #     @reloadEmailThreadsStub.restore()
+    #     @loadEmailFoldersStub.restore()
+    #     @setStub.restore()
 
-      it "reloads the email threads", ->
-        expect(@reloadEmailThreadsStub).toHaveBeenCalled()
+    #   it "reloads the email threads", ->
+    #     expect(@reloadEmailThreadsStub).toHaveBeenCalled()
 
-      it "reloads the email folders", ->
-        expect(@loadEmailFoldersStub).toHaveBeenCalled()
+    #   it "reloads the email folders", ->
+    #     expect(@loadEmailFoldersStub).toHaveBeenCalled()
         
-      it "updates the emailThreadParent", ->
-        expect(@setStub).toHaveBeenCalledWith("emails")
+    #   it "updates the emailThreadParent", ->
+    #     expect(@setStub).toHaveBeenCalledWith("emails")
 
-    describe "#createFolderFormSubmitted", ->
-      beforeEach ->
-        seededChance = new Chance(1)
-        @randomFolderName = seededChance.string({length: 20})
+    # describe "#createFolderFormSubmitted", ->
+    #   beforeEach ->
+    #     seededChance = new Chance(1)
+    #     @randomFolderName = seededChance.string({length: 20})
 
-      describe "when the mode is label", ->
+    #   describe "when the mode is label", ->
 
-        it "calls labels as clicked with the label name", ->
-          spy = sinon.spy(TuringEmailApp, "labelAsClicked")
-          TuringEmailApp.createFolderFormSubmitted("label", @randomFolderName)
-          expect(spy).toHaveBeenCalled()
-          expect(spy).toHaveBeenCalledWith(undefined, @randomFolderName)
-          spy.restore()
+    #     it "calls labels as clicked with the label name", ->
+    #       spy = sinon.spy(TuringEmailApp, "labelAsClicked")
+    #       TuringEmailApp.createFolderFormSubmitted("label", @randomFolderName)
+    #       expect(spy).toHaveBeenCalled()
+    #       expect(spy).toHaveBeenCalledWith(undefined, @randomFolderName)
+    #       spy.restore()
 
-      describe "when the mode is folder", ->
+    #   describe "when the mode is folder", ->
 
-        it "calls move to folder clicked with the folder name", ->
-          spy = sinon.spy(TuringEmailApp, "moveToFolderClicked")
-          TuringEmailApp.createFolderFormSubmitted("folder", @randomFolderName)
-          expect(spy).toHaveBeenCalled()
-          expect(spy).toHaveBeenCalledWith(undefined, @randomFolderName)
-          spy.restore()
+    #     it "calls move to folder clicked with the folder name", ->
+    #       spy = sinon.spy(TuringEmailApp, "moveToFolderClicked")
+    #       TuringEmailApp.createFolderFormSubmitted("folder", @randomFolderName)
+    #       expect(spy).toHaveBeenCalled()
+    #       expect(spy).toHaveBeenCalledWith(undefined, @randomFolderName)
+    #       spy.restore()
 
-    describe "#emailThreadSeenChanged", ->
-      beforeEach ->
-        TuringEmailApp.collections.emailThreads.reset(
-          _.map(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE),
-            (emailThread) => emailThread.toJSON()
-          )
-        )
-        TuringEmailApp.collections.emailFolders.reset(FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE))
+    # describe "#emailThreadSeenChanged", ->
+    #   beforeEach ->
+    #     TuringEmailApp.collections.emailThreads.reset(
+    #       _.map(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE),
+    #         (emailThread) => emailThread.toJSON()
+    #       )
+    #     )
+    #     TuringEmailApp.collections.emailFolders.reset(FactoryGirl.createLists("EmailFolder", FactoryGirl.SMALL_LIST_SIZE))
         
-        @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
-        @selectedEmailFolderIDStub.returns("INBOX")
+    #     @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
+    #     @selectedEmailFolderIDStub.returns("INBOX")
         
-        @emailThread = TuringEmailApp.collections.emailThreads.at(0)
-        @emailThread.set("folder_ids", [TuringEmailApp.collections.emailFolders.at(0).get("label_id")])
+    #     @emailThread = TuringEmailApp.collections.emailThreads.at(0)
+    #     @emailThread.set("folder_ids", [TuringEmailApp.collections.emailFolders.at(0).get("label_id")])
 
-        folderIDs = @emailThread.get("folder_ids")
-        expect(folderIDs.length > 0).toBeTruthy()
+    #     folderIDs = @emailThread.get("folder_ids")
+    #     expect(folderIDs.length > 0).toBeTruthy()
 
-        @unreadCounts = {}
-        for folderID in @emailThread.get("folder_ids")
-          folder = TuringEmailApp.collections.emailFolders.get(folderID)
-          @unreadCounts[folderID] = folder.get("num_unread_threads") 
+    #     @unreadCounts = {}
+    #     for folderID in @emailThread.get("folder_ids")
+    #       folder = TuringEmailApp.collections.emailFolders.get(folderID)
+    #       @unreadCounts[folderID] = folder.get("num_unread_threads") 
   
-      afterEach ->
-        @selectedEmailFolderIDStub.restore()
+    #   afterEach ->
+    #     @selectedEmailFolderIDStub.restore()
   
-      it "triggers a change:emailFolderUnreadCount event", ->
-        spy = sinon.backbone.spy(TuringEmailApp, "change:emailFolderUnreadCount")
+    #   it "triggers a change:emailFolderUnreadCount event", ->
+    #     spy = sinon.backbone.spy(TuringEmailApp, "change:emailFolderUnreadCount")
 
-        TuringEmailApp.emailThreadSeenChanged @emailThread, true
+    #     TuringEmailApp.emailThreadSeenChanged @emailThread, true
 
-        for folderID in @emailThread.get("folder_ids")
-          folder = TuringEmailApp.collections.emailFolders.get(folderID)
-          expect(spy).toHaveBeenCalledWith(TuringEmailApp, folder)
+    #     for folderID in @emailThread.get("folder_ids")
+    #       folder = TuringEmailApp.collections.emailFolders.get(folderID)
+    #       expect(spy).toHaveBeenCalledWith(TuringEmailApp, folder)
 
-        spy.restore()
+    #     spy.restore()
           
-      describe "seenValue=true", ->
-        beforeEach ->
-          TuringEmailApp.emailThreadSeenChanged @emailThread, true
+    #   describe "seenValue=true", ->
+    #     beforeEach ->
+    #       TuringEmailApp.emailThreadSeenChanged @emailThread, true
           
-        it "decrements the unread count", ->
-          for folderID in @emailThread.get("folder_ids")
-            folder = TuringEmailApp.collections.emailFolders.get(folderID)
-            expect(folder.get("num_unread_threads")).toEqual(@unreadCounts[folderID] - 1)
+    #     it "decrements the unread count", ->
+    #       for folderID in @emailThread.get("folder_ids")
+    #         folder = TuringEmailApp.collections.emailFolders.get(folderID)
+    #         expect(folder.get("num_unread_threads")).toEqual(@unreadCounts[folderID] - 1)
 
-      describe "seenValue=false", ->
-        beforeEach ->
-          TuringEmailApp.emailThreadSeenChanged @emailThread, false
+    #   describe "seenValue=false", ->
+    #     beforeEach ->
+    #       TuringEmailApp.emailThreadSeenChanged @emailThread, false
 
-        it "increments the unread count", ->
-          for folderID in @emailThread.get("folder_ids")
-            folder = TuringEmailApp.collections.emailFolders.get(folderID)
-            expect(folder.get("num_unread_threads")).toEqual(@unreadCounts[folderID] + 1)
+    #     it "increments the unread count", ->
+    #       for folderID in @emailThread.get("folder_ids")
+    #         folder = TuringEmailApp.collections.emailFolders.get(folderID)
+    #         expect(folder.get("num_unread_threads")).toEqual(@unreadCounts[folderID] + 1)
 
-    describe "#emailThreadFolderChanged", ->
+    # describe "#emailThreadFolderChanged", ->
 
-      describe "when the folder is not already in the collection", ->
-        beforeEach ->
-          @getStub = sinon.stub(TuringEmailApp.collections.emailFolders, "get")
-          @getStub.returns(null)
+    #   describe "when the folder is not already in the collection", ->
+    #     beforeEach ->
+    #       @getStub = sinon.stub(TuringEmailApp.collections.emailFolders, "get")
+    #       @getStub.returns(null)
 
-        afterEach ->
-          @getStub.restore()
+    #     afterEach ->
+    #       @getStub.restore()
 
-        it "it reloads the email folders", ->
-          spy = sinon.spy(TuringEmailApp, "loadEmailFolders")
-          TuringEmailApp.emailThreadFolderChanged undefined, {"label_id" : "INBOX"}
-          expect(spy).toHaveBeenCalled()
-          spy.restore()
+    #     it "it reloads the email folders", ->
+    #       spy = sinon.spy(TuringEmailApp, "loadEmailFolders")
+    #       TuringEmailApp.emailThreadFolderChanged undefined, {"label_id" : "INBOX"}
+    #       expect(spy).toHaveBeenCalled()
+    #       spy.restore()
 
-      describe "when the folder is already in the collection", ->
-        beforeEach ->
-          @getStub = sinon.stub(TuringEmailApp.collections.emailFolders, "get")
-          @getStub.returns({})
+    #   describe "when the folder is already in the collection", ->
+    #     beforeEach ->
+    #       @getStub = sinon.stub(TuringEmailApp.collections.emailFolders, "get")
+    #       @getStub.returns({})
 
-        afterEach ->
-          @getStub.restore()
+    #     afterEach ->
+    #       @getStub.restore()
 
-        it "it reloads the email folders", ->
-          spy = sinon.spy(TuringEmailApp, "loadEmailFolders")
-          TuringEmailApp.emailThreadFolderChanged undefined, {"label_id" : "INBOX"}
-          expect(spy).not.toHaveBeenCalled()
-          spy.restore()
+    #     it "it reloads the email folders", ->
+    #       spy = sinon.spy(TuringEmailApp, "loadEmailFolders")
+    #       TuringEmailApp.emailThreadFolderChanged undefined, {"label_id" : "INBOX"}
+    #       expect(spy).not.toHaveBeenCalled()
+    #       spy.restore()
 
-    describe "#isSplitPaneMode", ->
-      beforeEach ->
-        TuringEmailApp.models.userConfiguration = new TuringEmailApp.Models.UserConfiguration(FactoryGirl.create("UserConfiguration"))
+    # describe "#isSplitPaneMode", ->
+    #   beforeEach ->
+    #     TuringEmailApp.models.userConfiguration = new TuringEmailApp.Models.UserConfiguration(FactoryGirl.create("UserConfiguration"))
     
-      describe "when split pane mode is horizontal in the user settings", ->
-        beforeEach ->
-          TuringEmailApp.models.userConfiguration.attributes.split_pane_mode = "horizontal"
+    #   describe "when split pane mode is horizontal in the user settings", ->
+    #     beforeEach ->
+    #       TuringEmailApp.models.userConfiguration.attributes.split_pane_mode = "horizontal"
     
-        it "should return true", ->
-          expect(TuringEmailApp.isSplitPaneMode()).toBeTruthy()
+    #     it "should return true", ->
+    #       expect(TuringEmailApp.isSplitPaneMode()).toBeTruthy()
     
-      describe "when split pane mode is vertical in the user settings", ->
-        beforeEach ->
-          TuringEmailApp.models.userConfiguration.attributes.split_pane_mode = "vertical"
+    #   describe "when split pane mode is vertical in the user settings", ->
+    #     beforeEach ->
+    #       TuringEmailApp.models.userConfiguration.attributes.split_pane_mode = "vertical"
     
-        it "should return true", ->
-          expect(TuringEmailApp.isSplitPaneMode()).toBeTruthy()
+    #     it "should return true", ->
+    #       expect(TuringEmailApp.isSplitPaneMode()).toBeTruthy()
     
-      describe "when split pane mode is off in the user settings", ->
-        beforeEach ->
-          TuringEmailApp.models.userConfiguration.attributes.split_pane_mode = "off"
+    #   describe "when split pane mode is off in the user settings", ->
+    #     beforeEach ->
+    #       TuringEmailApp.models.userConfiguration.attributes.split_pane_mode = "off"
 
-        it "should return false", ->
-          expect(TuringEmailApp.isSplitPaneMode()).toBeFalsy()
+    #     it "should return false", ->
+    #       expect(TuringEmailApp.isSplitPaneMode()).toBeFalsy()
       
-    describe "#showEmailThread", ->
-      beforeEach ->
-        TuringEmailApp.collections.emailThreads.reset(
-          _.map(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE),
-            (emailThread) => emailThread.toJSON()
-          )
-        )
-        @emailThread = TuringEmailApp.collections.emailThreads.at(0)
+    # describe "#showEmailThread", ->
+    #   beforeEach ->
+    #     TuringEmailApp.collections.emailThreads.reset(
+    #       _.map(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE),
+    #         (emailThread) => emailThread.toJSON()
+    #       )
+    #     )
+    #     @emailThread = TuringEmailApp.collections.emailThreads.at(0)
         
-        @setStub = sinon.stub(@emailThread, "set")
-        @eventSpy = null
+    #     @setStub = sinon.stub(@emailThread, "set")
+    #     @eventSpy = null
 
-      afterEach ->
-        @eventSpy.restore() if @eventSpy?
-        @setStub.restore()
+    #   afterEach ->
+    #     @eventSpy.restore() if @eventSpy?
+    #     @setStub.restore()
     
-      emailThreadViewEvents = ["goBackClicked", "replyClicked", "forwardClicked", "archiveClicked", "trashClicked"]
-      for event in emailThreadViewEvents
-        it "hooks the emailThreadView " + event + " event", ->
-          @eventSpy = sinon.spy(TuringEmailApp, event)
+    #   emailThreadViewEvents = ["goBackClicked", "replyClicked", "forwardClicked", "archiveClicked", "trashClicked"]
+    #   for event in emailThreadViewEvents
+    #     it "hooks the emailThreadView " + event + " event", ->
+    #       @eventSpy = sinon.spy(TuringEmailApp, event)
     
-          TuringEmailApp.showEmailThread(@emailThread)
-          TuringEmailApp.currentEmailThreadView.trigger(event)
+    #       TuringEmailApp.showEmailThread(@emailThread)
+    #       TuringEmailApp.currentEmailThreadView.trigger(event)
 
-          expect(@eventSpy).toHaveBeenCalled()
+    #       expect(@eventSpy).toHaveBeenCalled()
 
-      describe "when the current email Thread is not null", ->
-        beforeEach ->
-          TuringEmailApp.showEmailThread(@emailThread)
-          @appSpy = sinon.spy(TuringEmailApp, "stopListening")
-          @viewSpy = sinon.spy(TuringEmailApp.currentEmailThreadView, "stopListening")
+    #   describe "when the current email Thread is not null", ->
+    #     beforeEach ->
+    #       TuringEmailApp.showEmailThread(@emailThread)
+    #       @appSpy = sinon.spy(TuringEmailApp, "stopListening")
+    #       @viewSpy = sinon.spy(TuringEmailApp.currentEmailThreadView, "stopListening")
           
-        afterEach ->
-          @appSpy.restore()
-          @viewSpy.restore()
+    #     afterEach ->
+    #       @appSpy.restore()
+    #       @viewSpy.restore()
 
-        it "stops listening to the current email thread view", ->
-          TuringEmailApp.showEmailThread(@emailThread)
-          expect(@appSpy).toHaveBeenCalled()
-          expect(@viewSpy).toHaveBeenCalled()
+    #     it "stops listening to the current email thread view", ->
+    #       TuringEmailApp.showEmailThread(@emailThread)
+    #       expect(@appSpy).toHaveBeenCalled()
+    #       expect(@viewSpy).toHaveBeenCalled()
 
-    describe "#showEmailEditorWithEmailThread", ->
-      beforeEach ->
-        TuringEmailApp.collections.emailThreads.reset(
-          _.map(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE),
-            (emailThread) => emailThread.toJSON()
-          )
-        )
+    # describe "#showEmailEditorWithEmailThread", ->
+    #   beforeEach ->
+    #     TuringEmailApp.collections.emailThreads.reset(
+    #       _.map(FactoryGirl.createLists("EmailThread", FactoryGirl.SMALL_LIST_SIZE),
+    #         (emailThread) => emailThread.toJSON()
+    #       )
+    #     )
 
-        @emailThread = TuringEmailApp.collections.emailThreads.at(0)
-        @setStub = sinon.stub(@emailThread, "set")
+    #     @emailThread = TuringEmailApp.collections.emailThreads.at(0)
+    #     @setStub = sinon.stub(@emailThread, "set")
         
-        @email = _.last(@emailThread.get("emails"))
+    #     @email = _.last(@emailThread.get("emails"))
         
-      afterEach ->
-        @setStub.restore()
+    #   afterEach ->
+    #     @setStub.restore()
     
-      it "loads the email thread", ->
-        spy = sinon.spy(TuringEmailApp, "loadEmailThread")
-        TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid")
-        expect(spy).toHaveBeenCalledWith(@emailThread.get("uid"))
-        spy.restore()
+    #   it "loads the email thread", ->
+    #     spy = sinon.spy(TuringEmailApp, "loadEmailThread")
+    #     TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid")
+    #     expect(spy).toHaveBeenCalledWith(@emailThread.get("uid"))
+    #     spy.restore()
     
-      it "shows the compose view", ->
-        spy = sinon.spy(TuringEmailApp.views.composeView, "show")
-        TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid")
-        expect(spy).toHaveBeenCalled()
-        spy.restore()
+    #   it "shows the compose view", ->
+    #     spy = sinon.spy(TuringEmailApp.views.composeView, "show")
+    #     TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid")
+    #     expect(spy).toHaveBeenCalled()
+    #     spy.restore()
     
-      describe "when in draft mode", ->
+    #   describe "when in draft mode", ->
     
-        it "loads the email draft", ->
-          spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailDraft")
-          TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid")
-          expect(spy).toHaveBeenCalledWith(@email, @emailThread)
-          spy.restore()
+    #     it "loads the email draft", ->
+    #       spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailDraft")
+    #       TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid")
+    #       expect(spy).toHaveBeenCalledWith(@email, @emailThread)
+    #       spy.restore()
     
-      describe "when in forward mode", ->
+    #   describe "when in forward mode", ->
     
-        it "loads the email as a forward", ->
-          spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailAsForward")
-          TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid"), "forward"
-          expect(spy).toHaveBeenCalledWith(@email, @emailThread)
-          spy.restore()
+    #     it "loads the email as a forward", ->
+    #       spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailAsForward")
+    #       TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid"), "forward"
+    #       expect(spy).toHaveBeenCalledWith(@email, @emailThread)
+    #       spy.restore()
     
-      describe "when in reply mode", ->
+    #   describe "when in reply mode", ->
     
-        it "loads the email as a reply", ->
-          spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailAsReply")
-          TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid"), "reply"
-          expect(spy).toHaveBeenCalledWith(@email, @emailThread)
-          spy.restore()
+    #     it "loads the email as a reply", ->
+    #       spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailAsReply")
+    #       TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid"), "reply"
+    #       expect(spy).toHaveBeenCalledWith(@email, @emailThread)
+    #       spy.restore()
 
-    describe "#moveTuringEmailReportToTop", ->
-      beforeEach ->
-        @listView = specCreateEmailThreadsListView()
-        @listViewDiv = @listView.$el
-        @emailThreads = @listView.collection
+    # describe "#moveTuringEmailReportToTop", ->
+    #   beforeEach ->
+    #     @listView = specCreateEmailThreadsListView()
+    #     @listViewDiv = @listView.$el
+    #     @emailThreads = @listView.collection
         
-        TuringEmailApp.views.emailThreadsListView = @listView
+    #     TuringEmailApp.views.emailThreadsListView = @listView
 
-        @moveItemToTopStub = sinon.stub(TuringEmailApp.views.emailThreadsListView, "moveItemToTop")
+    #     @moveItemToTopStub = sinon.stub(TuringEmailApp.views.emailThreadsListView, "moveItemToTop")
   
-      afterEach ->
-        @server.restore()
-        @listViewDiv.remove()
-        @moveItemToTopStub.restore()
+    #   afterEach ->
+    #     @server.restore()
+    #     @listViewDiv.remove()
+    #     @moveItemToTopStub.restore()
 
-      describe "if there is not a report email", ->
-        beforeEach ->
-          TuringEmailApp.moveTuringEmailReportToTop(TuringEmailApp.views.emailThreadsListView)
+    #   describe "if there is not a report email", ->
+    #     beforeEach ->
+    #       TuringEmailApp.moveTuringEmailReportToTop(TuringEmailApp.views.emailThreadsListView)
           
-        it "should leave the emails in the same order", ->
-          expect(@moveItemToTopStub).not.toHaveBeenCalled()
+    #     it "should leave the emails in the same order", ->
+    #       expect(@moveItemToTopStub).not.toHaveBeenCalled()
 
-      describe "if there is a report email", ->
-        beforeEach ->
-          @turingEmailThread = _.values(TuringEmailApp.views.emailThreadsListView.listItemViews)[0].model
+    #   describe "if there is a report email", ->
+    #     beforeEach ->
+    #       @turingEmailThread = _.values(TuringEmailApp.views.emailThreadsListView.listItemViews)[0].model
 
-          TuringEmailApp.views.emailThreadsListView.collection.remove @turingEmailThread
-          @turingEmailThread.set("subject", "Turing Email - Your daily Brain Report!")
-          TuringEmailApp.views.emailThreadsListView.collection.add @turingEmailThread
-          TuringEmailApp.views.emailThreadsListView.render()
+    #       TuringEmailApp.views.emailThreadsListView.collection.remove @turingEmailThread
+    #       @turingEmailThread.set("subject", "Turing Email - Your daily Brain Report!")
+    #       TuringEmailApp.views.emailThreadsListView.collection.add @turingEmailThread
+    #       TuringEmailApp.views.emailThreadsListView.render()
 
-          TuringEmailApp.moveTuringEmailReportToTop(TuringEmailApp.views.emailThreadsListView)
+    #       TuringEmailApp.moveTuringEmailReportToTop(TuringEmailApp.views.emailThreadsListView)
 
-        it "should move the email to the top", ->
-          expect(@moveItemToTopStub).toHaveBeenCalledWith(@turingEmailThread)
+    #     it "should move the email to the top", ->
+    #       expect(@moveItemToTopStub).toHaveBeenCalledWith(@turingEmailThread)
 
-    describe "#showEmails", ->
-      beforeEach ->
-        @showEmailsSpy = sinon.spy(TuringEmailApp.views.mainView, "showEmails")
+    # describe "#showEmails", ->
+    #   beforeEach ->
+    #     @showEmailsSpy = sinon.spy(TuringEmailApp.views.mainView, "showEmails")
         
-        TuringEmailApp.showEmails()
+    #     TuringEmailApp.showEmails()
         
-      afterEach ->
-        @showEmailsSpy.restore()
+    #   afterEach ->
+    #     @showEmailsSpy.restore()
         
-      it "shows the emails on the main view", ->
-        expect(@showEmailsSpy).toHaveBeenCalledWith(TuringEmailApp.isSplitPaneMode())
+    #   it "shows the emails on the main view", ->
+    #     expect(@showEmailsSpy).toHaveBeenCalledWith(TuringEmailApp.isSplitPaneMode())
 
-    describe "#showAppsLibrary", ->
-      beforeEach ->
-        @oldAppsLibraryView = TuringEmailApp.appsLibraryView = {}
+    # describe "#showAppsLibrary", ->
+    #   beforeEach ->
+    #     @oldAppsLibraryView = TuringEmailApp.appsLibraryView = {}
         
-        @appsLibraryView = {}
-        @showAppsLibraryStub = sinon.stub(TuringEmailApp.views.mainView, "showAppsLibrary", => @appsLibraryView)
-        @listenToStub = sinon.stub(TuringEmailApp, "listenTo", ->)
-        @stopListeningStub = sinon.stub(TuringEmailApp, "stopListening", ->)
+    #     @appsLibraryView = {}
+    #     @showAppsLibraryStub = sinon.stub(TuringEmailApp.views.mainView, "showAppsLibrary", => @appsLibraryView)
+    #     @listenToStub = sinon.stub(TuringEmailApp, "listenTo", ->)
+    #     @stopListeningStub = sinon.stub(TuringEmailApp, "stopListening", ->)
 
-        TuringEmailApp.showAppsLibrary()
+    #     TuringEmailApp.showAppsLibrary()
       
-      afterEach ->
-        @stopListeningStub.restore()
-        @listenToStub.restore()
-        @showAppsLibraryStub.restore()
+    #   afterEach ->
+    #     @stopListeningStub.restore()
+    #     @listenToStub.restore()
+    #     @showAppsLibraryStub.restore()
 
-      it "shows the apps library on the main view", ->
-        expect(@showAppsLibraryStub).toHaveBeenCalled()
+    #   it "shows the apps library on the main view", ->
+    #     expect(@showAppsLibraryStub).toHaveBeenCalled()
         
-      it "stops listening on the old apps library view", ->
-        expect(@stopListeningStub).toHaveBeenCalledWith(@oldAppsLibraryView)
+    #   it "stops listening on the old apps library view", ->
+    #     expect(@stopListeningStub).toHaveBeenCalledWith(@oldAppsLibraryView)
         
-      it "listens for installAppClicked on the apps library view", ->
-        expect(@listenToStub).toHaveBeenCalledWith(@appsLibraryView, "installAppClicked", TuringEmailApp.installAppClicked)
+    #   it "listens for installAppClicked on the apps library view", ->
+    #     expect(@listenToStub).toHaveBeenCalledWith(@appsLibraryView, "installAppClicked", TuringEmailApp.installAppClicked)
 
-    describe "#showDelayedEmails", ->
-      beforeEach ->
-        @oldDelayedEmailsView = TuringEmailApp.delayedEmailsView = {}
+    # describe "#showDelayedEmails", ->
+    #   beforeEach ->
+    #     @oldDelayedEmailsView = TuringEmailApp.delayedEmailsView = {}
 
-        @delayedEmailsView = {}
-        @showDelayedEmailsStub = sinon.stub(TuringEmailApp.views.mainView, "showDelayedEmails", => @delayedEmailsView)
-        @listenToStub = sinon.stub(TuringEmailApp, "listenTo", ->)
-        @stopListeningStub = sinon.stub(TuringEmailApp, "stopListening", ->)
+    #     @delayedEmailsView = {}
+    #     @showDelayedEmailsStub = sinon.stub(TuringEmailApp.views.mainView, "showDelayedEmails", => @delayedEmailsView)
+    #     @listenToStub = sinon.stub(TuringEmailApp, "listenTo", ->)
+    #     @stopListeningStub = sinon.stub(TuringEmailApp, "stopListening", ->)
 
-        TuringEmailApp.showDelayedEmails()
+    #     TuringEmailApp.showDelayedEmails()
 
-      afterEach ->
-        @stopListeningStub.restore()
-        @listenToStub.restore()
-        @showDelayedEmailsStub.restore()
+    #   afterEach ->
+    #     @stopListeningStub.restore()
+    #     @listenToStub.restore()
+    #     @showDelayedEmailsStub.restore()
 
-      it "shows the delayed emails on the main view", ->
-        expect(@showDelayedEmailsStub).toHaveBeenCalled()
+    #   it "shows the delayed emails on the main view", ->
+    #     expect(@showDelayedEmailsStub).toHaveBeenCalled()
 
-      it "stops listening on the old delayed emails view", ->
-        expect(@stopListeningStub).toHaveBeenCalledWith(@oldDelayedEmailsView)
+    #   it "stops listening on the old delayed emails view", ->
+    #     expect(@stopListeningStub).toHaveBeenCalledWith(@oldDelayedEmailsView)
 
-      it "listens for deleteDelayedEmailClicked on the delayed emails view", ->
-        expect(@listenToStub).toHaveBeenCalledWith(@delayedEmailsView, "deleteDelayedEmailClicked", TuringEmailApp.deleteDelayedEmailClicked)
+    #   it "listens for deleteDelayedEmailClicked on the delayed emails view", ->
+    #     expect(@listenToStub).toHaveBeenCalledWith(@delayedEmailsView, "deleteDelayedEmailClicked", TuringEmailApp.deleteDelayedEmailClicked)
         
-    describe "#showSettings", ->
-      beforeEach ->
-        @oldSettingsView = TuringEmailApp.settingsView = {}
+    # describe "#showSettings", ->
+    #   beforeEach ->
+    #     @oldSettingsView = TuringEmailApp.settingsView = {}
         
-        @settingsView = {}
-        @showSettingsStub = sinon.stub(TuringEmailApp.views.mainView, "showSettings", => @settingsView)
-        @listenToStub = sinon.stub(TuringEmailApp, "listenTo", ->)
-        @stopListeningStub = sinon.stub(TuringEmailApp, "stopListening", ->)
+    #     @settingsView = {}
+    #     @showSettingsStub = sinon.stub(TuringEmailApp.views.mainView, "showSettings", => @settingsView)
+    #     @listenToStub = sinon.stub(TuringEmailApp, "listenTo", ->)
+    #     @stopListeningStub = sinon.stub(TuringEmailApp, "stopListening", ->)
         
-        @server.restore()
+    #     @server.restore()
 
-        brainRulesFixtures = fixture.load("rules/brain_rules.fixture.json", true)
-        @validBrainRulesFixture = brainRulesFixtures[0]
+    #     brainRulesFixtures = fixture.load("rules/brain_rules.fixture.json", true)
+    #     @validBrainRulesFixture = brainRulesFixtures[0]
 
-        emailRulesFixtures = fixture.load("rules/email_rules.fixture.json", true)
-        @validEmailRulesFixture = emailRulesFixtures[0]
+    #     emailRulesFixtures = fixture.load("rules/email_rules.fixture.json", true)
+    #     @validEmailRulesFixture = emailRulesFixtures[0]
 
-        @server = sinon.fakeServer.create()
-        @server.respondWith "GET", "/api/v1/genie_rules", JSON.stringify(@validBrainRulesFixture)
-        @server.respondWith "GET", "/api/v1/email_rules", JSON.stringify(@validEmailRulesFixture)
+    #     @server = sinon.fakeServer.create()
+    #     @server.respondWith "GET", "/api/v1/genie_rules", JSON.stringify(@validBrainRulesFixture)
+    #     @server.respondWith "GET", "/api/v1/email_rules", JSON.stringify(@validEmailRulesFixture)
 
-        userConfigurationData = FactoryGirl.create("UserConfiguration")
-        TuringEmailApp.models.userConfiguration = new TuringEmailApp.Models.UserConfiguration(userConfigurationData)
+    #     userConfigurationData = FactoryGirl.create("UserConfiguration")
+    #     TuringEmailApp.models.userConfiguration = new TuringEmailApp.Models.UserConfiguration(userConfigurationData)
         
-        TuringEmailApp.showSettings()
+    #     TuringEmailApp.showSettings()
 
-      afterEach ->
-        @server.restore()
+    #   afterEach ->
+    #     @server.restore()
 
-        @stopListeningStub.restore()
-        @listenToStub.restore()
-        @showSettingsStub.restore()
+    #     @stopListeningStub.restore()
+    #     @listenToStub.restore()
+    #     @showSettingsStub.restore()
 
-      it "shows the Settings on the main view", ->
-        expect(@showSettingsStub).toHaveBeenCalled()
-        @showSettingsStub.restore()
+    #   it "shows the Settings on the main view", ->
+    #     expect(@showSettingsStub).toHaveBeenCalled()
+    #     @showSettingsStub.restore()
 
-      it "stops listening on the old settings view", ->
-        expect(@stopListeningStub).toHaveBeenCalledWith(@oldSettingsView)
+    #   it "stops listening on the old settings view", ->
+    #     expect(@stopListeningStub).toHaveBeenCalledWith(@oldSettingsView)
 
-      it "listens for uninstallAppClicked on the settings view", ->
-        expect(@listenToStub).toHaveBeenCalledWith(@settingsView, "uninstallAppClicked", TuringEmailApp.uninstallAppClicked)
+    #   it "listens for uninstallAppClicked on the settings view", ->
+    #     expect(@listenToStub).toHaveBeenCalledWith(@settingsView, "uninstallAppClicked", TuringEmailApp.uninstallAppClicked)
 
-      it "loads the brain rules", ->
-        @server.respond()
-        validateBrainRulesAttributes(TuringEmailApp.collections.brainRules.models[0].toJSON())
+    #   it "loads the brain rules", ->
+    #     @server.respond()
+    #     validateBrainRulesAttributes(TuringEmailApp.collections.brainRules.models[0].toJSON())
 
-      it "loads the email rules", ->
-        @server.respond()
-        validateEmailRulesAttributes(TuringEmailApp.collections.emailRules.models[0].toJSON())
+    #   it "loads the email rules", ->
+    #     @server.respond()
+    #     validateEmailRulesAttributes(TuringEmailApp.collections.emailRules.models[0].toJSON())
 
-    describe "#showAnalytics", ->
-      beforeEach ->
-        @showAnalyticsSpy = sinon.spy(TuringEmailApp.views.mainView, "showAnalytics")
+    # describe "#showAnalytics", ->
+    #   beforeEach ->
+    #     @showAnalyticsSpy = sinon.spy(TuringEmailApp.views.mainView, "showAnalytics")
 
-        TuringEmailApp.showAnalytics()
+    #     TuringEmailApp.showAnalytics()
 
-      afterEach ->
-        @showAnalyticsSpy.restore()
+    #   afterEach ->
+    #     @showAnalyticsSpy.restore()
 
-      it "shows the Analytics on the main view", ->
-        expect(@showAnalyticsSpy).toHaveBeenCalled()
+    #   it "shows the Analytics on the main view", ->
+    #     expect(@showAnalyticsSpy).toHaveBeenCalled()
 
-    describe "#showReport", ->
-      beforeEach ->
-        @showReportSpy = sinon.spy(TuringEmailApp.views.mainView, "showReport")
+    # describe "#showReport", ->
+    #   beforeEach ->
+    #     @showReportSpy = sinon.spy(TuringEmailApp.views.mainView, "showReport")
 
-        TuringEmailApp.showReport(TuringEmailApp.Models.Reports.AttachmentsReport,
-                                  TuringEmailApp.Views.Reports.AttachmentsReportView)
+    #     TuringEmailApp.showReport(TuringEmailApp.Models.Reports.AttachmentsReport,
+    #                               TuringEmailApp.Views.Reports.AttachmentsReportView)
 
-      afterEach ->
-        @showReportSpy.restore()
+    #   afterEach ->
+    #     @showReportSpy.restore()
 
-      it "shows the Analytics on the main view", ->
-        expect(@showReportSpy).toHaveBeenCalled()
+    #   it "shows the Analytics on the main view", ->
+    #     expect(@showReportSpy).toHaveBeenCalled()

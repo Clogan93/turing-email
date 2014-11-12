@@ -1,5 +1,5 @@
 class StaticPagesController < ApplicationController
-  before_action :signed_in_user, :except => [:home]
+  before_action :signed_in_user, :except => [:home, :home2]
 
   def home
   end
