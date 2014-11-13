@@ -3,7 +3,6 @@ Rails.application.routes.default_url_options[:host] = $config.http_host
 Rails.application.routes.draw do
   root 'static_pages#home'
   get '/mail', to: 'static_pages#mail'
-  get '/home2', to: 'static_pages#home2'
   get '/analytics', to: 'static_pages#analytics'
 
   resources :sessions, only: [:new, :create, :destroy]
