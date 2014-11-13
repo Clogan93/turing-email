@@ -282,7 +282,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @reloadEmailThreads()
     @loadEmailFolders()
 
-    window.setTimeout(=>
+    @syncTimeout = window.setTimeout(=>
       @syncEmail()
     , 60000)
     

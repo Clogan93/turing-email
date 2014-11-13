@@ -123,7 +123,11 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
     @$el.find(".settings-button").click ->
       $(this).tooltip('hide')
-      
+
+    @$el.find(".pause-button").click ->
+      clearTimeout(TuringEmailApp.syncTimeout)
+      TuringEmailApp.showAlert("Email sync paused.", "alert-success")
+
   setupBulkActionButtons: ->
     @$el.find(".all-bulk-action").click =>
       @divAllCheckbox.iCheck("check")

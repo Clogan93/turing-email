@@ -130,6 +130,7 @@ describe "ToolbarView", ->
         expect(@toolbarView.$el.find(".paginate-right-link")).toHandle("click")
         expect(@toolbarView.$el.find(".label_as_link")).toHandle("click")
         expect(@toolbarView.$el.find(".move_to_folder_link")).toHandle("click")
+        expect(@toolbarView.$el.find(".pause-button")).toHandle("click")
 
       it "sets up bulk action buttons", ->
         spy = sinon.spy(@toolbarView, "setupBulkActionButtons")
@@ -193,6 +194,17 @@ describe "ToolbarView", ->
         it "triggers moveToFolderClicked", ->
           spy = sinon.backbone.spy(@toolbarView, "moveToFolderClicked")
           @toolbarView.$el.find(".move_to_folder_link").click()
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+
+      describe "when .pause-button is clicked", ->
+        it "clears the sync timeout", ->
+          @toolbarView.$el.find(".pause-button").click()
+          expect(TuringEmailApp.syncTimeout).not.toBeDefined()
+
+        it "show the pause alert", ->
+          spy = sinon.spy(TuringEmailApp, "showAlert")
+          @toolbarView.$el.find(".pause-button").click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
