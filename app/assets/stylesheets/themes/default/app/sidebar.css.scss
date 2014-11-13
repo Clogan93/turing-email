@@ -5,11 +5,13 @@
 .compose-button {
   font-variant: small-caps;
   margin-left: 10px;
+  min-width: 178px;
 }
 
 .mailbox-content {
 
   padding: 10px 20px 10px 0px;
+  min-width: 198px;
 
   .category-list {
     padding: 0px;
