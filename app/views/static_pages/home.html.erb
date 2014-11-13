@@ -21,7 +21,7 @@
 
         <div class="authentication-buttons" style="text-align: center">
           <% if !current_user.nil? %><a class='button' href=
-          "%3C%=%20mail_url%20%%3E">Mail</a><br>
+          "<%= mail_url %>">Mail</a><br>
           <br>
           <%= link_to('Signout', signout_path, :method => :delete, class: 'button') %>
           <% else %>
