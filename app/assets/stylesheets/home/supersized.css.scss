@@ -30,7 +30,7 @@ img {
 	height: 60px;
 	margin: -30px 0 0 -30px;
 	text-indent: -999em;
-	background: url(/assets/home/progress.gif) no-repeat center center;
+	background: image-url("home/progress.gif") no-repeat center center;
 }
 #supersized {
 	display: block;
@@ -83,7 +83,7 @@ img {
 	z-index: -10;
 }
 #supersized li.image-loading {
-	background: #111 url(/assets/home/progress.gif) no-repeat center center;
+	background: #111 image-url("home/progress.gif") no-repeat center center;
 	width: 100%;
 	height: 100%;
 }

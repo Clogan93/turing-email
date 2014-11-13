@@ -52,12 +52,12 @@
 }
 #prevslide {
 	left: 6px;
-    background: #000000 url(../images/arrow_left.png) center center no-repeat;
+    background: #000000 image-url("home/arrow_left.png") center center no-repeat;
 	background-color: rgba(0,0,0,0.94);
 }
 #nextslide {
 	right: 6px;
-    background: #000000 url(../images/arrow_right.png) center center no-repeat;
+    background: #000000 image-url("home/arrow_right.png") center center no-repeat;
 	background-color: rgba(0,0,0,0.94);
 }
 
@@ -71,7 +71,7 @@
 	bottom: 0px;
 	left: 0;
 	z-index: 4;
-	background: url(../images/nav-bg.png) repeat-x;
+	background: image-url("home/nav-bg.png") repeat-x;
 	position: fixed;
 }
 #controls {
@@ -97,7 +97,7 @@
 	float: left;
 	margin-top: 1px;
 	border-right: 1px solid #333;
-	background: url('../images/bg-hover.png') repeat-x 0 44px;
+	background: image-url("home/bg-hover.png") repeat-x 0 44px;
 }
 #play-button:hover {
 	background-position: 0 1px;
@@ -123,7 +123,7 @@ ul#slide-list li a {
 	display: block;
 	width: 12px;
 	height: 12px;
-	background: url('../images/nav-dot.html') no-repeat 0 -24px;
+	background: image-url("home/nav-dot.html") no-repeat 0 -24px;
 }
 ul#slide-list li a:hover {
 	background-position: 0 -12px;
@@ -133,7 +133,7 @@ ul#slide-list li a:hover {
 	float: right;
 	margin-top: 1px;
 	border-left: 1px solid #333;
-	background: url('../images/bg-hover.png') repeat-x 0 44px;
+	background: image-url("home/bg-hover.png") repeat-x 0 44px;
 }
 #tray-button:hover {
 	background-position: 0 1px;
@@ -148,13 +148,13 @@ ul#slide-list li a:hover {
 	left: 0;
 	height: 8px;
 	width: 100%;
-	background: url('../images/progress-back.html') repeat-x;
+	background: image-url("home/progress-back.html") repeat-x;
 }
 #progress-bar {
 	position: relative;
 	height: 2px;
 	width: 100%;
-	background: url('../images/progress-bar.html') repeat-x;
+	background: image-url("home/progress-bar.html") repeat-x;
 }
 /* Thumbnail Navigation
 	----------------------------*/	
@@ -193,7 +193,7 @@ ul#slide-list li a:hover {
 	z-index: 3;
 	bottom: 0;
 	left: 0;
-	background: url(../images/bg-black.png);
+	background: image-url("home/bg-black.png");
 	height: 150px;
 	width: 100%;
 	overflow: hidden;
@@ -211,11 +211,11 @@ ul#slide-list li a:hover {
 }
 #thumb-back {
 	left: 0;
-	background: url('../images/thumb-back.html') no-repeat center center;
+	background: image-url("home/thumb-back.html") no-repeat center center;
 }
 #thumb-forward {
 	right: 0;
-	background: url('../images/thumb-forward.html') no-repeat center center;
+	background: image-url("home/thumb-forward.html") no-repeat center center;
 }
 #thumb-back:hover, #thumb-forward:hover {
 	cursor: pointer;
