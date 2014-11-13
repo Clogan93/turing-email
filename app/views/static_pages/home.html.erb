@@ -42,8 +42,7 @@
           <!-- START LOGO -->
 
           <div class="logo large">
-            <a href="#home"><img alt="Logo" src="/assets/home/logo.png"
-            title="logo"></a>
+            <a href="#home"><%= image_tag('home/logo.png', :alt => 'Logo', :title => 'Logo') %></a>
           </div><!-- END LOGO -->
         </div><!-- END FOUR COLUMNS -->
 
@@ -100,8 +99,9 @@
           <div class="row">
             <div class="one-third column">
               <div class="service-features">
-                <div class="img-container"><img alt="Service Features" src=
-                "/assets/home/icons/icons/paperplane.png"></div>
+                <div class="img-container">
+                  <%= image_tag('home/icons/icons/paperplane.png', :alt => 'Service Features') %>
+                </div>
 
                 <h3>Email basics</h3>
 
@@ -112,8 +112,9 @@
 
             <div class="one-third column">
               <div class="service-features">
-                <div class="img-container"><img alt="Service Features" src=
-                "/assets/home/icons/icons/lab.png"></div>
+                <div class="img-container">
+                  <%= image_tag('home/icons/icons/lab.png', :alt => 'Service Features') %>
+                </div>
 
                 <h3>Innovative features</h3>
 
@@ -124,8 +125,9 @@
 
             <div class="one-third column">
               <div class="service-features">
-                <div class="img-container"><img alt="Service Features" src=
-                "/assets/home/icons/icons/like.png"></div>
+                <div class="img-container">
+                  <%= image_tag('home/icons/icons/like.png', :alt => 'Service Features') %>
+                </div>
 
                 <h3>Rapid improvement</h3>
 
@@ -290,8 +292,9 @@
         <div class="container clearfix">
           <div class="sixteen columns">
             <div class="copyright-logo">
-              <a href="#"><img alt="logo" src="/assets/home/logo2.png" title=
-              "logo"></a>
+              <a href="#">
+                <%= image_tag('home/logo2.png', :alt => 'logo', :title => 'logo') %>
+              </a>
             </div>
 
             <p>&copy; 2014 All Rights Reserved. Turing Technology, Inc.</p>
