@@ -45,15 +45,37 @@ div[contenteditable]:focus {
   float: left;
 }
 
-.emolji-dropdown span {
-  cursor: pointer;
+.emoji-dropdown-div {
+  width: 83px;
+  float: left;
 }
 
 .dropdown-menu.emoji-dropdown {
+
   width: 20.5%;
   left: 56.5%;
   height: 240px !important;
+
   span {
     cursor: pointer;
   }
+
+}
+
+.email-templates-dropdown-div {
+
+  width: 142px;
+  float: left;
+
+  button {
+    padding-top: 5px;
+    padding-bottom: 4px;
+    margin-top: 5px;
+    margin-left: 5px;
+  }
+
+  li {
+    cursor: pointer;
+  }
+
 }
