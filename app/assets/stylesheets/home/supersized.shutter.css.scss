@@ -219,13 +219,13 @@ ul#slide-list li a:hover {
 }
 #thumb-back:hover, #thumb-forward:hover {
 	cursor: pointer;
-	background-color: rgba(256,256,256, 0.1);
+	background-color: rgba(255,255,255, 0.1);
 }
 #thumb-back:hover {
-	border-right: 1px solid rgba(256,256,256, 0.2);
+	border-right: 1px solid rgba(255,255,255, 0.2);
 }
 #thumb-forward:hover {
-	border-left: 1px solid rgba(256,256,256, 0.2);
+	border-left: 1px solid rgba(255,255,255, 0.2);
 }
 ul#thumb-list {
 	display: inline-block;

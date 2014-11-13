@@ -143,6 +143,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @listenTo(@views.toolbarView, "labelAsClicked", (toolbarView, labelID) => @labelAsClicked(labelID))
     @listenTo(@views.toolbarView, "moveToFolderClicked", (toolbarView, folderID) => @moveToFolderClicked(folderID))
     @listenTo(@views.toolbarView, "refreshClicked", @refreshClicked)
+    @listenTo(@views.toolbarView, "pauseClicked", @pauseClicked)
     @listenTo(@views.toolbarView, "searchClicked", (toolbarView, query) => @searchClicked(query))
     @listenTo(@views.toolbarView, "createNewLabelClicked", @createNewLabelClicked)
     @listenTo(@views.toolbarView, "createNewEmailFolderClicked", @createNewEmailFolderClicked)
@@ -481,6 +482,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
   refreshClicked: ->
     @reloadEmailThreads()
+
+  pauseClicked: ->
+    clearTimeout(@syncTimeout)
+    @showAlert("Email sync paused.", "alert-success")
 
   searchClicked: (query) ->
     @routers.searchResultsRouter.navigate("#search/" + query, trigger: true)

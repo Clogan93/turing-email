@@ -25,7 +25,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
     @setupAllCheckbox()
     @divAllCheckbox = @$el.find("div.icheckbox_square-green")
-    
+
     @setupButtons()
     @setupDemoModeSwitch()
     @renderRefreshButton()
@@ -124,9 +124,8 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @$el.find(".settings-button").click ->
       $(this).tooltip('hide')
 
-    @$el.find(".pause-button").click ->
-      clearTimeout(TuringEmailApp.syncTimeout)
-      TuringEmailApp.showAlert("Email sync paused.", "alert-success")
+    @$el.find(".pause-button").click =>
+      @trigger("pauseClicked", this)
 
   setupBulkActionButtons: ->
     @$el.find(".all-bulk-action").click =>

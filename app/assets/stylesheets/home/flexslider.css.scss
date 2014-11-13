@@ -179,7 +179,7 @@ html[xmlns] .slides {
 	z-index:500;
 }
 .flex-direction-nav li .flex-prev {
-	background: #000000 url(/assets/home/arrow_left.png) center center no-repeat;
+	background: #000000 image-url("home/arrow_left.png") center center no-repeat;
 	background-color:  rgba(0,0,0,0.8);
 }
 .flex-direction-nav li .flex-next {
