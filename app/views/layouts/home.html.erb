@@ -2,13 +2,16 @@
 <html>
   <head>
     <title><%= page_title(yield(:title)) %></title>
+
     <link rel="shortcut icon" href="favicon.ico"/>
+
     <%= stylesheet_link_tag    'application-home', media: 'all', 'data-turbolinks-track' => true %>
+    <link href="/assets/home/light.css" id="layout_color" rel="stylesheet" type="text/css">
+    <link href="/assets/home/colors/mediumaquamarine.css" id="primary_color_scheme" rel="stylesheet" type="text/css">
+    <% stylesheet_link_tag '/skins/2/style.css', media: 'all', 'data-turbolinks-track' => true %>
 
     <%= javascript_include_tag 'application-home', 'data-turbolinks-track' => true %>
     <%= csrf_meta_tags %>
-
-    <% stylesheet_link_tag '/skins/2/style.css', media: 'all', 'data-turbolinks-track' => true %>
 
     <!-- GOOGLE WEB FONTS INCLUDE -->
     <link href='http://fonts.googleapis.com/css?family=Oswald|Open+Sans:400,600' rel='stylesheet' type='text/css'>
