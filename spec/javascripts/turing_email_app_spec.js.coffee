@@ -170,7 +170,7 @@ describe "TuringEmailApp", ->
       toolbarViewEvents = ["checkAllClicked", "checkAllReadClicked", "checkAllUnreadClicked", "uncheckAllClicked",
                            "readClicked", "unreadClicked", "archiveClicked", "trashClicked", "snoozeClicked",
                            "leftArrowClicked", "rightArrowClicked",
-                           "labelAsClicked", "moveToFolderClicked", "refreshClicked", "searchClicked",
+                           "labelAsClicked", "moveToFolderClicked", "refreshClicked", "pauseClicked", "searchClicked",
                            "createNewLabelClicked", "createNewEmailFolderClicked", "demoModeSwitchClicked"]
       for event in toolbarViewEvents
         it "hooks the toolbar " + event + " event", ->
@@ -1350,6 +1350,18 @@ describe "TuringEmailApp", ->
         it "reloads the email threads", ->
           spy = sinon.spy(TuringEmailApp, "reloadEmailThreads")
           TuringEmailApp.refreshClicked()
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+
+      describe "#pauseClicked", ->
+
+        it "clears the sync timeout", ->
+          TuringEmailApp.pauseClicked()
+          expect(TuringEmailApp.syncTimeout).not.toBeDefined()
+
+        it "show the pause alert", ->
+          spy = sinon.spy(TuringEmailApp, "showAlert")
+          TuringEmailApp.pauseClicked()
           expect(spy).toHaveBeenCalled()
           spy.restore()
 

@@ -198,12 +198,8 @@ describe "ToolbarView", ->
           spy.restore()
 
       describe "when .pause-button is clicked", ->
-        it "clears the sync timeout", ->
-          @toolbarView.$el.find(".pause-button").click()
-          expect(TuringEmailApp.syncTimeout).not.toBeDefined()
-
-        it "show the pause alert", ->
-          spy = sinon.spy(TuringEmailApp, "showAlert")
+        it "triggers pauseClicked", ->
+          spy = sinon.backbone.spy(@toolbarView, "pauseClicked")
           @toolbarView.$el.find(".pause-button").click()
           expect(spy).toHaveBeenCalled()
           spy.restore()
