@@ -1,5 +1,7 @@
 specStartedHistory = false
 
+window.TestMode = true
+
 oldPrettyPrinterFormat = jasmine.PrettyPrinter::format
 jasmine.PrettyPrinter::format = (value) ->
   self = this
