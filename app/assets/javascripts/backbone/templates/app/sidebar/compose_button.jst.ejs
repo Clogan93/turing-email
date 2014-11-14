@@ -1,3 +1,13 @@
-<button type="button" class="btn btn-block btn-primary compose-mail compose-button">
-  COMPOSE
-</button>
+<div class="btn-group compose-btn-group">
+  <button type="button" class="btn btn-block btn-primary compose-mail compose-button">
+    COMPOSE
+  </button>
+  <button type="button" class="btn btn-primary dropdown-toggle compose-button-dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+    <span class="caret"></span>
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <ul class="dropdown-menu" role="menu">
+    <li><a class="quick-compose-item">Quick Compose: How are things?</a></li>
+    <li><a class="quick-compose-item">Quick Compose: Yo</a></li>
+  </ul>
+</div>
