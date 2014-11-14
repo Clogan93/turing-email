@@ -1,0 +1,30 @@
+<div class="page-header">
+  <h1 class="h1">List Subscriptions</h1>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <table class="table table-striped list-subscriptions-table">
+      <thead>
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Domain</th>
+        <th>Unsubscribe</th>
+      </tr>
+      </thead>
+      <tbody>
+      <% for(var i = 0; i < listSubscriptions.length; i++) { %>
+        <tr>
+          <td>
+            <img src="<%= "https://plus.google.com/_/favicon?domain=" + listSubscriptions[i].list_domain %>" />
+          </td>
+          <td><%= listSubscriptions[i].list_name %></td>
+          <td><%= listSubscriptions[i].list_domain %></td>
+          <td><button type="button" class="btn btn-block unsubscribe-list-button">Unsubscribe</button></td>
+        </tr>
+      <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>

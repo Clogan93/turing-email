@@ -43,7 +43,7 @@ class CreateEmails < ActiveRecord::Migration
               :unique => true, :name => 'index_emails_on_email_account_and_draft_id'
     
     add_index :emails, :id, :where => 'NOT seen'
-    add_index :emails, :uid
+    add_index :emails, :uid, :unique => true
     add_index :emails, :message_id
     add_index :emails, :email_thread_id
     

@@ -10,6 +10,6 @@ class CreateEmailThreads < ActiveRecord::Migration
     add_index :email_threads, [:email_account_id, :email_account_type, :uid],
               :unique => true, :name => 'index_email_threads_on_email_account_and_uid'
     add_index :email_threads, [:email_account_id, :email_account_type]
-    add_index :email_threads, :uid
+    add_index :email_threads, :uid, :unique => true
   end
 end

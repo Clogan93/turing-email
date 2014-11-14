@@ -46,6 +46,7 @@ Rails.application.routes.draw do
       delete '/delayed_emails/:delayed_email_uid', :to => 'delayed_emails#destroy'
 
       resources :email_trackers, only: [:index]
+      resources :list_subscriptions, only: [:index]
       
       post '/email_accounts/drafts', to: 'email_accounts#create_draft'
       put '/email_accounts/drafts', to: 'email_accounts#update_draft'

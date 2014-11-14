@@ -53,6 +53,10 @@ class GmailAccount < ActiveRecord::Base
 
   has_many :email_tracker_views,
            :through => :email_tracker_recipients
+  
+  has_many :list_subscriptions,
+           :as => :email_account,
+           :dependent => :destroy
 
   validates_presence_of(:user, :google_id, :email, :verified_email)
 
@@ -215,7 +219,7 @@ class GmailAccount < ActiveRecord::Base
                                        :name => label_name) if gmail_label.nil? && label_name
   
       if gmail_label.nil?
-        log_console("LABEL DNE! Creating!!")
+        log_console('LABEL DNE! Creating!!')
   
         if label_id != 'TRASH' && !self.user.user_configuration.demo_mode_enabled && $config.gmail_live
           label_data = self.gmail_client.labels_create('me', label_name || 'New Label')
@@ -508,7 +512,9 @@ class GmailAccount < ActiveRecord::Base
     destroy_all_batch(self.emails)
     destroy_all_batch(self.gmail_labels)
     destroy_all_batch(self.sync_failed_emails)
+    destroy_all_batch(self.list_subscriptions)
     
+    self.sync_started_time = nil
     self.last_history_id_synced = nil
     
     self.save!
@@ -537,7 +543,7 @@ class GmailAccount < ActiveRecord::Base
       if self.sync_started_time
         seconds_since_sync_started = ((DateTime.now() - self.sync_started_time.to_datetime()) * 24 * 60 * 60).to_i
 
-        if seconds_since_sync_started < 3.hours
+        if seconds_since_sync_started < 2.hours
           log_console("SKIPPING SYNC because seconds_since_sync_started=#{seconds_since_sync_started}")
           return []
         else
@@ -553,7 +559,7 @@ class GmailAccount < ActiveRecord::Base
     job_ids = self.process_sync_failed_emails(delay: delay)
 
     if self.last_history_id_synced.nil? || !self.user.has_genie_report_ran
-      log_console ("INITIAL SYNC!!")
+      log_console ('INITIAL SYNC!!')
       
       job_ids.concat(self.sync_email_full(labelIds: labelIds, delay: delay))
       job_ids.concat(self.sync_email_partial(delay: delay)) if labelIds.blank?
@@ -834,6 +840,8 @@ class GmailAccount < ActiveRecord::Base
         end
       end
 
+      ListSubscription.create_from_email_raw(self, email_raw)
+
       self.sync_email_labels(email, gmail_data['labelIds'])
 
       self.user.apply_email_rules_to_email(email) if gmail_data['labelIds'].include?("INBOX")
@@ -1095,7 +1103,7 @@ class GmailAccount < ActiveRecord::Base
   end
 
   def get_draft_ids()
-    log_console("GET DRAFTS")
+    log_console('GET DRAFTS')
 
     draft_ids = {}
 

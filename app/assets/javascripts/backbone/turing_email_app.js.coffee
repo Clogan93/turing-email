@@ -217,6 +217,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @routers.appsLibraryRouter = new TuringEmailApp.Routers.AppsLibraryRouter()
     @routers.delayedEmailsRouter = new TuringEmailApp.Routers.DelayedEmailsRouter()
     @routers.emailTrackersRouter = new TuringEmailApp.Routers.EmailTrackersRouter()
+    @routers.listSubscriptionsRouter = new TuringEmailApp.Routers.ListSubscriptionsRouter()
 
   ###############
   ### Getters ###
@@ -568,6 +569,9 @@ window.TuringEmailApp = new(Backbone.View.extend(
   deleteDelayedEmailClicked: (view, delayedEmailUID) ->
     TuringEmailApp.Models.DelayedEmail.Delete(delayedEmailUID)
     view.collection.remove(view.collection.get(delayedEmailUID))
+
+  unsubscribeListClicked: (view, listName, listID, listDomain) ->
+    return
     
   #############################
   ### EmailThreads.ListView ###
@@ -724,6 +728,12 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
   showEmailTrackers: ->
     @views.mainView.showEmailTrackers()
+
+  showListSubscriptions: ->
+    @stopListening(@listSubscriptionsView) if @listSubscriptionsView
+
+    @listSubscriptionsView = @views.mainView.showListSubscriptions()
+    @listenTo(@listSubscriptionsView, "unsubscribeListClicked", @unsubscribeListClicked)  
     
   showSettings: ->
     @models.userConfiguration.fetch(reset: true)
