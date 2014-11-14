@@ -91,6 +91,18 @@ div[contenteditable]:focus {
 
 }
 
-.quick-compose-item {
+.quick-compose-item, .email-tag-item {
   cursor: pointer;
+}
+
+.email-tag-dropdown-div {
+  width: 65px;
+  float: left;
+
+  button {
+    padding-top: 5px;
+    padding-bottom: 4px;
+    margin-top: 5px;
+    margin-left: 15px;
+  }
 }
