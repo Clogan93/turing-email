@@ -1,7 +1,11 @@
 describe "EmojiDropdownView", ->
   beforeEach ->
-    @emojiDropdownView = new TuringEmailApp.Views.App.EmojiDropdownView(
-    )
+    window.TestEmoji = true
+    
+    @emojiDropdownView = new TuringEmailApp.Views.App.EmojiDropdownView()
+    
+  afterEach ->
+    window.TestEmoji = false
 
   it "has the right template", ->
     expect(@emojiDropdownView.template).toEqual JST["backbone/templates/app/compose/emoji_dropdown"]

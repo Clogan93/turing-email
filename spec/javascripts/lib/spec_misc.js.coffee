@@ -1,5 +1,8 @@
 specStartedHistory = false
 
+window.TestMode = true
+window.TestEmoji = false
+
 oldPrettyPrinterFormat = jasmine.PrettyPrinter::format
 jasmine.PrettyPrinter::format = (value) ->
   self = this

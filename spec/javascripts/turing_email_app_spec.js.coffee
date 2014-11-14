@@ -38,7 +38,7 @@ describe "TuringEmailApp", ->
 
       expect(@messagesListStub).toHaveBeenCalledWith(@params)
       expect(@returned).toEqual(@ret)
-    
+
   # TODO change to view
   describe "#renderSyncingEmailsMessage", ->
       
@@ -736,7 +736,7 @@ describe "TuringEmailApp", ->
 
           it "triggers the change:emailFolders event", ->
             expect(@changeEmailFoldersSpy).toHaveBeenCalledWith(TuringEmailApp, TuringEmailApp.collections.emailFolders)
-  
+
     describe "Email Thread Functions", ->
       describe "#loadEmailThread", ->
         beforeEach ->
@@ -983,7 +983,7 @@ describe "TuringEmailApp", ->
       
             it "removes the item", ->
               expect(@emailThreads.findWhere(uid: @emailThread.uid)).toBeUndefined()
-      
+
         describe "when an item is checked", ->
           beforeEach ->
             @emailThread = @emailThreads.models[0]

@@ -208,7 +208,7 @@ class EmailGenie
   end
   
   def EmailGenie.is_completed_conversation_email(email, sent_folder = nil)
-    return email.seen && sent_folder &&
+    return sent_folder &&
            EmailInReplyTo.find_by(:email => sent_folder.emails, :in_reply_to_message_id => email.message_id)
   end
   
@@ -237,7 +237,7 @@ class EmailGenie
       log_console("UNIMPORTANT => list_id = #{email.list_id}")
       return true
     elsif EmailGenie.is_completed_conversation_email(email, sent_label)
-      log_console("UNIMPORTANT => Email SEEN AND replied to!")
+      log_console("UNIMPORTANT => Email IS replied to!")
       return true
     elsif EmailGenie.is_unimportant_group_email(email)
       log_console("UNIMPORTANT => GROUP EMAIL! email_recipients.count = #{email.email_recipients.count}")

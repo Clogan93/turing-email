@@ -1049,8 +1049,13 @@ class GmailAccount < ActiveRecord::Base
       email_tracker.email_subject = subject
       email_tracker.email_date = DateTime.now()
       email_tracker.save!()
+      
+      email_recipients = []
+      email_recipients += tos if tos
+      email_recipients += ccs if ccs
+      email_recipients += bccs if bccs
 
-      tos.each do |rcpt_to|
+      email_recipients.each do |rcpt_to|
         next if rcpt_to.blank?
         
         log_console("rcpt_to = #{rcpt_to}")

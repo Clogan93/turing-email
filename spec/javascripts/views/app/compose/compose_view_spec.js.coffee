@@ -113,9 +113,14 @@ describe "ComposeView", ->
 
       describe "#setupEmojis", ->
         beforeEach ->
+          window.TestEmoji = true
+          
           @composeView.emojiDropdownView = null
           @composeView.setupEmojis()
   
+        afterEach ->
+          window.TestEmoji = false
+          
         it "creates an emoji dropdown view", ->
           expect(@composeView.emojiDropdownView).toBeDefined()
   
