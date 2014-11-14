@@ -4,7 +4,7 @@ class TuringEmailApp.Views.App.EmojiDropdownView extends Backbone.View
   template: JST["backbone/templates/app/compose/emoji_dropdown"]
 
   render: ->
-    return this if TestMode && !TestEmoji
+    return this if TestMode? && TestMode && !TestEmoji
     
     @$el.append(@template())
 
