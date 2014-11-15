@@ -121,17 +121,34 @@ class ListSubscription < ActiveRecord::Base
 
     list_subscription.list_domain = ListSubscription.get_domain(list_subscription, email_raw)
     
-    list_subscription = ListSubscription.find_or_create_by!(list_subscription.attributes)
+    list_subscription_found = ListSubscription.find_or_create_by!(list_subscription.attributes)
     if email_raw.date &&
        (
-        list_subscription.most_recent_email_date.nil? ||
-        (email_raw.date > list_subscription.most_recent_email_date && email_raw.date <= DateTime.now())
+        list_subscription_found.most_recent_email_date.nil? ||
+        (email_raw.date > list_subscription_found.most_recent_email_date && email_raw.date <= DateTime.now())
        )
-      list_subscription.most_recent_email_date = email_raw.date
-      list_subscription.save!
+
+      list_subscription_found.list_name = list_subscription.list_name
+      list_subscription_found.list_id = list_subscription.list_id
+
+      list_subscription_found.list_subscribe = list_subscription.list_subscribe
+      list_subscription_found.list_subscribe_mailto = list_subscription.list_subscribe_mailto
+      list_subscription_found.list_subscribe_email = list_subscription.list_subscribe_email
+      list_subscription_found.list_subscribe_link = list_subscription.list_subscribe_link
+
+      list_subscription_found.list_unsubscribe = list_subscription.list_unsubscribe
+      list_subscription_found.list_unsubscribe_mailto = list_subscription.list_unsubscribe_mailto
+      list_subscription_found.list_unsubscribe_email = list_subscription.list_unsubscribe_email
+      list_subscription_found.list_unsubscribe_link = list_subscription.list_unsubscribe_link
+
+      list_subscription_found.list_domain = list_subscription.list_domain
+      
+      list_subscription_found.most_recent_email_date = email_raw.date
+
+      list_subscription_found.save!
     end
       
-    return list_subscription
+    return list_subscription_found
   rescue
     return nil
   end
