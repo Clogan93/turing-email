@@ -13,6 +13,6 @@ class CreateEmailTrackers < ActiveRecord::Migration
     end
 
     add_index :email_trackers, :email_account_id
-    add_index :email_trackers, :uid
+    add_index :email_trackers, :uid, :unique => true
   end
 end

@@ -12,6 +12,6 @@ class CreateEmailTrackerViews < ActiveRecord::Migration
     end
 
     add_index :email_tracker_views, :email_tracker_recipient_id
-    add_index :email_tracker_views, :uid
+    add_index :email_tracker_views, :uid, :unique => true
   end
 end

@@ -255,7 +255,7 @@ describe "MainView", ->
         beforeEach ->
           @delayedEmailsView = @mainView.showDelayedEmails()
 
-        it "shows the apps library view", ->
+        it "shows the delayed emails view", ->
           expect(@primaryPane.children().length).toEqual(1)
           expect($(@primaryPane.children()[0]).html()).toEqual(@delayedEmailsView.$el.html())
 
@@ -263,9 +263,17 @@ describe "MainView", ->
         beforeEach ->
           @emailTrackersView = @mainView.showEmailTrackers()
 
-        it "shows the apps library view", ->
+        it "shows the email trackers view", ->
           expect(@primaryPane.children().length).toEqual(1)
           expect($(@primaryPane.children()[0]).html()).toEqual(@emailTrackersView.$el.html())
+
+      describe "#showListSubscriptions", ->
+        beforeEach ->
+          @listSubscriptionsView = @mainView.showListSubscriptions()
+
+        it "shows the list subscriptions view", ->
+          expect(@primaryPane.children().length).toEqual(1)
+          expect($(@primaryPane.children()[0]).html()).toEqual(@listSubscriptionsView.$el.html())
 
       describe "#showAnalytics", ->
         beforeEach ->

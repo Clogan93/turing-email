@@ -47,6 +47,9 @@ Rails.application.routes.draw do
 
       resources :email_trackers, only: [:index]
       
+      resources :list_subscriptions, only: [:index]
+      delete '/list_subscriptions/unsubscribe', :to => 'list_subscriptions#destroy'
+      
       post '/email_accounts/drafts', to: 'email_accounts#create_draft'
       put '/email_accounts/drafts', to: 'email_accounts#update_draft'
       post '/email_accounts/send_draft', to: 'email_accounts#send_draft'

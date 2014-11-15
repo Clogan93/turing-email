@@ -213,6 +213,21 @@ class TuringEmailApp.Views.Main extends Backbone.View
     @primaryPaneDiv.append(emailTrackersView.$el)
 
     return emailTrackersView
+
+  showListSubscriptions: ->
+    return false if not @primaryPaneDiv?
+
+    listSubscriptions = new TuringEmailApp.Collections.ListSubscriptionsCollection()
+    listSubscriptions.fetch()
+    listSubscriptionsView = new TuringEmailApp.Views.App.ListSubscriptionsView({
+      collection: listSubscriptions
+    })
+    listSubscriptionsView.render()
+
+    @primaryPaneDiv.html("")
+    @primaryPaneDiv.append(listSubscriptionsView.$el)
+
+    return listSubscriptionsView
     
   showSettings: ->
     return false if not @primaryPaneDiv?

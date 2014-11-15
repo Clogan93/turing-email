@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141112031148) do
+ActiveRecord::Schema.define(version: 20141114042025) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -346,6 +346,33 @@ ActiveRecord::Schema.define(version: 20141112031148) do
   end
 
   add_index "ip_infos", ["ip"], name: "index_ip_infos_on_ip", unique: true, using: :btree
+
+  create_table "list_subscriptions", force: true do |t|
+    t.integer  "email_account_id"
+    t.string   "email_account_type"
+    t.text     "uid"
+    t.text     "list_name"
+    t.text     "list_id"
+    t.text     "list_subscribe"
+    t.text     "list_subscribe_mailto"
+    t.text     "list_subscribe_email"
+    t.text     "list_subscribe_link"
+    t.text     "list_unsubscribe"
+    t.text     "list_unsubscribe_mailto"
+    t.text     "list_unsubscribe_email"
+    t.text     "list_unsubscribe_link"
+    t.text     "list_domain"
+    t.datetime "most_recent_email_date"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "list_subscriptions", ["email_account_id", "list_id", "list_domain"], name: "index_list_subscriptions_on_ea_id_and_list_id_list_domain", unique: true, using: :btree
+  add_index "list_subscriptions", ["email_account_id", "list_unsubscribe"], name: "index_list_subscriptions_on_ea_id_and_list_unsubscribe", unique: true, using: :btree
+  add_index "list_subscriptions", ["email_account_id", "list_unsubscribe_email"], name: "index_list_subscriptions_on_ea_id_and_list_unsubscribe_email", unique: true, using: :btree
+  add_index "list_subscriptions", ["email_account_id", "list_unsubscribe_link"], name: "index_list_subscriptions_on_ea_id_and_list_unsubscribe_link", unique: true, using: :btree
+  add_index "list_subscriptions", ["email_account_id", "list_unsubscribe_mailto"], name: "index_list_subscriptions_on_ea_id_and_list_unsubscribe_mailto", unique: true, using: :btree
+  add_index "list_subscriptions", ["uid"], name: "index_list_subscriptions_on_uid", unique: true, using: :btree
 
   create_table "people", force: true do |t|
     t.integer  "email_account_id"
