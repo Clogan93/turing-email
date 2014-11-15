@@ -367,7 +367,7 @@ ActiveRecord::Schema.define(version: 20141114042025) do
     t.datetime "updated_at"
   end
 
-  add_index "list_subscriptions", ["email_account_id", "list_id"], name: "index_list_subscriptions_on_ea_id_and_list_id", unique: true, using: :btree
+  add_index "list_subscriptions", ["email_account_id", "list_id", "list_domain"], name: "index_list_subscriptions_on_ea_id_and_list_id_list_domain", unique: true, using: :btree
   add_index "list_subscriptions", ["email_account_id", "list_unsubscribe"], name: "index_list_subscriptions_on_ea_id_and_list_unsubscribe", unique: true, using: :btree
   add_index "list_subscriptions", ["email_account_id", "list_unsubscribe_email"], name: "index_list_subscriptions_on_ea_id_and_list_unsubscribe_email", unique: true, using: :btree
   add_index "list_subscriptions", ["email_account_id", "list_unsubscribe_link"], name: "index_list_subscriptions_on_ea_id_and_list_unsubscribe_link", unique: true, using: :btree

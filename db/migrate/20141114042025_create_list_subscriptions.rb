@@ -27,8 +27,8 @@ class CreateListSubscriptions < ActiveRecord::Migration
 
     add_index :list_subscriptions, :uid, :unique => true
 
-    add_index :list_subscriptions, [:email_account_id, :list_id],
-              :unique => true, :name => 'index_list_subscriptions_on_ea_id_and_list_id'
+    add_index :list_subscriptions, [:email_account_id, :list_id, :list_domain],
+              :unique => true, :name => 'index_list_subscriptions_on_ea_id_and_list_id_list_domain'
     
     add_index :list_subscriptions, [:email_account_id, :list_unsubscribe],
               :unique => true, :name => 'index_list_subscriptions_on_ea_id_and_list_unsubscribe'
