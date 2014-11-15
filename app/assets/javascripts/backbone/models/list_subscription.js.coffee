@@ -1,2 +1,6 @@
 class TuringEmailApp.Models.ListSubscription extends Backbone.Model
-  idAttribute: "uid"
+  @Unsubscribe: (listSubscription) ->
+    $.ajax
+      url: "/api/v1/list_subscriptions/unsubscribe"
+      type: "DELETE"
+      data: listSubscription.toJSON()

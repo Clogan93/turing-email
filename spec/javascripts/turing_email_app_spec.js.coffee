@@ -327,6 +327,7 @@ describe "TuringEmailApp", ->
         expect(TuringEmailApp.routers.appsLibraryRouter).toBeDefined()
         expect(TuringEmailApp.routers.delayedEmailsRouter).toBeDefined()
         expect(TuringEmailApp.routers.emailTrackersRouter).toBeDefined()
+        expect(TuringEmailApp.routers.listSubscriptionsRouter).toBeDefined()
   
   describe "after start", ->
     beforeEach ->
@@ -1692,9 +1693,8 @@ describe "TuringEmailApp", ->
               get: sinon.stub()
               remove: sinon.stub()
 
-          sinon.stub
           @view.collection.get.returns(@delayedEmail)
-              
+
           TuringEmailApp.deleteDelayedEmailClicked(@view, @delayedEmailUID)
 
         afterEach ->
@@ -1706,6 +1706,26 @@ describe "TuringEmailApp", ->
         it "removes the delayed email from the collection", ->
           expect(@view.collection.get).toHaveBeenCalledWith(@delayedEmailUID)
           expect(@view.collection.remove).toHaveBeenCalledWith(@delayedEmail)
+
+      describe "#unsubscribeListClicked", ->
+        beforeEach ->
+          @unsubscribeStub = sinon.stub(TuringEmailApp.Models.ListSubscription, "Unsubscribe", ->)
+
+          @listSubscription = {}
+          @view =
+            collection:
+              remove: sinon.stub()
+
+          TuringEmailApp.unsubscribeListClicked(@view, @listSubscription)
+
+        afterEach ->
+          @unsubscribeStub.restore()
+
+        it "unsubscribes the delayed email", ->
+          expect(@unsubscribeStub).toHaveBeenCalledWith(@listSubscription)
+
+        it "removes the delayed email from the collection", ->
+          expect(@view.collection.remove).toHaveBeenCalledWith(@listSubscription)
           
     describe "#listItemSelected", ->
       beforeEach ->
@@ -2204,6 +2224,31 @@ describe "TuringEmailApp", ->
 
       it "shows the email trackers on the main view", ->
         expect(@showEmailTrackersStub).toHaveBeenCalled()
+
+    describe "#showListSubscriptions", ->
+      beforeEach ->
+        @oldListSubscriptionsView = TuringEmailApp.listSubscriptionsView = {}
+
+        @listSubscriptionsView = {}
+        @showListSubscriptionsStub = sinon.stub(TuringEmailApp.views.mainView, "showListSubscriptions", => @listSubscriptionsView)
+        @listenToStub = sinon.stub(TuringEmailApp, "listenTo", ->)
+        @stopListeningStub = sinon.stub(TuringEmailApp, "stopListening", ->)
+
+        TuringEmailApp.showListSubscriptions()
+
+      afterEach ->
+        @stopListeningStub.restore()
+        @listenToStub.restore()
+        @showListSubscriptionsStub.restore()
+
+      it "shows the list subscriptions on the main view", ->
+        expect(@showListSubscriptionsStub).toHaveBeenCalled()
+
+      it "stops listening on the old list subscriptions view", ->
+        expect(@stopListeningStub).toHaveBeenCalledWith(@oldListSubscriptionsView)
+
+      it "listens for unsubscribeListClicked on the list subscriptions view", ->
+        expect(@listenToStub).toHaveBeenCalledWith(@listSubscriptionsView, "unsubscribeListClicked", TuringEmailApp.unsubscribeListClicked)
         
     describe "#showSettings", ->
       beforeEach ->

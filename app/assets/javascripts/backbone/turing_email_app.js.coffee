@@ -570,8 +570,9 @@ window.TuringEmailApp = new(Backbone.View.extend(
     TuringEmailApp.Models.DelayedEmail.Delete(delayedEmailUID)
     view.collection.remove(view.collection.get(delayedEmailUID))
 
-  unsubscribeListClicked: (view, listName, listID, listDomain) ->
-    return
+  unsubscribeListClicked: (view, listSubscription) ->
+    TuringEmailApp.Models.ListSubscription.Unsubscribe(listSubscription)
+    view.collection.remove(listSubscription)
     
   #############################
   ### EmailThreads.ListView ###

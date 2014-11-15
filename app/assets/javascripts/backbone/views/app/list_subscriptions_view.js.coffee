@@ -18,6 +18,6 @@ class TuringEmailApp.Views.App.ListSubscriptionsView extends TuringEmailApp.View
     index = @$el.find(".unsubscribe-list-button").index(event.currentTarget)
     listSubscription = @collection.at(index)
 
-    @trigger("unsubscribeListClicked", this, listSubscription.get("uid"))
+    @trigger("unsubscribeListClicked", this, listSubscription)
 
     return false

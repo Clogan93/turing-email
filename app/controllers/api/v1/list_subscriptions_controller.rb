@@ -16,4 +16,19 @@ class Api::V1::ListSubscriptionsController < ApiController
   def index
     @list_subscriptions = @email_account.list_subscriptions.select(:list_id, :list_name, :list_domain).order(:list_name).uniq
   end
+
+  swagger_api :destroy do
+    summary 'Unsubscribe from the list.'
+
+    param :form, :list_id, :string, :required, 'List ID'
+    param :form, :list_name, :string, :required, 'List Name'
+    param :form, :list_domain, :string, :required, 'List Domain'
+
+    response :ok
+  end
+
+  # TODO write tests
+  def destroy
+    render :json => {}
+  end
 end
