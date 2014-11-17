@@ -2,10 +2,24 @@
 ******** SIDEBAR ********
 *************************/
 
+.compose-btn-group {
+  width: 100%;
+  padding-left: 6% !important;
+
+  .dropdown-menu {
+    width: 190px;
+  }
+}
+
 .compose-button {
   font-variant: small-caps;
   margin-left: 10px;
-  min-width: 178px;
+  float: left;
+  width: 84%;
+}
+
+.compose-button-dropdown-toggle {
+  float: right !important;
 }
 
 .mailbox-content {

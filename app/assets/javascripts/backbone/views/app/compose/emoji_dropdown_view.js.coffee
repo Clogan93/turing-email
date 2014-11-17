@@ -22,4 +22,4 @@ class TuringEmailApp.Views.App.EmojiDropdownView extends Backbone.View
           $(element).emoji()
           $(element).removeClass("subsequent-load")
 
-    return this
+    return this 

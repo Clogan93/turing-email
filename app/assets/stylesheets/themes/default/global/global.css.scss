@@ -24,7 +24,7 @@ h3 {
 .fixed {
   width: 200px;
   float: left;
-  overflow-x: auto;
+  overflow-x: hidden;
   overflow-y: hidden;
   padding-left: 2px;
   font-family: Roboto,Open Sans, Arial,Tahoma, Helvetica, sans-serif;
@@ -88,4 +88,9 @@ h3 {
 .has-switch {
   border-color: #e7eaec;
   border-radius: 3px;
+}
+
+.delayed-emails, .list-subscriptions {
+  height: 100%;
+  overflow-y: scroll;
 }

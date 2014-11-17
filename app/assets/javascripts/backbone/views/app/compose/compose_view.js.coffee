@@ -45,6 +45,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     @setupLinkPreviews()
     @setupEmojis()
     @setupEmailTemplatesDropdown()
+    @setupEmailTagsDropdown()
     
     @$el.find(".send-later-datetimepicker").datetimepicker(
       format: "m/d/Y g:i a"
@@ -112,6 +113,13 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       composeView: @
     )
     @emailTemplatesDropdownView.render()
+
+  setupEmailTagsDropdown: ->
+    @emailTagDropdownView = new TuringEmailApp.Views.App.EmailTagDropdownView(
+      el: @$el.find(".note-toolbar.btn-toolbar")
+      composeView: @
+    )
+    @emailTagDropdownView.render()
 
   #########################
   ### Display Functions ###

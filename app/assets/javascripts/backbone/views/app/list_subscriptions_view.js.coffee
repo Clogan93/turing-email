@@ -2,7 +2,9 @@ TuringEmailApp.Views.App ||= {}
 
 class TuringEmailApp.Views.App.ListSubscriptionsView extends TuringEmailApp.Views.CollectionView
   template: JST["backbone/templates/app/list_subscriptions"]
-  
+
+  className: "list-subscriptions"
+
   render: ->
     selectedTabID = $(".tab-pane.active").attr("id")
     

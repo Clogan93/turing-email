@@ -43,6 +43,17 @@ div[contenteditable]:focus {
 
 .compose-modal .send-later-datetimepicker {
   float: left;
+  background-color: #FFFFFF;
+  background-image: none;
+  border: 1px solid #e5e6e7;
+  display: block;
+  padding: 8px 12px;
+  -webkit-transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+  transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+  width: 19%;
+  margin-right: 16px;
+  text-align: center;
+  border-radius: 4px;
 }
 
 .emoji-dropdown-div {
@@ -78,4 +89,20 @@ div[contenteditable]:focus {
     cursor: pointer;
   }
 
+}
+
+.quick-compose-item, .email-tag-item {
+  cursor: pointer;
+}
+
+.email-tag-dropdown-div {
+  width: 65px;
+  float: left;
+
+  button {
+    padding-top: 5px;
+    padding-bottom: 4px;
+    margin-top: 5px;
+    margin-left: 15px;
+  }
 }
