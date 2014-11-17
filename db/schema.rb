@@ -364,6 +364,8 @@ ActiveRecord::Schema.define(version: 20141117030450) do
     t.text     "list_unsubscribe_link"
     t.text     "list_domain"
     t.datetime "most_recent_email_date"
+    t.integer  "unsubscribe_delayed_job_id"
+    t.boolean  "unsubscribed",               default: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
