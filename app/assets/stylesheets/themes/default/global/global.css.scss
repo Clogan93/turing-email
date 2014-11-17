@@ -89,3 +89,8 @@ h3 {
   border-color: #e7eaec;
   border-radius: 3px;
 }
+
+.delayed-emails, .list-subscriptions {
+  height: 100%;
+  overflow-y: scroll;
+}
