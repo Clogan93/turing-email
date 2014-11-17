@@ -126,7 +126,7 @@ a.label-link:hover {
   border-color: rgba(255, 123, 118, 0.2) !important;
   color: white !important; }
 
-.compose-button-dropdown-toggle {
+.compose-button-dropdown-toggle, .compose-button-dropdown-toggle:hover, .compose-button-dropdown-toggle:focus, .compose-button-dropdown-toggle:active, .open .dropdown-toggle.btn-primary {
   background-color: #ff7b76;
   border-color: #ff7b76; 
   padding-bottom: 9px;

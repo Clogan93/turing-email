@@ -366,8 +366,6 @@ ActiveRecord::Schema.define(version: 20141117030450) do
     t.datetime "most_recent_email_date"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "unsubscribe_delayed_job_id"
-    t.boolean  "unsubscribed",               default: false
   end
 
   add_index "list_subscriptions", ["email_account_id", "list_id", "list_domain"], name: "index_list_subscriptions_on_ea_id_and_list_id_list_domain", unique: true, using: :btree
