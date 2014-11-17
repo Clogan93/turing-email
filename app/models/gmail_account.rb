@@ -837,14 +837,27 @@ class GmailAccount < ActiveRecord::Base
           email.add_in_reply_tos(email_raw)
           email.add_recipients(email_raw)
           email.add_attachments(email_raw)
+
+          list_subscription = ListSubscription.create_from_email_raw(self, email_raw)
+          email.list_subscription = list_subscription
+          email.save!
         end
       end
-
-      ListSubscription.create_from_email_raw(self, email_raw)
 
       self.sync_email_labels(email, gmail_data['labelIds'])
 
       self.user.apply_email_rules_to_email(email) if gmail_data['labelIds'].include?("INBOX")
+
+      if email.list_subscription
+        if self.list_subscriptions.where(:list_id => email.list_subscription.list_id,
+                                         :list_name => email.list_subscription.list_name,
+                                         :list_domain => email.list_subscription.list_domain,
+                                         :unsubscribed => true).count > 0
+          log_console("email with subject=#{email.subject} from UNSUBSCRIBED list!! trashing")
+          
+          self.trash_email(email)
+        end
+      end
     rescue ActiveRecord::RecordNotUnique => unique_violation
       raise unique_violation if unique_violation.message !~ /index_emails_on_email_account_type_and_email_account_id_and_uid/ &&
                                 unique_violation.message !~ /index_emails_on_email_account_id_and_email_account_type_and_uid/
@@ -1022,9 +1035,9 @@ class GmailAccount < ActiveRecord::Base
     return email
   end
   
-  def send_email(tos, ccs, bccs,
-                 subject,
-                 html_part, text_part,
+  def send_email(tos = nil, ccs = nil, bccs = nil,
+                 subject = nil,
+                 html_part = nil, text_part = nil,
                  email_in_reply_to_uid = nil,
                  tracking_enabled = false)
     email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, html_part, text_part,

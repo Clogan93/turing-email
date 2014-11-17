@@ -30,11 +30,13 @@ describe "ListSubscriptionsView", ->
     describe "#setupButtons", ->
       beforeEach ->
         @onUnsubscribeListClick = sinon.stub(@listSubscriptionsView, "onUnsubscribeListClick")
+        @onResubscribeListClick = sinon.stub(@listSubscriptionsView, "onResubscribeListClick")
         
         @listSubscriptionsView.setupButtons()
         
       afterEach ->
         @onUnsubscribeListClick.restore()
+        @onResubscribeListClick.restore()
 
       it "handles unsubscribe-list-button click", ->
         expect(@listSubscriptionsView.$el.find(".unsubscribe-list-button")).toHandle("click")
@@ -42,6 +44,13 @@ describe "ListSubscriptionsView", ->
       it "unsubscribe-list-button click", ->
         @listSubscriptionsView.$el.find(".unsubscribe-list-button").click()
         expect(@onUnsubscribeListClick).toHaveBeenCalled()
+
+      it "handles resubscribe-list-button click", ->
+        expect(@listSubscriptionsView.$el.find(".resubscribe-list-button")).toHandle("click")
+
+      it "resubscribe-list-button click", ->
+        @listSubscriptionsView.$el.find(".resubscribe-list-button").click()
+        expect(@onResubscribeListClick).toHaveBeenCalled()
 
     describe "after setupButtons", ->
       beforeEach ->
@@ -61,3 +70,18 @@ describe "ListSubscriptionsView", ->
 
         it "triggers unsubscribeListClicked", ->
           expect(@triggerStub).toHaveBeenCalledWith("unsubscribeListClicked", @listSubscriptionsView, @listSubscriptions.at(0))
+
+      describe "#onResubscribeListClick", ->
+        beforeEach ->
+          @event =
+            currentTarget: $(@listSubscriptionsView.$el.find(".resubscribe-list-button")[0])
+
+          @triggerStub = sinon.stub(@listSubscriptionsView, "trigger", ->)
+
+          @listSubscriptionsView.onResubscribeListClick(@event)
+
+        afterEach ->
+          @triggerStub.restore()
+
+        it "triggers resubscribeListClicked", ->
+          expect(@triggerStub).toHaveBeenCalledWith("resubscribeListClicked", @listSubscriptionsView, @listSubscriptions.at(0))

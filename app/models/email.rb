@@ -28,6 +28,8 @@ class Email < ActiveRecord::Base
   
   has_many :email_tracker_views,
            :through => :email_tracker_recipients
+  
+  belongs_to :list_subscription
 
   validates_presence_of(:email_account, :uid, :email_thread_id)
 
@@ -42,7 +44,10 @@ class Email < ActiveRecord::Base
                 pluck('list_name, list_id, COUNT(*) / (1 + EXTRACT(day FROM now() - MIN(date))) AS daily_average')
   end
   
-  def Email.email_raw_from_params(tos, ccs, bccs, subject, html_part, text_part, email_account = nil, email_in_reply_to_uid = nil)
+  def Email.email_raw_from_params(tos = nil, ccs = nil, bccs = nil,
+                                  subject = nil,
+                                  html_part = nil, text_part = nil,
+                                  email_account = nil, email_in_reply_to_uid = nil)
     email_raw = Mail.new do
       to tos
       cc ccs

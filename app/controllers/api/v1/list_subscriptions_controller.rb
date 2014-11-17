@@ -14,10 +14,13 @@ class Api::V1::ListSubscriptionsController < ApiController
   end
   
   def index
-    @list_subscriptions = @email_account.list_subscriptions.select(:list_id, :list_name, :list_domain).order(:list_name).uniq
+    @list_subscriptions = @email_account.list_subscriptions.
+                                         select(:list_id, :list_name, :list_domain, :unsubscribed).
+                                         order(:list_name).
+                                         uniq
   end
 
-  swagger_api :destroy do
+  swagger_api :unsubscribe do
     summary 'Unsubscribe from the list.'
 
     param :form, :list_id, :string, :required, 'List ID'
@@ -26,9 +29,40 @@ class Api::V1::ListSubscriptionsController < ApiController
 
     response :ok
   end
+  
+  # TODO write tests
+  def unsubscribe
+    list_subscriptions = @email_account.list_subscriptions.
+                                        where(:list_id => params[:list_id],
+                                              :list_name => params[:list_name],
+                                              :list_domain => params[:list_domain],
+                                              :unsubscribed => false,
+                                              :unsubscribe_delayed_job_id => nil)
+    
+    list_subscriptions.each do |list_subscription|
+      job = list_subscription.delay({:run_at => 1.hour.from_now}, heroku_scale: false).unsubscribe()
+      
+      list_subscription.unsubscribe_delayed_job_id = job.id
+      list_subscription.unsubscribed = true
+      
+      list_subscription.save!
+    end
+
+    render :json => {}
+  end
 
   # TODO write tests
-  def destroy
+  def resubscribe
+    list_subscriptions = @email_account.list_subscriptions.
+        where(:list_id => params[:list_id],
+              :list_name => params[:list_name],
+              :list_domain => params[:list_domain],
+              :unsubscribed => true)
+
+    list_subscriptions.each do |list_subscription|
+      list_subscription.resubscribe()
+    end
+
     render :json => {}
   end
 end

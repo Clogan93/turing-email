@@ -1711,10 +1711,13 @@ describe "TuringEmailApp", ->
         beforeEach ->
           @unsubscribeStub = sinon.stub(TuringEmailApp.Models.ListSubscription, "Unsubscribe", ->)
 
-          @listSubscription = {}
+          @listSubscription =
+            set: sinon.stub()
+
           @view =
             collection:
               remove: sinon.stub()
+              add: sinon.stub()
 
           TuringEmailApp.unsubscribeListClicked(@view, @listSubscription)
 
@@ -1726,6 +1729,41 @@ describe "TuringEmailApp", ->
 
         it "removes the delayed email from the collection", ->
           expect(@view.collection.remove).toHaveBeenCalledWith(@listSubscription)
+
+        it "updates the unsubscribed property", ->
+          expect(@listSubscription.set).toHaveBeenCalledWith("unsubscribed", true)
+          
+        it "adds the delayed email to the collection", ->
+          expect(@view.collection.add).toHaveBeenCalledWith(@listSubscription)
+
+      describe "#resubscribeListClicked", ->
+        beforeEach ->
+          @resubscribeStub = sinon.stub(TuringEmailApp.Models.ListSubscription, "Resubscribe", ->)
+
+          @listSubscription =
+            set: sinon.stub()
+
+          @view =
+            collection:
+              remove: sinon.stub()
+              add: sinon.stub()
+
+          TuringEmailApp.resubscribeListClicked(@view, @listSubscription)
+
+        afterEach ->
+          @resubscribeStub.restore()
+
+        it "resubscribes the delayed email", ->
+          expect(@resubscribeStub).toHaveBeenCalledWith(@listSubscription)
+
+        it "removes the delayed email from the collection", ->
+          expect(@view.collection.remove).toHaveBeenCalledWith(@listSubscription)
+
+        it "updates the unsubscribed property", ->
+          expect(@listSubscription.set).toHaveBeenCalledWith("unsubscribed", false)
+
+        it "adds the delayed email to the collection", ->
+          expect(@view.collection.add).toHaveBeenCalledWith(@listSubscription)
           
     describe "#listItemSelected", ->
       beforeEach ->
@@ -2249,6 +2287,9 @@ describe "TuringEmailApp", ->
 
       it "listens for unsubscribeListClicked on the list subscriptions view", ->
         expect(@listenToStub).toHaveBeenCalledWith(@listSubscriptionsView, "unsubscribeListClicked", TuringEmailApp.unsubscribeListClicked)
+
+      it "listens for resubscribeListClicked on the list subscriptions view", ->
+        expect(@listenToStub).toHaveBeenCalledWith(@listSubscriptionsView, "resubscribeListClicked", TuringEmailApp.resubscribeListClicked)
         
     describe "#showSettings", ->
       beforeEach ->

@@ -1,30 +1,66 @@
-<div class="page-header">
-  <h1 class="h1">List Subscriptions</h1>
-</div>
-
+<%
+  function outputListsTable(listSubscriptions, subscribed) { %>
 <div class="row">
   <div class="col-md-12">
-    <table class="table table-striped list-subscriptions-table">
+    <table class="table table-striped">
       <thead>
       <tr>
         <th></th>
         <th>Name</th>
         <th>Domain</th>
-        <th>Unsubscribe</th>
+        <th></th>
       </tr>
       </thead>
       <tbody>
       <% for(var i = 0; i < listSubscriptions.length; i++) { %>
-        <tr>
-          <td>
-            <img src="<%= "https://plus.google.com/_/favicon?domain=" + listSubscriptions[i].list_domain %>" />
-          </td>
-          <td><%= listSubscriptions[i].list_name %></td>
-          <td><%= listSubscriptions[i].list_domain %></td>
-          <td><button type="button" class="btn btn-block unsubscribe-list-button">Unsubscribe</button></td>
-        </tr>
+      <tr>
+        <td>
+          <img src="<%= "https://plus.google.com/_/favicon?domain=" + listSubscriptions[i].list_domain %>" />
+        </td>
+        <td><%= listSubscriptions[i].list_name %></td>
+        <td><%= listSubscriptions[i].list_domain %></td>
+        <td>
+          <button type="button" class="btn btn-block <%= subscribed ? "unsubscribe" : "resubscribe" %>-list-button">
+            <%= subscribed ? "Unsubscribe" : "Resubscribe" %>
+          </button>
+        </td>
+      </tr>
       <% } %>
       </tbody>
     </table>
+  </div>
+</div>
+<%  
+  }
+%>
+
+<div class="page-header">
+  <h1 class="h1">List Subscriptions</h1>
+</div>
+
+<div class="col-lg-12">
+  <div class="panel blank-panel">
+
+    <div class="panel-heading">
+      <div class="panel-options">
+        <ul class="nav nav-tabs">
+          <li class="active"><a data-toggle="tab" href="#tab-1">Subscribed Lists</a></li>
+          <li class=""><a data-toggle="tab" href="#tab-2">Unsubscribed Lists</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="panel-body">
+
+      <div class="tab-content">
+        <div id="tab-1" class="tab-pane active">
+          <% outputListsTable(listsSubscribed, true); %>
+        </div>
+
+        <div id="tab-2" class="tab-pane">
+          <% outputListsTable(listsUnsubscribed, false); %>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
