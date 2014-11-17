@@ -572,7 +572,17 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
   unsubscribeListClicked: (view, listSubscription) ->
     TuringEmailApp.Models.ListSubscription.Unsubscribe(listSubscription)
+    
     view.collection.remove(listSubscription)
+    listSubscription.set("unsubscribed", true)
+    view.collection.add(listSubscription)
+
+  resubscribeListClicked: (view, listSubscription) ->
+    TuringEmailApp.Models.ListSubscription.Resubscribe(listSubscription)
+    
+    view.collection.remove(listSubscription)
+    listSubscription.set("unsubscribed", false)
+    view.collection.add(listSubscription)
     
   #############################
   ### EmailThreads.ListView ###
@@ -734,7 +744,8 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @stopListening(@listSubscriptionsView) if @listSubscriptionsView
 
     @listSubscriptionsView = @views.mainView.showListSubscriptions()
-    @listenTo(@listSubscriptionsView, "unsubscribeListClicked", @unsubscribeListClicked)  
+    @listenTo(@listSubscriptionsView, "unsubscribeListClicked", @unsubscribeListClicked)
+    @listenTo(@listSubscriptionsView, "resubscribeListClicked", @resubscribeListClicked)
     
   showSettings: ->
     @models.userConfiguration.fetch(reset: true)

@@ -1,3 +1,5 @@
+require 'open-uri'
+
 class ListSubscription < ActiveRecord::Base
   serialize :list_subscribe_email
   serialize :list_unsubscribe_email
@@ -7,6 +9,73 @@ class ListSubscription < ActiveRecord::Base
   validates_presence_of(:email_account, :uid, :list_unsubscribe)
 
   before_validation { self.uid = SecureRandom.uuid() if self.uid.nil? }
+
+  def ListSubscription.perform_list_action(email_account, link = nil, email = nil, mailto = nil)
+    success = false
+
+    if !success && email
+      begin
+        log_console("List using EMAIL #{email}")
+
+        tos = [email]
+        email_account.send_email(tos)
+
+        success = true
+      rescue
+      end
+    end
+
+    if !success && mailto
+      begin
+        log_console("List using MAILTO #{mailto}")
+
+        tos = []
+        ccs = []
+        bccs = []
+        subject = nil
+        body = nil
+
+        uri = URI(mailto)
+
+        tos.push(uri.to) if uri.to
+
+        uri.headers.each do |header|
+          if !header[1].blank?
+            headerName = header[0].downcase
+
+            if headerName == 'to'
+              tos.concat(header[1].split(','))
+            elsif headerName == 'cc'
+              ccs.concat(header[1].split(','))
+            elsif headerName == 'bcc'
+              bccs.concat(header[1].split(','))
+            elsif headerName == 'subject'
+              subject = header[1]
+            elsif headerName == 'body'
+              body = header[1]
+            end
+          end
+        end
+
+        email_account.send_email(tos, ccs, bccs, subject, nil, body)
+
+        success = true
+      rescue
+      end
+
+      if !success && link
+        begin
+          log_console("List using LINK #{link}")
+          open(link)
+
+          success = true
+        rescue
+        end
+      end
+    end
+
+    return success
+  end
   
   def ListSubscription.get_domain(list_subscription, email_raw)
     domain = nil
@@ -120,36 +189,100 @@ class ListSubscription < ActiveRecord::Base
     end
 
     list_subscription.list_domain = ListSubscription.get_domain(list_subscription, email_raw)
+
+    list_subscriptions_found = []
     
-    list_subscription_found = ListSubscription.find_or_create_by!(list_subscription.attributes)
-    if email_raw.date &&
-       (
-        list_subscription_found.most_recent_email_date.nil? ||
-        (email_raw.date > list_subscription_found.most_recent_email_date && email_raw.date <= DateTime.now())
-       )
-
-      list_subscription_found.list_name = list_subscription.list_name
-      list_subscription_found.list_id = list_subscription.list_id
-
-      list_subscription_found.list_subscribe = list_subscription.list_subscribe
-      list_subscription_found.list_subscribe_mailto = list_subscription.list_subscribe_mailto
-      list_subscription_found.list_subscribe_email = list_subscription.list_subscribe_email
-      list_subscription_found.list_subscribe_link = list_subscription.list_subscribe_link
-
-      list_subscription_found.list_unsubscribe = list_subscription.list_unsubscribe
-      list_subscription_found.list_unsubscribe_mailto = list_subscription.list_unsubscribe_mailto
-      list_subscription_found.list_unsubscribe_email = list_subscription.list_unsubscribe_email
-      list_subscription_found.list_unsubscribe_link = list_subscription.list_unsubscribe_link
-
-      list_subscription_found.list_domain = list_subscription.list_domain
+    retry_block do
+      list_subscriptions_found = email_account.list_subscriptions.where([
+        '(list_id=? AND list_domain=?) OR list_unsubscribe=? OR list_unsubscribe_mailto=? OR list_unsubscribe_email=? OR list_unsubscribe_link=?',
+        list_subscription.list_id, list_subscription.list_domain,
+        list_subscription.list_unsubscribe,
+        list_subscription.list_unsubscribe_mailto,
+        list_subscription.list_unsubscribe_email,
+        list_subscription.list_unsubscribe_link
+      ])
       
-      list_subscription_found.most_recent_email_date = email_raw.date
+      if list_subscriptions_found.count == 0
+        list_subscription.save!
+        list_subscriptions_found = [list_subscription]
+      end
+    end
 
-      list_subscription_found.save!
+    list_subscriptions_found.each do |list_subscription_found|
+      if email_raw.date &&
+         (
+          list_subscription_found.most_recent_email_date.nil? ||
+          (email_raw.date > list_subscription_found.most_recent_email_date && email_raw.date <= DateTime.now())
+         )
+  
+        list_subscription_found.list_name = list_subscription.list_name
+        list_subscription_found.list_id = list_subscription.list_id
+  
+        list_subscription_found.list_subscribe = list_subscription.list_subscribe
+        list_subscription_found.list_subscribe_mailto = list_subscription.list_subscribe_mailto
+        list_subscription_found.list_subscribe_email = list_subscription.list_subscribe_email
+        list_subscription_found.list_subscribe_link = list_subscription.list_subscribe_link
+  
+        list_subscription_found.list_unsubscribe = list_subscription.list_unsubscribe
+        list_subscription_found.list_unsubscribe_mailto = list_subscription.list_unsubscribe_mailto
+        list_subscription_found.list_unsubscribe_email = list_subscription.list_unsubscribe_email
+        list_subscription_found.list_unsubscribe_link = list_subscription.list_unsubscribe_link
+  
+        list_subscription_found.list_domain = list_subscription.list_domain
+        
+        list_subscription_found.most_recent_email_date = email_raw.date
+  
+        list_subscription_found.save!
+      end
     end
       
-    return list_subscription_found
+    return list_subscriptions_found[0]
   rescue
     return nil
+  end
+  
+  def unsubscribe
+    log_console("List UNSUBSCRIBE #{self.id}")
+    
+    unsubscribed =
+      ListSubscription.perform_list_action(self.email_account,
+                                           self.list_unsubscribe_link,
+                                           self.list_unsubscribe_email,
+                                           self.list_unsubscribe_mailto)        
+
+    log_console("List UNSUBSCRIBE #{self.id} - unsubscribed=#{unsubscribed}")
+
+    self.unsubscribe_delayed_job_id = nil
+    self.unsubscribed = true
+    self.save!
+  end
+  
+  def resubscribe
+    log_console("List RESUBSCRIBE #{self.id}")
+    
+    job = Delayed::Job.find_by(id: self.unsubscribe_delayed_job_id)
+    if job
+      log_console('RESUBSCRIBE found JOB - destroying it!')
+      
+      job.with_lock do
+        job.destroy!
+      end
+    end
+
+    if self.unsubscribed && self.unsubscribe_delayed_job_id.nil?
+      log_console('RESUBSCRIBE is unsubscribed - resubscribing!')
+      
+      subscribed =
+        ListSubscription.perform_list_action(self.email_account,
+                                             self.list_subscribe_link,
+                                             self.list_subscribe_email,
+                                             self.list_subscribe_mailto)
+  
+      log_console("List SUBSCRIBE #{self.id} - subscribed=#{subscribed}")
+    end
+    
+    self.unsubscribe_delayed_job_id = nil
+    self.unsubscribed = false
+    self.save!
   end
 end

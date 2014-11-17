@@ -21,6 +21,9 @@ class CreateListSubscriptions < ActiveRecord::Migration
       t.text :list_domain
       
       t.datetime :most_recent_email_date
+
+      t.integer :unsubscribe_delayed_job_id
+      t.boolean :unsubscribed, :default => false
       
       t.timestamps
     end
