@@ -33,9 +33,9 @@ class Email < ActiveRecord::Base
 
   enum :bounce_back_type => {
     :always => 'always',
-    :not_opened => 'not opened',
-    :not_clicked => 'not clicked',
-    :no_reply => 'no reply'
+    :not_opened => 'not_opened',
+    :not_clicked => 'not_clicked',
+    :no_reply => 'no_reply'
   }
   
   validates_presence_of(:email_account, :uid, :email_thread_id)
@@ -332,7 +332,28 @@ class Email < ActiveRecord::Base
     return if !self.bounce_back
 
     do_bounce_back = false
-    do_bounce_back = do_bounce_back || self.bounce_back_type == :always
+    
+    if self.bounce_back_type == Email.bounce_back_types[:always]
+      log_console('bounce back ALWAYS!!')
+      
+      do_bounce_back = true
+    elsif self.bounce_back_type == Email.bounce_back_types[:no_reply]
+      log_console('bounce back NO reply!!')
+      
+      if EmailInReplyTo.where(:email => self.email_account.emails, :in_reply_to_message_id => self.message_id).count == 0
+        log_console('NO reply found!! doing bounce!!')
+        
+        do_bounce_back = true
+      end
+    elsif self.bounce_back_type == Email.bounce_back_types[:not_opened]
+      log_console('bounce back UNOPENED!!')
+      
+      if self.email_tracker_views.count == 0
+        log_console('NO views found!! doing bounce!!')
+        
+        do_bounce_back = true
+      end
+    end
 
     self.email_account.apply_label_to_email(self, label_id: 'INBOX') if do_bounce_back
   end

@@ -323,7 +323,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     email.set("tracking_enabled", @$el.find(".compose-form .tracking-switch").parent().parent().hasClass("switch-on"))
     
     email.set("bounce_back_enabled", @$el.find(".compose-form .bounce-back-switch").parent().parent().hasClass("switch-on"))
-    email.set("bounce_back_time", @$el.find(".compose-form .bounce-back-datetimepicker").val())
+    email.set("bounce_back_time", new Date(@$el.find(".compose-form .bounce-back-datetimepicker").val()))
     email.set("bounce_back_type", @$el.find(".compose-form .bounce-back-select").val())
 
     email.set("tos", @$el.find(".compose-form .to-input").val().split(/[;, ]/))

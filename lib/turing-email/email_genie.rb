@@ -44,7 +44,7 @@ class EmailGenie
       else
         replied_to_message_ids = EmailInReplyTo.where(:email => user.emails,
                                                       :in_reply_to_message_id => sent_emails_message_ids).
-            pluck(:in_reply_to_message_id)
+                                                pluck(:in_reply_to_message_id)
         not_replied_to_message_ids = sent_emails_message_ids - replied_to_message_ids
 
         num_sent_emails_not_replied_to = user.emails.where(:message_id => not_replied_to_message_ids).order('date DESC').count
