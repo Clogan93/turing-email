@@ -3,175 +3,6 @@ TuringEmailApp.Views.App ||= {}
 class TuringEmailApp.Views.App.ComposeView extends Backbone.View
   template: JST["backbone/templates/app/compose/modal_compose"]
 
-  # Toolbar configuration generated automatically by the editor based on config.toolbarGroups.
-  @ckeditorToolbarConfiguration = [
-    {
-      name: "document"
-      groups: [
-        "mode"
-        "document"
-        "doctools"
-      ]
-      items: [
-        "Source"
-        "-"
-        "Save"
-        "NewPage"
-        "Preview"
-        "Print"
-        "-"
-        "Templates"
-      ]
-    }
-    {
-      name: "clipboard"
-      groups: [
-        "clipboard"
-        "undo"
-      ]
-      items: [
-        "Cut"
-        "Copy"
-        "Paste"
-        "PasteText"
-        "PasteFromWord"
-        "-"
-        "Undo"
-        "Redo"
-      ]
-    }
-    {
-      name: "editing"
-      groups: [
-        "find"
-        "selection"
-        "spellchecker"
-      ]
-      items: [
-        "Find"
-        "Replace"
-        "-"
-        "SelectAll"
-        "-"
-        "Scayt"
-      ]
-    }
-    {
-      name: "forms"
-      items: [
-        "Form"
-        "Checkbox"
-        "Radio"
-        "TextField"
-        "Textarea"
-        "Select"
-        "Button"
-        "ImageButton"
-        "HiddenField"
-      ]
-    }
-    "/"
-    {
-      name: "basicstyles"
-      groups: [
-        "basicstyles"
-        "cleanup"
-      ]
-      items: [
-        "Bold"
-        "Italic"
-        "Underline"
-        "Strike"
-        "Subscript"
-        "Superscript"
-        "-"
-        "RemoveFormat"
-      ]
-    }
-    {
-      name: "paragraph"
-      groups: [
-        "list"
-        "indent"
-        "blocks"
-        "align"
-        "bidi"
-      ]
-      items: [
-        "NumberedList"
-        "BulletedList"
-        "-"
-        "Outdent"
-        "Indent"
-        "-"
-        "Blockquote"
-        "CreateDiv"
-        "-"
-        "JustifyLeft"
-        "JustifyCenter"
-        "JustifyRight"
-        "JustifyBlock"
-        "-"
-        "BidiLtr"
-        "BidiRtl"
-        "Language"
-      ]
-    }
-    {
-      name: "links"
-      items: [
-        "Link"
-        "Unlink"
-        "Anchor"
-      ]
-    }
-    {
-      name: "insert"
-      items: [
-        "Image"
-        "Flash"
-        "Table"
-        "HorizontalRule"
-        "Smiley"
-        "SpecialChar"
-        "PageBreak"
-        "Iframe"
-      ]
-    }
-    "/"
-    {
-      name: "styles"
-      items: [
-        "Styles"
-        "Format"
-        "Font"
-        "FontSize"
-      ]
-    }
-    {
-      name: "colors"
-      items: [
-        "TextColor"
-        "BGColor"
-      ]
-    }
-    {
-      name: "tools"
-      items: [
-        "Maximize"
-        "ShowBlocks"
-      ]
-    }
-    {
-      name: "others"
-      items: ["-"]
-    }
-    {
-      name: "about"
-      items: ["About"]
-    }
-    ]
-
   initialize: (options) ->
     @app = options.app
   
@@ -198,9 +29,161 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
   #######################
 
   setupComposeView: ->
-    @$el.find(".compose-email-body").ckeditor({
-    toolbar : @ckeditorToolbarConfiguration
-    })
+    config = {}
+    config.toolbar = [
+      {
+        name: "basicstyles"
+        groups: [
+          "basicstyles"
+          "cleanup"
+        ]
+        items: [
+          "Bold"
+          "Italic"
+          "Underline"
+          "Strike"
+          "Subscript"
+          "Superscript"
+        ]
+      }
+      {
+        name: "paragraph"
+        groups: [
+          "list"
+          "indent"
+          "blocks"
+          "align"
+          "bidi"
+        ]
+        items: [
+          "NumberedList"
+          "BulletedList"
+          "-"
+          "Outdent"
+          "Indent"
+          "-"
+          "JustifyLeft"
+          "JustifyCenter"
+          "JustifyRight"
+          "JustifyBlock"
+        ]
+      }
+      {
+        name: "links"
+        items: [
+          "Link"
+          "Unlink"
+        ]
+      }
+      {
+        name: "insert"
+        items: [
+          "Smiley"
+        ]
+      }
+      {
+        name: "styles"
+        items: [
+          "Font"
+          "FontSize"
+        ]
+      }
+      {
+        name: "colors"
+        items: [
+          "TextColor"
+          "BGColor"
+        ]
+      }
+      {
+        name: "document"
+        groups: [
+          "mode"
+          "document"
+          "doctools"
+        ]
+        items: [
+          "Source"
+          "-"
+          "Print"
+        ]
+      }
+      {
+        name: "clipboard"
+        groups: [
+          "clipboard"
+          "undo"
+        ]
+        items: [
+          "Cut"
+          "Copy"
+          "Paste"
+          "-"
+          "Undo"
+          "Redo"
+        ]
+      }
+      {
+        name: "tools"
+        items: [
+          "Maximize"
+        ]
+      }
+    ]
+    config.toolbarGroups = [
+      {
+        name: "basicstyles"
+        groups: [
+          "basicstyles"
+          "cleanup"
+        ]
+      }
+      {
+        name: "paragraph"
+        groups: [
+          "list"
+          "indent"
+          "blocks"
+          "align"
+          "bidi"
+        ]
+      }
+      {
+        name: "links"
+      }
+      {
+        name: "insert"
+      }
+      {
+        name: "styles"
+      }
+      {
+        name: "colors"
+      }
+      {
+        name: "document"
+        groups: [
+          "mode"
+          "document"
+          "doctools"
+        ]
+      }
+      {
+        name: "clipboard"
+        groups: [
+          "clipboard"
+          "undo"
+        ]
+      }
+      {
+        name: "tools"
+      }
+    ]
+
+    @$el.find(".compose-email-body").ckeditor config
+
+    # @$el.find(".compose-email-body").ckeditor $.noop,
+    #   toolbar: 'basic'
 
     @$el.find(".compose-form").submit =>
       console.log "SEND clicked! Sending..."
