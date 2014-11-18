@@ -551,6 +551,11 @@ describe "ComposeView", ->
     
     describe "Email State", ->
       describe "#updateDraft", ->
+        beforeEach ->
+          date = new Date()
+          date.setDate(date.getDate() + 1)
+          @composeView.$el.find(".compose-modal .bounce-back-datetimepicker").val(date.toString())
+
         it "updates the email with the current email draft", ->
           @composeView.currentEmailDraft = new TuringEmailApp.Models.EmailDraft()
           spy = sinon.spy(@composeView, "updateEmail")
@@ -682,13 +687,16 @@ describe "ComposeView", ->
             expect(@composeView.savingDraft).toEqual(false)
         
     describe "Send Email", ->
-      describe "#sendEmail", ->
+      describe "#sendEmailWithCallback", ->
         beforeEach ->
           @updateEmailSpy = sinon.spy(@composeView, "updateEmail")
           @updateDraftSpy = sinon.spy(@composeView, "updateDraft")
           @resetViewStub = sinon.stub(@composeView, "resetView")
           @hideStub = sinon.stub(@composeView, "hide")
           @sendUndoableEmailStub = sinon.stub(@composeView, "sendUndoableEmail")
+          
+          @callback = sinon.stub()
+          @callbackWithDraft = sinon.stub()
 
           @composeView.$el.find(".compose-form .to-input").val("allan@turing.com")
           
@@ -708,12 +716,12 @@ describe "ComposeView", ->
               @composeView.savingDraft = true
               @clock = sinon.useFakeTimers()
 
-              @composeView.sendEmail()
-              @sendEmailStub = sinon.spy(@composeView, "sendEmail")
+              @composeView.sendEmailWithCallback(@callback, @callbackWithDraft)
+              @sendEmailWithCallbackStub = sinon.spy(@composeView, "sendEmailWithCallback")
 
             afterEach ->
               @clock.restore()
-              @sendEmailStub.restore()
+              @sendEmailWithCallbackStub.restore()
               
             it "updates the draft", ->
               expect(@updateDraftSpy).toHaveBeenCalled()
@@ -726,30 +734,22 @@ describe "ComposeView", ->
   
             it "sends the email after a timeout", ->
               @clock.tick(500)
-              expect(@sendEmailStub).toHaveBeenCalled()
+              expect(@sendEmailWithCallbackStub).toHaveBeenCalled()
   
           describe "when not saving the draft", ->
             beforeEach ->
               @composeView.savingDraft = false
               @server = sinon.fakeServer.create()
 
-              @composeView.sendEmail()
+              @composeView.sendEmailWithCallback(@callback, @callbackWithDraft)
   
-            describe "when the server responds successfully", ->
-              beforeEach ->
-                @server.respondWith "POST", "/api/v1/email_accounts/drafts", JSON.stringify({})
-  
-              it "triggers change:draft", ->
-                spy = sinon.backbone.spy(@composeView, "change:draft")
-                @composeView.sendEmail()
-                @server.respond()
-                expect(spy).toHaveBeenCalled()
-                spy.restore()
+            it "calls the callback", ->
+              expect(@callbackWithDraft).toHaveBeenCalled()
   
         describe "when the current email draft is not defined", ->
           beforeEach ->
             @composeView.currentEmailDraft = null
-            @composeView.sendEmail()
+            @composeView.sendEmailWithCallback(@callback, @callbackWithDraft)
 
           it "updates the email", ->
             expect(@updateEmailSpy).toHaveBeenCalled()
@@ -759,90 +759,37 @@ describe "ComposeView", ->
 
           it "hides the compose modal", ->
             expect(@hideStub).toHaveBeenCalled()
-  
-          it "sends the emails", ->
-            expect(@sendUndoableEmailStub).toHaveBeenCalled()
-      
+
+          it "calls the callback", ->
+            expect(@callback).toHaveBeenCalled()
+
+      describe "#sendEmail", ->
+        beforeEach ->
+          @sendEmailWithCallbackStub = sinon.stub(@composeView, "sendEmailWithCallback")
+          
+          @composeView.sendEmail()
+          
+        afterEach ->
+          @sendEmailWithCallbackStub.restore()
+
+        it "calls sendEmailWithCallback", ->
+          expect(@sendEmailWithCallbackStub).toHaveBeenCalled()
+        
       describe "#sendEmailDelayed", ->
         beforeEach ->
-          @updateEmailSpy = sinon.spy(@composeView, "updateEmail")
-          @updateDraftSpy = sinon.spy(@composeView, "updateDraft")
-          @resetViewStub = sinon.stub(@composeView, "resetView")
-          @hideStub = sinon.stub(@composeView, "hide")
-          @sendUndoableEmailStub = sinon.stub(@composeView, "sendUndoableEmail")
-          
+          @sendEmailWithCallbackStub = sinon.stub(@composeView, "sendEmailWithCallback")
+
           date = new Date()
           date.setDate(date.getDate() + 1)
           @composeView.$el.find(".compose-modal .send-later-datetimepicker").val(date.toString())
 
-          @composeView.$el.find(".compose-form .to-input").val("allan@turing.com")
+          @composeView.sendEmailDelayed()
 
         afterEach ->
-          @updateEmailSpy.restore()
-          @updateDraftSpy.restore()
-          @resetViewStub.restore()
-          @hideStub.restore()
-          @sendUndoableEmailStub.restore()
-
-        describe "when the current email draft is defined", ->
-          beforeEach ->
-            @composeView.currentEmailDraft = new TuringEmailApp.Models.EmailDraft()
-
-          describe "when saving the draft", ->
-            beforeEach ->
-              @composeView.savingDraft = true
-              @clock = sinon.useFakeTimers()
-
-              @composeView.sendEmailDelayed()
-              @sendEmailDelayedStub = sinon.spy(@composeView, "sendEmailDelayed")
-
-            afterEach ->
-              @clock.restore()
-              @sendEmailDelayedStub.restore()
-
-            it "updates the draft", ->
-              expect(@updateDraftSpy).toHaveBeenCalled()
-
-            it "resets the view", ->
-              expect(@resetViewStub).toHaveBeenCalled()
-
-            it "hides the compose modal", ->
-              expect(@hideStub).toHaveBeenCalled()
-
-            it "sends the email after a timeout", ->
-              @clock.tick(500)
-              expect(@sendEmailDelayedStub).toHaveBeenCalled()
-
-          describe "when not saving the draft", ->
-            beforeEach ->
-              @composeView.savingDraft = false
-    
-              @sendLaterStub = sinon.stub(@composeView.currentEmailDraft, "sendLater")
-              @sendLaterReturn = done: sinon.stub()
-              @sendLaterStub.returns(@sendLaterReturn)
-              
-              @composeView.sendEmailDelayed()
-              
-            afterEach ->
-              @sendLaterStub.restore()
-              
-            it "sends the email later", ->
-              expect(@sendLaterStub).toHaveBeenCalled()
-              specCompareFunctions((=> @trigger "change:draft", this, model, @emailThreadParent), @sendLaterReturn.done.args[0][0])
-
-        describe "when the current email draft is not defined", ->
-          beforeEach ->
-            @composeView.currentEmailDraft = null
-            @composeView.sendEmailDelayed()
-
-          it "updates the email", ->
-            expect(@updateEmailSpy).toHaveBeenCalled()
-
-          it "resets the view", ->
-            expect(@resetViewStub).toHaveBeenCalled()
-
-          it "hides the compose modal", ->
-            expect(@hideStub).toHaveBeenCalled()
+          @sendEmailWithCallbackStub.restore()
+        
+        it "calls sendEmailWithCallback", ->
+          expect(@sendEmailWithCallbackStub).toHaveBeenCalled()
   
       describe "#sendUndoableEmail", ->
         beforeEach ->

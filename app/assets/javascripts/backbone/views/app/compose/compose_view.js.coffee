@@ -446,7 +446,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
 
       callback(emailToSend)
   
-  sendEmail: (draftToSend=null) ->
+  sendEmail: () ->
     console.log "ComposeView sendEmail!"
 
     @sendEmailWithCallback(
@@ -464,7 +464,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
         })
     )
 
-  sendEmailDelayed: (draftToSend=null) ->
+  sendEmailDelayed: () ->
     console.log "sendEmailDelayed!!!"
     
     dateTimePickerVal = @$el.find(".compose-form .send-later-datetimepicker").val()
