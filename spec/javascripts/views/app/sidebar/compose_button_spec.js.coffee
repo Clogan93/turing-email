@@ -1,11 +1,13 @@
 describe "ComposeButtonView", ->
   beforeEach ->
+    window.ckeditorStub.restore()
     specStartTuringEmailApp()
 
     @composeButtonView = new TuringEmailApp.Views.App.ComposeButtonView()
 
   afterEach ->
     specStopTuringEmailApp()
+    window.ckeditorStub = sinon.stub($.fn, "ckeditor", ->)
 
   it "has the right template", ->
     expect(@composeButtonView.template).toEqual JST["backbone/templates/app/sidebar/compose_button"]
