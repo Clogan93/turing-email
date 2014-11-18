@@ -61,7 +61,8 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
   #######################
 
   setupComposeView: ->
-    @$el.find(".summernote").summernote toolbar: TuringEmailApp.Views.App.ComposeView.SummerNoteToolbarSettings
+    #@$el.find(".summernote").summernote toolbar: TuringEmailApp.Views.App.ComposeView.SummerNoteToolbarSettings
+    @$el.find(".compose-email-body").ckeditor()
 
     @$el.find(".compose-form").submit =>
       console.log "SEND clicked! Sending..."
