@@ -22,6 +22,10 @@ class Api::V1::EmailAccountsController < ApiController
 
     param :form, :tracking_enabled, :boolean, false, 'Tracking Enabled'
 
+    param :form, :bounce_back_enabled, :boolean, false, 'Bounce Back Enabled'
+    param :form, :bounce_back_time, :string, false, 'Bounce Back Time'
+    param :form, :bounce_back_type, :string, false, 'Bounce Back Type'
+
     response :ok
   end
 
@@ -30,7 +34,8 @@ class Api::V1::EmailAccountsController < ApiController
     @email = @email_account.send_email(params[:tos], params[:ccs], params[:bccs],
                                        params[:subject], params[:html_part], params[:text_part],
                                        params[:email_in_reply_to_uid],
-                                       params[:tracking_enabled])
+                                       params[:tracking_enabled],
+                                       params[:bounce_back_enabled] == 'true', params[:bounce_back_time], params[:bounce_back_type])
     if @email
       render 'api/v1/emails/show'
     else
@@ -41,7 +46,7 @@ class Api::V1::EmailAccountsController < ApiController
   swagger_api :send_email_delayed do
     summary 'Send email delayed.'
 
-    param :form, :sendAtDateTime, :string, false, 'Date to send the email'
+    param :form, :sendAtDateTime, :string, false, 'Datetime to send the email'
 
     param :form, :tos, :string, false, 'Array of recipient email addresses'
     param :form, :ccs, :string, false, 'Array of recipient email addresses'
@@ -54,6 +59,10 @@ class Api::V1::EmailAccountsController < ApiController
     param :form, :email_in_reply_to_uid, :string, false, 'Email UID being replied to.'
 
     param :form, :tracking_enabled, :boolean, false, 'Tracking Enabled'
+
+    param :form, :bounce_back_enabled, :boolean, false, 'Bounce Back Enabled'
+    param :form, :bounce_back_time, :string, false, 'Bounce Back Time'
+    param :form, :bounce_back_type, :string, false, 'Bounce Back Type'
 
     response :ok
   end
@@ -76,6 +85,10 @@ class Api::V1::EmailAccountsController < ApiController
       delayed_email.email_in_reply_to_uid = params[:email_in_reply_to_uid]
       
       delayed_email.tracking_enabled = params[:tracking_enabled]
+      
+      delayed_email.bounce_back_enabled = params[:bounce_back_enabled] == 'true'
+      delayed_email.bounce_back_time = params[:bounce_back_time]
+      delayed_email.bounce_back_type = params[:bounce_back_type]
       
       delayed_email.save!
 

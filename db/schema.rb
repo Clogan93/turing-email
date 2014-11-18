@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141118010319) do
+ActiveRecord::Schema.define(version: 20141118072614) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -45,6 +45,9 @@ ActiveRecord::Schema.define(version: 20141118010319) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "tracking_enabled"
+    t.boolean  "bounce_back",           default: false
+    t.datetime "bounce_back_time"
+    t.text     "bounce_back_type"
   end
 
   add_index "delayed_emails", ["delayed_job_id"], name: "index_delayed_emails_on_delayed_job_id", using: :btree
@@ -242,6 +245,10 @@ ActiveRecord::Schema.define(version: 20141118010319) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "list_subscription_id"
+    t.boolean  "bounce_back",             default: false
+    t.datetime "bounce_back_time"
+    t.text     "bounce_back_type"
+    t.integer  "bounce_back_job_id"
   end
 
   add_index "emails", ["date", "id"], name: "index_emails_on_date_and_id", order: {"date"=>:desc, "id"=>:desc}, using: :btree

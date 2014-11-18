@@ -1039,7 +1039,8 @@ class GmailAccount < ActiveRecord::Base
                  subject = nil,
                  html_part = nil, text_part = nil,
                  email_in_reply_to_uid = nil,
-                 tracking_enabled = false)
+                 tracking_enabled = false,
+                 bounce_back = false, bounce_back_time = nil, bounce_back_type = nil)
     email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, html_part, text_part,
                                                                self, email_in_reply_to_uid)
 
@@ -1110,6 +1111,18 @@ class GmailAccount < ActiveRecord::Base
       log_console('NO tracking_enabled')
       
       email = self.send_email_raw(email_raw, email_in_reply_to)
+    end
+    
+    if email && bounce_back
+      log_console("BOUNCE BACK!! #{bounce_back_time} #{bounce_back_type}")
+      email.bounce_back = bounce_back
+      email.bounce_back_time = bounce_back_time
+      email.bounce_back_type = bounce_back_type
+      
+      job = email.delay({:run_at => bounce_back_time}, heroku_scale: false).run_bounce_back()
+      email.bounce_back_job_id = job.id
+      
+      email.save!
     end
     
     return email

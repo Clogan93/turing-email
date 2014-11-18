@@ -31,6 +31,13 @@ class Email < ActiveRecord::Base
   
   belongs_to :list_subscription
 
+  enum :bounce_back_type => {
+    :always => 'always',
+    :not_opened => 'not opened',
+    :not_clicked => 'not clicked',
+    :no_reply => 'no reply'
+  }
+  
   validates_presence_of(:email_account, :uid, :email_thread_id)
 
   after_create {
@@ -319,5 +326,14 @@ class Email < ActiveRecord::Base
       rescue ActiveRecord::RecordNotUnique
       end
     end
+  end
+  
+  def run_bounce_back()
+    return if !self.bounce_back
+
+    do_bounce_back = false
+    do_bounce_back = do_bounce_back || self.bounce_back_type == :always
+
+    self.email_account.apply_label_to_email(self, label_id: 'INBOX') if do_bounce_back
   end
 end
