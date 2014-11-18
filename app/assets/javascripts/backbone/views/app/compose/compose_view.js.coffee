@@ -10,6 +10,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     @$el.html(@template())
     
     @setupComposeView()
+    @setupSendAndArchive()
     # @setupLinkPreviews()
     # @setupEmojis()
     @setupEmailTemplatesDropdown()
@@ -198,6 +199,10 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
 
     @$el.find(".compose-modal").on "hidden.bs.modal", (event) =>
       @saveDraft(false)
+
+  setupSendAndArchive: ->
+    @$el.find(".send-and-archive").click ->
+      console.log "Send and archive clicked"
 
   setupLinkPreviews: ->
     @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").bind "keydown", "space return shift+return", =>

@@ -27,7 +27,18 @@
           
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <button type="button" class="btn btn-info save-button">Save</button>
-          <button type="submit" class="btn btn-primary send-button">Send</button>
+
+          <div class="btn-group">
+            <button type="submit" class="btn btn-primary send-button">Send</button>
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+              <span class="caret"></span>
+              <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu send-button-dropdown-menu" role="menu">
+              <li><a class="send-and-archive">Send & Archive</a></li>
+            </ul>
+          </div>
+
         </div>
       </form>
     </div>
