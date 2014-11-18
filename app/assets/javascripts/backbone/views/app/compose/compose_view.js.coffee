@@ -1,38 +1,6 @@
 TuringEmailApp.Views.App ||= {}
 
 class TuringEmailApp.Views.App.ComposeView extends Backbone.View
-  @SummerNoteToolbarSettings: [
-    [
-      "style"
-      [
-        "bold"
-        "italic"
-        "underline"
-        "clear"
-      ]
-    ]
-    [
-      "fontname"
-      ["fontname"]
-    ]
-    [
-      "fontsize"
-      ["fontsize"]
-    ]
-    [
-      "color"
-      ["color"]
-    ]
-    [
-      "para"
-      ["paragraph"]
-    ]
-    [
-      "height"
-      ["height"]
-    ]
-  ]
-  
   template: JST["backbone/templates/app/compose/modal_compose"]
 
   initialize: (options) ->
@@ -42,8 +10,8 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     @$el.html(@template())
     
     @setupComposeView()
-    @setupLinkPreviews()
-    @setupEmojis()
+    # @setupLinkPreviews()
+    # @setupEmojis()
     @setupEmailTemplatesDropdown()
     @setupEmailTagsDropdown()
     
@@ -61,7 +29,6 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
   #######################
 
   setupComposeView: ->
-    #@$el.find(".summernote").summernote toolbar: TuringEmailApp.Views.App.ComposeView.SummerNoteToolbarSettings
     @$el.find(".compose-email-body").ckeditor()
 
     @$el.find(".compose-form").submit =>
@@ -79,8 +46,8 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       @saveDraft(false)
 
   setupLinkPreviews: ->
-    @$el.find(".compose-form .note-editable").bind "keydown", "space return shift+return", =>
-      emailHtml = @$el.find(".compose-form .note-editable").html()
+    @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").bind "keydown", "space return shift+return", =>
+      emailHtml = @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").html()
       indexOfUrl = emailHtml.search(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/)
 
       linkPreviewIndex = emailHtml.search("compose-link-preview")
@@ -94,7 +61,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
 
         @websitePreviewView = new TuringEmailApp.Views.App.WebsitePreviewView(
           model: websitePreview
-          el: @$el.find(".compose-form .note-editable")
+          el: @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable")
         )
         websitePreview.fetch()
 
@@ -104,7 +71,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     )
     @emojiDropdownView.render()
 
-    noteEditable = @$el.find(".compose-form .note-editable")
+    noteEditable = @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable")
     @$el.find(".emoji-dropdown span").click ->
       noteEditable.append($(@).html())
 
@@ -147,7 +114,8 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     @$el.find(".compose-form .bcc-input").val("")
 
     @$el.find(".compose-form .subject-input").val("")
-    @$el.find(".compose-form .note-editable").html("")
+    @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").html(" ")
+    @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").text(" ")
 
     @$el.find(".compose-form .send-later-datetimepicker").val("")
 
@@ -234,7 +202,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       [body, html] = @parseEmail(emailJSON)
       body = $.parseHTML(body) if not html
 
-    @$el.find(".compose-form .note-editable").html(body)
+    @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").html(body)
 
     return body
 
@@ -323,8 +291,8 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     email.set("bccs",  @$el.find(".compose-form .bcc-input").val().split(/[;, ]/))
 
     email.set("subject", @$el.find(".compose-form .subject-input").val())
-    email.set("html_part", @$el.find(".compose-form .note-editable").html())
-    email.set("text_part", @$el.find(".compose-form .note-editable").text())
+    email.set("html_part", @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").html())
+    email.set("text_part", @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").text())
     
   emailHasRecipients: (email) ->
     return email.get("tos").length > 1 || email.get("tos")[0].trim() != "" ||
