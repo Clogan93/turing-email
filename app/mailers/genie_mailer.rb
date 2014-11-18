@@ -3,8 +3,7 @@ class GenieMailer < ActionMailer::Base
 
   def user_report_email(user,
                         num_important_emails, important_emails,
-                        num_auto_filed_emails, auto_filed_emails,
-                        num_sent_emails_not_replied_to, sent_emails_not_replied_to)
+                        num_auto_filed_emails, auto_filed_emails)
     @user = user
 
     @num_important_emails = num_important_emails
@@ -12,9 +11,6 @@ class GenieMailer < ActionMailer::Base
 
     @num_auto_filed_emails = num_auto_filed_emails
     @auto_filed_emails = auto_filed_emails
-    
-    @num_sent_emails_not_replied_to = num_sent_emails_not_replied_to
-    @sent_emails_not_replied_to = sent_emails_not_replied_to
 
     email = mail(to: user.email, subject: "#{$config.service_name} - Your daily Brain Report!")
     #email.header['X-MC-Important'] = 'true'
