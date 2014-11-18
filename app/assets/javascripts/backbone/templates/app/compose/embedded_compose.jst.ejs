@@ -7,9 +7,9 @@
       <label class="compose-form-attachments-label">Attachments</label><input class="compose-form-attachments-input" type="file" name="attachment" multiple />
       <br />
       <br />
-      <div contenteditable="true" class="form-control summernote email-draft-editable compose-email-body" rows="15">
+      <textarea class="form-control email-draft-editable compose-email-body" rows="15">
         <%= email.html_part %>
-      </div>
+      </textarea>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-info save-button">Save</button>
