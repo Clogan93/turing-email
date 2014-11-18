@@ -30,7 +30,7 @@ class Api::V1::EmailAccountsController < ApiController
     @email = @email_account.send_email(params[:tos], params[:ccs], params[:bccs],
                                        params[:subject], params[:html_part], params[:text_part],
                                        params[:email_in_reply_to_uid],
-                                       params[:tracking_enabled])
+                                       params[:tracking_enabled].downcase == 'true')
     if @email
       render 'api/v1/emails/show'
     else
