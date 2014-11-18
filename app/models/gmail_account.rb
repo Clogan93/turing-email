@@ -1048,6 +1048,8 @@ class GmailAccount < ActiveRecord::Base
     if tracking_enabled
       log_console('tracking_enabled = true!!!!!!')
 
+      html_part = '' if html_part.nil?
+
       self.google_o_auth2_token.refresh()
       
       email_raw.From = self.email
