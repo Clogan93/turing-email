@@ -10,7 +10,7 @@ class TuringEmailApp.Views.App.EmailTagDropdownView extends Backbone.View
     @$el.append(@template())
 
     @$el.find(".email-tag-item").click (event) =>
-      @composeView.$el.find(".compose-form .note-editable").append("<meta name='email-type-tag' content='" + $(event.target).text().toLowerCase() + "'>")
+      @composeView.$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").append("<meta name='email-type-tag' content='" + $(event.target).text().toLowerCase() + "'>")
       token = TuringEmailApp.showAlert("Email tag successfully inserted!", "alert-success")
 
       setTimeout (=>

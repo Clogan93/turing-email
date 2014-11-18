@@ -3,6 +3,8 @@ specStartedHistory = false
 window.TestMode = true
 window.TestEmoji = false
 
+window.ckeditorStub = sinon.stub($.fn, "ckeditor", ->)
+
 oldPrettyPrinterFormat = jasmine.PrettyPrinter::format
 jasmine.PrettyPrinter::format = (value) ->
   self = this

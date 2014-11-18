@@ -23,7 +23,7 @@ describe "ComposeButtonView", ->
         firstQuickCompose = @composeButtonView.$el.find(".quick-compose-item").first()
         quickComposeText = firstQuickCompose.text().replace("Quick Compose: ", "")
         firstQuickCompose.click()
-        expect($(".compose-modal .note-editable")).toContainText(quickComposeText)
+        expect($(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable")).toContainText(quickComposeText)
 
       it "adds text to the subject-input", ->
         firstQuickCompose = @composeButtonView.$el.find(".quick-compose-item").first()

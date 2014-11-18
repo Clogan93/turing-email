@@ -50,7 +50,7 @@ describe "SettingsView", ->
 
       expect(@settingsDiv).toContainHtml('<h4 class="h4">Demo Mode</h4>')
       expect(@settingsDiv).toContainHtml('<h4 class="h4">Keyboard Shortcuts</h4>')
-      expect(@settingsDiv).toContainHtml('<h4 class="h4">Email Genie</h4>')
+      expect(@settingsDiv).toContainHtml('<h4 class="h4">Inbox Cleaner</h4>')
       expect(@settingsDiv).toContainHtml('<h4 class="h4">Horizontal Preview Panel</h4>')
 
     it "renders the tabs", ->
