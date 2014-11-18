@@ -34,8 +34,9 @@ class Api::V1::EmailAccountsController < ApiController
     @email = @email_account.send_email(params[:tos], params[:ccs], params[:bccs],
                                        params[:subject], params[:html_part], params[:text_part],
                                        params[:email_in_reply_to_uid],
-                                       params[:tracking_enabled],
-                                       params[:bounce_back_enabled] == 'true', params[:bounce_back_time], params[:bounce_back_type])
+                                       params[:tracking_enabled].downcase == 'true',
+                                       params[:bounce_back_enabled].downcase == 'true', params[:bounce_back_time], params[:bounce_back_type])
+
     if @email
       render 'api/v1/emails/show'
     else
@@ -86,7 +87,7 @@ class Api::V1::EmailAccountsController < ApiController
       
       delayed_email.tracking_enabled = params[:tracking_enabled]
       
-      delayed_email.bounce_back_enabled = params[:bounce_back_enabled] == 'true'
+      delayed_email.bounce_back_enabled = params[:bounce_back_enabled].downcase == 'true'
       delayed_email.bounce_back_time = params[:bounce_back_time]
       delayed_email.bounce_back_type = params[:bounce_back_type]
       
