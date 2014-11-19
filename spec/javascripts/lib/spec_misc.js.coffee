@@ -1,7 +1,6 @@
 specStartedHistory = false
 
 window.TestMode = true
-window.TestEmoji = false
 
 window.ckeditorStub = sinon.stub($.fn, "ckeditor", ->)
 

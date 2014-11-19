@@ -220,16 +220,6 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
         )
         websitePreview.fetch()
 
-  setupEmojis: ->
-    @emojiDropdownView = new TuringEmailApp.Views.App.EmojiDropdownView(
-      el: @$el.find(".note-toolbar.btn-toolbar")
-    )
-    @emojiDropdownView.render()
-
-    noteEditable = @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable")
-    @$el.find(".emoji-dropdown span").click ->
-      noteEditable.append($(@).html())
-
   setupEmailTemplatesDropdown: ->
     @emailTemplatesDropdownView = new TuringEmailApp.Views.App.EmailTemplatesDropdownView(
       el: @$el.find(".send-later-button")
