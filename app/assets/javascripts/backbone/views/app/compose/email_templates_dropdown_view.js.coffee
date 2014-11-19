@@ -9,7 +9,7 @@ class TuringEmailApp.Views.App.EmailTemplatesDropdownView extends Backbone.View
   render: ->
     @$el.after(@template())
 
-    @$el.find(".email-templates-dropdown li").click =>
+    @$el.parent().find(".email-templates-dropdown li").click =>
       @composeView.$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").prepend("Hi [Prospect],<br /><br />
       I really enjoyed our phone conversation [or meeting] earlier today and especially liked learning about your unique role at [company]. I understand the challenges you are facing with [challenges discussed] and the impact they are having on [insert personal impact].<br /><br />
       As promised, I have attached [or linked to] the resources and materials that can help you better understand how we can help you solve [insert compelling reason to buy].<br /><br />
