@@ -29,6 +29,8 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
 
   setupComposeView: ->
     config = {}
+    config.enterMode = CKEDITOR.ENTER_BR
+    config.shiftEnterMode = CKEDITOR.ENTER_P
     config.toolbar = [
       {
         name: "basicstyles"
