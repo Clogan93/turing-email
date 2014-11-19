@@ -260,8 +260,8 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     @$el.find(".compose-form .bcc-input").val("")
 
     @$el.find(".compose-form .subject-input").val("")
-    @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").html(" ")
-    @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").text(" ")
+    @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").html("")
+    @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").text("")
 
     @$el.find(".compose-form .send-later-switch").bootstrapSwitch("setState", false, true)
     @$el.find(".compose-form .send-later-datetimepicker").val("")
