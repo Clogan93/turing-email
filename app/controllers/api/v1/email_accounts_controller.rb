@@ -87,7 +87,7 @@ class Api::V1::EmailAccountsController < ApiController
       
       delayed_email.tracking_enabled = params[:tracking_enabled]
       
-      delayed_email.bounce_back_enabled = params[:bounce_back_enabled].downcase == 'true'
+      delayed_email.bounce_back = params[:bounce_back_enabled].downcase == 'true'
       delayed_email.bounce_back_time = params[:bounce_back_time]
       delayed_email.bounce_back_type = params[:bounce_back_type]
       

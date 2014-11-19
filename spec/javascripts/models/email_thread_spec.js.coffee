@@ -177,7 +177,7 @@ describe "EmailThread", ->
           
         it "calls googleRequest", ->
           expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
-          specCompareFunctions((=> @removeGmailLabelRequest(emailThreadUID, labelID)), @googleRequestStub.args[0][1])
+          specCompareFunctions((=> @removeGmailLabelRequest(emailThreadUID, emailFolderID)), @googleRequestStub.args[0][1])
           expect(@googleRequestStub.args[0][2]).toEqual(@success)
           expect(@googleRequestStub.args[0][3]).toEqual(@error)
 
