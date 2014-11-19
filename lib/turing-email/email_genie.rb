@@ -28,43 +28,13 @@ class EmailGenie
 
     log_console("FOUND #{important_emails.count} IMPORTANT emails")
 
-    sent_label = user.gmail_accounts.first.sent_folder
-    if sent_label
-      sent_emails_ids = sent_label.emails.
-          where('date < ? AND date > ?', Time.now - 24.hours, Time.now - 24.hours * 7).
-          order(:date => :desc).
-          pluck(:email_id, :message_id)
-
-      sent_emails_ids_transposed = sent_emails_ids.transpose()
-      sent_emails_email_ids = sent_emails_ids_transposed[0]
-      sent_emails_message_ids = sent_emails_ids_transposed[1]
-
-      if sent_emails_message_ids.nil?
-        sent_emails_not_replied_to = []
-      else
-        replied_to_message_ids = EmailInReplyTo.where(:email => user.emails,
-                                                      :in_reply_to_message_id => sent_emails_message_ids).
-            pluck(:in_reply_to_message_id)
-        not_replied_to_message_ids = sent_emails_message_ids - replied_to_message_ids
-
-        num_sent_emails_not_replied_to = user.emails.where(:message_id => not_replied_to_message_ids).order('date DESC').count
-        sent_emails_not_replied_to = user.emails.where(:message_id => not_replied_to_message_ids).order('date DESC').limit(100)
-      end
-    else
-      num_sent_emails_not_replied_to  = 0
-      sent_emails_not_replied_to = []
-    end
-
-    log_console("FOUND #{sent_emails_not_replied_to.count} SENT emails AWAITING reply")
-
     num_auto_filed_emails = user.emails.where(:auto_filed => true, :auto_filed_reported => false).order(:date => :desc).count
     auto_filed_emails = user.emails.where(:auto_filed => true, :auto_filed_reported => false).order(:date => :desc).limit(100)
     log_console("FOUND #{auto_filed_emails.count} AUTO FILED emails")
 
     GenieMailer.user_report_email(user,
                                   num_important_emails, important_emails,
-                                  num_auto_filed_emails, auto_filed_emails,
-                                  num_sent_emails_not_replied_to, sent_emails_not_replied_to).deliver()
+                                  num_auto_filed_emails, auto_filed_emails).deliver()
 
     user.emails.where(:auto_filed => true, :auto_filed_reported => false).update_all(:auto_filed_reported => true)
   end

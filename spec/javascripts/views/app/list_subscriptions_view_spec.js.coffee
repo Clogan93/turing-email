@@ -3,6 +3,7 @@ describe "ListSubscriptionsView", ->
     specStartTuringEmailApp()
 
     @listSubscriptions = new TuringEmailApp.Collections.ListSubscriptionsCollection(FactoryGirl.createLists("ListSubscription", FactoryGirl.SMALL_LIST_SIZE))
+    @listSubscriptions.at(1).set("unsubscribed", true)
     @listSubscriptionsView = new TuringEmailApp.Views.App.ListSubscriptionsView(collection: @listSubscriptions)
 
   afterEach ->
@@ -84,4 +85,4 @@ describe "ListSubscriptionsView", ->
           @triggerStub.restore()
 
         it "triggers resubscribeListClicked", ->
-          expect(@triggerStub).toHaveBeenCalledWith("resubscribeListClicked", @listSubscriptionsView, @listSubscriptions.at(0))
+          expect(@triggerStub).toHaveBeenCalledWith("resubscribeListClicked", @listSubscriptionsView, @listSubscriptions.at(1))

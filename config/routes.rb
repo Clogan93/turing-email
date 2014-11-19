@@ -101,6 +101,10 @@ Rails.application.routes.draw do
       post '/apps/test', to: 'apps#test'
 
       post 'people/recent_thread_subjects', to: 'people#recent_thread_subjects'
+
+      resources :email_templates, only: [:create, :index]
+      patch '/email_templates/:email_template_uid', :to => 'email_templates#update'
+      delete '/email_templates/:email_template_uid', :to => 'email_templates#destroy'
     end
   end
 

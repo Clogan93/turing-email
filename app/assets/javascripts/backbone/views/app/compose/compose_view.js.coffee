@@ -14,12 +14,12 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     # @setupLinkPreviews()
     @setupEmailTemplatesDropdown()
 
-    @$el.find(".send-later-datetimepicker").datetimepicker(
+    @$el.find(".datetimepicker").datetimepicker(
       format: "m/d/Y g:i a"
       formatTime: "g:i a"
     );
 
-    @$el.find(".tracking-switch").bootstrapSwitch()
+    @$el.find(".switch").bootstrapSwitch()
 
     return this
 
@@ -261,7 +261,11 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").html(" ")
     @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").text(" ")
 
+    @$el.find(".compose-form .send-later-switch").bootstrapSwitch("setState", false, true)
     @$el.find(".compose-form .send-later-datetimepicker").val("")
+
+    @$el.find(".compose-form .bounce-back-switch").bootstrapSwitch("setState", false, true)
+    @$el.find(".compose-form .bounce-back-datetimepicker").val("")
 
   showEmailSentAlert: (emailSentJSON) ->
     console.log "ComposeView showEmailSentAlert"
@@ -428,7 +432,12 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
   updateEmail: (email) ->
     console.log "ComposeView updateEmail!"
     email.set("email_in_reply_to_uid", @emailInReplyToUID)
+    
     email.set("tracking_enabled", @$el.find(".compose-form .tracking-switch").parent().parent().hasClass("switch-on"))
+    
+    email.set("bounce_back_enabled", @$el.find(".compose-form .bounce-back-switch").parent().parent().hasClass("switch-on"))
+    email.set("bounce_back_time", new Date(@$el.find(".compose-form .bounce-back-datetimepicker").val()))
+    email.set("bounce_back_type", @$el.find(".compose-form .bounce-back-select").val())
 
     email.set("tos", @$el.find(".compose-form .to-input").val().split(/[;, ]/))
     email.set("ccs", @$el.find(".compose-form .cc-input").val().split(/[;, ]/))
@@ -442,6 +451,22 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     return email.get("tos").length > 1 || email.get("tos")[0].trim() != "" ||
            email.get("ccs").length > 1 || email.get("ccs")[0].trim() != "" ||
            email.get("bccs").length > 1 || email.get("bccs")[0].trim() != ""
+    
+  checkBounceBack: (email) ->
+    return true if !email.get("bounce_back_enabled")
+    return @checkDate(email.get("bounce_back_time"), "bounce back time")
+    
+  checkDate: (dateString, description) ->
+    dateTime = new Date(dateString)
+
+    if dateTime.toString() == "Invalid Date"
+      @app.showAlert("The " + description + " is invalid.", "alert-danger", 5000)
+      return false
+    else if dateTime < new Date()
+      @app.showAlert("The " + description + " is before the current time.", "alert-danger", 5000)
+      return false
+      
+    return true
 
   ###################
   ### Email Draft ###
@@ -486,43 +511,36 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
   ### Send Email ###
   ##################
     
-  sendEmail: (draftToSend=null) ->
-    console.log "ComposeView sendEmail!"
-    
+  sendEmailWithCallback: (callback, callbackWithDraft, draftToSend=null) ->
     if @currentEmailDraft? || draftToSend?
       console.log "sending DRAFT"
-      
+
       if not draftToSend?
         console.log "NO draftToSend - not callback so update the draft and save it"
         # need to update and save the draft state because reset below clears it
         @updateDraft()
         draftToSend = @currentEmailDraft
-        
+
         if !@emailHasRecipients(draftToSend)
           @app.showAlert("Email has no recipients!", "alert-danger", 5000)
           return
-        
+
+        if !@checkBounceBack(draftToSend)
+          return
+
         @resetView()
         @hide()
-        
+
       if @savingDraft
         console.log "SAVING DRAFT!!!!!!! do TIMEOUT callback!"
         # if still saving the draft from save-button click need to retry because otherwise multiple drafts
         # might be created or the wrong version of the draft might be sent.
         setTimeout (=>
-         @sendEmail(draftToSend)
+          @sendEmailWithCallback(callback, callbackWithDraft, draftToSend)
         ), 500
       else
         console.log "NOT in middle of draft save - saving it then sending"
-        
-        draftToSend.save(null, {
-          success: (model, response, options) =>
-            console.log "SAVED! setting draft_id to " + response.draft_id
-            draftToSend.set("draft_id", response.draft_id)
-            @trigger "change:draft", this, model, @emailThreadParent
-            
-            @sendUndoableEmail(draftToSend)
-        })
+        callbackWithDraft(draftToSend)
     else
       # easy case - no draft just send the email!
       console.log "NO draft! Sending"
@@ -532,67 +550,51 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       if !@emailHasRecipients(emailToSend)
         @app.showAlert("Email has no recipients!", "alert-danger", 5000)
         return
-      
-      @resetView()
-      @hide()
-
-      @sendUndoableEmail(emailToSend)
-
-  sendEmailDelayed: (draftToSend=null) ->
-    console.log "sendEmailDelayed!!!"
-    
-    dateTimePickerVal = @$el.find(".compose-modal .send-later-datetimepicker").val()
-    sendAtDateTime = new Date(dateTimePickerVal)
-      
-    if sendAtDateTime.toString() == "Invalid Date"
-      @app.showAlert("The send later date is invalid.", "alert-danger", 5000)
-      return
-    else if sendAtDateTime < new Date()
-      @app.showAlert("The send later date is before the current time.", "alert-danger", 5000)
-      return
-
-    if @currentEmailDraft? || draftToSend?
-      console.log "sending DRAFT later"
-
-      if not draftToSend?
-        console.log "NO draftToSend - not callback so update the draft and save it"
-        # need to update and save the draft state because reset below clears it
-        @updateDraft()
-        draftToSend = @currentEmailDraft
-        if !@emailHasRecipients(draftToSend)
-          @app.showAlert("Email has no recipients!", "alert-danger", 5000)
-          return
-
-        @resetView()
-        @hide()
-
-      if @savingDraft
-        console.log "SAVING DRAFT!!!!!!! do sendEmailDelayed TIMEOUT callback!"
-        # if still saving the draft from save-button click need to retry because otherwise multiple drafts
-        # might be created or the wrong version of the draft might be sent.
-        setTimeout (=>
-          @sendEmailDelayed(draftToSend)
-        ), 500
-      else
-        console.log "NOT in middle of draft save - sending later now!!"
         
-        draftToSend.sendLater(sendAtDateTime).done(
-          => @trigger "change:draft", this, model, @emailThreadParent
-        )
-    else
-      # easy case - no draft just send the email!
-      console.log "NO draft! Sending later now!!"
-      emailToSend = new TuringEmailApp.Models.Email()
-      @updateEmail(emailToSend)
-
-      if !@emailHasRecipients(emailToSend)
-        @app.showAlert("Email has no recipients!", "alert-danger", 5000)
+      if !@checkBounceBack(emailToSend)
         return
 
       @resetView()
       @hide()
-      
-      emailToSend.sendLater(sendAtDateTime)
+
+      callback(emailToSend)
+  
+  sendEmail: () ->
+    console.log "ComposeView sendEmail!"
+
+    @sendEmailWithCallback(
+      (emailToSend) =>
+        @sendUndoableEmail(emailToSend)
+
+      (draftToSend) =>
+        draftToSend.save(null, {
+          success: (model, response, options) =>
+            console.log "SAVED! setting draft_id to " + response.draft_id
+            draftToSend.set("draft_id", response.draft_id)
+            @trigger "change:draft", this, model, @emailThreadParent
+
+            @sendUndoableEmail(draftToSend)
+        })
+    )
+
+  sendEmailDelayed: () ->
+    console.log "sendEmailDelayed!!!"
+    
+    dateTimePickerVal = @$el.find(".compose-form .send-later-datetimepicker").val()
+    if !@checkDate(dateTimePickerVal, "send later time")
+      return
+
+    sendAtDateTime = new Date(dateTimePickerVal)
+
+    @sendEmailWithCallback(
+      (emailToSend) =>
+        emailToSend.sendLater(sendAtDateTime)
+        
+      (draftToSend) =>
+        draftToSend.sendLater(sendAtDateTime).done(
+          => @trigger "change:draft", this, model, @emailThreadParent
+        )
+    )
       
   sendUndoableEmail: (emailToSend) ->
     console.log "ComposeView sendUndoableEmail! - Setting up Undo button"

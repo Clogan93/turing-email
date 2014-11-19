@@ -24,7 +24,8 @@ class DelayedEmail < ActiveRecord::Base
     self.email_account.send_email(self.tos, self.ccs, self.bccs,
                                   self.subject,
                                   self.html_part, self.text_part,
-                                  self.email_in_reply_to_uid)
+                                  self.email_in_reply_to_uid,
+                                  self.bounce_back_enabled, self.bounce_back_time, self.bounce_back_type)
     self.destroy!()
   end
   

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141117030450) do
+ActiveRecord::Schema.define(version: 20141118072614) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -45,6 +45,9 @@ ActiveRecord::Schema.define(version: 20141117030450) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "tracking_enabled"
+    t.boolean  "bounce_back",           default: false
+    t.datetime "bounce_back_time"
+    t.text     "bounce_back_type"
   end
 
   add_index "delayed_emails", ["delayed_job_id"], name: "index_delayed_emails_on_delayed_job_id", using: :btree
@@ -144,6 +147,19 @@ ActiveRecord::Schema.define(version: 20141117030450) do
   add_index "email_rules", ["from_address", "to_address", "subject", "list_id", "destination_folder_name"], name: "index_email_rules_on_everything", unique: true, using: :btree
   add_index "email_rules", ["uid"], name: "index_email_rules_on_uid", unique: true, using: :btree
 
+  create_table "email_templates", force: true do |t|
+    t.integer  "user_id"
+    t.text     "uid"
+    t.text     "name"
+    t.text     "text"
+    t.text     "html"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "email_templates", ["uid"], name: "index_email_templates_on_uid", unique: true, using: :btree
+  add_index "email_templates", ["user_id", "name"], name: "index_email_templates_on_user_id_and_name", unique: true, using: :btree
+
   create_table "email_threads", force: true do |t|
     t.integer  "email_account_id"
     t.string   "email_account_type"
@@ -229,6 +245,10 @@ ActiveRecord::Schema.define(version: 20141117030450) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "list_subscription_id"
+    t.boolean  "bounce_back",             default: false
+    t.datetime "bounce_back_time"
+    t.text     "bounce_back_type"
+    t.integer  "bounce_back_job_id"
   end
 
   add_index "emails", ["date", "id"], name: "index_emails_on_date_and_id", order: {"date"=>:desc, "id"=>:desc}, using: :btree

@@ -33,10 +33,15 @@ $config.http_errors = {
 
     :email_not_found => {:status_code => 620, :description => 'Email not found.'},
     :email_thread_not_found => {:status_code => 630, :description => 'Email Thread not found.'},
+    
     :genie_rule_not_found => {:status_code => 640, :description => 'Genie Rule not found.'},
     :email_rule_not_found => {:status_code => 650, :description => 'Email Rule not found.'},
+    
     :email_account_not_found => {:status_code => 660, :description => 'Email Account not found.'},
-    :app_not_found => {:status_code => 670, :description => 'App not found.'}
+    :app_not_found => {:status_code => 670, :description => 'App not found.'},
+    
+    :email_template_not_found => {:status_code => 680, :description => 'Email template not found.'},
+    :email_template_name_in_use => {:status_code => 681, :description => 'Email template name in use.'}
 }
 
 # globals

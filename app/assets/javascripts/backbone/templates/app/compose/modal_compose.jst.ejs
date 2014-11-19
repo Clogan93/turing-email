@@ -21,9 +21,9 @@
         </div>
 
         <div class="modal-footer">
-          <input class="send-later-datetimepicker" type="text" placeholder="date &amp; time" />
+          <input class="send-later-datetimepicker datetimepicker" type="text" placeholder="date &amp; time" />
           <button type="button" class="btn btn-info send-later-button">Send Later</button>
-          Tracking: <input type="checkbox" class="tracking-switch">
+          Tracking: <input type="checkbox" class="tracking-switch switch">
           
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <button type="button" class="btn btn-info save-button">Save</button>
@@ -39,6 +39,16 @@
             </ul>
           </div>
 
+        </div>
+
+        <div class="modal-footer">
+          <select class="form-control bounce-back-select">
+            <option value="always">Always</option>
+            <option value="no_reply">No Reply</option>
+          </select>
+
+          <input class="bounce-back-datetimepicker datetimepicker" type="text" placeholder="date &amp; time" />
+          Bounce Back: <input type="checkbox" class="bounce-back-switch switch">
         </div>
       </form>
     </div>
