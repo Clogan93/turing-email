@@ -79,7 +79,7 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
       for emailThreadUID in emailThreadUIDs
         googleRequest(
           app
-          => @removeGmailLabelRequest(emailThreadUID, labelID)
+          => @removeGmailLabelRequest(emailThreadUID, emailFolderID)
           success
           error
         )
