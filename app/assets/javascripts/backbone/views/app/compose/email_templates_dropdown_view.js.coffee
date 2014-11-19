@@ -7,7 +7,7 @@ class TuringEmailApp.Views.App.EmailTemplatesDropdownView extends Backbone.View
     @composeView = options.composeView
 
   render: ->
-    @$el.append(@template())
+    @$el.after(@template())
 
     @$el.find(".email-templates-dropdown li").click =>
       @composeView.$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").prepend("Hi [Prospect],<br /><br />

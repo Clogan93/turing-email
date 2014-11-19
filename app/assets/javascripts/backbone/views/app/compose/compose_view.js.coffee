@@ -12,10 +12,9 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     @setupComposeView()
     @setupSendAndArchive()
     # @setupLinkPreviews()
-    # @setupEmojis()
-    @setupEmailTemplatesDropdown()
     @setupEmailTagsDropdown()
-    
+    @setupEmailTemplatesDropdown()
+
     @$el.find(".send-later-datetimepicker").datetimepicker(
       format: "m/d/Y g:i a"
       formatTime: "g:i a"
@@ -183,9 +182,6 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
 
     @$el.find(".compose-email-body").ckeditor config
 
-    # @$el.find(".compose-email-body").ckeditor $.noop,
-    #   toolbar: 'basic'
-
     @$el.find(".compose-form").submit =>
       console.log "SEND clicked! Sending..."
       @sendEmail()
@@ -236,7 +232,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
 
   setupEmailTemplatesDropdown: ->
     @emailTemplatesDropdownView = new TuringEmailApp.Views.App.EmailTemplatesDropdownView(
-      el: @$el.find(".note-toolbar.btn-toolbar")
+      el: @$el.find(".send-later-button")
       composeView: @
     )
     @emailTemplatesDropdownView.render()
