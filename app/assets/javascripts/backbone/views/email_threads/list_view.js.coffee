@@ -20,7 +20,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
   resetView: (models, options) ->
     @removeAll(options.previousModels) if options?.previousModels?
-    @selectedListItemView = null
+    @select(@selectedItem(), silent: true) if @selectedItem()?
 
     @render()
 

@@ -24,6 +24,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
           
           @addPreviewDataToTheModelJSON(modelJSON)
           
+          console.log modelJSON
           @$el.html(@template(modelJSON))
           @$el.addClass("email-thread")
 
