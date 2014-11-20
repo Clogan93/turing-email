@@ -112,3 +112,21 @@ pre.email-body {
 .single-click-communication-link {
   cursor: pointer;
 }
+
+.email-response-btn-group {
+  float: right;
+  position: relative;
+  bottom: 39px;
+  right: 2px;
+  padding-left: 3px;
+  padding-right: 4px;
+}
+
+.email-response-dropdown-menu {
+  left: -150%;
+  height: 40px;
+  
+  a {
+    cursor: pointer;
+  }
+}

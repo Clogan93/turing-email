@@ -23,8 +23,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
           modelJSON["emails"] = @model.get("emails")
           
           @addPreviewDataToTheModelJSON(modelJSON)
-          
-          console.log modelJSON
+
           @$el.html(@template(modelJSON))
           @$el.addClass("email-thread")
 
@@ -149,7 +148,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
       @trigger("forwardClicked", this)
 
   setupQuickReplyButton: ->
-    @$el.find(".each-email-reply-button").each ->
+    @$el.find(".email-response-btn-group").each ->
       quickReplyView = new TuringEmailApp.Views.App.QuickReplyView(
         el: $(@)
         emailThreadView: TuringEmailApp.views.mainView.currentEmailThreadView
