@@ -83,7 +83,7 @@ class ListSubscription < ActiveRecord::Base
     # unsubscribe
     
     if domain.blank? && list_subscription.list_unsubscribe_link
-      log_exception(false) do
+      ignore_exception() do
         uri = URI(list_subscription.list_unsubscribe_link)
         domain = uri.host
       end
@@ -102,7 +102,7 @@ class ListSubscription < ActiveRecord::Base
     # subscribe
     
     if domain.blank? && list_subscription.list_subscribe_link
-      log_exception(false) do
+      ignore_exception() do
         uri = URI(list_subscription.list_subscribe_link)
         domain = uri.host
       end
