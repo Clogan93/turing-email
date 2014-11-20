@@ -46,7 +46,7 @@ describe "SettingsView", ->
 
   describe "#render", ->
     it "renders the settings view", ->
-      expect(@settingsDiv.find("div[class=page-header]")).toContainHtml('<h1 class="h1">Settings</h1>')
+      expect(@settingsDiv.find("div[class=col-md-10]")).toContainHtml('<h1 class="h1">Settings</h1>')
 
       expect(@settingsDiv).toContainHtml('<h4 class="h4">Demo Mode</h4>')
       expect(@settingsDiv).toContainHtml('<h4 class="h4">Keyboard Shortcuts</h4>')
