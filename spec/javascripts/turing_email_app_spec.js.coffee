@@ -39,9 +39,6 @@ describe "TuringEmailApp", ->
       expect(@messagesListStub).toHaveBeenCalledWith(@params)
       expect(@returned).toEqual(@ret)
 
-  # TODO change to view
-  describe "#renderSyncingEmailsMessage", ->
-      
   describe "#start", ->
     it "defines the model, view, collection, and router containers", ->
       TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserConfiguration"))
@@ -68,20 +65,7 @@ describe "TuringEmailApp", ->
       TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserConfiguration"))
       expect(@syncEmailStub).toHaveBeenCalled()
 
-  it "starts the threadsListInboxCountRequest", ->
-      @googleRequestStub = sinon.stub(window, "googleRequest", ->)
-
-      userJSON = FactoryGirl.create("User")
-      userJSON.has_genie_report_ran = false
-      TuringEmailApp.start(userJSON, FactoryGirl.create("UserConfiguration"))
-      
-      expect(@googleRequestStub.args[0][0]).toEqual(TuringEmailApp)
-      specCompareFunctions((=> @threadsListInboxCountRequest()), @googleRequestStub.args[0][1])
-      specCompareFunctions(((response) => @renderSyncingEmailsMessage(response.result.resultSizeEstimate)), @googleRequestStub.args[0][2])
-      
-      @googleRequestStub.restore()
-
-  it "starts the backbone history", ->
+    it "starts the backbone history", ->
       TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserConfiguration"))
       expect(Backbone.History.started).toBeTruthy()
 
