@@ -10,6 +10,12 @@ class CreateDelayedEmails < ActiveRecord::Migration
       t.text :subject
       t.text :html_part, :text_part
       t.text :email_in_reply_to_uid
+
+      t.boolean :tracking_enabled
+
+      t.boolean :bounce_back, :default => false
+      t.datetime :bounce_back_time
+      t.text :bounce_back_type
       
       t.timestamps
     end

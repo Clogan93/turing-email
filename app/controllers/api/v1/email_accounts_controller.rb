@@ -87,7 +87,7 @@ class Api::V1::EmailAccountsController < ApiController
       
       delayed_email.tracking_enabled = params[:tracking_enabled]
       
-      delayed_email.bounce_back_enabled = params[:bounce_back_enabled].downcase == 'true'
+      delayed_email.bounce_back = params[:bounce_back_enabled].downcase == 'true'
       delayed_email.bounce_back_time = params[:bounce_back_time]
       delayed_email.bounce_back_type = params[:bounce_back_type]
       
@@ -111,7 +111,7 @@ class Api::V1::EmailAccountsController < ApiController
 
   # TODO write tests
   def sync
-    @email_account.delay.sync_email() if @email_account.last_history_id_synced
+    #@email_account.delay.sync_email() if @email_account.last_history_id_synced
     render :json => ''
   end
 

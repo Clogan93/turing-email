@@ -90,13 +90,14 @@ $config.mailgun_api_url_base = "https://api:#{$config.mailgun_api_key}@api.mailg
 $config.mailgun_api_url = "#{$config.mailgun_api_url_base}/#{$config.mailgun_domain}"
 
 # Heroku Dynos
-$config.heroku_dynos = ['worker']
+#$config.heroku_dynos = ['worker']
+$config.heroku_dynos = []
 
 # Delayed Job
 $config.dj_queues = ['worker']
 $config.dj_queue_alert_size = 100000
 $config.dj_queues_heroku_dynos = {
-    'worker' => 'worker'
+    #'worker' => 'worker'
 }
 
 =begin

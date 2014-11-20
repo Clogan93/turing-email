@@ -44,11 +44,14 @@ gem 'unicorn', '~> 4.8.3'
 # gem 'debugger', group: [:development, :test]
 
 # heroku
-gem 'rails_12factor', '~> 0.0.2', group: [:production, :beta] if ENV['NOT_HEROKU'].nil? # must use NOT_HEROKU because env not available in heroku compile
-gem 'heroku-api', '~> 0.3.19'
+if ENV['NOT_HEROKU'].nil? # must use NOT_HEROKU because env not available in heroku compile
+  gem 'rails_12factor', '~> 0.0.2', group: [:production, :beta]
+  
+  # deflater
+  gem 'heroku-deflater', '~> 0.5.3'
+end
 
-# deflater
-gem 'heroku-deflater', '~> 0.5.3'
+gem 'heroku-api', '~> 0.3.19'
 
 # bootstrap
 gem 'bootstrap-sass', '~> 3.2.0.1'

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141118072614) do
+ActiveRecord::Schema.define(version: 20141118010319) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -42,12 +42,12 @@ ActiveRecord::Schema.define(version: 20141118072614) do
     t.text     "html_part"
     t.text     "text_part"
     t.text     "email_in_reply_to_uid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.boolean  "tracking_enabled"
     t.boolean  "bounce_back",           default: false
     t.datetime "bounce_back_time"
     t.text     "bounce_back_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "delayed_emails", ["delayed_job_id"], name: "index_delayed_emails_on_delayed_job_id", using: :btree
@@ -82,12 +82,12 @@ ActiveRecord::Schema.define(version: 20141118072614) do
     t.integer  "email_id"
     t.integer  "email_folder_id"
     t.string   "email_folder_type"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.integer  "email_thread_id"
     t.datetime "folder_email_date"
     t.text     "folder_email_draft_id"
-    t.integer  "email_thread_id"
     t.datetime "folder_email_thread_date"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "email_folder_mappings", ["email_folder_id", "email_folder_type", "email_id"], name: "index_email_folder_mappings_on_email_folder_type_and_email", using: :btree
@@ -170,7 +170,7 @@ ActiveRecord::Schema.define(version: 20141118072614) do
 
   add_index "email_threads", ["email_account_id", "email_account_type", "uid"], name: "index_email_threads_on_email_account_and_uid", unique: true, using: :btree
   add_index "email_threads", ["email_account_id", "email_account_type"], name: "index_email_threads_on_email_account_id_and_email_account_type", using: :btree
-  add_index "email_threads", ["uid"], name: "index_email_threads_on_uid", using: :btree
+  add_index "email_threads", ["uid"], name: "index_email_threads_on_uid", unique: true, using: :btree
 
   create_table "email_tracker_recipients", force: true do |t|
     t.integer  "email_tracker_id"
@@ -183,7 +183,7 @@ ActiveRecord::Schema.define(version: 20141118072614) do
 
   add_index "email_tracker_recipients", ["email_id"], name: "index_email_tracker_recipients_on_email_id", using: :btree
   add_index "email_tracker_recipients", ["email_tracker_id"], name: "index_email_tracker_recipients_on_email_tracker_id", using: :btree
-  add_index "email_tracker_recipients", ["uid"], name: "index_email_tracker_recipients_on_uid", using: :btree
+  add_index "email_tracker_recipients", ["uid"], name: "index_email_tracker_recipients_on_uid", unique: true, using: :btree
 
   create_table "email_tracker_views", force: true do |t|
     t.integer  "email_tracker_recipient_id"
@@ -195,7 +195,7 @@ ActiveRecord::Schema.define(version: 20141118072614) do
   end
 
   add_index "email_tracker_views", ["email_tracker_recipient_id"], name: "index_email_tracker_views_on_email_tracker_recipient_id", using: :btree
-  add_index "email_tracker_views", ["uid"], name: "index_email_tracker_views_on_uid", using: :btree
+  add_index "email_tracker_views", ["uid"], name: "index_email_tracker_views_on_uid", unique: true, using: :btree
 
   create_table "email_trackers", force: true do |t|
     t.integer  "email_account_id"
@@ -209,7 +209,7 @@ ActiveRecord::Schema.define(version: 20141118072614) do
   end
 
   add_index "email_trackers", ["email_account_id"], name: "index_email_trackers_on_email_account_id", using: :btree
-  add_index "email_trackers", ["uid"], name: "index_email_trackers_on_uid", using: :btree
+  add_index "email_trackers", ["uid"], name: "index_email_trackers_on_uid", unique: true, using: :btree
 
   create_table "emails", force: true do |t|
     t.integer  "email_account_id"
@@ -242,13 +242,13 @@ ActiveRecord::Schema.define(version: 20141118072614) do
     t.text     "text_part"
     t.text     "body_text"
     t.boolean  "has_calendar_attachment", default: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "list_subscription_id"
     t.boolean  "bounce_back",             default: false
     t.datetime "bounce_back_time"
     t.text     "bounce_back_type"
     t.integer  "bounce_back_job_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "emails", ["date", "id"], name: "index_emails_on_date_and_id", order: {"date"=>:desc, "id"=>:desc}, using: :btree
@@ -259,7 +259,7 @@ ActiveRecord::Schema.define(version: 20141118072614) do
   add_index "emails", ["email_thread_id"], name: "index_emails_on_email_thread_id", using: :btree
   add_index "emails", ["id"], name: "index_emails_on_id", where: "(NOT seen)", using: :btree
   add_index "emails", ["message_id"], name: "index_emails_on_message_id", using: :btree
-  add_index "emails", ["uid"], name: "index_emails_on_uid", using: :btree
+  add_index "emails", ["uid"], name: "index_emails_on_uid", unique: true, using: :btree
 
   create_table "genie_rules", force: true do |t|
     t.integer  "user_id"
@@ -439,14 +439,14 @@ ActiveRecord::Schema.define(version: 20141118072614) do
 
   create_table "user_configurations", force: true do |t|
     t.integer  "user_id"
-    t.boolean  "demo_mode_enabled",          default: true
+    t.boolean  "demo_mode_enabled",          default: false
     t.boolean  "keyboard_shortcuts_enabled", default: true
     t.boolean  "genie_enabled",              default: true
     t.text     "split_pane_mode",            default: "horizontal"
     t.boolean  "developer_enabled",          default: false
+    t.integer  "skin_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "skin_id"
   end
 
   add_index "user_configurations", ["user_id"], name: "index_user_configurations_on_user_id", unique: true, using: :btree

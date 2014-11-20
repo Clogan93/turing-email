@@ -35,9 +35,6 @@ window.TuringEmailApp = new(Backbone.View.extend(
       
     gapi.client.gmail.users.messages.list(params)
   
-  renderSyncingEmailsMessage: (numEmailsToSync) ->
-    $("#main").html("<div class='col-md-offset-2 col-md-8 emails-syncing-information'><table style='width: 100%;' border='0' align='center' cellpadding='0' cellspacing='0'><tbody><tr><td width='auto' align='center' valign='middle' height='28' style='font-size:18px;font-family:Roboto,Open Sans,Arial,Tahoma,Helvetica,sans-serif;text-align:center;color:#a3a2a2;font-weight:300;padding-left:18px;padding-right:18px'><span style='color:#a3a2a2;font-weight:300'><a href='#1496f007833f508e_' style='text-decoration:none;color:#a3a2a2;font-weight:300'>TURING <span style='color:#4ab59c;font-weight:300'>EMAIL SYNC</span></a></span></td></tr></tbody></table><br/>Your emails are syncing! An email will be sent to you when your emails have finished syncing.</div>")
-    
   start: (userJSON, userConfigurationJSON) ->
     @models = {}
     @views = {}
@@ -47,16 +44,6 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @setupUser(userJSON, userConfigurationJSON)
     
     @setupGmailAPI()
-    
-    if !@models.user.get("has_genie_report_ran")
-      googleRequest(
-        this,
-        => @threadsListInboxCountRequest()
-        (response) => @renderSyncingEmailsMessage(response.result.resultSizeEstimate)
-      )
-      
-      $("#main").html("<div class='col-md-offset-2 col-md-8 emails-syncing-information'><table style='width: 100%;' border='0' align='center' cellpadding='0' cellspacing='0'><tbody><tr><td width='auto' align='center' valign='middle' height='28' style='font-size:18px;font-family:Roboto,Open Sans,Arial,Tahoma,Helvetica,sans-serif;text-align:center;color:#a3a2a2;font-weight:300;padding-left:18px;padding-right:18px'><span style='color:#a3a2a2;font-weight:300'><a href='#1496f007833f508e_' style='text-decoration:none;color:#a3a2a2;font-weight:300'>TURING <span style='color:#4ab59c;font-weight:300'>EMAIL SYNC</span></a></span></td></tr></tbody></table><br/>Your emails are syncing! An email will be sent to you when your emails have finished syncing.</div>")
-      return
     
     @setupKeyboardHandler()
     
@@ -279,7 +266,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   ######################
 
   syncEmail: ->
-    $.post("api/v1/email_accounts/sync", undefined, undefined, "text") if @models.userConfiguration.get("demo_mode_enabled")
+    #$.post("api/v1/email_accounts/sync", undefined, undefined, "text") if @models.userConfiguration.get("demo_mode_enabled")
     
     @reloadEmailThreads()
     @loadEmailFolders()

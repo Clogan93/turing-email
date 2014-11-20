@@ -504,8 +504,8 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
 
     if !force &&
        !@emailHasRecipients(@currentEmailDraft) &&
-       @currentEmailDraft.get("subject") == "" &&
-       @currentEmailDraft.get("html_part") == "" && @currentEmailDraft.get("text_part") == "" &&
+       @currentEmailDraft.get("subject").trim() == "" &&
+       @currentEmailDraft.get("html_part").trim() == "" && @currentEmailDraft.get("text_part").trim() == "" &&
        not @currentEmailDraft.get("draft_id")?
 
       console.log "SKIPPING SAVE - BLANK draft!!"
