@@ -145,7 +145,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
 
     @$el.find(".reply-to-all").click =>
       console.log "replyToAllClicked"
-      #@trigger("replyToAllClicked", this)
+      @trigger("replyToAllClicked", this)
 
     @$el.find(".email_forward_button").click =>
       console.log "forwardClicked"

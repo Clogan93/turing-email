@@ -329,6 +329,20 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     @emailInReplyToUID = emailJSON.uid
     @emailThreadParent = emailThreadParent
 
+  loadEmailAsReplyToAll: (emailJSON, emailThreadParent) ->
+    console.log("ComposeView loadEmailAsReplyToAll!!")
+    @resetView()
+
+    console.log emailJSON
+
+    @$el.find(".compose-form .to-input").val(if emailJSON.tos? then emailJSON.tos)
+    @$el.find(".compose-form .cc-input").val(if emailJSON.ccs? then emailJSON.ccs)
+    @$el.find(".compose-form .subject-input").val(@subjectWithPrefixFromEmail(emailJSON, "Re: "))
+    @loadEmailBody(emailJSON, true)
+
+    @emailInReplyToUID = emailJSON.uid
+    @emailThreadParent = emailThreadParent
+
   loadEmailAsForward: (emailJSON, emailThreadParent) ->
     console.log("ComposeView loadEmailAsForward!!")
     @resetView()

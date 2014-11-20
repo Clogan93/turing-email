@@ -181,6 +181,13 @@ describe "EmailThreadView", ->
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
+      describe "when reply-to-all is clicked", ->
+        it "triggers replyToAllClicked", ->
+          spy = sinon.backbone.spy(@emailThreadView, "replyToAllClicked")
+          @emailThreadView.$el.find(".reply-to-all").click()
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+
       describe "when email_forward_button is clicked", ->
         it "triggers forwardClicked", ->
           spy = sinon.backbone.spy(@emailThreadView, "forwardClicked")

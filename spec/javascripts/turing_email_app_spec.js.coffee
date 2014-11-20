@@ -1414,6 +1414,28 @@ describe "TuringEmailApp", ->
           TuringEmailApp.replyClicked()
           expect(@showEmailEditorWithEmailThreadStub).toHaveBeenCalledWith(@emailThread.get("uid"), "reply")
 
+      describe "#replyToAllClicked", ->
+        beforeEach ->
+          @listView = specCreateEmailThreadsListView()
+          @listViewDiv = @listView.$el
+          @emailThreads = @listView.collection
+    
+          TuringEmailApp.views.emailThreadsListView = @listView
+          TuringEmailApp.collections.emailThreads = @emailThreads
+
+          @emailThread = _.values(@listView.listItemViews)[0].model
+
+          TuringEmailApp.views.emailThreadsListView.select @emailThread
+
+          @showEmailEditorWithEmailThreadStub = sinon.stub(TuringEmailApp, "showEmailEditorWithEmailThread", ->)
+          
+        afterEach ->
+          @showEmailEditorWithEmailThreadStub.restore()
+
+        it "shows the email editor with the selected email thread", ->
+          TuringEmailApp.replyToAllClicked()
+          expect(@showEmailEditorWithEmailThreadStub).toHaveBeenCalledWith(@emailThread.get("uid"), "reply-to-all")
+
       describe "#forwardClicked", ->
         beforeEach ->
           @listView = specCreateEmailThreadsListView()
@@ -2075,7 +2097,7 @@ describe "TuringEmailApp", ->
         @eventSpy.restore() if @eventSpy?
         @setStub.restore()
     
-      emailThreadViewEvents = ["goBackClicked", "replyClicked", "forwardClicked", "archiveClicked", "trashClicked"]
+      emailThreadViewEvents = ["goBackClicked", "replyClicked", "replyToAllClicked", "forwardClicked", "archiveClicked", "trashClicked"]
       for event in emailThreadViewEvents
         it "hooks the emailThreadView " + event + " event", ->
           @eventSpy = sinon.spy(TuringEmailApp, event)
@@ -2149,6 +2171,14 @@ describe "TuringEmailApp", ->
         it "loads the email as a reply", ->
           spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailAsReply")
           TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid"), "reply"
+          expect(spy).toHaveBeenCalledWith(@email, @emailThread)
+          spy.restore()
+
+      describe "when in reply-to-all mode", ->
+    
+        it "loads the email as a reply-to-all", ->
+          spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailAsReplyToAll")
+          TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid"), "reply-to-all"
           expect(spy).toHaveBeenCalledWith(@email, @emailThread)
           spy.restore()
 

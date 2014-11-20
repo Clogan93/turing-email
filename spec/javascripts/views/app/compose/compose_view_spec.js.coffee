@@ -321,6 +321,49 @@ describe "ComposeView", ->
           @composeView.loadEmailAsReply emailJSON
           expect(@composeView.emailInReplyToUID).toEqual emailJSON.uid
 
+      describe "#loadEmailAsReplyToAll", ->
+        beforeEach ->
+          @seededChance = new Chance(1)
+  
+        it "resets the view", ->
+          spy = sinon.spy(@composeView, "resetView")
+          @composeView.loadEmailAsReplyToAll JSON.stringify({})
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+  
+        it "loads the email body", ->
+          spy = sinon.spy(@composeView, "loadEmailBody")
+          emailJSON = {}
+          @composeView.loadEmailAsReplyToAll emailJSON
+          expect(spy).toHaveBeenCalled()
+          expect(spy).toHaveBeenCalledWith(emailJSON)
+          spy.restore()
+  
+        it "updates the to input with the tos", ->
+          emailJSON = {}
+          emailJSON["tos"] = @seededChance.email() + ", " + @seededChance.email() + ", " + @seededChance.email()
+          @composeView.loadEmailAsReplyToAll emailJSON
+          expect(@composeView.$el.find(".compose-form .to-input").val()).toEqual emailJSON.tos
+
+        it "updates the cc input with the ccs", ->
+          emailJSON = {}
+          emailJSON["ccs"] = @seededChance.email() + ", " + @seededChance.email() + ", " + @seededChance.email()
+          @composeView.loadEmailAsReplyToAll emailJSON
+          expect(@composeView.$el.find(".compose-form .cc-input").val()).toEqual emailJSON.ccs
+
+        it "updates the subject input", ->
+          emailJSON = {}
+          emailJSON["subject"] = @seededChance.string({length: 20})
+          @composeView.loadEmailAsReplyToAll emailJSON
+          subjectWithPrefixFromEmail = @composeView.subjectWithPrefixFromEmail(emailJSON, "Re: ")
+          expect(@composeView.$el.find(".compose-form .subject-input").val()).toEqual subjectWithPrefixFromEmail
+  
+        it "updates the email in reply to UID", ->
+          emailJSON = {}
+          emailJSON.uid = chance.integer({min: 1, max: 10000})
+          @composeView.loadEmailAsReplyToAll emailJSON
+          expect(@composeView.emailInReplyToUID).toEqual emailJSON.uid
+
       describe "#loadEmailAsForward", ->
         beforeEach ->
           @seededChance = new Chance(1)
