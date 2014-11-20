@@ -111,7 +111,7 @@ class Api::V1::EmailAccountsController < ApiController
 
   # TODO write tests
   def sync
-    @email_account.delay.sync_email() if @email_account.last_history_id_synced
+    #@email_account.delay.sync_email() if @email_account.last_history_id_synced
     render :json => ''
   end
 

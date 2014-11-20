@@ -34,6 +34,13 @@ class CreateEmails < ActiveRecord::Migration
 
       t.boolean :has_calendar_attachment, :default => false
 
+      t.belongs_to :list_subscription
+
+      t.boolean :bounce_back, :default => false
+      t.datetime :bounce_back_time
+      t.text :bounce_back_type
+      t.integer :bounce_back_job_id
+
       t.timestamps
     end
 
