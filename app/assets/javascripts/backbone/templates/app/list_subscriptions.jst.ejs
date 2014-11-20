@@ -34,8 +34,14 @@
   }
 %>
 
-<div class="page-header">
-  <h1 class="h1">List Subscriptions</h1>
+<div class="page-header row">
+  <div class="col-md-10">
+    <h1 class="h1">List Subscriptions</h1>
+  </div>
+  <div class="col-md-2">
+    <% var template = JST["backbone/templates/toolbar/more_dropdown"]; %>
+    <%= template({}) %>
+  </div>
 </div>
 
 <div class="col-lg-12">

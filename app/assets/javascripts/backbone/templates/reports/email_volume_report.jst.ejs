@@ -1,7 +1,13 @@
-<div class="page-header col-lg-11">
-  <h1 class="h1">Email Volume</h1>
-  <span class="report_toolbar_dropdown in-report-dropdown">
-  </span>
+<div class="page-header row">
+  <div class="col-md-10">
+    <h1 class="h1">Email Volume</h1>
+  </div>
+  <div class="col-md-2">
+    <span class="report_toolbar_dropdown top-report-dropdown">
+    </span>
+    <% var template = JST["backbone/templates/toolbar/more_dropdown"]; %>
+    <%= template({}) %>
+  </div>
 </div>
 
 <div class="row">
