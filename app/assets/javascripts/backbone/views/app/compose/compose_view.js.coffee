@@ -241,7 +241,10 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
 
   show: ->
     @$el.find(".compose-modal").modal "show"
-    
+    @syncTimeout = window.setTimeout(=>
+      @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").focus()
+    , 1000)
+
   hide: ->
     @$el.find(".compose-modal").modal "hide"
 
