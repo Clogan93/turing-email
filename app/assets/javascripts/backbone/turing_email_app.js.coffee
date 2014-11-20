@@ -176,6 +176,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @views.composeView = @views.mainView.composeView
 
     @listenTo(@views.composeView, "change:draft", @draftChanged)
+    @listenTo(@views.composeView, "archiveClicked", @archiveClicked)
 
   setupCreateFolderView: ->
     @views.createFolderView = @views.mainView.createFolderView

@@ -76,7 +76,28 @@ describe "ComposeView", ->
   
             expect(@spy).toHaveBeenCalled()
             @spy.restore()
+
+      describe "#setupSendAndArchive", ->
+
+        it "hooks the click action on the send-and-archive button", ->
+          expect(@composeView.$el.find(".send-and-archive")).toHandle("click")
+
+        describe "when the send and archive button is clicked", ->
+
+          it "should send the email", ->
+            @clock = sinon.useFakeTimers()
+            spy = sinon.spy(@composeView, "sendEmail")
+            @composeView.$el.find(".send-and-archive").click()
   
+            expect(spy).toHaveBeenCalled()
+            spy.restore()
+
+          it "triggers archiveClicked", ->
+            spy = sinon.backbone.spy(@composeView, "archiveClicked")
+            @composeView.$el.find(".send-and-archive").click()
+            expect(spy).toHaveBeenCalled()
+            spy.restore()
+
       # describe "#setupLinkPreviews", ->
       #   it "binds keydown to the compose body", ->
       #     expect(@composeView.$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable")).toHandle("keydown")

@@ -198,8 +198,10 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       @saveDraft(false)
 
   setupSendAndArchive: ->
-    @$el.find(".send-and-archive").click ->
-      console.log "Send and archive clicked"
+    @$el.find(".send-and-archive").click =>
+      console.log "send-and-archive clicked"
+      @sendEmail()
+      @trigger("archiveClicked", this)
 
   setupLinkPreviews: ->
     @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").bind "keydown", "space return shift+return", =>
@@ -505,7 +507,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     if !force &&
        !@emailHasRecipients(@currentEmailDraft) &&
        @currentEmailDraft.get("subject").trim() == "" &&
-       @currentEmailDraft.get("html_part").trim() == "" && @currentEmailDraft.get("text_part").trim() == "" &&
+       @currentEmailDraft.get("html_part")?.trim() == "" && @currentEmailDraft?.get("text_part").trim() == "" &&
        not @currentEmailDraft.get("draft_id")?
 
       console.log "SKIPPING SAVE - BLANK draft!!"
