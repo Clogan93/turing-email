@@ -272,6 +272,14 @@ describe "MainView", ->
           expect(@primaryPane.children().length).toEqual(1)
           expect($(@primaryPane.children()[0]).html()).toEqual(@listSubscriptionsView.$el.html())
 
+      describe "#showInboxCleaner", ->
+        beforeEach ->
+          @inboxCleanerView = @mainView.showInboxCleaner()
+
+        it "shows the inbox cleaner view", ->
+          expect(@primaryPane.children().length).toEqual(1)
+          expect($(@primaryPane.children()[0]).html()).toEqual(@inboxCleanerView.$el.html())
+
       describe "#showAnalytics", ->
         beforeEach ->
           @server.restore()

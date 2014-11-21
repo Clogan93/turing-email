@@ -312,6 +312,7 @@ describe "TuringEmailApp", ->
         expect(TuringEmailApp.routers.delayedEmailsRouter).toBeDefined()
         expect(TuringEmailApp.routers.emailTrackersRouter).toBeDefined()
         expect(TuringEmailApp.routers.listSubscriptionsRouter).toBeDefined()
+        expect(TuringEmailApp.routers.inboxCleanerRouter).toBeDefined()
   
   describe "after start", ->
     beforeEach ->
@@ -2304,7 +2305,22 @@ describe "TuringEmailApp", ->
 
       it "listens for resubscribeListClicked on the list subscriptions view", ->
         expect(@listenToStub).toHaveBeenCalledWith(@listSubscriptionsView, "resubscribeListClicked", TuringEmailApp.resubscribeListClicked)
-        
+
+    describe "#showInboxCleaner", ->
+      beforeEach ->
+        @oldInboxCleanerView = TuringEmailApp.inboxCleanerView = {}
+
+        @inboxCleanerView = {}
+        @showInboxCleanerViewStub = sinon.stub(TuringEmailApp.views.mainView, "showInboxCleaner", => @inboxCleanerView)
+
+        TuringEmailApp.showInboxCleaner()
+
+      afterEach ->
+        @showInboxCleanerViewStub.restore()
+
+      it "shows the list subscriptions on the main view", ->
+        expect(@showInboxCleanerViewStub).toHaveBeenCalled()
+
     describe "#showSettings", ->
       beforeEach ->
         @oldSettingsView = TuringEmailApp.settingsView = {}
