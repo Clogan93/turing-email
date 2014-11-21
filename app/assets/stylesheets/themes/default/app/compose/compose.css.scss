@@ -129,3 +129,27 @@ div[contenteditable]:focus {
 .modal-body {
   padding: 20px 5px 30px 5px;
 }
+
+.display-cc, .display-bcc {
+  float: right;
+  cursor: pointer;
+  padding-right: 10px;
+  padding-bottom: 10px;
+}
+
+.cc-input {
+  margin-top: 13px;
+}
+
+.cc-input, .bcc-input {
+  display: none;
+  margin-bottom: 12px;
+}
+
+.from-indicator {
+  font-size: 14px;
+  padding-left: 13px;
+  .from-user-address {
+    padding-left: 5px;
+  }
+}

@@ -5,10 +5,10 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
 
   initialize: (options) ->
     @app = options.app
-  
+
   render: ->
-    @$el.html(@template())
-    
+    @$el.html(@template({ userAddress : @app.models.user.get("email") }))
+
     @setupComposeView()
     @setupSendAndArchive()
     @setupEmailAddressDeobfuscation()
@@ -202,6 +202,14 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
 
     @$el.find(".compose-modal").on "hidden.bs.modal", (event) =>
       @saveDraft(false)
+
+    @$el.find(".display-cc").click (event) =>
+      $(event.target).hide()
+      @$el.find(".cc-input").show()
+
+    @$el.find(".display-bcc").click (event) =>
+      $(event.target).hide()
+      @$el.find(".bcc-input").show()
 
   setupSendAndArchive: ->
     @$el.find(".send-and-archive").click =>

@@ -6,7 +6,7 @@ class TuringEmailApp.Views.App.EmbeddedComposeView extends TuringEmailApp.Views.
   render: ->
     @currentEmailDraft = new TuringEmailApp.Models.EmailDraft(@email)
 
-    @$el.html(@template({ email: @email }))
+    @$el.html(@template({ email: @email, userAddress: @app.models.user.get("email") }))
 
     @setupComposeView()
 
