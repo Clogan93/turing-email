@@ -32,6 +32,9 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     config = {}
     config.enterMode = CKEDITOR.ENTER_BR
     config.shiftEnterMode = CKEDITOR.ENTER_P
+    config.disableNativeSpellChecker = false
+    config.removePlugins = 'scayt,menubutton,liststyle,tabletools,contextmenu'
+    config.browserContextMenuOnCtrl = true
     config.toolbar = [
       {
         name: "basicstyles"
