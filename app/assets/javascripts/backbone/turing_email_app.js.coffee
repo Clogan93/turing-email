@@ -206,6 +206,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @routers.delayedEmailsRouter = new TuringEmailApp.Routers.DelayedEmailsRouter()
     @routers.emailTrackersRouter = new TuringEmailApp.Routers.EmailTrackersRouter()
     @routers.listSubscriptionsRouter = new TuringEmailApp.Routers.ListSubscriptionsRouter()
+    @routers.inboxCleanerRouter = new TuringEmailApp.Routers.InboxCleanerRouter()
 
   ###############
   ### Getters ###
@@ -743,7 +744,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @listSubscriptionsView = @views.mainView.showListSubscriptions()
     @listenTo(@listSubscriptionsView, "unsubscribeListClicked", @unsubscribeListClicked)
     @listenTo(@listSubscriptionsView, "resubscribeListClicked", @resubscribeListClicked)
-    
+
+  showInboxCleaner: ->
+    @inboxCleanerView = @views.mainView.showInboxCleaner()
+
   showSettings: ->
     @models.userConfiguration.fetch(reset: true)
       

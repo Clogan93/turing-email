@@ -224,7 +224,18 @@ class TuringEmailApp.Views.Main extends Backbone.View
     @primaryPaneDiv.append(listSubscriptionsView.$el)
 
     return listSubscriptionsView
-    
+
+  showInboxCleaner: ->
+    return false if not @primaryPaneDiv?
+
+    inboxCleanerView = new TuringEmailApp.Views.App.InboxCleanerView()
+    inboxCleanerView.render()
+
+    @primaryPaneDiv.html("")
+    @primaryPaneDiv.append(inboxCleanerView.$el)
+
+    return inboxCleanerView
+
   showSettings: ->
     return false if not @primaryPaneDiv?
     
