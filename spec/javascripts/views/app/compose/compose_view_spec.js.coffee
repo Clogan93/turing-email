@@ -98,6 +98,41 @@ describe "ComposeView", ->
             expect(spy).toHaveBeenCalled()
             spy.restore()
 
+      describe "#setupSizeToggle", ->
+
+        it "hooks the click action on the compose-modal-size-toggle", ->
+          expect(@composeView.$el.find(".compose-modal-size-toggle")).toHandle("click")
+
+        describe "when the compose modal size toggle is clicked", ->
+
+          it "should toggle the compress and expand classes", ->
+            expect(@composeView.$el.find(".compose-modal-size-toggle")).toHaveClass("fa-compress")
+            expect(@composeView.$el.find(".compose-modal-size-toggle")).not.toHaveClass("fa-expand")
+
+            @composeView.$el.find(".compose-modal-size-toggle").click()
+
+            expect(@composeView.$el.find(".compose-modal-size-toggle")).not.toHaveClass("fa-compress")
+            expect(@composeView.$el.find(".compose-modal-size-toggle")).toHaveClass("fa-expand")
+  
+            @composeView.$el.find(".compose-modal-size-toggle").click()
+
+            expect(@composeView.$el.find(".compose-modal-size-toggle")).toHaveClass("fa-compress")
+            expect(@composeView.$el.find(".compose-modal-size-toggle")).not.toHaveClass("fa-expand")
+
+          it "should toggle the size of the modal", ->
+            expect(@composeView.$el.find(".compose-modal-dialog")).toHaveClass("compose-modal-dialog-large")
+            expect(@composeView.$el.find(".compose-modal-dialog")).not.toHaveClass("compose-modal-dialog-small")
+
+            @composeView.$el.find(".compose-modal-size-toggle").click()
+
+            expect(@composeView.$el.find(".compose-modal-dialog")).not.toHaveClass("compose-modal-dialog-large")
+            expect(@composeView.$el.find(".compose-modal-dialog")).toHaveClass("compose-modal-dialog-small")
+  
+            @composeView.$el.find(".compose-modal-size-toggle").click()
+
+            expect(@composeView.$el.find(".compose-modal-dialog")).toHaveClass("compose-modal-dialog-large")
+            expect(@composeView.$el.find(".compose-modal-dialog")).not.toHaveClass("compose-modal-dialog-small")
+
       # describe "#setupLinkPreviews", ->
       #   it "binds keydown to the compose body", ->
       #     expect(@composeView.$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable")).toHandle("keydown")

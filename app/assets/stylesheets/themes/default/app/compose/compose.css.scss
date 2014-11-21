@@ -2,8 +2,12 @@
 ***** COMPOSE VIEW ****
 *************************/
 
-.compose-modal-dialog {
+.compose-modal-dialog-large {
   width: 840px !important;
+}
+
+.compose-modal-dialog-small {
+  width: 650px !important;
 }
 
 .compose-email-body, #compose-form .note-editable {
@@ -117,4 +121,11 @@ div[contenteditable]:focus {
     cursor: pointer;
   }
 
+}
+
+.compose-modal-size-toggle {
+  float: right;
+  padding-right: 11px;
+  padding-top: 2px;
+  cursor: pointer;
 }

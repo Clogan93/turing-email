@@ -11,8 +11,8 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     
     @setupComposeView()
     @setupSendAndArchive()
-    # @setupLinkPreviews()
     @setupEmailTemplatesDropdown()
+    @setupSizeToggle()
 
     @$el.find(".datetimepicker").datetimepicker(
       format: "m/d/Y g:i a"
@@ -229,6 +229,13 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       composeView: @
     )
     @emailTemplatesDropdownView.render()
+
+  setupSizeToggle: ->
+    @$el.find(".compose-modal-size-toggle").click (event) =>
+      @$el.find(".compose-modal-dialog").toggleClass("compose-modal-dialog-large")
+      @$el.find(".compose-modal-dialog").toggleClass("compose-modal-dialog-small")
+      $(event.target).toggleClass("fa-compress")
+      $(event.target).toggleClass("fa-expand")
 
   # setupEmailTagsDropdown: ->
   #   @emailTagDropdownView = new TuringEmailApp.Views.App.EmailTagDropdownView(
