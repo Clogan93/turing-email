@@ -3,3 +3,4 @@ git pull
 git submodule update
 ./foreman.cleanup.beta
 ./foreman.export.beta
+sudo start turing-beta
