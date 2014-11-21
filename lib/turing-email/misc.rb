@@ -16,4 +16,7 @@ def benchmark_email_creation
   end
 
   log_console(counts)
+
+  counts = counts[1..-1]
+  log_console(counts.sum / counts.length)
 end
