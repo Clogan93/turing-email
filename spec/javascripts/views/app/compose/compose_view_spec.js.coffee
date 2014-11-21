@@ -76,7 +76,84 @@ describe "ComposeView", ->
   
             expect(@spy).toHaveBeenCalled()
             @spy.restore()
+
+      describe "#setupSendAndArchive", ->
+
+        it "hooks the click action on the send-and-archive button", ->
+          expect(@composeView.$el.find(".send-and-archive")).toHandle("click")
+
+        describe "when the send and archive button is clicked", ->
+
+          it "should send the email", ->
+            @clock = sinon.useFakeTimers()
+            spy = sinon.spy(@composeView, "sendEmail")
+            @composeView.$el.find(".send-and-archive").click()
   
+            expect(spy).toHaveBeenCalled()
+            spy.restore()
+
+          it "triggers archiveClicked", ->
+            spy = sinon.backbone.spy(@composeView, "archiveClicked")
+            @composeView.$el.find(".send-and-archive").click()
+            expect(spy).toHaveBeenCalled()
+            spy.restore()
+
+      describe "#setupEmailAddressDeobfuscation", ->
+
+        it "hooks the keyup action on the to, cc and bcc fields", ->
+          expect(@composeView.$el.find(".compose-form .to-input, .compose-form .cc-input, .compose-form .bcc-input")).toHandle("keyup")
+
+        describe "when a nonobfuscated email is typed into one of the to, cc, or bcc fields", ->
+
+          it "leaves the email address as is", ->
+            seededChance = new Chance(1)
+            randomEmailAddress = seededChance.email()
+            @composeView.$el.find(".compose-form .to-input").val(randomEmailAddress)
+            @composeView.$el.find(".compose-form .to-input").keyup()
+            expect(@composeView.$el.find(".compose-form .to-input").val()).toEqual randomEmailAddress
+
+        describe "when an obfuscated email is typed into one of the to, cc, or bcc fields", ->
+
+          it "changes the email address", ->
+            @composeView.$el.find(".compose-form .to-input").val("testemail [at] gmail [dot] com")
+            @composeView.$el.find(".compose-form .to-input").keyup()
+            expect(@composeView.$el.find(".compose-form .to-input").val()).toEqual "testemail@gmail.com"
+
+      describe "#setupSizeToggle", ->
+
+        it "hooks the click action on the compose-modal-size-toggle", ->
+          expect(@composeView.$el.find(".compose-modal-size-toggle")).toHandle("click")
+
+        describe "when the compose modal size toggle is clicked", ->
+
+          it "should toggle the compress and expand classes", ->
+            expect(@composeView.$el.find(".compose-modal-size-toggle")).toHaveClass("fa-compress")
+            expect(@composeView.$el.find(".compose-modal-size-toggle")).not.toHaveClass("fa-expand")
+
+            @composeView.$el.find(".compose-modal-size-toggle").click()
+
+            expect(@composeView.$el.find(".compose-modal-size-toggle")).not.toHaveClass("fa-compress")
+            expect(@composeView.$el.find(".compose-modal-size-toggle")).toHaveClass("fa-expand")
+  
+            @composeView.$el.find(".compose-modal-size-toggle").click()
+
+            expect(@composeView.$el.find(".compose-modal-size-toggle")).toHaveClass("fa-compress")
+            expect(@composeView.$el.find(".compose-modal-size-toggle")).not.toHaveClass("fa-expand")
+
+          it "should toggle the size of the modal", ->
+            expect(@composeView.$el.find(".compose-modal-dialog")).toHaveClass("compose-modal-dialog-large")
+            expect(@composeView.$el.find(".compose-modal-dialog")).not.toHaveClass("compose-modal-dialog-small")
+
+            @composeView.$el.find(".compose-modal-size-toggle").click()
+
+            expect(@composeView.$el.find(".compose-modal-dialog")).not.toHaveClass("compose-modal-dialog-large")
+            expect(@composeView.$el.find(".compose-modal-dialog")).toHaveClass("compose-modal-dialog-small")
+  
+            @composeView.$el.find(".compose-modal-size-toggle").click()
+
+            expect(@composeView.$el.find(".compose-modal-dialog")).toHaveClass("compose-modal-dialog-large")
+            expect(@composeView.$el.find(".compose-modal-dialog")).not.toHaveClass("compose-modal-dialog-small")
+
       # describe "#setupLinkPreviews", ->
       #   it "binds keydown to the compose body", ->
       #     expect(@composeView.$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable")).toHandle("keydown")
@@ -319,6 +396,49 @@ describe "ComposeView", ->
           emailJSON = {}
           emailJSON.uid = chance.integer({min: 1, max: 10000})
           @composeView.loadEmailAsReply emailJSON
+          expect(@composeView.emailInReplyToUID).toEqual emailJSON.uid
+
+      describe "#loadEmailAsReplyToAll", ->
+        beforeEach ->
+          @seededChance = new Chance(1)
+  
+        it "resets the view", ->
+          spy = sinon.spy(@composeView, "resetView")
+          @composeView.loadEmailAsReplyToAll JSON.stringify({})
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+  
+        it "loads the email body", ->
+          spy = sinon.spy(@composeView, "loadEmailBody")
+          emailJSON = {}
+          @composeView.loadEmailAsReplyToAll emailJSON
+          expect(spy).toHaveBeenCalled()
+          expect(spy).toHaveBeenCalledWith(emailJSON)
+          spy.restore()
+  
+        it "updates the to input with the tos", ->
+          emailJSON = {}
+          emailJSON["tos"] = @seededChance.email() + ", " + @seededChance.email() + ", " + @seededChance.email()
+          @composeView.loadEmailAsReplyToAll emailJSON
+          expect(@composeView.$el.find(".compose-form .to-input").val()).toEqual emailJSON.tos
+
+        it "updates the cc input with the ccs", ->
+          emailJSON = {}
+          emailJSON["ccs"] = @seededChance.email() + ", " + @seededChance.email() + ", " + @seededChance.email()
+          @composeView.loadEmailAsReplyToAll emailJSON
+          expect(@composeView.$el.find(".compose-form .cc-input").val()).toEqual emailJSON.ccs
+
+        it "updates the subject input", ->
+          emailJSON = {}
+          emailJSON["subject"] = @seededChance.string({length: 20})
+          @composeView.loadEmailAsReplyToAll emailJSON
+          subjectWithPrefixFromEmail = @composeView.subjectWithPrefixFromEmail(emailJSON, "Re: ")
+          expect(@composeView.$el.find(".compose-form .subject-input").val()).toEqual subjectWithPrefixFromEmail
+  
+        it "updates the email in reply to UID", ->
+          emailJSON = {}
+          emailJSON.uid = chance.integer({min: 1, max: 10000})
+          @composeView.loadEmailAsReplyToAll emailJSON
           expect(@composeView.emailInReplyToUID).toEqual emailJSON.uid
 
       describe "#loadEmailAsForward", ->

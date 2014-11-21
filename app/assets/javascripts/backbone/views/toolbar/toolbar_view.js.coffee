@@ -121,9 +121,6 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       selector: "[data-toggle=tooltip], .tooltip-button"
       container: "body"
 
-    @$el.find(".settings-button").click ->
-      $(this).tooltip('hide')
-
     @$el.find(".pause-button").click =>
       @trigger("pauseClicked", this)
 

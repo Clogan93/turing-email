@@ -2,8 +2,12 @@
 ***** COMPOSE VIEW ****
 *************************/
 
-.compose-modal-dialog {
+.compose-modal-dialog-large {
   width: 840px !important;
+}
+
+.compose-modal-dialog-small {
+  width: 650px !important;
 }
 
 .compose-email-body, #compose-form .note-editable {
@@ -33,19 +37,15 @@ div[contenteditable]:focus {
   font-size: 26px;
 }
 
-.compose-modal .note-editable {
-  min-height: 200px;
-}
-
-.compose-modal .send-later-button {
+.compose-form .send-later-button {
   float: left;
 }
 
-.compose-modal .send-later-datetimepicker {
+.compose-form .send-later-datetimepicker {
   float: left;
 }
 
-.compose-modal .datetimepicker {
+.compose-form .datetimepicker {
   background-color: #FFFFFF;
   background-image: none;
   border: 1px solid #e5e6e7;
@@ -117,4 +117,39 @@ div[contenteditable]:focus {
     cursor: pointer;
   }
 
+}
+
+.compose-modal-size-toggle {
+  float: right;
+  padding-right: 11px;
+  padding-top: 2px;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 20px 5px 30px 5px;
+}
+
+.display-cc, .display-bcc {
+  float: right;
+  cursor: pointer;
+  padding-right: 10px;
+  padding-bottom: 10px;
+}
+
+.cc-input {
+  margin-top: 13px;
+}
+
+.cc-input, .bcc-input {
+  display: none;
+  margin-bottom: 12px;
+}
+
+.from-indicator {
+  font-size: 14px;
+  padding-left: 13px;
+  .from-user-address {
+    padding-left: 5px;
+  }
 }

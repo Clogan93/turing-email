@@ -17,7 +17,7 @@ describe "QuickReplyView", ->
     $("body").append(@emailThreadView.$el)
 
     @quickReplyView = new TuringEmailApp.Views.App.QuickReplyView(
-      el: @emailThreadView.$el.find(".each-email-reply-button").first()
+      el: @emailThreadView.$el.find(".email-response-btn-group").first()
       emailThreadView: @emailThreadView
     )
 

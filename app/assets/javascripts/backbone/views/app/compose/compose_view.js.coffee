@@ -5,21 +5,11 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
 
   initialize: (options) ->
     @app = options.app
-  
+
   render: ->
-    @$el.html(@template())
-    
-    @setupComposeView()
-    @setupSendAndArchive()
-    # @setupLinkPreviews()
-    @setupEmailTemplatesDropdown()
-
-    @$el.find(".datetimepicker").datetimepicker(
-      format: "m/d/Y g:i a"
-      formatTime: "g:i a"
-    );
-
-    @$el.find(".switch").bootstrapSwitch()
+    @$el.html(@template({ userAddress : @app.models.user.get("email") }))
+    @postRenderSetup()
+    @setupSizeToggle()
 
     return this
 
@@ -27,10 +17,27 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
   ### Setup Functions ###
   #######################
 
+  postRenderSetup: ->
+    @setupComposeView()
+    @setupSendAndArchive()
+    @setupEmailAddressDeobfuscation()
+    @setupEmailTemplatesDropdown()
+
+    @$el.find(".datetimepicker").datetimepicker(
+      format: "m/d/Y g:i a"
+      formatTime: "g:i a"
+    )
+
+    @$el.find(".switch").bootstrapSwitch()
+  
   setupComposeView: ->
     config = {}
     config.enterMode = CKEDITOR.ENTER_BR
     config.shiftEnterMode = CKEDITOR.ENTER_P
+    config.disableNativeSpellChecker = false
+    config.removePlugins = 'scayt,menubutton,liststyle,tabletools,contextmenu,language'
+    config.extraPlugins = 'button,listblock,panel,floatpanel,richcombo,zoom'
+    config.browserContextMenuOnCtrl = true
     config.toolbar = [
       {
         name: "basicstyles"
@@ -127,6 +134,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       {
         name: "tools"
         items: [
+          "Zoom"
           "Maximize"
         ]
       }
@@ -197,9 +205,27 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     @$el.find(".compose-modal").on "hidden.bs.modal", (event) =>
       @saveDraft(false)
 
+    @$el.find(".display-cc").click (event) =>
+      $(event.target).hide()
+      @$el.find(".cc-input").show()
+
+    @$el.find(".display-bcc").click (event) =>
+      $(event.target).hide()
+      @$el.find(".bcc-input").show()
+
   setupSendAndArchive: ->
-    @$el.find(".send-and-archive").click ->
-      console.log "Send and archive clicked"
+    @$el.find(".send-and-archive").click =>
+      console.log "send-and-archive clicked"
+      @sendEmail()
+      @trigger("archiveClicked", this)
+
+  setupEmailAddressDeobfuscation: ->
+    @$el.find(".compose-form .to-input, .compose-form .cc-input, .compose-form .bcc-input").keyup ->
+      inputText = $(@).val()
+      indexOfObfuscatedEmail = inputText.search(/(.+) ?\[at\] ?(.+) ?[dot] ?(.+)/)
+      console.log indexOfObfuscatedEmail
+      if indexOfObfuscatedEmail != -1
+        $(@).val(inputText.replace(" [at] ", "@").replace(" [dot] ", "."))
 
   setupLinkPreviews: ->
     @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").bind "keydown", "space return shift+return", =>
@@ -228,6 +254,13 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     )
     @emailTemplatesDropdownView.render()
 
+  setupSizeToggle: ->
+    @$el.find(".compose-modal-size-toggle").click (event) =>
+      @$el.find(".compose-modal-dialog").toggleClass("compose-modal-dialog-large")
+      @$el.find(".compose-modal-dialog").toggleClass("compose-modal-dialog-small")
+      $(event.target).toggleClass("fa-compress")
+      $(event.target).toggleClass("fa-expand")
+
   # setupEmailTagsDropdown: ->
   #   @emailTagDropdownView = new TuringEmailApp.Views.App.EmailTagDropdownView(
   #     el: @$el.find(".note-toolbar.btn-toolbar")
@@ -241,7 +274,10 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
 
   show: ->
     @$el.find(".compose-modal").modal "show"
-    
+    @syncTimeout = window.setTimeout(=>
+      @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").focus()
+    , 1000)
+
   hide: ->
     @$el.find(".compose-modal").modal "hide"
 
@@ -320,6 +356,20 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     @resetView()
 
     @$el.find(".compose-form .to-input").val(if emailJSON.reply_to_address? then emailJSON.reply_to_address else emailJSON.from_address)
+    @$el.find(".compose-form .subject-input").val(@subjectWithPrefixFromEmail(emailJSON, "Re: "))
+    @loadEmailBody(emailJSON, true)
+
+    @emailInReplyToUID = emailJSON.uid
+    @emailThreadParent = emailThreadParent
+
+  loadEmailAsReplyToAll: (emailJSON, emailThreadParent) ->
+    console.log("ComposeView loadEmailAsReplyToAll!!")
+    @resetView()
+
+    console.log emailJSON
+
+    @$el.find(".compose-form .to-input").val(if emailJSON.tos? then emailJSON.tos)
+    @$el.find(".compose-form .cc-input").val(if emailJSON.ccs? then emailJSON.ccs)
     @$el.find(".compose-form .subject-input").val(@subjectWithPrefixFromEmail(emailJSON, "Re: "))
     @loadEmailBody(emailJSON, true)
 
@@ -488,7 +538,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     if !force &&
        !@emailHasRecipients(@currentEmailDraft) &&
        @currentEmailDraft.get("subject").trim() == "" &&
-       @currentEmailDraft.get("html_part").trim() == "" && @currentEmailDraft.get("text_part").trim() == "" &&
+       @currentEmailDraft.get("html_part")?.trim() == "" && @currentEmailDraft?.get("text_part").trim() == "" &&
        not @currentEmailDraft.get("draft_id")?
 
       console.log "SKIPPING SAVE - BLANK draft!!"

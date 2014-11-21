@@ -181,6 +181,13 @@ describe "EmailThreadView", ->
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
+      describe "when reply-to-all is clicked", ->
+        it "triggers replyToAllClicked", ->
+          spy = sinon.backbone.spy(@emailThreadView, "replyToAllClicked")
+          @emailThreadView.$el.find(".reply-to-all").click()
+          expect(spy).toHaveBeenCalled()
+          spy.restore()
+
       describe "when email_forward_button is clicked", ->
         it "triggers forwardClicked", ->
           spy = sinon.backbone.spy(@emailThreadView, "forwardClicked")
@@ -204,6 +211,6 @@ describe "EmailThreadView", ->
       beforeEach ->
         @emailThreadView.setupQuickReplyButton()
       
-      it "renders a quick reply view on next to each reply button", ->
-        @emailThreadView.$el.find(".each-email-reply-button").each ->
+      it "renders a quick reply view on next to each response button group", ->
+        @emailThreadView.$el.find(".email-response-btn-group").each ->
           expect($(@).parent()).toContain($(".quick-reply-dropdown-div"))

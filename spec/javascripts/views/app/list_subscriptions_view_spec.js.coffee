@@ -11,7 +11,7 @@ describe "ListSubscriptionsView", ->
 
   it "has the right template", ->
     expect(@listSubscriptionsView.template).toEqual JST["backbone/templates/app/list_subscriptions"]
-  
+
   describe "#render", ->
     beforeEach ->
       @setupButtonsStub = sinon.stub(@listSubscriptionsView, "setupButtons")

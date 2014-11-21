@@ -23,9 +23,6 @@ describe "MainView", ->
     it "creates the toolbar", ->
       expect(@mainView.toolbarView).toBeDefined()
 
-    it "creates the miniature toolbar", ->
-      expect(@mainView.miniatureToolbarView).toBeDefined()
-
   describe "#render", ->
     beforeEach ->
       @clock = sinon.useFakeTimers()
@@ -234,8 +231,8 @@ describe "MainView", ->
           @settingsView = @mainView.showSettings()
   
         it "shows the settings view", ->
-          expect(@primaryPane.children().length).toEqual(2)
-          expect($(@primaryPane.children()[1]).html()).toEqual(@settingsView.$el.html())
+          expect(@primaryPane.children().length).toEqual(1)
+          expect($(@primaryPane.children()[0]).html()).toEqual(@settingsView.$el.html())
 
         it "sets the brain rules on the settings view", ->
           expect(@settingsView.brainRules).toEqual TuringEmailApp.collections.brainRules
@@ -274,6 +271,14 @@ describe "MainView", ->
         it "shows the list subscriptions view", ->
           expect(@primaryPane.children().length).toEqual(1)
           expect($(@primaryPane.children()[0]).html()).toEqual(@listSubscriptionsView.$el.html())
+
+      describe "#showInboxCleaner", ->
+        beforeEach ->
+          @inboxCleanerView = @mainView.showInboxCleaner()
+
+        it "shows the inbox cleaner view", ->
+          expect(@primaryPane.children().length).toEqual(1)
+          expect($(@primaryPane.children()[0]).html()).toEqual(@inboxCleanerView.$el.html())
 
       describe "#showAnalytics", ->
         beforeEach ->

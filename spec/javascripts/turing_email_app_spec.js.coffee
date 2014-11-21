@@ -312,6 +312,7 @@ describe "TuringEmailApp", ->
         expect(TuringEmailApp.routers.delayedEmailsRouter).toBeDefined()
         expect(TuringEmailApp.routers.emailTrackersRouter).toBeDefined()
         expect(TuringEmailApp.routers.listSubscriptionsRouter).toBeDefined()
+        expect(TuringEmailApp.routers.inboxCleanerRouter).toBeDefined()
   
   describe "after start", ->
     beforeEach ->
@@ -1398,6 +1399,28 @@ describe "TuringEmailApp", ->
           TuringEmailApp.replyClicked()
           expect(@showEmailEditorWithEmailThreadStub).toHaveBeenCalledWith(@emailThread.get("uid"), "reply")
 
+      describe "#replyToAllClicked", ->
+        beforeEach ->
+          @listView = specCreateEmailThreadsListView()
+          @listViewDiv = @listView.$el
+          @emailThreads = @listView.collection
+    
+          TuringEmailApp.views.emailThreadsListView = @listView
+          TuringEmailApp.collections.emailThreads = @emailThreads
+
+          @emailThread = _.values(@listView.listItemViews)[0].model
+
+          TuringEmailApp.views.emailThreadsListView.select @emailThread
+
+          @showEmailEditorWithEmailThreadStub = sinon.stub(TuringEmailApp, "showEmailEditorWithEmailThread", ->)
+          
+        afterEach ->
+          @showEmailEditorWithEmailThreadStub.restore()
+
+        it "shows the email editor with the selected email thread", ->
+          TuringEmailApp.replyToAllClicked()
+          expect(@showEmailEditorWithEmailThreadStub).toHaveBeenCalledWith(@emailThread.get("uid"), "reply-to-all")
+
       describe "#forwardClicked", ->
         beforeEach ->
           @listView = specCreateEmailThreadsListView()
@@ -2059,7 +2082,7 @@ describe "TuringEmailApp", ->
         @eventSpy.restore() if @eventSpy?
         @setStub.restore()
     
-      emailThreadViewEvents = ["goBackClicked", "replyClicked", "forwardClicked", "archiveClicked", "trashClicked"]
+      emailThreadViewEvents = ["goBackClicked", "replyClicked", "replyToAllClicked", "forwardClicked", "archiveClicked", "trashClicked"]
       for event in emailThreadViewEvents
         it "hooks the emailThreadView " + event + " event", ->
           @eventSpy = sinon.spy(TuringEmailApp, event)
@@ -2133,6 +2156,14 @@ describe "TuringEmailApp", ->
         it "loads the email as a reply", ->
           spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailAsReply")
           TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid"), "reply"
+          expect(spy).toHaveBeenCalledWith(@email, @emailThread)
+          spy.restore()
+
+      describe "when in reply-to-all mode", ->
+    
+        it "loads the email as a reply-to-all", ->
+          spy = sinon.spy(TuringEmailApp.views.composeView, "loadEmailAsReplyToAll")
+          TuringEmailApp.showEmailEditorWithEmailThread @emailThread.get("uid"), "reply-to-all"
           expect(spy).toHaveBeenCalledWith(@email, @emailThread)
           spy.restore()
 
@@ -2274,7 +2305,22 @@ describe "TuringEmailApp", ->
 
       it "listens for resubscribeListClicked on the list subscriptions view", ->
         expect(@listenToStub).toHaveBeenCalledWith(@listSubscriptionsView, "resubscribeListClicked", TuringEmailApp.resubscribeListClicked)
-        
+
+    describe "#showInboxCleaner", ->
+      beforeEach ->
+        @oldInboxCleanerView = TuringEmailApp.inboxCleanerView = {}
+
+        @inboxCleanerView = {}
+        @showInboxCleanerViewStub = sinon.stub(TuringEmailApp.views.mainView, "showInboxCleaner", => @inboxCleanerView)
+
+        TuringEmailApp.showInboxCleaner()
+
+      afterEach ->
+        @showInboxCleanerViewStub.restore()
+
+      it "shows the list subscriptions on the main view", ->
+        expect(@showInboxCleanerViewStub).toHaveBeenCalled()
+
     describe "#showSettings", ->
       beforeEach ->
         @oldSettingsView = TuringEmailApp.settingsView = {}

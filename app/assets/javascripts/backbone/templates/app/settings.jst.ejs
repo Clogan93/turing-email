@@ -1,7 +1,13 @@
 <div class="create_rule_view"></div>
 
-<div class="page-header">
-  <h1 class="h1">Settings</h1>
+<div class="row">
+  <div class="col-md-10">
+    <h1 class="h1">Settings</h1>
+  </div>
+  <div class="col-md-2">
+    <% var template = JST["backbone/templates/toolbar/more_dropdown"]; %>
+    <%= template({}) %>
+  </div>
 </div>
 
 <div class="col-lg-12">
@@ -222,12 +228,13 @@
 
         <div id="tab-6" class="tab-pane">
           <h4 class="h4">Feedback</h4>
-          <p>We'd love to receive any feedback that you have. Let us know what you like, what you don't like, suggestions you have, bugs you've encountered, and anything you'd like to tell us. You can do so by emailing us at <a href="mailto:feedback@turinginc.com" target="_top">feedback@turinginc.com</a>.</p>
+          <p>
+            We'd love to receive any feedback that you have. Let us know what you like, what you don't like,
+            suggestions you have, bugs you've encountered, and anything you'd like to tell us. You can do so
+            by emailing us at <a href="mailto:feedback@turinginc.com" target="_top">feedback@turinginc.com</a>.
+          </p>
         </div>
-
       </div>
-
     </div>
-
   </div>
 </div>

@@ -176,6 +176,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @views.composeView = @views.mainView.composeView
 
     @listenTo(@views.composeView, "change:draft", @draftChanged)
+    @listenTo(@views.composeView, "archiveClicked", @archiveClicked)
 
   setupCreateFolderView: ->
     @views.createFolderView = @views.mainView.createFolderView
@@ -205,6 +206,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @routers.delayedEmailsRouter = new TuringEmailApp.Routers.DelayedEmailsRouter()
     @routers.emailTrackersRouter = new TuringEmailApp.Routers.EmailTrackersRouter()
     @routers.listSubscriptionsRouter = new TuringEmailApp.Routers.ListSubscriptionsRouter()
+    @routers.inboxCleanerRouter = new TuringEmailApp.Routers.InboxCleanerRouter()
 
   ###############
   ### Getters ###
@@ -212,10 +214,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
   selectedEmailThread: ->
     return @views.emailThreadsListView.selectedItem()
-    
+
   selectedEmailFolder: ->
     return @views.emailFoldersTreeView.selectedItem()
-    
+
   selectedEmailFolderID: ->
     return @views.emailFoldersTreeView.selectedItem()?.get("label_id")
 
@@ -232,7 +234,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
         @showEmailThread(emailThread)
 
         @views.toolbarView.uncheckAllCheckbox()
-        
+
         @trigger "change:selectedEmailThread", this, emailThread
       )
     else
@@ -240,7 +242,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
       @showEmailThread()
       @views.emailThreadsListView.deselect()
       @views.toolbarView.uncheckAllCheckbox()
-      
+
       @trigger "change:selectedEmailThread", this, null
 
   currentEmailFolderIs: (emailFolderID, pageTokenIndex, lastEmailThreadUID=null, dir="DESC") ->
@@ -487,6 +489,12 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @showEmailEditorWithEmailThread(@selectedEmailThread().get("uid"), "reply")
     return @selectedEmailThread()
 
+  replyToAllClicked: ->
+    return false if not @selectedEmailThread()?
+    
+    @showEmailEditorWithEmailThread(@selectedEmailThread().get("uid"), "reply-to-all")
+    return @selectedEmailThread()
+
   forwardClicked: ->
     return false if not @selectedEmailThread()?
     
@@ -674,6 +682,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
     @listenTo(emailThreadView, "goBackClicked", @goBackClicked)
     @listenTo(emailThreadView, "replyClicked", @replyClicked)
+    @listenTo(emailThreadView, "replyToAllClicked", @replyToAllClicked)
     @listenTo(emailThreadView, "forwardClicked", @forwardClicked)
     @listenTo(emailThreadView, "archiveClicked", @archiveClicked)
     @listenTo(emailThreadView, "trashClicked", @trashClicked)
@@ -695,6 +704,8 @@ window.TuringEmailApp = new(Backbone.View.extend(
           @views.composeView.loadEmailAsForward(_.last(emails), emailThread)
         when "reply"
           @views.composeView.loadEmailAsReply(_.last(emails), emailThread)
+        when "reply-to-all"
+          @views.composeView.loadEmailAsReplyToAll(_.last(emails), emailThread)
         else
           @views.composeView.loadEmailDraft(_.last(emails), emailThread)
 
@@ -733,7 +744,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @listSubscriptionsView = @views.mainView.showListSubscriptions()
     @listenTo(@listSubscriptionsView, "unsubscribeListClicked", @unsubscribeListClicked)
     @listenTo(@listSubscriptionsView, "resubscribeListClicked", @resubscribeListClicked)
-    
+
+  showInboxCleaner: ->
+    @inboxCleanerView = @views.mainView.showInboxCleaner()
+
   showSettings: ->
     @models.userConfiguration.fetch(reset: true)
       

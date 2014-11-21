@@ -8,7 +8,7 @@ class TuringEmailApp.Views.App.ComposeButtonView extends Backbone.View
 
     @$el.find(".quick-compose-item").click (event) =>
       @$el.find(".compose-button").click()
-      quickComposeText = $(event.target).text().replace("Quick Compose: ", "")
+      quickComposeText = $(event.target).text()
       $(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").prepend(quickComposeText)
       $(".compose-modal .subject-input").val(quickComposeText)
       $(".compose-modal .to-input").focus()
