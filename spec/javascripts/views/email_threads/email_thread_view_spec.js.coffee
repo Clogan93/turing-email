@@ -211,6 +211,6 @@ describe "EmailThreadView", ->
       beforeEach ->
         @emailThreadView.setupQuickReplyButton()
       
-      it "renders a quick reply view on next to each reply button", ->
-        @emailThreadView.$el.find(".each-email-reply-button").each ->
+      it "renders a quick reply view on next to each response button group", ->
+        @emailThreadView.$el.find(".email-response-btn-group").each ->
           expect($(@).parent()).toContain($(".quick-reply-dropdown-div"))
