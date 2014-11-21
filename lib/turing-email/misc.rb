@@ -6,3 +6,14 @@ def clear_email_tables
     m.delete_all
   end
 end
+
+def benchmark_email_creation
+  counts = []
+
+  while counts.length < 15
+    counts.push(Email.count - counts.sum())
+    sleep(1)
+  end
+
+  log_console(counts)
+end
