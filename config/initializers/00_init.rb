@@ -13,3 +13,4 @@ require 'turing-lib/google/o_auth2_client'
 require 'turing-lib/google/gmail_client'
 
 require 'turing-email/email_genie'
+require 'turing-email/misc'
