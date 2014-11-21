@@ -1,7 +1,7 @@
 TuringEmailApp.Views.App ||= {}
 
 class TuringEmailApp.Views.App.EmbeddedComposeView extends TuringEmailApp.Views.App.ComposeView
-  template: JST["backbone/templates/app/compose/embedded_compose"]
+  template: JST["backbone/templates/app/compose/compose_form"]
 
   render: ->
     @currentEmailDraft = new TuringEmailApp.Models.EmailDraft(@email)
@@ -9,6 +9,17 @@ class TuringEmailApp.Views.App.EmbeddedComposeView extends TuringEmailApp.Views.
     @$el.html(@template({ email: @email }))
 
     @setupComposeView()
+
+    @setupSendAndArchive()
+    @setupEmailAddressDeobfuscation()
+    @setupEmailTemplatesDropdown()
+
+    @$el.find(".datetimepicker").datetimepicker(
+      format: "m/d/Y g:i a"
+      formatTime: "g:i a"
+    )
+
+    @$el.find(".switch").bootstrapSwitch()
 
     return this
 

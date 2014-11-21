@@ -18,7 +18,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     @$el.find(".datetimepicker").datetimepicker(
       format: "m/d/Y g:i a"
       formatTime: "g:i a"
-    );
+    )
 
     @$el.find(".switch").bootstrapSwitch()
 

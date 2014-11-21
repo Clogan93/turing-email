@@ -37,19 +37,15 @@ div[contenteditable]:focus {
   font-size: 26px;
 }
 
-.compose-modal .note-editable {
-  min-height: 200px;
-}
-
-.compose-modal .send-later-button {
+.compose-form .send-later-button {
   float: left;
 }
 
-.compose-modal .send-later-datetimepicker {
+.compose-form .send-later-datetimepicker {
   float: left;
 }
 
-.compose-modal .datetimepicker {
+.compose-form .datetimepicker {
   background-color: #FFFFFF;
   background-image: none;
   border: 1px solid #e5e6e7;

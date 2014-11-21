@@ -1,0 +1,46 @@
+<form class="compose-form">
+  <div class="modal-body">
+    <input type="text" class="form-control to-input" placeholder="To" /><br />
+    <input type="text" class="form-control cc-input" placeholder="CC" /><br />
+    <input type="text" class="form-control bcc-input" placeholder="BCC" /><br />
+    <input type="text" class="form-control subject-input" placeholder="Subject" /><br />
+    
+    <label class="compose-form-attachments-label">Attachments</label>
+    <input class="compose-form-attachments-input" type="file" name="attachment" multiple />
+  
+    <br /><br />
+  
+    <textarea class="form-control compose-email-body" rows="15"></textarea>
+  </div>
+
+  <div class="modal-footer">
+    <input class="send-later-datetimepicker datetimepicker" type="text" placeholder="date &amp; time" />
+    <button type="button" class="btn btn-info send-later-button">Send Later</button>
+    Tracking: <input type="checkbox" class="tracking-switch switch">
+    
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    <button type="button" class="btn btn-info save-button">Save</button>
+
+    <div class="btn-group">
+      <button type="submit" class="btn btn-primary send-button">Send</button>
+      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+        <span class="caret"></span>
+        <span class="sr-only">Toggle Dropdown</span>
+      </button>
+      <ul class="dropdown-menu send-button-dropdown-menu" role="menu">
+        <li><a class="send-and-archive">Send & Archive</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="modal-footer">
+    <select class="form-control bounce-back-select">
+      <option value="always">Always</option>
+      <option value="no_reply">No Reply</option>
+    </select>
+
+    <input class="bounce-back-datetimepicker datetimepicker" type="text" placeholder="date &amp; time" />
+    Bounce Back: <input type="checkbox" class="bounce-back-switch switch">
+  </div>
+</form>
