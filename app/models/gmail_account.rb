@@ -981,8 +981,10 @@ class GmailAccount < ActiveRecord::Base
             call = gmail_client.messages_get_call('me', gmail_id, format: format)
             batch_request.add(call)
           end
-    
-          self.google_o_auth2_token.api_client.execute!(batch_request)
+
+          ActiveRecord::Base.transaction do
+            self.google_o_auth2_token.api_client.execute!(batch_request)
+          end
         else
           current_gmail_ids.each do |gmail_id|
             job = self.delay(heroku_scale: false).sync_gmail_id(gmail_id)
