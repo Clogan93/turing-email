@@ -11,6 +11,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     
     @setupComposeView()
     @setupSendAndArchive()
+    @setupEmailAddressDeobfuscation()
     @setupEmailTemplatesDropdown()
     @setupSizeToggle()
 
@@ -202,6 +203,14 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       console.log "send-and-archive clicked"
       @sendEmail()
       @trigger("archiveClicked", this)
+
+  setupEmailAddressDeobfuscation: ->
+    @$el.find(".compose-form .to-input, .compose-form .cc-input, .compose-form .bcc-input").keyup ->
+      inputText = $(@).val()
+      indexOfObfuscatedEmail = inputText.search(/(.+) ?\[at\] ?(.+) ?[dot] ?(.+)/)
+      console.log indexOfObfuscatedEmail
+      if indexOfObfuscatedEmail != -1
+        $(@).val(inputText.replace(" [at] ", "@").replace(" [dot] ", "."))
 
   setupLinkPreviews: ->
     @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").bind "keydown", "space return shift+return", =>

@@ -98,6 +98,27 @@ describe "ComposeView", ->
             expect(spy).toHaveBeenCalled()
             spy.restore()
 
+      describe "#setupEmailAddressDeobfuscation", ->
+
+        it "hooks the keyup action on the to, cc and bcc fields", ->
+          expect(@composeView.$el.find(".compose-form .to-input, .compose-form .cc-input, .compose-form .bcc-input")).toHandle("keyup")
+
+        describe "when a nonobfuscated email is typed into one of the to, cc, or bcc fields", ->
+
+          it "leaves the email address as is", ->
+            seededChance = new Chance(1)
+            randomEmailAddress = seededChance.email()
+            @composeView.$el.find(".compose-form .to-input").val(randomEmailAddress)
+            @composeView.$el.find(".compose-form .to-input").keyup()
+            expect(@composeView.$el.find(".compose-form .to-input").val()).toEqual randomEmailAddress
+
+        describe "when an obfuscated email is typed into one of the to, cc, or bcc fields", ->
+
+          it "changes the email address", ->
+            @composeView.$el.find(".compose-form .to-input").val("testemail [at] gmail [dot] com")
+            @composeView.$el.find(".compose-form .to-input").keyup()
+            expect(@composeView.$el.find(".compose-form .to-input").val()).toEqual "testemail@gmail.com"
+
       describe "#setupSizeToggle", ->
 
         it "hooks the click action on the compose-modal-size-toggle", ->
