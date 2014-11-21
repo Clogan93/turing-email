@@ -33,7 +33,8 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     config.enterMode = CKEDITOR.ENTER_BR
     config.shiftEnterMode = CKEDITOR.ENTER_P
     config.disableNativeSpellChecker = false
-    config.removePlugins = 'scayt,menubutton,liststyle,tabletools,contextmenu'
+    config.removePlugins = 'scayt,menubutton,liststyle,tabletools,contextmenu,language'
+    config.extraPlugins = 'button,listblock,panel,floatpanel,richcombo,zoom'
     config.browserContextMenuOnCtrl = true
     config.toolbar = [
       {
@@ -131,6 +132,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       {
         name: "tools"
         items: [
+          "Zoom"
           "Maximize"
         ]
       }
