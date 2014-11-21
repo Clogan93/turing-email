@@ -8,19 +8,8 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
 
   render: ->
     @$el.html(@template({ userAddress : @app.models.user.get("email") }))
-
-    @setupComposeView()
-    @setupSendAndArchive()
-    @setupEmailAddressDeobfuscation()
-    @setupEmailTemplatesDropdown()
+    @postRenderSetup()
     @setupSizeToggle()
-
-    @$el.find(".datetimepicker").datetimepicker(
-      format: "m/d/Y g:i a"
-      formatTime: "g:i a"
-    )
-
-    @$el.find(".switch").bootstrapSwitch()
 
     return this
 
@@ -28,6 +17,19 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
   ### Setup Functions ###
   #######################
 
+  postRenderSetup: ->
+    @setupComposeView()
+    @setupSendAndArchive()
+    @setupEmailAddressDeobfuscation()
+    @setupEmailTemplatesDropdown()
+
+    @$el.find(".datetimepicker").datetimepicker(
+      format: "m/d/Y g:i a"
+      formatTime: "g:i a"
+    )
+
+    @$el.find(".switch").bootstrapSwitch()
+  
   setupComposeView: ->
     config = {}
     config.enterMode = CKEDITOR.ENTER_BR

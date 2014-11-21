@@ -7,19 +7,7 @@ class TuringEmailApp.Views.App.EmbeddedComposeView extends TuringEmailApp.Views.
     @currentEmailDraft = new TuringEmailApp.Models.EmailDraft(@email)
 
     @$el.html(@template({ email: @email, userAddress: @app.models.user.get("email") }))
-
-    @setupComposeView()
-
-    @setupSendAndArchive()
-    @setupEmailAddressDeobfuscation()
-    @setupEmailTemplatesDropdown()
-
-    @$el.find(".datetimepicker").datetimepicker(
-      format: "m/d/Y g:i a"
-      formatTime: "g:i a"
-    )
-
-    @$el.find(".switch").bootstrapSwitch()
+    @postRenderSetup()
 
     return this
 
