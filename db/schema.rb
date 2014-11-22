@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141121082254) do
+ActiveRecord::Schema.define(version: 20141122102745) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -285,6 +285,7 @@ ActiveRecord::Schema.define(version: 20141121082254) do
     t.text     "last_history_id_synced"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "sync_delayed_job_id"
   end
 
   add_index "gmail_accounts", ["email"], name: "index_gmail_accounts_on_email", using: :btree

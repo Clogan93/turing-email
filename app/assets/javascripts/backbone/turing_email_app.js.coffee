@@ -268,10 +268,21 @@ window.TuringEmailApp = new(Backbone.View.extend(
   ######################
 
   syncEmail: ->
-    #$.post("api/v1/email_accounts/sync", undefined, undefined, "text") if @models.userConfiguration.get("demo_mode_enabled")
-    
-    @reloadEmailThreads()
-    @loadEmailFolders()
+    reload = =>
+      @reloadEmailThreads()
+      @loadEmailFolders()
+      
+    if !@models.userConfiguration.get("demo_mode_enabled")
+      reload()
+    else
+      $.post("api/v1/email_accounts/sync", undefined, undefined).done(
+        (data) =>
+          last_email_update = new Date(data)
+          
+          if not @last_email_update || last_email_update > @last_email_update
+            @last_email_update = last_email_update
+            reload()
+      )
 
     @syncTimeout = window.setTimeout(=>
       @syncEmail()
