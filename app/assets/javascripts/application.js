@@ -30,8 +30,6 @@
 //= require backbone/turing_email_app_keyboard_handler
 //= require backbone/turing_email_app
 //
-//= require ../../../vendor/assets/ckeditor/ckeditor
-//= require ../../../vendor/assets/ckeditor/adapters/jquery
 //= require_tree ../../../vendor/assets/javascripts/
 //= require_tree ./lib/
 //= require google_api
