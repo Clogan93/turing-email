@@ -5,6 +5,8 @@
     <link rel="shortcut icon" href="favicon.ico"/>
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+    <%= javascript_include_tag '/ckeditor/ckeditor.js', 'data-turbolinks-track' => true %>
+    <%= javascript_include_tag '/ckeditor/adapters/jquery.js', 'data-turbolinks-track' => true %>
     <%= csrf_meta_tags %>
 
     <% if current_user && current_user.user_configuration.skin %>

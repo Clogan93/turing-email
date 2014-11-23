@@ -52,5 +52,29 @@ module Delayed
 
   class Worker
     prepend WorkerExtensions
+
+=begin
+    def run(job)
+      job_say job, 'RUNNING'
+      runtime =  Benchmark.realtime do
+        Timeout.timeout(max_run_time(job).to_i, WorkerTimeout) { job.invoke_job }
+        job.destroy
+
+        GC.start
+        t = Hash.new(0)
+        ObjectSpace.each_object(Object) {|o| t[o.class] += 1 }
+        #Rails.logger.info(t.to_a.sort_by(&:last)[-10,10].inspect)
+        log_console(t.to_a.sort_by(&:last)[-30,25].inspect)
+      end
+      job_say job, format('COMPLETED after %.4f', runtime)
+      return true  # did work
+    rescue DeserializationError => error
+      job.last_error = "#{error.message}\n#{error.backtrace.join("\n")}"
+      failed(job)
+    rescue => error
+      self.class.lifecycle.run_callbacks(:error, self, job) { handle_failed_job(job, error) }
+      return false  # work failed
+    end
+=end
   end
 end

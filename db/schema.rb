@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141118010319) do
+ActiveRecord::Schema.define(version: 20141122102745) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -91,6 +91,7 @@ ActiveRecord::Schema.define(version: 20141118010319) do
   end
 
   add_index "email_folder_mappings", ["email_folder_id", "email_folder_type", "email_id"], name: "index_email_folder_mappings_on_email_folder_type_and_email", using: :btree
+  add_index "email_folder_mappings", ["email_folder_id", "email_folder_type", "folder_email_thread_date", "email_thread_id", "email_id"], name: "index_email_folder_mappings_sort", using: :btree
   add_index "email_folder_mappings", ["email_folder_id", "email_folder_type"], name: "index_email_folder_mappings_on_email_folder", using: :btree
   add_index "email_folder_mappings", ["email_id", "email_folder_id", "email_folder_type"], name: "index_email_folder_mappings_on_email_and_email_folder", unique: true, using: :btree
   add_index "email_folder_mappings", ["email_thread_id"], name: "index_email_folder_mappings_on_email_thread_id", using: :btree
@@ -284,6 +285,7 @@ ActiveRecord::Schema.define(version: 20141118010319) do
     t.text     "last_history_id_synced"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "sync_delayed_job_id"
   end
 
   add_index "gmail_accounts", ["email"], name: "index_gmail_accounts_on_email", using: :btree

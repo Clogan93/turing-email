@@ -28,7 +28,7 @@ class GmailLabel < ActiveRecord::Base
 
     last_email_sql = ''
     query_params = []
-    dir_op = dir.upcase == 'DESC' ? '<=' : '>='
+    dir_op = dir.upcase == 'DESC' ? '<' : '>'
     
     if last_email_thread
       emails = last_email_thread.emails.order(:date => :desc)
@@ -42,55 +42,79 @@ class GmailLabel < ActiveRecord::Base
       
       last_email = emails[0] if last_email.nil?
 
-      query_params.push(last_email.date, last_email_thread.id, last_email.date, last_email_thread.id)
+      query_params.push(last_email.date, last_email_thread.id, last_email.id)
     else
-      max_date = self.emails.maximum(:date)
-      query_params.push(max_date, -1, max_date, -1)
+      max_date = self.emails.maximum(:date) + 1.second
+      query_params.push(max_date, -1, -1)
     end
       
     last_email_sql = <<last_email_sql
 AND
-email_folder_mappings."folder_email_thread_date" #{dir_op} ? AND
-email_folder_mappings."email_thread_id" != ?
+(
+  email_folder_mappings."folder_email_thread_date",
+  email_folder_mappings."email_thread_id",
+  email_folder_mappings."email_id"
+)
+#{dir_op}
+(?, ?, ?)
 last_email_sql
       
     last_email_sql_inner = <<last_email_sql_inner
 AND 
-email_folder_mappings_inner."folder_email_thread_date" #{dir_op} ? AND
-email_folder_mappings_inner."email_thread_id" != ?
+(
+  email_folder_mappings_inner."folder_email_thread_date",
+  email_folder_mappings_inner."email_thread_id",
+  email_folder_mappings_inner."email_id"
+)
+#{dir_op}
+(
+  recent_email_threads."folder_email_thread_date",
+  recent_email_threads."email_thread_id",
+  recent_email_threads."email_id"
+)
 last_email_sql_inner
     
     sql = <<sql
 WITH RECURSIVE recent_email_threads AS (
-    (SELECT email_folder_mappings.email_thread_id AS email_thread_id,
-            array[email_folder_mappings.email_thread_id] AS seen
+    (SELECT email_folder_mappings."folder_email_thread_date" AS folder_email_thread_date,
+            email_folder_mappings."email_thread_id" AS email_thread_id,
+            email_folder_mappings."email_id" AS email_id,
+            array[email_folder_mappings."email_thread_id"] AS seen
     FROM "email_folder_mappings" AS email_folder_mappings
     WHERE email_folder_mappings."email_folder_id" = #{self.id.to_i} AND
           email_folder_mappings."email_folder_type" = '#{self.class.to_s}'
           #{last_email_sql}
     ORDER BY email_folder_mappings."folder_email_thread_date" #{dir},
-             email_folder_mappings."email_id" #{dir} LIMIT 1)
+             email_folder_mappings."email_thread_id" #{dir},
+             email_folder_mappings."email_id" #{dir}
+    LIMIT 1)
 
     UNION ALL
 
-    (SELECT email_folder_mappings_lateral.email_thread_id AS email_thread_id,
-            recent_email_threads.seen || email_folder_mappings_lateral.email_thread_id
+    (SELECT email_folder_mappings_lateral."folder_email_thread_date" AS folder_email_thread_date,
+            email_folder_mappings_lateral."email_thread_id" AS email_thread_id,
+            email_folder_mappings_lateral."email_id" AS email_id,
+            recent_email_threads."seen" || email_folder_mappings_lateral."email_thread_id"
     FROM recent_email_threads,
-    LATERAL (SELECT email_folder_mappings_inner.email_thread_id
+    LATERAL (SELECT email_folder_mappings_inner."folder_email_thread_date",
+                    email_folder_mappings_inner."email_thread_id",
+                    email_folder_mappings_inner."email_id"
             FROM "email_folder_mappings" AS email_folder_mappings_inner
-            WHERE email_folder_mappings_inner.folder_email_draft_id IS NULL AND
+            WHERE email_folder_mappings_inner."folder_email_draft_id" IS NULL AND
                   email_folder_mappings_inner."email_folder_id" = #{self.id.to_i} AND
                   email_folder_mappings_inner."email_folder_type" = '#{self.class.to_s}' AND
-                  email_folder_mappings_inner.email_thread_id <> ALL (recent_email_threads.seen)
+                  email_folder_mappings_inner."email_thread_id" <> ALL (recent_email_threads."seen")
                   #{last_email_sql_inner}
             ORDER BY email_folder_mappings_inner."folder_email_thread_date" #{dir},
-                     email_folder_mappings_inner."email_id" #{dir} LIMIT 1)
+                     email_folder_mappings_inner."email_thread_id" #{dir},
+                     email_folder_mappings_inner."email_id" #{dir}
+            LIMIT 1)
       AS email_folder_mappings_lateral
-    WHERE array_upper(recent_email_threads.seen, 1) < #{num_rows})
+    WHERE array_upper(recent_email_threads."seen", 1) < #{num_rows})
 )
 SELECT email_threads.*
        FROM email_threads
-       WHERE id IN (SELECT recent_email_threads.email_thread_id
+       WHERE id IN (SELECT recent_email_threads."email_thread_id"
                     FROM recent_email_threads
                     LIMIT #{threads_per_page})
 sql
