@@ -69,7 +69,9 @@ window.TuringEmailApp = new(Backbone.View.extend(
     if windowLocationHash is ""
       @routers.emailFoldersRouter.navigate("#email_folder/INBOX", trigger: true)
 
-    @syncEmail()
+    @syncTimeout = window.setTimeout(=>
+      @syncEmail()
+    , 60000)
 
   #######################
   ### Setup Functions ###
@@ -251,6 +253,8 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @collections.emailThreads.setupURL(lastEmailThreadUID, dir) if @models.userConfiguration.get("demo_mode_enabled")
 
     @reloadEmailThreads(
+      render: false
+      
       success: (collection, response, options) =>
         emailFolder = @collections.emailFolders.get(emailFolderID)
         @views.emailFoldersTreeView.select(emailFolder, silent: true)
@@ -349,7 +353,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
           callback?(emailThread)
       )
       
-  reloadEmailThreads: (myOptions) ->
+  reloadEmailThreads: (myOptions=render: true) ->
     selectedEmailThread = @selectedEmailThread()
 
     @collections.emailThreads.fetch(
@@ -357,6 +361,8 @@ window.TuringEmailApp = new(Backbone.View.extend(
       reset: true
       
       success: (collection, response, options) =>
+        @views.emailThreadsListView.render() if myOptions?.render
+
         @stopListening(emailThread) for emailThread in options.previousModels
 
         for emailThread in collection.models
@@ -382,6 +388,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
   loadSearchResults: (query) ->
     @reloadEmailThreads(
       query: query
+      render: false
       
       success: (collection, response, options) =>
         @showEmails()

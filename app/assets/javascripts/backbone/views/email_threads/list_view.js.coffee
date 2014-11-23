@@ -67,6 +67,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     )
 
   removeAll: (models = @collection.models) ->
+    @$el.empty()
     models.forEach(@removeOne, this)
 
   ###############
