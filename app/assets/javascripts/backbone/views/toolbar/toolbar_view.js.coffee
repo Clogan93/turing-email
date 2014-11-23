@@ -7,7 +7,6 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
   initialize: (options) ->
     @app = options.app
     @currentEmailFolders = options.emailFolders if options.emailFolders?
-    @demoMode = if options.demoMode? then options.demoMode else true
     
     @listenTo(options.app, "change:currentEmailFolder", @currentEmailFolderChanged)
     @listenTo(options.app, "change:emailFolders", @emailFoldersChanged)
@@ -17,7 +16,7 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
 
   render: ->
     emailFolders = @currentEmailFolders?.toJSON() ? []
-    @$el.html(@template({emailFolders : emailFolders, demoMode: @demoMode}))
+    @$el.html(@template(emailFolders : emailFolders))
     
     emailFolders = _.sortBy(emailFolders, (emailFolder) ->
       emailFolder.name
@@ -27,7 +26,6 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @divAllCheckbox = @$el.find("div.icheckbox_square-green")
 
     @setupButtons()
-    @setupDemoModeSwitch()
     @renderRefreshButton()
     @renderReportToolbarDropdown()
 
@@ -155,13 +153,6 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
     @$el.find(".snooze-dropdown .dropdown-menu .one-day").click =>
       @$el.find(".snooze-dropdown-menu").tooltip('hide')
       @trigger("snoozeClicked", this, 60 * 24)
-
-  setupDemoModeSwitch: ->
-    @$el.find(".demo-mode-switch").bootstrapSwitch()
-
-    @$el.find(".demo-mode-switch").on "switch-change", (event, state) =>
-      @demoMode = !@demoMode
-      @trigger("demoModeSwitchClicked", @demoMode)
 
   #################
   ### Functions ###
