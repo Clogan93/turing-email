@@ -15,6 +15,8 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
     @listenTo(@collection, "destroy", @remove)
 
   render: ->
+    startTime = Date.now()
+    
     @generateTree()
 
     systemBadges =
@@ -26,6 +28,8 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
     @setupNodes()
 
     @select(@collection.get(@selectedItem().get("label_id")), silent: true) if @selectedItem()?
+
+    console.log("EmailFolders.TreeView render took " + (Date.now() - startTime) / 1000 + " seconds")
       
     return this
 
