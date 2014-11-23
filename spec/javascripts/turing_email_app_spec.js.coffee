@@ -59,12 +59,6 @@ describe "TuringEmailApp", ->
         expect(spy).toHaveBeenCalled()
         spy.restore()
 
-    it "calls syncEmail", ->
-      @syncEmailStub.restore()
-      @syncEmailStub = sinon.stub(TuringEmailApp, "syncEmail")
-      TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserConfiguration"))
-      expect(@syncEmailStub).toHaveBeenCalled()
-
     it "starts the backbone history", ->
       TuringEmailApp.start(FactoryGirl.create("User"), FactoryGirl.create("UserConfiguration"))
       expect(Backbone.History.started).toBeTruthy()
@@ -581,7 +575,7 @@ describe "TuringEmailApp", ->
         
       describe "demoMode=true", ->
         beforeEach ->
-          @postStub = sinon.stub($, "post", ->)
+          @postStub = sinon.stub($, "post", -> done: sinon.stub())
           TuringEmailApp.models.userConfiguration.set("demo_mode_enabled", true)
           
           TuringEmailApp.syncEmail()

@@ -4,10 +4,12 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   initialize: (options) ->
     @listenTo(@collection, "add", @addOne)
     @listenTo(@collection, "remove", @removeOne)
-    #@listenTo(@collection, "reset", @resetView)
+    @listenTo(@collection, "reset", @resetView)
     @listenTo(@collection, "destroy", @remove)
 
   render: ->
+    return if @skipRender
+
     startTime = Date.now()
     
     @removeAll()

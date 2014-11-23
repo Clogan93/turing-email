@@ -111,15 +111,7 @@ class Api::V1::EmailAccountsController < ApiController
 
   # TODO write tests
   def sync
-    if @email_account.last_history_id_synced
-      job = Delayed::Job.find_by(:id => @email_account.sync_delayed_job_id, :failed_at => nil)
-
-      if job.nil?
-        job = @email_account.delay.sync_email()
-        @email_account.sync_delayed_job_id = job.id
-        @email_account.save!
-      end
-    end
+    @email_account.queue_sync_account()
     
     render :json => @email_account.emails.maximum(:updated_at)
   end

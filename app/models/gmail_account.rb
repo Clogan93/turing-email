@@ -536,6 +536,27 @@ class GmailAccount < ActiveRecord::Base
       self.delay({run_at: 1.minute.from_now}, num_dynos: GmailAccount::NUM_SYNC_DYNOS).check_initial_sync(job_ids)
     end
   end
+
+  def queue_sync_account
+    self.with_lock do
+      if self.last_history_id_synced
+        job = Delayed::Job.find_by(:id => self.sync_delayed_job_id, :failed_at => nil)
+
+        if job.nil?
+          job = self.delay.sync_account()
+          self.sync_delayed_job_id = job.id
+          self.save!
+        end
+      end
+    end
+  end
+  
+  def sync_account
+    log_console("sync_account for #{self.email}")
+
+    self.sync_labels()
+    self.sync_email()
+  end
   
   def sync_email(labelIds: nil, delay: true)
     log_console("SYNCING Gmail #{self.email}")
