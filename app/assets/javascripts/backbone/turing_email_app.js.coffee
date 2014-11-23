@@ -254,7 +254,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @collections.emailThreads.setupURL(lastEmailThreadUID, dir) if @models.userConfiguration.get("demo_mode_enabled")
 
     @reloadEmailThreads(
-      render: false
+      skipRender: true
       
       success: (collection, response, options) =>
         emailFolder = @collections.emailFolders.get(emailFolderID)
@@ -354,15 +354,17 @@ window.TuringEmailApp = new(Backbone.View.extend(
           callback?(emailThread)
       )
       
-  reloadEmailThreads: (myOptions=render: true) ->
+  reloadEmailThreads: (myOptions=skipRender: false) ->
     selectedEmailThread = @selectedEmailThread()
 
+    @views.emailThreadsListView.skipRender = myOptions.skipRender
+    
     @collections.emailThreads.fetch(
       query: myOptions?.query
       reset: true
       
       success: (collection, response, options) =>
-        @views.emailThreadsListView.render() if myOptions?.render
+        @views.emailThreadsListView.skipRender = false
 
         @stopListening(emailThread) for emailThread in options.previousModels
 
@@ -382,14 +384,17 @@ window.TuringEmailApp = new(Backbone.View.extend(
         
         @views.mainView.resize()
         myOptions.success(collection, response, options) if myOptions?.success?
-        
-      error: myOptions?.error
+
+      error: (collection, response, options) =>
+        @views.emailThreadsListView.skipRender = false
+
+        myOptions.error(collection, response, options) if myOptions?.error?
     )
 
   loadSearchResults: (query) ->
     @reloadEmailThreads(
       query: query
-      render: false
+      skipRender: true
       
       success: (collection, response, options) =>
         @showEmails()
