@@ -2321,6 +2321,23 @@ describe "TuringEmailApp", ->
       it "shows the list subscriptions on the main view", ->
         expect(@showInboxCleanerViewStub).toHaveBeenCalled()
 
+    describe "#showWelcomeTour", ->
+      beforeEach ->
+        @showEmailsStub = sinon.stub(TuringEmailApp, "showEmails", ->)
+        @showWelcomeTourViewStub = sinon.stub(TuringEmailApp.views.mainView, "showWelcomeTour", => @welcomeTourView)
+
+        TuringEmailApp.showWelcomeTour()
+
+      afterEach ->
+        @showEmailsStub.restore()
+        @showWelcomeTourViewStub.restore()
+
+      it "shows the emails", ->
+        expect(@showEmailsStub).toHaveBeenCalled()
+
+      it "shows the welcome tour on the main view", ->
+        expect(@showWelcomeTourViewStub).toHaveBeenCalled()
+
     describe "#showSettings", ->
       beforeEach ->
         @oldSettingsView = TuringEmailApp.settingsView = {}
