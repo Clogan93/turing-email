@@ -80,6 +80,8 @@ class GmailAccountsController < ApplicationController
             gmail_account.google_o_auth2_token = google_o_auth2_token
             gmail_account.save!
           end
+
+          UserMailer.delay.welcome_email(user)
         end
         
         sign_in(user)

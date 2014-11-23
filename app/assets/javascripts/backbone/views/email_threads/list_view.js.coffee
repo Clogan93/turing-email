@@ -4,17 +4,25 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   initialize: (options) ->
     @listenTo(@collection, "add", @addOne)
     @listenTo(@collection, "remove", @removeOne)
-    @listenTo(@collection, "reset", @resetView)
+    #@listenTo(@collection, "reset", @resetView)
     @listenTo(@collection, "destroy", @remove)
 
   render: ->
+    startTime = Date.now()
+    
     @removeAll()
     @$el.empty()
     @listItemViews = {}
-    
-    @addAll()
+
+    @$el.hide()
+    frag = $(document.createDocumentFragment())
+    @addAll(frag)
+    @$el.append(frag)
+    @$el.show()
 
     @select(@selectedItem(), silent: true) if @selectedItem()?
+    
+    console.log("EmailThreads.ListView render took " + (Date.now() - startTime) / 1000 + " seconds")
 
     return this
 
@@ -28,11 +36,15 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   ### Collection Functions ###
   ############################
 
-  addOne: (emailThread) ->
+  addOne: (emailThread, collection, options) ->
     @listItemViews ?= {}
 
     listItemView = new TuringEmailApp.Views.EmailThreads.ListItemView(model: emailThread)
-    @$el.append(listItemView.render().el)
+    if options?.frag?
+      options.frag.append(listItemView.render().el)
+    else
+      @$el.append(listItemView.render().el)
+      
     listItemView.addedToDOM()
 
     @hookListItemViewEvents(listItemView)
@@ -48,10 +60,14 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
 
     delete @listItemViews[emailThread.get("uid")]
 
-  addAll: ->
-    @collection.forEach(@addOne, this)
+  addAll: (frag) ->
+    @collection.forEach(
+      (emailThread) =>
+        @addOne(emailThread, @collection, frag: frag)
+    )
 
   removeAll: (models = @collection.models) ->
+    @$el.empty()
     models.forEach(@removeOne, this)
 
   ###############

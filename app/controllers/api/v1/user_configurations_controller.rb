@@ -21,13 +21,16 @@ class Api::V1::UserConfigurationsController < ApiController
     param :form, :split_pane_mode, :string, false, 'Split Pane Mode (off, horizontal, or vertical)'
     param :form, :keyboard_shortcuts_enabled, :string, false, 'Keyboard Shortcuts Enabled status'
     param :form, :developer_enabled, :string, false, 'Developer Enabled status'
+    param :form, :email_list_view_row_height, :integer, false, 'Email List View Row Height'
 
     response :ok
   end
   
   def update
     @user_configuration = current_user.user_configuration
-    permitted_params = params.permit(:demo_mode_enabled, :genie_enabled, :split_pane_mode, :keyboard_shortcuts_enabled, :developer_enabled)
+    permitted_params = params.permit(:demo_mode_enabled, :genie_enabled, :split_pane_mode,
+                                     :keyboard_shortcuts_enabled, :developer_enabled,
+                                     :email_list_view_row_height)
     @user_configuration.update_attributes!(permitted_params)
     
     @user_configuration.skin = Skin.find_by_uid(params[:skin_uid])
