@@ -72,7 +72,6 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
       $(event.currentTarget).parent().parent().remove()
       
   saveSettings: (refresh=false) ->
-    demo_mode_enabled = @$el.find(".demo-mode-switch").parent().parent().hasClass("switch-on")
     keyboard_shortcuts_enabled = @$el.find(".keyboard-shortcuts-switch").parent().parent().hasClass("switch-on")
     genie_enabled = @$el.find(".genie-switch").parent().parent().hasClass("switch-on")
     split_pane_mode = if @$el.find(".split-pane-switch").parent().parent().hasClass("switch-on") then "horizontal" else "off"
@@ -80,7 +79,6 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     skin_uid = @$el.find(".skin-select").val()
 
     @model.set({
-      demo_mode_enabled: demo_mode_enabled,
       genie_enabled: genie_enabled,
       split_pane_mode: split_pane_mode,
       keyboard_shortcuts_enabled: keyboard_shortcuts_enabled,

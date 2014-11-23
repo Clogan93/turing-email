@@ -34,6 +34,8 @@
 //= require jasmine-sinon
 //= require support/jasmine-jquery-1.7.0
 //
+//= require ./lib/ckeditor/ckeditor.js
+//= require ./lib/ckeditor/adapters/jquery.js
 //= require ./vendors/chance.js
 //= require ./vendors/unserialize.jquery.latest.js
 //= require ./vendors/node.js

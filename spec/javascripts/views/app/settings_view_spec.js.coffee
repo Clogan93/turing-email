@@ -48,7 +48,6 @@ describe "SettingsView", ->
     it "renders the settings view", ->
       expect(@settingsDiv.find("div[class=col-md-10]")).toContainHtml('<h1 class="h1">Settings</h1>')
 
-      expect(@settingsDiv).toContainHtml('<h4 class="h4">Demo Mode</h4>')
       expect(@settingsDiv).toContainHtml('<h4 class="h4">Keyboard Shortcuts</h4>')
       expect(@settingsDiv).toContainHtml('<h4 class="h4">Inbox Cleaner</h4>')
       expect(@settingsDiv).toContainHtml('<h4 class="h4">Horizontal Preview Panel</h4>')
@@ -63,11 +62,6 @@ describe "SettingsView", ->
       expect(@settingsDiv).toContainHtml('<h4 class="h4">Email Bankruptcy</h4>')
       expect(@settingsDiv).toContainHtml('<button type="button" class="btn btn-block btn-danger email-bankruptcy-button">Declare Email Bankruptcy</button>')
 
-    it "renders the demo mode switch", ->
-      demoModeSwitch = $(".demo-mode-switch")
-      expect(@settingsDiv).toContain(demoModeSwitch)
-      expect(demoModeSwitch.is(":checked")).toEqual(@userConfiguration.get("demo_mode_enabled"))
-      
     it "renders the keyboard shortcuts switch", ->
       keyboardShortcutsSwitch = $(".keyboard-shortcuts-switch")
       expect(@settingsDiv).toContain(keyboardShortcutsSwitch)
@@ -142,10 +136,6 @@ describe "SettingsView", ->
         expect(@settingsDiv.find(".installed-app")[index]).toContainHtml('<td>' + installedApp.app.description + '</td>')
 
   describe "#setupSwitches", ->
-
-    it "sets up the demo mode switch", ->
-      @settingsView.setupSwitches()
-      expect(@settingsDiv.find(".demo-mode-switch").parent().parent()).toHaveClass "has-switch"
 
     it "sets up the keyboard shortcuts switch", ->
       @settingsView.setupSwitches()
