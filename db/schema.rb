@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141122102745) do
+ActiveRecord::Schema.define(version: 20141123063036) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -449,6 +449,7 @@ ActiveRecord::Schema.define(version: 20141122102745) do
     t.integer  "skin_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "email_list_view_row_height"
   end
 
   add_index "user_configurations", ["user_id"], name: "index_user_configurations_on_user_id", unique: true, using: :btree
