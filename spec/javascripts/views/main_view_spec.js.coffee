@@ -27,12 +27,10 @@ describe "MainView", ->
     beforeEach ->
       @clock = sinon.useFakeTimers()
       @resizeSpy = sinon.spy(@mainView, "resize")
-      @showTourStub = sinon.stub(@mainView, "showTour")
       @mainView.render()
       
     afterEach ->
       @resizeSpy.restore()
-      @showTourStub.restore()
       @clock.restore()
       
     it "creates the primary_pane", ->
@@ -46,10 +44,6 @@ describe "MainView", ->
       
     it "resized", ->
       expect(@resizeSpy).toHaveBeenCalled()
-
-    it "show the tour", ->  
-      @clock.tick(5000)
-      expect(@showTourStub).toHaveBeenCalled()
 
     it "creates the create folder view", ->
       expect(@mainView.createFolderView).toBeDefined()
@@ -406,19 +400,10 @@ describe "MainView", ->
         it "adds the app iframes to the split pane", ->
           expect(@appsDiv.children().length).toEqual(TuringEmailApp.models.userConfiguration.get("installed_apps").length)
               
-      describe "#showTour", ->
+      describe "#showWelcomeTour", ->
         beforeEach ->
-          @mainView.tour = null
-          @mainView.showTour()
+          @mainView.tourView = null
+          @mainView.showWelcomeTour()
 
-        it "create a tour object", ->
-          expect(@mainView.tour).toBeDefined()
-
-        it "sets the step attributes on the tour", ->
-          expect(@mainView.tour._options.steps[0].element).toEqual ".settings-switch"
-          expect(@mainView.tour._options.steps[0].placement).toEqual "right"
-          expect(@mainView.tour._options.steps[0].title).toEqual "Welcome to demo mode"
-          expect(@mainView.tour._options.steps[0].content).toEqual "Toggle to see your emails after the brain has done it's work vs. normal."
-
-        it "the tour is initialized", ->
-          expect(@mainView.tour._inited).toBeTruthy()
+        it "create the tour view", ->
+          expect(@mainView.tourView).toBeDefined()
