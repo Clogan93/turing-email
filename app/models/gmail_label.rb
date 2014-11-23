@@ -14,12 +14,22 @@ class GmailLabel < ActiveRecord::Base
 
   validates_presence_of(:gmail_account_id, :label_id, :name, :label_type)
 
-  def num_threads
-    return EmailFolderMapping.joins(:email).where(:email_folder => self).count('DISTINCT "emails"."email_thread_id"')
+  def update_counts
+    self.with_lock do
+      self.num_threads = EmailFolderMapping.joins(:email).where(:email_folder => self).
+                                            count('DISTINCT "emails"."email_thread_id"')
+      self.update_num_unread_threads()
+      self.save!
+    end
   end
-
-  def num_unread_threads
-    return EmailFolderMapping.joins(:email).where(:email_folder => self).where('"emails"."seen" = ?',false).count('DISTINCT "emails"."email_thread_id"')
+  
+  def update_num_unread_threads
+    self.with_lock do
+      self.num_unread_threads = EmailFolderMapping.joins(:email).where(:email_folder => self).
+                                                   where('"emails"."seen" = ?',false).
+                                                   count('DISTINCT "emails"."email_thread_id"')
+      self.save!
+    end
   end
   
   def get_sorted_paginated_threads(last_email_thread: nil, dir: 'DESC', threads_per_page: 50, log: false)

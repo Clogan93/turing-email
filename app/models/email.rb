@@ -44,6 +44,14 @@ class Email < ActiveRecord::Base
     EmailFolderMapping.where(:email_thread => self.email_thread).
                        update_all(:folder_email_thread_date => self.email_thread.emails.maximum(:date))
   }
+
+  after_update {
+    if self.seen_changed?
+      self.gmail_labels.each do |gmail_label|
+        gmail_label.update_num_unread_threads()
+      end
+    end
+  }
   
   def Email.lists_email_daily_average(user, limit: nil, where: nil)
     return user.emails.where("list_id IS NOT NULL").where(where).

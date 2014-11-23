@@ -256,7 +256,10 @@ class GmailAccount < ActiveRecord::Base
       self.apply_label_to_emails(emails, label_id: 'UNREAD')
     end
     
-    emails.update_all(:seen => seen)
+    emails.each do |email|
+      email.seen = seen
+      email.save!
+    end
   end
   
   # polymorphic call
