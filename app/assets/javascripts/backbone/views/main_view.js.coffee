@@ -35,10 +35,6 @@ class TuringEmailApp.Views.Main extends Backbone.View
 
     @resize()
 
-    window.setTimeout(=>
-      @showTour()
-    , 5000)
-
   createEmailThreadsListView: (emailThreads) ->
     @emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView(
       collection: emailThreads
@@ -342,6 +338,6 @@ class TuringEmailApp.Views.Main extends Backbone.View
       installedApp = TuringEmailApp.Models.InstalledApps.InstalledApp.CreateFromJSON(installedAppJSON)
       installedApp.run(appIframe, object)  
 
-  showTour: ->
+  showWelcomeTour: ->
     @tourView = new TuringEmailApp.Views.App.TourView()
     @tourView.render()
