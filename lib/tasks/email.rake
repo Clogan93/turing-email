@@ -1,17 +1,3 @@
-desc 'Queue sync account'
-
-task :queue_sync_account => :environment do
-  GmailAccount.all.each do |gmail_account|
-    begin
-      log_console("PROCESSING account #{gmail_account.email}")
-
-      gmail_account.queue_sync_account()
-    rescue Exception => ex
-      log_email_exception(ex)
-    end
-  end
-end
-
 desc 'Sync all email accounts'
 
 task :sync_email, [:labelIds_string] => :environment do |t, args|

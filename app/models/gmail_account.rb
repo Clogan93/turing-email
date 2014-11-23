@@ -501,14 +501,18 @@ class GmailAccount < ActiveRecord::Base
     gmail_ids = self.sync_failed_emails.pluck(:email_uid)
     self.sync_failed_emails.where(:email_uid => gmail_ids).destroy_all()
 
-    if delay
-      job = self.delay(num_dynos: GmailAccount::NUM_SYNC_DYNOS).sync_gmail_ids(gmail_ids, delay: false)
-      
-      return [job.id]
-    else
-      self.sync_gmail_ids(gmail_ids, delay: false)
-      return []
+    if gmail_ids.length > 0
+      if delay
+        job = self.delay(num_dynos: GmailAccount::NUM_SYNC_DYNOS).sync_gmail_ids(gmail_ids, delay: false)
+        
+        return [job.id]
+      else
+        self.sync_gmail_ids(gmail_ids, delay: false)
+        return []
+      end
     end
+    
+    return []
   end
 
   def sync_reset
@@ -798,13 +802,15 @@ class GmailAccount < ActiveRecord::Base
           
           log_console("GOT #{gmail_ids.length} messages\n")
     
-          if delay
-            job = self.delay(heroku_scale: false).sync_gmail_ids(gmail_ids, delay: false)
-            job_ids.push(job.id)
-          else
-            self.sync_gmail_ids(gmail_ids, delay: false)
+          if gmail_ids.length > 0
+            if delay
+              job = self.delay(heroku_scale: false).sync_gmail_ids(gmail_ids, delay: false)
+              job_ids.push(job.id)
+            else
+              self.sync_gmail_ids(gmail_ids, delay: false)
+            end
+            num_emails_synced += gmail_ids.length
           end
-          num_emails_synced += gmail_ids.length
           
           self.set_last_history_id_synced(historys_data.last['id']) if !historys_data.empty?
           
