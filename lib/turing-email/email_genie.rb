@@ -120,12 +120,15 @@ class EmailGenie
       gmail_client = gmail_account.gmail_client
       batch_empty = true
     end
+
+    auto_cleaner_enabled = gmail_account.user.user_configuration.auto_cleaner_enabled
     
     Email.where(:id => email_ids).find_each do |email|
       if EmailGenie.email_is_unimportant(email, sent_label: sent_label)
         gmail_label, call = EmailGenie.auto_file(email, inbox_label, sent_label: sent_label,
                                                  top_lists_email_daily_average: top_lists_email_daily_average,
-                                                 batch_request: true, gmail_client: gmail_client)
+                                                 batch_request: true, gmail_client: gmail_client,
+                                                 auto_cleaner_enabled: auto_cleaner_enabled)
   
         if !gmail_account.user.user_configuration.demo_mode_enabled && $config.gmail_live
           batch_request.add(call)
@@ -233,7 +236,7 @@ class EmailGenie
   end
 
   def EmailGenie.auto_file(email, inbox_folder, sent_label: nil, top_lists_email_daily_average: nil,
-                           batch_request: false, gmail_client: nil)
+                           batch_request: false, gmail_client: nil, auto_cleaner_enabled: false)
     log_console("AUTO FILING! #{email.uid}")
 
     folder_name = nil
@@ -248,7 +251,9 @@ class EmailGenie
 
       gmail_label, call = 
           EmailGenie.auto_file_list_email(email, top_lists_email_daily_average: top_lists_email_daily_average,
-                                          batch_request: batch_request, gmail_client: gmail_client)
+                                          batch_request: batch_request,
+                                          gmail_client: gmail_client,
+                                          auto_cleaner_enabled: auto_cleaner_enabled)
     elsif EmailGenie.is_completed_conversation_email(email, sent_label)
       folder_name = 'Unimportant/Completed Conversations'
     elsif EmailGenie.is_unimportant_group_email(email)
@@ -258,20 +263,25 @@ class EmailGenie
     end
 
     if folder_name
-      gmail_label, call =
-          email.email_account.move_email_to_folder(email, folder_name:
-                                                   folder_name, set_auto_filed_folder: true,
-                                                   batch_request: batch_request, gmail_client: gmail_client)
+      if auto_cleaner_enabled
+        gmail_label, call =
+            email.email_account.move_email_to_folder(email, folder_name: folder_name,
+                                                     set_auto_filed_folder: true,
+                                                     batch_request: batch_request,
+                                                     gmail_client: gmail_client)
+        email.auto_filed = true
+      else
+        email.auto_file_folder_name = folder_name
+      end
     end
 
-    email.auto_filed = true
     email.save!
     
     return gmail_label, call
   end
   
   def EmailGenie.auto_file_list_email(email, top_lists_email_daily_average: nil,
-                                      batch_request: false, gmail_client: nil)
+                                      batch_request: false, gmail_client: nil, auto_cleaner_enabled: false)
     subfolder = email.list_name
     subfolder = email.list_id if subfolder.nil?
     
@@ -285,10 +295,16 @@ class EmailGenie
       folder_name = 'List Emails'
     end
 
-    gmail_label, call =
-        email.email_account.move_email_to_folder(email, folder_name: folder_name,
-                                                 set_auto_filed_folder: true,
-                                                 batch_request: batch_request, gmail_client: gmail_client)
+    if auto_cleaner_enabled
+      gmail_label, call =
+          email.email_account.move_email_to_folder(email, folder_name: folder_name,
+                                                   set_auto_filed_folder: true,
+                                                   batch_request: batch_request,
+                                                   gmail_client: gmail_client)
+      email.auto_filed = true
+    else
+      email.auto_file_folder_name = folder_name
+    end
 
     return gmail_label, call
   end

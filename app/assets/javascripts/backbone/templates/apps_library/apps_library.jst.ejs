@@ -1,14 +1,7 @@
 <div class="create_app_view"></div>
 
-<div class="page-header row">
-  <div class="col-md-10">
-    <h1 class="h1">Apps</h1>
-  </div>
-  <div class="col-md-2">
-    <% var template = JST["backbone/templates/toolbar/more_dropdown"]; %>
-    <%= template({}) %>
-  </div>
-</div>
+<% var template = JST["backbone/templates/page_header_view"]; %>
+<%= template({title: "Apps"}) %>
 
 <% if (developer_enabled) { %>
   <button type="button" class="btn btn-block btn-primary create-app-button">Create App</button>

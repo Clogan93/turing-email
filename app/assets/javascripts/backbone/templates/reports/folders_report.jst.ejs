@@ -1,14 +1,5 @@
-<div class="page-header row">
-  <div class="col-md-10">
-    <h1 class="h1">Folders</h1>
-  </div>
-  <div class="col-md-2">
-    <span class="report_toolbar_dropdown top-report-dropdown">
-    </span>
-    <% var template = JST["backbone/templates/toolbar/more_dropdown"]; %>
-    <%= template({}) %>
-  </div>
-</div>
+<% var template = JST["backbone/templates/page_header_view"]; %>
+<%= template({title: "Folders", showReportsMenu: true}) %>
 
 <div class="row">
   <div class="col-lg-11">
