@@ -77,8 +77,13 @@ describe "SettingsView", ->
       expect(@settingsDiv).toContain(splitPaneSwitch)
       expect(splitPaneSwitch.is(":checked")).toEqual(@userConfiguration.get("split_pane_mode") == "horizontal")
 
+    it "renders the auto cleaner switch", ->
+      autoCleanerSwitch = $(".auto-cleaner-switch")
+      expect(@settingsDiv).toContain(autoCleanerSwitch)
+      expect(autoCleanerSwitch.is(":checked")).toEqual(@userConfiguration.get("auto_cleaner_enabled"))
+      
     it "renders the developer switch", ->
-      developerSwitch = $(".developer_switch")
+      developerSwitch = $(".developer-switch")
       expect(@settingsDiv).toContain(developerSwitch)
       expect(developerSwitch.is(":checked")).toEqual(@userConfiguration.get("developer_enabled"))
 

@@ -49,13 +49,13 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
         ), 3000
 
   setupSwitches: ->
-    @$el.find(".demo-mode-switch").bootstrapSwitch()
     @$el.find(".keyboard-shortcuts-switch").bootstrapSwitch()
     @$el.find(".genie-switch").bootstrapSwitch()
     @$el.find(".split-pane-switch").bootstrapSwitch()
-    @$el.find(".developer_switch").bootstrapSwitch()
+    @$el.find(".auto-cleaner-switch").bootstrapSwitch()
+    @$el.find(".developer-switch").bootstrapSwitch()
 
-    @$el.find(".demo-mode-switch, .keyboard-shortcuts-switch, .genie-switch, .split-pane-switch, .developer_switch").
+    @$el.find(".keyboard-shortcuts-switch, .genie-switch, .split-pane-switch, .auto-cleaner-switch, .developer-switch").
          on("switch-change", (event, state) =>
       @saveSettings()
     )
@@ -75,13 +75,15 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     keyboard_shortcuts_enabled = @$el.find(".keyboard-shortcuts-switch").parent().parent().hasClass("switch-on")
     genie_enabled = @$el.find(".genie-switch").parent().parent().hasClass("switch-on")
     split_pane_mode = if @$el.find(".split-pane-switch").parent().parent().hasClass("switch-on") then "horizontal" else "off"
-    developer_enabled = @$el.find(".developer_switch").parent().parent().hasClass("switch-on")
+    auto_cleaner_enabled = @$el.find(".auto-cleaner-switch").parent().parent().hasClass("switch-on")
+    developer_enabled = @$el.find(".developer-switch").parent().parent().hasClass("switch-on")
     skin_uid = @$el.find(".skin-select").val()
 
     @model.set({
       genie_enabled: genie_enabled,
       split_pane_mode: split_pane_mode,
       keyboard_shortcuts_enabled: keyboard_shortcuts_enabled,
+      auto_cleaner_enabled: auto_cleaner_enabled,
       developer_enabled: developer_enabled,
       skin_uid: skin_uid
     })
