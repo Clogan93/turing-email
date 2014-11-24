@@ -227,6 +227,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
     cleanerReport = new TuringEmailApp.Models.CleanerReport()
     cleanerReport.fetch()
     inboxCleanerView = new TuringEmailApp.Views.App.InboxCleanerView({
+      app: @app
       model: cleanerReport
     })
     inboxCleanerView.render()
