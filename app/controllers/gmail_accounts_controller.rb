@@ -25,6 +25,8 @@ class GmailAccountsController < ApplicationController
 
       redirect_to(root_url)
     else
+      new_user = false
+      
       token = nil
       gmail_account = nil
       created_gmail_account = false
@@ -54,6 +56,7 @@ class GmailAccountsController < ApplicationController
           gmail_account.google_o_auth2_token.update(o_auth2_base_client, true)
         else
           log_console("NOT FOUND gmail_account!!!")
+          new_user = true
           
           if google_o_auth2_token.refresh_token.blank?
             log_console("NO refresh token - redirecting to gmail login!!!")
@@ -97,7 +100,11 @@ class GmailAccountsController < ApplicationController
         log_email_exception(ex)
       end
 
-      redirect_to(mail_url)
+      if new_user
+        redirect_to(mail_url + '#welcome_tour')
+      else
+        redirect_to(mail_url)
+      end
     end
   end
 
