@@ -209,6 +209,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @routers.emailTrackersRouter = new TuringEmailApp.Routers.EmailTrackersRouter()
     @routers.listSubscriptionsRouter = new TuringEmailApp.Routers.ListSubscriptionsRouter()
     @routers.inboxCleanerRouter = new TuringEmailApp.Routers.InboxCleanerRouter()
+    @routers.tourRouter = new TuringEmailApp.Routers.TourRouter()
 
   ###############
   ### Getters ###
@@ -770,6 +771,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
   showInboxCleaner: ->
     @inboxCleanerView = @views.mainView.showInboxCleaner()
+
+  showWelcomeTour: ->
+    @showEmails()
+    @views.mainView.showWelcomeTour()
 
   showSettings: ->
     @models.userConfiguration.fetch(reset: true)

@@ -35,10 +35,6 @@ class TuringEmailApp.Views.Main extends Backbone.View
 
     @resize()
 
-    window.setTimeout(=>
-      @showTour()
-    , 5000)
-
   createEmailThreadsListView: (emailThreads) ->
     @emailThreadsListView = new TuringEmailApp.Views.EmailThreads.ListView(
       collection: emailThreads
@@ -345,32 +341,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
       appIframe.css("height", "100%")
       installedApp = TuringEmailApp.Models.InstalledApps.InstalledApp.CreateFromJSON(installedAppJSON)
       installedApp.run(appIframe, object)  
-    
-  showTour: ->
-    # create the tour
-    @tour = new Tour(
-      onEnd: ->
-        $(".popover.tour").remove()
-      steps: [
-        {
-          element: ".settings-switch"
-          placement: "right"
-          title: "Welcome to demo mode"
-          content: "Toggle to see your emails after the brain has done it's work vs. normal."
-        }
-      ],
-    
-      template: "<div class='popover tour'>
-                   <div class='arrow'></div>
-                   <h3 class='popover-title'></h3>
-                   <div class='popover-content'></div>
-                   <button class='btn btn-default end-tour' data-role='end'>End tour</button>
-                   </nav>
-                 </div>"
-    )
 
-    # Initialize the tour
-    @tour.init()
-
-    # Start the tour
-    @tour.start()
+  showWelcomeTour: ->
+    @tourView = new TuringEmailApp.Views.App.TourView()
+    @tourView.render()
