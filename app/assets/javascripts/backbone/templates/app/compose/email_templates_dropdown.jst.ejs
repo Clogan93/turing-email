@@ -1,9 +1,34 @@
-<div class="dropdown email-templates-dropdown-div">
-  <button class="btn btn-default dropdown-toggle" type="button" id="emailTemplatesDropdownMenu" data-toggle="dropdown">
-    Email Templates
-    <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu email-templates-dropdown" role="menu" aria-labelledby="emailTemplatesDropdownMenu">
-    <li role="presentation"><a role="menuitem" tabindex="-1" class="follow-up-email-to-a-first-conversation">Follow-Up Email to a First Conversation</a></li>
-  </ul>
+<div class="email-templates">
+  <div class="dropdown email-templates-dropdown-div">
+    <button class="btn btn-default dropdown-toggle" type="button" id="emailTemplatesDropdownMenu" data-toggle="dropdown">
+      Email Templates
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu email-templates-dropdown" role="menu" aria-labelledby="emailTemplatesDropdownMenu">
+
+      <li role="presentation"><a role="menuitem" tabindex="-1" class="create-email-template">Create</a></li>
+      <li role="presentation"><a role="menuitem" tabindex="-1" class="delete-email-template">Delete</a></li>
+      <li role="presentation"><a role="menuitem" tabindex="-1" class="update-email-template">Update</a></li>
+
+      <hr />
+
+      <% for(var i = 0; i < emailTemplates.length; i++) { %>
+        <li role="presentation"><a role="menuitem" tabindex="-1" class="load-email-template"><%= emailTemplates[i].name %></a></li>
+      <% } %>
+
+    </ul>
+  </div>
+
+  <div class="create-email-templates-dialog-form" title="Create new email template">
+    <form>
+      <fieldset>
+        <br />
+        <label>Template Name</label><br /><br />
+        <input type="text" class="text ui-widget-content ui-corner-all form-control email-template-name">
+   
+        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+      </fieldset>
+    </form>
+  </div>
 </div>

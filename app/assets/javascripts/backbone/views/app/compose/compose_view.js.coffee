@@ -253,7 +253,10 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
         websitePreview.fetch()
 
   setupEmailTemplatesDropdown: ->
+    emailTemplates = new TuringEmailApp.Collections.EmailTemplatesCollection()
+    emailTemplates.fetch()
     @emailTemplatesDropdownView = new TuringEmailApp.Views.App.EmailTemplatesDropdownView(
+      collection: emailTemplates
       el: @$el.find(".send-later-button")
       composeView: @
     )
@@ -285,6 +288,12 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
 
   hide: ->
     @$el.find(".compose-modal").modal "hide"
+
+  bodyHtml: ->
+    return @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").html()
+
+  bodyText: ->
+    return @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").text()
 
   resetView: ->
     console.log("ComposeView RESET!!")
