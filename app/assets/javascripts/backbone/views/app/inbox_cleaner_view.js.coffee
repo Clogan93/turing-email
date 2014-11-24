@@ -5,6 +5,14 @@ class TuringEmailApp.Views.App.InboxCleanerView extends Backbone.View
 
   className: "inbox-cleaner"
 
+  initialize: ->
+    if @model
+      @listenTo(@model, "change", @render)
+      @listenTo(@model, "destroy", @remove)
+  
   render: ->
-    @$el.html(@template())
+    @$el.empty()
+
+    @$el.html(@template(@model.toJSON())) if _.keys(@model.attributes).length > 0
+    
     return this

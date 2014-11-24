@@ -228,7 +228,11 @@ class TuringEmailApp.Views.Main extends Backbone.View
   showInboxCleaner: ->
     return false if not @primaryPaneDiv?
 
-    inboxCleanerView = new TuringEmailApp.Views.App.InboxCleanerView()
+    cleanerReport = new TuringEmailApp.Models.CleanerReport()
+    cleanerReport.fetch()
+    inboxCleanerView = new TuringEmailApp.Views.App.InboxCleanerView({
+      model: cleanerReport
+    })
     inboxCleanerView.render()
 
     @primaryPaneDiv.html("")

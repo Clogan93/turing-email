@@ -109,6 +109,8 @@ task :email_genie_reset => :environment do
       
       emails_auto_filed.update_all(:auto_filed => false, :auto_filed_reported => false,
                                    :auto_filed_folder_id => nil, :auto_filed_folder_type => nil)
+
+      user.emails.update_all(:auto_file_folder_name => nil)
     rescue Exception => ex
       log_email_exception(ex)
     end

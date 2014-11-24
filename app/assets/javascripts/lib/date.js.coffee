@@ -5,6 +5,7 @@ class @TDate
 
   initializeWithISO8601: (iSO8601DateString) ->
     @date = new Date(iSO8601DateString)
+    return this
 
   longFormDateString: ->
     dateStringComponents = @date.toDateString().split(" ")
