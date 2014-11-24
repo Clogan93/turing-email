@@ -154,7 +154,7 @@ div[contenteditable]:focus {
   }
 }
 
-.create-email-templates-dialog {
+.create-email-templates-dialog, .delete-email-templates-dialog, .update-email-templates-dialog {
   z-index: 10000;
 }
 

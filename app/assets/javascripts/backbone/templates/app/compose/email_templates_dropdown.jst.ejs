@@ -31,4 +31,39 @@
       </fieldset>
     </form>
   </div>
+
+  <div class="delete-email-templates-dialog-form" title="Delete email template">
+    <form>
+      <fieldset>
+        <br />
+
+        <select class="form-control">
+          <% for(var i = 0; i < emailTemplates.length; i++) { %>
+            <option value="<%= emailTemplates[i].name %>"><%= emailTemplates[i].name %></option>
+          <% } %>
+        </select>
+
+        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+      </fieldset>
+    </form>
+  </div>
+
+  <div class="update-email-templates-dialog-form" title="Update email template">
+    <form>
+      <fieldset>
+        <br />
+
+        <select class="form-control">
+          <% for(var i = 0; i < emailTemplates.length; i++) { %>
+            <option value="<%= emailTemplates[i].name %>"><%= emailTemplates[i].name %></option>
+          <% } %>
+        </select>
+
+        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+      </fieldset>
+    </form>
+  </div>
+
 </div>
