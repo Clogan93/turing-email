@@ -203,11 +203,6 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       @saveDraft(true)
 
     @$el.find(".compose-modal").on "hidden.bs.modal", (event) =>
-      @$el.find(".compose-modal .display-cc").show()
-      @$el.find(".compose-modal .cc-input").hide()
-      @$el.find(".compose-modal .display-bcc").show()
-      @$el.find(".compose-modal .bcc-input").hide()
-
       @saveDraft(false)
 
     @$el.find(".display-cc").click (event) =>
