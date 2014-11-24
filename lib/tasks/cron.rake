@@ -3,6 +3,7 @@ require 'turing-lib/heroku-tools'
 require 'turing-lib/logging'
 
 desc 'Called every 10 minutes - Heroku keep-alive and autoscale'
+
 task :heroku_maintenance => :environment do
   log_exception() do
     startTime = Time.now
@@ -57,5 +58,25 @@ task :heroku_maintenance => :environment do
     end
   
     log_console("EXITING heroku_maintenance #{Time.now - startTime}")
+  end
+end
+
+desc 'Queue sync account'
+
+task :queue_sync_account => :environment do
+  log_exception() do
+    startTime = Time.now
+
+    log_console('STARTING queue_sync_account')
+    
+    GmailAccount.all.each do |gmail_account|
+      log_exception() do
+        log_console("PROCESSING account #{gmail_account.email}")
+  
+        gmail_account.queue_sync_account()
+      end
+    end
+
+    log_console("EXITING queue_sync_account #{Time.now - startTime}")
   end
 end

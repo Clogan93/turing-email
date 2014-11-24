@@ -24,8 +24,7 @@
   })
 %>
 
-<div class="page-header">
-  <h1 class="h1">Reports <small>word counts</small></h1>
-</div>
+<% var template = JST["backbone/templates/page_header_view"]; %>
+<%= template({title: "Word Counts", showReportsMenu: true}) %>
 
 <div class="word-count-chart-div"></div>

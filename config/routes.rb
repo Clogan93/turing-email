@@ -55,6 +55,7 @@ Rails.application.routes.draw do
       put '/email_accounts/drafts', to: 'email_accounts#update_draft'
       post '/email_accounts/send_draft', to: 'email_accounts#send_draft'
       post '/email_accounts/delete_draft', to: 'email_accounts#delete_draft'
+      get '/email_accounts/cleaner_report', to: 'email_accounts#cleaner_report'
       
       get '/emails/show/:email_uid', to: 'emails#show'
       post '/emails/set_seen', to: 'emails#set_seen'

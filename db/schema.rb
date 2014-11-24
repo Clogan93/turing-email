@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141123095111) do
+ActiveRecord::Schema.define(version: 20141124011041) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -250,6 +250,7 @@ ActiveRecord::Schema.define(version: 20141123095111) do
     t.datetime "bounce_back_time"
     t.text     "bounce_back_type"
     t.integer  "bounce_back_job_id"
+    t.string   "auto_file_folder_name"
   end
 
   add_index "emails", ["date", "id"], name: "index_emails_on_date_and_id", order: {"date"=>:desc, "id"=>:desc}, using: :btree
@@ -452,6 +453,7 @@ ActiveRecord::Schema.define(version: 20141123095111) do
     t.datetime "updated_at"
     t.integer  "skin_id"
     t.integer  "email_list_view_row_height"
+    t.boolean  "auto_cleaner_enabled",       default: false
   end
 
   add_index "user_configurations", ["user_id"], name: "index_user_configurations_on_user_id", unique: true, using: :btree

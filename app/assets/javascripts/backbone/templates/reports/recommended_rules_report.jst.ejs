@@ -1,14 +1,5 @@
-<div class="page-header row">
-  <div class="col-md-10">
-    <h1 class="h1">Recommended Rules</h1>
-  </div>
-  <div class="col-md-2">
-    <span class="report_toolbar_dropdown top-report-dropdown">
-    </span>
-    <% var template = JST["backbone/templates/toolbar/more_dropdown"]; %>
-    <%= template({}) %>
-  </div>
-</div>
+<% var template = JST["backbone/templates/page_header_view"]; %>
+<%= template({title: "Recommended Rules", showReportsMenu: true}) %>
 
 <h4 class="h4">Recommended Rules</h4>
 <p>The genie has been working extra hard to keep your inbox clean, and recommends that you make the following rules so that these emails skip your inbox during the day:</p>

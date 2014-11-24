@@ -1,17 +1,3 @@
-desc 'Queue sync account'
-
-task :queue_sync_account => :environment do
-  GmailAccount.all.each do |gmail_account|
-    begin
-      log_console("PROCESSING account #{gmail_account.email}")
-
-      gmail_account.queue_sync_account()
-    rescue Exception => ex
-      log_email_exception(ex)
-    end
-  end
-end
-
 desc 'Sync all email accounts'
 
 task :sync_email, [:labelIds_string] => :environment do |t, args|
@@ -123,6 +109,8 @@ task :email_genie_reset => :environment do
       
       emails_auto_filed.update_all(:auto_filed => false, :auto_filed_reported => false,
                                    :auto_filed_folder_id => nil, :auto_filed_folder_type => nil)
+
+      user.emails.update_all(:auto_file_folder_name => nil)
     rescue Exception => ex
       log_email_exception(ex)
     end

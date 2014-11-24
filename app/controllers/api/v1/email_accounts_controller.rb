@@ -208,4 +208,23 @@ class Api::V1::EmailAccountsController < ApiController
 
     render :json => {}
   end
+
+  swagger_api :cleaner_report do
+    summary 'Cleaner report.'
+
+    response :ok
+  end
+  
+  def cleaner_report
+    inbox_label = @email_account.inbox_folder
+    if inbox_label
+      @important_emails = inbox_label.emails.where('auto_file_folder_name IS NULL').
+                                             order(:date => :desc).limit(100)
+    else
+      @important_emails = []
+    end
+
+    @auto_filed_emails = @email_account.emails.where('auto_file_folder_name IS NOT NULL').
+                                            order(:date => :desc).limit(100)
+  end
 end

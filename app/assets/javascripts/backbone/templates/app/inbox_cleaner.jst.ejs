@@ -1,9 +1,48 @@
-<div class="page-header row">
-  <div class="col-md-10">
-    <h1 class="h1">Inbox Cleaner</h1>
-  </div>
-  <div class="col-md-2">
-    <% var template = JST["backbone/templates/toolbar/more_dropdown"]; %>
-    <%= template({}) %>
-  </div>
-</div>
+<% var template = JST["backbone/templates/page_header_view"]; %>
+<%= template({title: "Inbox Cleaner"}) %>
+
+<span style="font-weight: 700">You have <%= important_emails.length %> important emails!</span>
+
+<% if (important_emails.length > 0) { %>
+  <table>
+    <tr>
+      <th></th>
+      <th>From</th>
+      <th>Subject</th>
+      <th>Date</th>
+    </tr>
+    
+    <% for(var i = 0; i < important_emails.length; i++) { %>
+      <tr>
+        <td><%= i + 1 %></td>
+        <td><%= important_emails[i].from_name %></td>
+        <td><%= important_emails[i].subject %></td>
+        <td><%= new TDate().initializeWithISO8601(important_emails[i].date).longFormDateString() %></td>
+      </tr>
+    <% } %>
+  </table>
+<% } %>
+
+<span style="font-weight: 700"><%= auto_filed_emails.length %> emails can be auto filed!</span>
+
+<% if (auto_filed_emails.length > 0) { %>
+  <table>
+    <tr>
+      <th></th>
+      <th>From</th>
+      <th>Subject</th>
+      <th>Date</th>
+      <th>Auto File Folder</th>
+    </tr>
+  
+    <% for(var i = 0; i < auto_filed_emails.length; i++) { %>
+    <tr>
+      <td><%= i + 1 %></td>
+      <td><%= auto_filed_emails[i].from_name %></td>
+      <td><%= auto_filed_emails[i].subject %></td>
+      <td><%= new TDate().initializeWithISO8601(auto_filed_emails[i].date).longFormDateString() %></td>
+      <td><%= auto_filed_emails[i].auto_file_folder_name %></td>
+    </tr>
+    <% } %>
+  </table>
+<% } %>
