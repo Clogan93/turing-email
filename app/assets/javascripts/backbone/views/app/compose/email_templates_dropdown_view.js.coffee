@@ -25,6 +25,32 @@ class TuringEmailApp.Views.App.EmailTemplatesDropdownView extends TuringEmailApp
     $(".delete-email-templates-dialog-form").remove()
     $(".update-email-templates-dialog-form").remove()
 
+  createEmailTemplate: ->
+    emailTemplate = new TuringEmailApp.Models.EmailTemplate()
+    name = $(".create-email-templates-dialog-form .email-template-name").val()
+    text = @composeView.bodyText()
+    html = @composeView.bodyHtml()
+
+    emailTemplate.set({
+      name: name,
+      text: text,
+      html: html
+    })
+
+    emailTemplate.save(null, {
+      success: (model, response) =>
+        alertToken = TuringEmailApp.showAlert("You have successfully created an email template!", "alert-success")
+    
+        setTimeout (=>
+          TuringEmailApp.removeAlert(alertToken)
+        ), 3000
+
+        @createEmailTemplatesDialog.dialog "close"
+
+        @collection.fetch()
+      }
+    )
+
   setupCreateEmailTemplate: ->
     @createEmailTemplatesDialog = @$el.parent().find(".create-email-templates-dialog-form").dialog(
       autoOpen: false
@@ -37,30 +63,8 @@ class TuringEmailApp.Views.App.EmailTemplatesDropdownView extends TuringEmailApp
           text: "Create email template"
           "class": 'btn btn-primary'
           click: =>
-            emailTemplate = new TuringEmailApp.Models.EmailTemplate()
-            name = $(".create-email-templates-dialog-form .email-template-name").val()
-            text = @composeView.bodyText()
-            html = @composeView.bodyHtml()
-
-            emailTemplate.set({
-              name: name,
-              text: text,
-              html: html
-            })
-
-            emailTemplate.save(null, {
-              success: (model, response) =>
-                alertToken = TuringEmailApp.showAlert("You have successfully created an email template!", "alert-success")
+            @createEmailTemplate()
             
-                setTimeout (=>
-                  TuringEmailApp.removeAlert(alertToken)
-                ), 3000
-
-                @createEmailTemplatesDialog.dialog "close"
-
-                @collection.fetch()
-              }
-            )
         },
         {
           text: "Cancel"
@@ -72,6 +76,22 @@ class TuringEmailApp.Views.App.EmailTemplatesDropdownView extends TuringEmailApp
     )
     @$el.parent().find(".email-templates-dropdown .create-email-template").click =>
       @createEmailTemplatesDialog.dialog("open")
+
+  deleteEmailTemplate: ->
+    index = $(".delete-email-templates-dialog-form select option").index($(".delete-email-templates-dialog-form select option:selected"))
+    emailTemplate = @collection.at(index)
+
+    emailTemplate.destroy()
+
+    alertToken = TuringEmailApp.showAlert("You have successfully deleted an email template!", "alert-success")
+
+    setTimeout (=>
+      TuringEmailApp.removeAlert(alertToken)
+    ), 3000
+
+    @deleteEmailTemplatesDialog.dialog "close"
+
+    @collection.fetch()
 
   setupDeleteEmailTemplate: ->
     @deleteEmailTemplatesDialog = @$el.parent().find(".delete-email-templates-dialog-form").dialog(
@@ -85,20 +105,7 @@ class TuringEmailApp.Views.App.EmailTemplatesDropdownView extends TuringEmailApp
           text: "Delete email template"
           "class": 'btn btn-danger'
           click: =>
-            index = $(".delete-email-templates-dialog-form select option").index($(".delete-email-templates-dialog-form select option:selected"))
-            emailTemplate = @collection.at(index)
-
-            emailTemplate.destroy()
-
-            alertToken = TuringEmailApp.showAlert("You have successfully deleted an email template!", "alert-success")
-
-            setTimeout (=>
-              TuringEmailApp.removeAlert(alertToken)
-            ), 3000
-
-            @deleteEmailTemplatesDialog.dialog "close"
-
-            @collection.fetch()
+            @deleteEmailTemplate()
         },
         {
           text: "Cancel"
@@ -121,6 +128,33 @@ class TuringEmailApp.Views.App.EmailTemplatesDropdownView extends TuringEmailApp
       console.log("load email template")
       @composeView.$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").prepend(emailTemplate.get("html"))
 
+  updateEmailTemplate: ->
+    index = $(".update-email-templates-dialog-form select option").index($(".update-email-templates-dialog-form select option:selected"))
+    emailTemplate = @collection.at(index)
+
+    text = @composeView.bodyText()
+    html = @composeView.bodyHtml()
+
+    emailTemplate.set({
+      text: text,
+      html: html
+    })
+
+    emailTemplate.save(null, {
+      patch: true
+      success: (model, response) =>
+        alertToken = TuringEmailApp.showAlert("You have successfully updated an email template!", "alert-success")
+
+        setTimeout (=>
+          TuringEmailApp.removeAlert(alertToken)
+        ), 3000
+
+        @updateEmailTemplatesDialog.dialog "close"
+
+        @collection.fetch()
+      }
+    )
+
   setupUpdateEmailTemplate: ->
     @updateEmailTemplatesDialog = @$el.parent().find(".update-email-templates-dialog-form").dialog(
       autoOpen: false
@@ -133,31 +167,7 @@ class TuringEmailApp.Views.App.EmailTemplatesDropdownView extends TuringEmailApp
           text: "Update email template"
           "class": 'btn btn-primary'
           click: =>
-            index = $(".update-email-templates-dialog-form select option").index($(".update-email-templates-dialog-form select option:selected"))
-            emailTemplate = @collection.at(index)
-
-            text = @composeView.bodyText()
-            html = @composeView.bodyHtml()
-
-            emailTemplate.set({
-              text: text,
-              html: html
-            })
-
-            emailTemplate.save(null, {
-              patch: true
-              success: (model, response) =>
-                alertToken = TuringEmailApp.showAlert("You have successfully updated an email template!", "alert-success")
-
-                setTimeout (=>
-                  TuringEmailApp.removeAlert(alertToken)
-                ), 3000
-
-                @updateEmailTemplatesDialog.dialog "close"
-
-                @collection.fetch()
-              }
-            )
+            @updateEmailTemplate()
         },
         {
           text: "Cancel"
