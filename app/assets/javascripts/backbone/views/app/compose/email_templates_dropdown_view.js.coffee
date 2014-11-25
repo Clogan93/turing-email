@@ -39,17 +39,20 @@ class TuringEmailApp.Views.App.EmailTemplatesDropdownView extends TuringEmailApp
 
     emailTemplate.save(null, {
       success: (model, response) =>
-        alertToken = TuringEmailApp.showAlert("You have successfully created an email template!", "alert-success")
-    
-        setTimeout (=>
-          TuringEmailApp.removeAlert(alertToken)
-        ), 3000
-
-        @createEmailTemplatesDialog.dialog "close"
-
-        @collection.fetch()
+        @showSuccessOfCreateEmailTemplate()
       }
     )
+
+  showSuccessOfCreateEmailTemplate: ->
+    alertToken = TuringEmailApp.showAlert("You have successfully created an email template!", "alert-success")
+
+    setTimeout (=>
+      TuringEmailApp.removeAlert(alertToken)
+    ), 3000
+
+    @createEmailTemplatesDialog.dialog "close"
+
+    @collection.fetch()
 
   setupCreateEmailTemplate: ->
     @createEmailTemplatesDialog = @$el.parent().find(".create-email-templates-dialog-form").dialog(
@@ -143,17 +146,20 @@ class TuringEmailApp.Views.App.EmailTemplatesDropdownView extends TuringEmailApp
     emailTemplate.save(null, {
       patch: true
       success: (model, response) =>
-        alertToken = TuringEmailApp.showAlert("You have successfully updated an email template!", "alert-success")
-
-        setTimeout (=>
-          TuringEmailApp.removeAlert(alertToken)
-        ), 3000
-
-        @updateEmailTemplatesDialog.dialog "close"
-
-        @collection.fetch()
+        @showSuccessOfUpdateEmailTemplate()
       }
     )
+
+  showSuccessOfUpdateEmailTemplate: ->
+    alertToken = TuringEmailApp.showAlert("You have successfully updated an email template!", "alert-success")
+
+    setTimeout (=>
+      TuringEmailApp.removeAlert(alertToken)
+    ), 3000
+
+    @updateEmailTemplatesDialog.dialog "close"
+
+    @collection.fetch()
 
   setupUpdateEmailTemplate: ->
     @updateEmailTemplatesDialog = @$el.parent().find(".update-email-templates-dialog-form").dialog(

@@ -56,39 +56,65 @@ describe "EmailTemplatesDropdownView", ->
         expect($("body")).not.toContain(".update-email-templates-dialog-form")
 
     describe "#createEmailTemplate", ->
-      it "posts", ->
+      beforeEach ->
+        @saveStub = sinon.stub(TuringEmailApp.Models.EmailTemplate.__super__,  "save", ->)
+
+      afterEach ->
+        @saveStub.restore()
+
+      it "saves the model", ->
         @emailTemplatesDropdownView.createEmailTemplate()
+        expect(@saveStub).toHaveBeenCalled()
 
-        expect(@server.requests.length).toEqual 1
-        request = @server.requests[0]
-        expect(request.method).toEqual "POST"
-        expect(request.url).toEqual "/api/v1/email_templates"
+    describe "#setupCreateEmailTemplate", ->
+      beforeEach ->
+        @dialogStub = sinon.stub($.prototype, "dialog", ->)
 
-      # describe "upon success", ->
-      #   beforeEach ->
-      #     @createEmailTemplateStub = sinon.stub(@emailTemplatesDropdownView, "createEmailTemplate", ->)
+      afterEach ->
+        @dialogStub.restore()
 
-      #   afterEach ->
-      #     @createEmailTemplateStub.restore()
+      it "sets up the dialog", ->
+        @emailTemplatesDropdownView.setupCreateEmailTemplate()
+        expect(@dialogStub).toHaveBeenCalled()
 
-      #   it "show the alert", ->
-      #     spy = sinon.spy(TuringEmailApp, "showAlert")
-      #     @emailTemplatesDropdownView.createEmailTemplate()
-      #     @createEmailTemplateStub.args[0][0].success(@emailTemplatesDropdownView.collections, {})
-      #     expect(spy).toHaveBeenCalled()
-      #     spy.restore()
+      it "binds a click handler to the create email template link", ->
+        expect(@emailTemplatesDropdownView.$el.parent().find(".email-templates-dropdown .create-email-template")).toHandle("click")
+
+    describe "#showSuccessOfCreateEmailTemplate", ->
+      beforeEach ->
+        @dialogStub = sinon.stub($.prototype, "dialog", ->)
+        @fetchStub = sinon.stub(TuringEmailApp.Collections.EmailTemplatesCollection.__super__,  "fetch", ->)
+
+      afterEach ->
+        @dialogStub.restore()
+        @fetchStub.restore()
+
+      it "show the alert", ->
+        spy = sinon.spy(TuringEmailApp, "showAlert")
+        @emailTemplatesDropdownView.showSuccessOfCreateEmailTemplate()
+        expect(spy).toHaveBeenCalled()
+        spy.restore()
+
+      it "fetches the collection", ->
+        @emailTemplatesDropdownView.showSuccessOfCreateEmailTemplate()
+        expect(@fetchStub).toHaveBeenCalled()
+
+      it "closes the dialog", ->
+        @emailTemplatesDropdownView.showSuccessOfCreateEmailTemplate()
+        expect(@dialogStub).toHaveBeenCalledWith("close")
 
     describe "#deleteEmailTemplate", ->
+      beforeEach ->
+        @destroyStub = sinon.stub(TuringEmailApp.Models.EmailTemplate.__super__,  "destroy", ->)
+        @fetchStub = sinon.stub(TuringEmailApp.Collections.EmailTemplatesCollection.__super__,  "fetch", ->)
 
-      it "DELETE", ->
+      afterEach ->
+        @destroyStub.restore()
+        @fetchStub.restore()
+
+      it "destroys the model", ->
         @emailTemplatesDropdownView.deleteEmailTemplate()
-        
-        expect(@server.requests.length).toEqual 2
-        
-        request = @server.requests[0]
-        
-        expect(request.method).toEqual "DELETE"
-        expect(request.url).toEqual "/api/v1/email_templates/41"
+        expect(@destroyStub).toHaveBeenCalled()
 
       it "show the alert", ->
         spy = sinon.spy(TuringEmailApp, "showAlert")
@@ -96,14 +122,68 @@ describe "EmailTemplatesDropdownView", ->
         expect(spy).toHaveBeenCalled()
         spy.restore()
 
-    describe "#updateEmailTemplate", ->
+      it "fetches the collection", ->
+        @emailTemplatesDropdownView.deleteEmailTemplate()
+        expect(@fetchStub).toHaveBeenCalled()
 
-      it "patches", ->
+    describe "#setupDeleteEmailTemplate", ->
+      beforeEach ->
+        @dialogStub = sinon.stub($.prototype, "dialog", ->)
+
+      afterEach ->
+        @dialogStub.restore()
+
+      it "sets up the dialog", ->
+        @emailTemplatesDropdownView.setupDeleteEmailTemplate()
+        expect(@dialogStub).toHaveBeenCalled()
+
+      it "binds a click handler to the delete email template link", ->
+        expect(@emailTemplatesDropdownView.$el.parent().find(".email-templates-dropdown .delete-email-template")).toHandle("click")
+
+    describe "#updateEmailTemplate", ->
+      beforeEach ->
+        @saveStub = sinon.stub(TuringEmailApp.Models.EmailTemplate.__super__,  "save", ->)
+
+      afterEach ->
+        @saveStub.restore()
+
+      it "saves the model", ->
         @emailTemplatesDropdownView.updateEmailTemplate()
-        
-        expect(@server.requests.length).toEqual 5
-        
-        request = @server.requests[0]
-        
-        expect(request.method).toEqual "PATCH"
-        expect(request.url).toContainText "/api/v1/email_templates"
+        expect(@saveStub).toHaveBeenCalled()
+
+    describe "#showSuccessOfUpdateEmailTemplate", ->
+      beforeEach ->
+        @dialogStub = sinon.stub($.prototype, "dialog", ->)
+        @fetchStub = sinon.stub(TuringEmailApp.Collections.EmailTemplatesCollection.__super__,  "fetch", ->)
+
+      afterEach ->
+        @dialogStub.restore()
+        @fetchStub.restore()
+
+      it "show the alert", ->
+        spy = sinon.spy(TuringEmailApp, "showAlert")
+        @emailTemplatesDropdownView.showSuccessOfUpdateEmailTemplate()
+        expect(spy).toHaveBeenCalled()
+        spy.restore()
+
+      it "fetches the collection", ->
+        @emailTemplatesDropdownView.showSuccessOfUpdateEmailTemplate()
+        expect(@fetchStub).toHaveBeenCalled()
+
+      it "closes the dialog", ->
+        @emailTemplatesDropdownView.showSuccessOfUpdateEmailTemplate()
+        expect(@dialogStub).toHaveBeenCalledWith("close")
+
+    describe "#setupUpdateEmailTemplate", ->
+      beforeEach ->
+        @dialogStub = sinon.stub($.prototype, "dialog", ->)
+
+      afterEach ->
+        @dialogStub.restore()
+
+      it "sets up the dialog", ->
+        @emailTemplatesDropdownView.setupUpdateEmailTemplate()
+        expect(@dialogStub).toHaveBeenCalled()
+
+      it "binds a click handler to the update email template link", ->
+        expect(@emailTemplatesDropdownView.$el.parent().find(".email-templates-dropdown .update-email-template")).toHandle("click")
