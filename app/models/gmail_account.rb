@@ -1264,4 +1264,39 @@ class GmailAccount < ActiveRecord::Base
     email = self.emails.find_by(:draft_id => draft_id)
     email.destroy if email
   end
+  
+  def apply_cleaner
+    if !self.user.user_configuration.demo_mode_enabled && $config.gmail_live
+      batch_request = EmailGenie.new_gmail_batch_request()
+      gmail_client = self.gmail_client
+      batch_empty = true
+    end
+    
+    self.emails.where(:auto_filed => false).
+                where('auto_file_folder_name IS NOT NULL').find_each do |email|
+      log_exception() do
+        gmail_label, call = self.move_email_to_folder(email, folder_name: email.auto_file_folder_name,
+                                                      set_auto_filed_folder: true,
+                                                      batch_request: batch_request,
+                                                      gmail_client: gmail_client)
+        email.auto_filed = true
+        email.auto_file_folder_name = nil
+        email.queued_auto_file = false
+        email.save!
+  
+        if !self.user.user_configuration.demo_mode_enabled && $config.gmail_live
+          batch_request.add(call)
+          batch_empty = false
+  
+          if batch_request.calls.length == 5
+            self.google_o_auth2_token.api_client.execute!(batch_request)
+            batch_request = EmailGenie.new_gmail_batch_request()
+            batch_empty = true
+  
+            sleep(1)
+          end
+        end
+      end
+    end
+  end
 end

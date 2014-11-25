@@ -58,10 +58,21 @@
 
           <div class="row">
             <div class="col-md-3">
+              <h4 class="h4">Auto Cleaner</h4>
+            </div>
+            <div class="col-md-3 settings-switch">
+              <input type="checkbox" class="auto-cleaner-switch" <%= userConfiguration.auto_cleaner_enabled ? "checked" : "" %>>
+            </div>
+          </div>
+
+          <br />
+
+          <div class="row">
+            <div class="col-md-3">
               <h4 class="h4">Developer Mode</h4>
             </div>
             <div class="col-md-3 settings-switch">
-              <input type="checkbox" class="developer_switch" <%= userConfiguration.developer_enabled ? "checked" : "" %>>
+              <input type="checkbox" class="developer-switch" <%= userConfiguration.developer_enabled ? "checked" : "" %>>
             </div>
           </div>
 

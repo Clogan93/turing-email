@@ -218,13 +218,32 @@ class Api::V1::EmailAccountsController < ApiController
   def cleaner_report
     inbox_label = @email_account.inbox_folder
     if inbox_label
+      @num_important_emails = @important_emails = inbox_label.emails.where('auto_file_folder_name IS NULL').count()
       @important_emails = inbox_label.emails.where('auto_file_folder_name IS NULL').
                                              order(:date => :desc).limit(100)
     else
+      @num_important_emails = 0
       @important_emails = []
     end
 
-    @auto_filed_emails = @email_account.emails.where('auto_file_folder_name IS NOT NULL').
-                                            order(:date => :desc).limit(100)
+    @num_auto_filed_emails = @email_account.emails.where(:queued_auto_file => false).
+                                                   where('auto_file_folder_name IS NOT NULL').count()
+
+    @auto_filed_emails = @email_account.emails.where(:queued_auto_file => false).
+                                               where('auto_file_folder_name IS NOT NULL').
+                                               order(:date => :desc).limit(100)
+  end
+
+  swagger_api :apply_cleaner do
+    summary 'Apply cleaner.'
+
+    response :ok
+  end
+  
+  def apply_cleaner
+    @email_account.emails.where('auto_file_folder_name IS NOT NULL').update_all(:queued_auto_file => true)
+    @email_account.delay.apply_cleaner()
+
+    render :json => {}
   end
 end

@@ -1,7 +1,7 @@
 <% var template = JST["backbone/templates/page_header_view"]; %>
 <%= template({title: "Inbox Cleaner"}) %>
 
-<span style="font-weight: 700">You have <%= important_emails.length %> important emails!</span>
+<span style="font-weight: 700">You have <%= num_important_emails %> important emails!</span>
 
 <% if (important_emails.length > 0) { %>
   <table>
@@ -23,9 +23,12 @@
   </table>
 <% } %>
 
-<span style="font-weight: 700"><%= auto_filed_emails.length %> emails can be auto filed!</span>
+<span style="font-weight: 700"><%= num_auto_filed_emails %> emails can be auto filed!</span>
 
 <% if (auto_filed_emails.length > 0) { %>
+  <button type="button" class="btn btn-block btn-primary auto-file-button">Auto File Emails!</button>
+  <br />
+
   <table>
     <tr>
       <th></th>
