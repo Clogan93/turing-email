@@ -161,7 +161,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
     return false if not @primaryPaneDiv?
 
     apps = new TuringEmailApp.Collections.AppsCollection()
-    apps.fetch()
+    apps.fetch(reset: true)
     appsLibraryView = new TuringEmailApp.Views.AppsLibrary.AppsLibraryView({
       collection: apps,
       developer_enabled: @app.models.userConfiguration.get("developer_enabled")
@@ -177,7 +177,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
     return false if not @primaryPaneDiv?
 
     delayedEmails = new TuringEmailApp.Collections.DelayedEmailsCollection()
-    delayedEmails.fetch()
+    delayedEmails.fetch(reset: true)
     delayedEmailsView = new TuringEmailApp.Views.App.DelayedEmailsView({
       collection: delayedEmails
     })
@@ -192,7 +192,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
     return false if not @primaryPaneDiv?
 
     emailTrackers = new TuringEmailApp.Collections.EmailTrackersCollection()
-    emailTrackers.fetch()
+    emailTrackers.fetch(reset: true)
     emailTrackersView = new TuringEmailApp.Views.App.EmailTrackersView({
       collection: emailTrackers
     })
@@ -207,7 +207,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
     return false if not @primaryPaneDiv?
 
     listSubscriptions = new TuringEmailApp.Collections.ListSubscriptionsCollection()
-    listSubscriptions.fetch()
+    listSubscriptions.fetch(reset: true)
     listSubscriptionsView = new TuringEmailApp.Views.App.ListSubscriptionsView({
       collection: listSubscriptions
     })
@@ -222,7 +222,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
     return false if not @primaryPaneDiv?
 
     cleanerReport = new TuringEmailApp.Models.CleanerReport()
-    cleanerReport.fetch()
+    cleanerReport.fetch(reset: true)
     inboxCleanerView = new TuringEmailApp.Views.App.InboxCleanerView({
       app: @app
       model: cleanerReport
@@ -275,7 +275,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
     @primaryPaneDiv.html("")
     @primaryPaneDiv.append(reportView.$el)
 
-    reportModel.fetch()
+    reportModel.fetch(reset: true)
     
     return reportView
 
