@@ -1,5 +1,5 @@
 <%
-  function outputListsTable(listSubscriptions, subscribed) { %>
+  function outputListsTable(listSubscriptions, subscribed, currentPageNumber, pageSize) { %>
 <div class="row">
   <div class="col-md-12">
     <table class="table table-striped">
@@ -12,7 +12,7 @@
       </tr>
       </thead>
       <tbody>
-      <% for(var i = 0; i < listSubscriptions.length; i++) { %>
+      <% for(var i = (currentPageNumber * pageSize); i < Math.min(listSubscriptions.length, ((currentPageNumber + 1) * pageSize)); i++) { %>
       <tr>
         <td>
           <img src="<%= "https://plus.google.com/_/favicon?domain=" + listSubscriptions[i].list_domain %>" />
@@ -53,12 +53,22 @@
 
       <div class="tab-content">
         <div id="tab-1" class="tab-pane active">
-          <% outputListsTable(listsSubscribed, true); %>
+
+          <% outputListsTable(listsSubscribed, true, currentListsSubscribedPageNumber, pageSize); %>
+
+          <nav class="list-subscription-pagination">
+            <ul class="pagination pagination-lg">
+              <li><a href="#" class="previous-list-subscription-page"><span aria-hidden="true">&laquo;</span><span class="sr-only">Previous</span></a></li>
+              <li><a href="#" class="next-list-subscription-page"><span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></a></li>
+            </ul>
+          </nav>
+
         </div>
 
         <div id="tab-2" class="tab-pane">
-          <% outputListsTable(listsUnsubscribed, false); %>
+          <% outputListsTable(listsUnsubscribed, false, currentListsUnsubscribedPageNumber, pageSize); %>
         </div>
+
       </div>
     </div>
   </div>

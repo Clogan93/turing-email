@@ -5,6 +5,12 @@ class TuringEmailApp.Views.App.ListSubscriptionsView extends TuringEmailApp.View
 
   className: "list-subscriptions"
 
+  initialize: (options) ->
+    super(options)
+    @currentListsSubscribedPageNumber = 0
+    @currentListsUnsubscribedPageNumber = 0
+    @pageSize = 5
+
   render: ->
     selectedTabID = $(".tab-pane.active").attr("id")
     
@@ -25,10 +31,15 @@ class TuringEmailApp.Views.App.ListSubscriptionsView extends TuringEmailApp.View
     params =
       listsSubscribed: listsSubscribedJSON
       listsUnsubscribed: listsUnsubscribedJSON
+      currentListsSubscribedPageNumber: @currentListsSubscribedPageNumber
+      currentListsUnsubscribedPageNumber: @currentListsUnsubscribedPageNumber
+      pageSize: @pageSize
 
     @$el.html(@template(params))
 
     @setupButtons()
+
+    @setupListSubscriptionPagination()
 
     $("a[href=#" + selectedTabID + "]").click() if selectedTabID?
 
@@ -37,9 +48,20 @@ class TuringEmailApp.Views.App.ListSubscriptionsView extends TuringEmailApp.View
   setupButtons: ->
     @$el.find(".unsubscribe-list-button").click (event) =>
       @onUnsubscribeListClick(event)
-      
+
     @$el.find(".resubscribe-list-button").click (event) =>
       @onResubscribeListClick(event)
+
+  setupListSubscriptionPagination: ->
+    @$el.find(".list-subscription-pagination .next-list-subscription-page").click (event) =>
+      console.log @currentListsSubscribedPageNumber
+      if @listsSubscribed.length <= ((@currentListsSubscribedPageNumber + 1) * @pageSize)
+        @currentListsSubscribedPageNumber += 1
+        @render()
+      false
+
+    @$el.find(".list-subscription-pagination .previous-list-subscription-page").click (event) =>
+      console.log @currentListsSubscribedPageNumber
 
   onUnsubscribeListClick: (event) ->
     index = @$el.find(".unsubscribe-list-button").index(event.currentTarget)
