@@ -107,11 +107,8 @@ class TuringEmailApp.Views.Main extends Backbone.View
 
     @primaryPaneDiv.html("")
 
-    emailThreadsListViewDiv = $('<div class="mail-box email-threads-list-view">
-                                   <table class="table table-hover table-mail">
-                                     <tbody class="email-threads-list-view-tbody"></tbody>
-                                   </table>
-                                 </div>')
+    email_threads_wrapper_template = JST["backbone/templates/email_threads/email_threads_wrapper"]
+    emailThreadsListViewDiv = $(email_threads_wrapper_template(inbox_tabs_enabled: @app.models.userConfiguration.get("inbox_tabs_enabled"), emailFolderID: @app.selectedEmailFolderID()))
 
     @primaryPaneDiv.append(@toolbarView.$el)
     @toolbarView.render()

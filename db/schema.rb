@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141125074239) do
+ActiveRecord::Schema.define(version: 20141126001126) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -467,6 +467,7 @@ ActiveRecord::Schema.define(version: 20141125074239) do
     t.datetime "updated_at"
     t.integer  "email_list_view_row_height"
     t.boolean  "auto_cleaner_enabled",       default: false
+    t.boolean  "inbox_tabs_enabled"
   end
 
   add_index "user_configurations", ["user_id"], name: "index_user_configurations_on_user_id", unique: true, using: :btree
