@@ -11,6 +11,7 @@ describe "EmailThreadView", ->
     )
     
     @emailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
+      app: TuringEmailApp
       model: @emailThread
     )
     $("body").append(@emailThreadView.$el)

@@ -11,6 +11,7 @@ describe "QuickReplyView", ->
     )
     
     @emailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
+      app: TuringEmailApp
       model: @emailThread
     )
     @emailThreadView.render()

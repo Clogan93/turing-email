@@ -297,7 +297,10 @@ class Email < ActiveRecord::Base
     email_attachment.email = self
     email_attachment.filename = attachment.filename
     email_attachment.content_type = attachment.content_type.split(';')[0].downcase.strip if attachment.content_type
-    email_attachment.file_size = attachment.decoded.length
+    
+    decoded_data = attachment.decoded
+    email_attachment.file_size = decoded_data.length
+    email_attachment.sha256_hex_digest = Digest::SHA256.hexdigest(decoded_data)
     
     email_attachment.save!
   end
@@ -364,5 +367,106 @@ class Email < ActiveRecord::Base
     end
 
     self.email_account.apply_label_to_email(self, label_id: 'INBOX') if do_bounce_back
+  end
+  
+  def get_attachments_from_gmail_data(gmail_client, parts_data, attachments = [])
+    return attachments if parts_data.nil?
+
+    gmail_client = self.email_account.gmail_client if gmail_client.nil?
+
+    parts_data.each do |part|
+      get_attachments_from_gmail_data(gmail_client, part['parts'], attachments)
+      
+      log_exception() do
+        retry_block do
+          if !part['filename'].blank? && part['body']
+            email_attachment = EmailAttachment.new
+            
+            email_attachment.email = self
+            email_attachment.filename = part['filename']
+            email_attachment.mime_type = part['mimeType']
+            
+            if part['headers']
+              part['headers'].each do |header|
+                name = header['name'].downcase
+                value = header['value']
+                
+                if name == 'content-type'
+                  email_attachment.content_type = value.split(';')[0].downcase.strip
+                elsif name == 'content-disposition'
+                  email_attachment.content_disposition = value
+                end
+              end
+            end
+  
+            body = part['body']
+
+            if body['data']
+              data = Base64.decode64(body['data'])
+              email_attachment.file_size = data.length
+              email_attachment.sha256_hex_digest = Digest::SHA256.hexdigest(data)
+            else
+              email_attachment.gmail_attachment_id = body['attachmentId']
+              attachment_json = gmail_client.attachments_get('me', self.uid, email_attachment.gmail_attachment_id)
+              
+              data = Base64.urlsafe_decode64(attachment_json['data'])
+              email_attachment.file_size = data.length
+              email_attachment.sha256_hex_digest = Digest::SHA256.hexdigest(data)
+            end
+  
+            email_attachment.s3_key = s3_get_new_key()
+            
+            file = Tempfile.new('turing')
+            file.binmode
+            file.write(data)
+            file.close()
+            
+            file_info = {:content_type => email_attachment.content_type,
+                         :content_disposition => email_attachment.content_disposition,
+                         :s3_key => email_attachment.s3_key,
+                         :file => file
+            }
+            s3_write_file(file_info)
+            
+            FileUtils.remove_entry_secure(file.path)
+            
+            attachments.push(email_attachment)
+          end
+        end
+      end
+    end
+    
+    return attachments
+  end
+
+  def upload_attachments
+    email_account = self.email_account
+    gmail_client = email_account.gmail_client
+    
+    new_email_attachments = []
+    
+    retry_block do
+      gmail_data = gmail_client.messages_get('me', self.uid, format: 'full')
+      new_email_attachments = self.get_attachments_from_gmail_data(gmail_client, gmail_data['payload']['parts'])
+    end
+
+    self.email_attachments.each do |old_attachment|
+      new_email_attachments.each do |new_attachment|
+        if old_attachment.sha256_hex_digest == new_attachment.sha256_hex_digest ||
+           (old_attachment.sha256_hex_digest.nil? &&
+            old_attachment.filename == new_attachment.filename &&
+            old_attachment.file_size == new_attachment.file_size)
+          new_attachment.uid = old_attachment.uid
+        end
+      end
+    end
+
+    ActiveRecord::Base.transaction do
+      self.email_attachments.destroy_all()
+      new_email_attachments.each { |email_attachment| email_attachment.save!() }
+    end
+    
+    self.attachments_uploaded = true
+    self.save!()
   end
 end

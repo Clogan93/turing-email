@@ -70,6 +70,16 @@
                     <%
                     }
                   %>
+
+                  <% if (email.email_attachments.length > 0) { %>
+                    <br />
+                    Attachments:
+                    <% _.each(email.email_attachments, function(email_attachment, index) { %>
+                      <a class="attachment-link" href="<%= email_attachment.uid %>">
+                        <%= email_attachment.filename %>
+                      </a>
+                    <% }); %>
+                  <% } %>
                 </div>
               </div>
             </div>
@@ -95,6 +105,7 @@
                 </div>
               </div>
             </div>
+      
             <hr />
           <%
         }

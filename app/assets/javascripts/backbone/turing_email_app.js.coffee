@@ -796,6 +796,18 @@ window.TuringEmailApp = new(Backbone.View.extend(
   showReport: (ReportModel, ReportView) ->
     @views.mainView.showReport(ReportModel, ReportView)
 
+  ######################
+  ### Misc Functions ###
+  ######################
+
+  # TODO write tests
+  downloadFile: (url) ->
+    if not @downloadIframe
+      @downloadIframe = $("<iframe></iframe>").appendTo("body")[0]
+      @downloadIframe.hidden = true
+
+    @downloadIframe.src = url
+
 ))(el: document.body)
 
 TuringEmailApp.tattletale = new Tattletale('/api/v1/log.json')

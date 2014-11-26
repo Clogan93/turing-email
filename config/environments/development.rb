@@ -6,6 +6,8 @@ Rails.application.configure do
   config.http_host = config.domain
   config.http_host += ":#{config.http_port}" if config.http_port != '80'
 
+  config.s3_bucket = 'dev.turingemail.com'
+
   config.smtp_helo_domain = 'localhost'
 
   config.url = "http://#{config.http_host}"
@@ -24,6 +26,9 @@ Rails.application.configure do
   config.heroku_api_key = ''
 
   config.google_analytics_key = 'UA-55892559-2'
+
+  config.aws_access_key_id = 'AKIAI3XHDPLQ4E5ECCZQ'
+  config.aws_secret_access_key = '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'
 
   config.log_level = :info if !ENV.has_key?('SQL_DEBUG')
 

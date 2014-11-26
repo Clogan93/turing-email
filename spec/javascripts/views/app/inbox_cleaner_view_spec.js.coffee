@@ -2,7 +2,7 @@ describe "InboxCleanerView", ->
   beforeEach ->
     specStartTuringEmailApp()
 
-    @inboxCleanerView = new TuringEmailApp.Views.App.InboxCleanerView()
+    @inboxCleanerView = new TuringEmailApp.Views.App.InboxCleanerView(app: TuringEmailApp)
 
   afterEach ->
     specStopTuringEmailApp()
