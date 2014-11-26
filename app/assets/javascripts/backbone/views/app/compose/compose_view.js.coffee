@@ -225,6 +225,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     @setupEmailAddressAutocomplete ".compose-form .cc-input"
     @setupEmailAddressAutocomplete ".compose-form .bcc-input"
 
+  # TODO write more thorough tests
   setupEmailAddressAutocomplete: (selector) ->
     @$el.find(selector).autocomplete(
       source: (request, response) ->

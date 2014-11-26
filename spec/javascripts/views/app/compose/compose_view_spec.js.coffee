@@ -98,6 +98,34 @@ describe "ComposeView", ->
             expect(spy).toHaveBeenCalled()
             spy.restore()
 
+      describe "#setupEmailAddressAutocompleteOnAddressFields", ->
+        beforeEach ->
+          @setupEmailAddressAutocompleteStub = sinon.stub(@composeView, "setupEmailAddressAutocomplete")
+          @composeView.setupEmailAddressAutocompleteOnAddressFields()
+
+        afterEach ->
+          @setupEmailAddressAutocompleteStub.restore()
+
+        it "sets up the email address auto complete on the to field", ->
+          expect(@setupEmailAddressAutocompleteStub).toHaveBeenCalled(".compose-form .to-input")
+
+        it "sets up the email address auto complete on the cc field", ->
+          expect(@setupEmailAddressAutocompleteStub).toHaveBeenCalled(".compose-form .cc-input")
+
+        it "sets up the email address auto complete on the bcc field", ->
+          expect(@setupEmailAddressAutocompleteStub).toHaveBeenCalled(".compose-form .bcc-input")
+
+      describe "#setupEmailAddressAutocomplete", ->
+        beforeEach ->
+          @autocompleteSpy = sinon.spy($.prototype, "autocomplete")
+          @composeView.setupEmailAddressAutocomplete ".compose-form .to-input"
+
+        afterEach ->
+          @autocompleteSpy.restore()
+
+        it "calls autocomplete on the selector field", ->
+          expect(@autocompleteSpy).toHaveBeenCalled()
+
       describe "#setupEmailAddressDeobfuscation", ->
 
         it "hooks the keyup action on the to, cc and bcc fields", ->
