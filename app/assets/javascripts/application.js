@@ -13,8 +13,9 @@
 //= require jquery
 //= require jquery_ujs
 //
-//= require jquery-ui/draggable
+//= require jquery-ui/autocomplete
 //= require jquery-ui/dialog
+//= require jquery-ui/draggable
 //
 // require turbolinks - disabled because its breaking backbone
 //

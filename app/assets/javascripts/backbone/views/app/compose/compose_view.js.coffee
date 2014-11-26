@@ -20,6 +20,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
   postRenderSetup: ->
     @setupComposeView()
     @setupSendAndArchive()
+    @setupEmailAddressAutocompleteOnAddressFields()
     @setupEmailAddressDeobfuscation()
     @setupEmailTemplatesDropdown()
 
@@ -219,11 +220,44 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       @sendEmail()
       @trigger("archiveClicked", this)
 
+  setupEmailAddressAutocompleteOnAddressFields: ->
+    @setupEmailAddressAutocomplete ".compose-form .to-input"
+    @setupEmailAddressAutocomplete ".compose-form .cc-input"
+    @setupEmailAddressAutocomplete ".compose-form .bcc-input"
+
+  setupEmailAddressAutocomplete: (selector) ->
+    @$el.find(selector).autocomplete(
+      source: (request, response) ->
+        $.ajax
+          url: "http://localhost:4000/api/v1/people/search/" + request.term
+          success: (data) ->
+            contacts = []
+            namesAndAddresses = []
+            for remoteContact in data
+              contact = {}
+              contact["value"] = remoteContact["email_address"]
+              contact["label"] = if remoteContact["name"]? then remoteContact["name"] else " "
+              contact["desc"] = remoteContact["email_address"]
+              contacts.push contact
+            response contacts
+      focus: (event, ui) ->
+        $(selector).val ui.item.value
+        false
+      select: (event, ui) ->
+        $(selector).val ui.item.value
+        false
+    ).autocomplete("instance")._renderItem = (ul, item) ->
+      if item.label is " "
+        $("<li>").append("<a>" + item.desc + "</a>").appendTo ul
+      else
+        $("<li>").append("<a>" + item.label + "<br>" + item.desc + "</a>").appendTo ul
+
+    @$el.find(selector).attr "autocomplete", "on"
+
   setupEmailAddressDeobfuscation: ->
     @$el.find(".compose-form .to-input, .compose-form .cc-input, .compose-form .bcc-input").keyup ->
       inputText = $(@).val()
       indexOfObfuscatedEmail = inputText.search(/(.+) ?\[at\] ?(.+) ?[dot] ?(.+)/)
-      console.log indexOfObfuscatedEmail
       if indexOfObfuscatedEmail != -1
         $(@).val(inputText.replace(" [at] ", "@").replace(" [dot] ", "."))
 

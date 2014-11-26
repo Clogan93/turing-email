@@ -15,8 +15,9 @@
  *= require themes/default/style
  *= require_tree ../../../vendor/assets/stylesheets/
  *
- *= require jquery-ui/draggable
+ *= require jquery-ui/autocomplete
  *= require jquery-ui/dialog
+ *= require jquery-ui/draggable
  *
  *= require themes/default/default
  */
