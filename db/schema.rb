@@ -413,6 +413,8 @@ ActiveRecord::Schema.define(version: 20141126001126) do
   end
 
   add_index "people", ["email_account_id", "email_account_type", "email_address"], name: "index_people_on_email_account_and_email_address", unique: true, using: :btree
+  add_index "people", ["email_address"], name: "index_people_on_email_address", using: :btree
+  add_index "people", ["name"], name: "index_people_on_name", using: :btree
 
   create_table "skins", force: true do |t|
     t.text     "uid"

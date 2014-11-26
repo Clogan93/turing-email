@@ -1,5 +1,9 @@
 class Api::V1::PeopleController < ApiController
-  before_action { signed_in_user(true) }
+  before_action do
+    signed_in_user(true)
+  end
+
+  before_action :correct_email_account
 
   swagger_controller :people, 'People Controller'
 
@@ -19,5 +23,20 @@ class Api::V1::PeopleController < ApiController
     recent_thread_subjects = gmail_account.recent_thread_subjects(email)
     
     render :json => recent_thread_subjects
+  end
+
+  swagger_api :search do
+    summary 'Search people.'
+
+    response :ok
+  end
+  
+  def search
+    query = params[:query].gsub(/\s/, '%')
+    query = "%#{query}%"
+    
+    @people = @email_account.people.where('people.name ILIKE ? OR people.email_address ILIKE ?', query, query).limit(6)
+    
+    render 'api/v1/people/index'
   end
 end

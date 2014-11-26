@@ -5,7 +5,9 @@ class TuringEmailApp.Views.App.InboxCleanerView extends Backbone.View
 
   className: "inbox-cleaner"
 
-  initialize: ->
+  initialize: (options) ->
+    @app = options.app
+    
     if @model
       @listenTo(@model, "change", @render)
       @listenTo(@model, "destroy", @remove)
@@ -22,6 +24,7 @@ class TuringEmailApp.Views.App.InboxCleanerView extends Backbone.View
   setupButtons: ->
     @$el.find(".auto-file-button").click (event) =>
       $(event.currentTarget).prop("disabled", true);
+      @app.showAlert("The emails are being filed away!", "alert-info", 5000)
       
       TuringEmailApp.Models.CleanerReport.Apply().done(
         => @model.fetch()
