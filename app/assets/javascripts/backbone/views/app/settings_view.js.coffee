@@ -54,8 +54,9 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     @$el.find(".split-pane-switch").bootstrapSwitch()
     @$el.find(".auto-cleaner-switch").bootstrapSwitch()
     @$el.find(".developer-switch").bootstrapSwitch()
+    @$el.find(".inbox-tabs-switch").bootstrapSwitch()
 
-    @$el.find(".keyboard-shortcuts-switch, .genie-switch, .split-pane-switch, .auto-cleaner-switch, .developer-switch").
+    @$el.find(".keyboard-shortcuts-switch, .genie-switch, .split-pane-switch, .auto-cleaner-switch, .developer-switch, .inbox-tabs-switch").
          on("switch-change", (event, state) =>
       @saveSettings()
     )
@@ -77,6 +78,7 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
     split_pane_mode = if @$el.find(".split-pane-switch").parent().parent().hasClass("switch-on") then "horizontal" else "off"
     auto_cleaner_enabled = @$el.find(".auto-cleaner-switch").parent().parent().hasClass("switch-on")
     developer_enabled = @$el.find(".developer-switch").parent().parent().hasClass("switch-on")
+    inbox_tabs_enabled = @$el.find(".inbox-tabs-switch").parent().parent().hasClass("switch-on")
     skin_uid = @$el.find(".skin-select").val()
 
     @model.set({
@@ -85,6 +87,7 @@ class TuringEmailApp.Views.SettingsView extends Backbone.View
       keyboard_shortcuts_enabled: keyboard_shortcuts_enabled,
       auto_cleaner_enabled: auto_cleaner_enabled,
       developer_enabled: developer_enabled,
+      inbox_tabs_enabled: inbox_tabs_enabled,
       skin_uid: skin_uid
     })
 

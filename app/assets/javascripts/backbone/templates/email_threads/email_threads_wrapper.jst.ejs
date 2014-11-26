@@ -1,0 +1,20 @@
+<div class="mail-box email-threads-list-view">
+
+  <% if(inbox_tabs_enabled && (emailFolderID == "INBOX" || emailFolderID == "CATEGORY_SOCIAL" || emailFolderID == "CATEGORY_PROMOTIONS" || emailFolderID == "CATEGORY_UPDATES")) { %>
+
+  <div style="height: 50px;" class="inbox-tabs">
+    <ul class="nav nav-tabs">
+      <li role="presentation" <%= emailFolderID == "INBOX" ? 'class="active"' : "" %>><a href="#email_folder/INBOX">Primary</a></li>
+      <li role="presentation" <%= emailFolderID == "CATEGORY_SOCIAL" ? 'class="active"' : "" %>><a href="#email_folder/CATEGORY_SOCIAL">Social</a></li>
+      <li role="presentation" <%= emailFolderID == "CATEGORY_PROMOTIONS" ? 'class="active"' : "" %>><a href="#email_folder/CATEGORY_PROMOTIONS">Promotions</a></li>
+      <li role="presentation" <%= emailFolderID == "CATEGORY_UPDATES" ? 'class="active"' : "" %>><a href="#email_folder/CATEGORY_UPDATES">Updates</a></li>
+    </ul>
+  </div>
+
+  <% } %>
+
+  <table class="table table-hover table-mail">
+    <tbody class="email-threads-list-view-tbody"></tbody>
+  </table>
+
+</div>

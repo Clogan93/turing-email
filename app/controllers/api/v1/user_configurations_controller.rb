@@ -22,6 +22,7 @@ class Api::V1::UserConfigurationsController < ApiController
     param :form, :keyboard_shortcuts_enabled, :string, false, 'Keyboard Shortcuts Enabled status'
     param :form, :developer_enabled, :string, false, 'Developer Enabled status'
     param :form, :email_list_view_row_height, :integer, false, 'Email List View Row Height'
+    param :form, :inbox_tabs_enabled, :boolean, :description => 'Inbox Tabs Enabled status'
 
     response :ok
   end
@@ -30,7 +31,7 @@ class Api::V1::UserConfigurationsController < ApiController
     @user_configuration = current_user.user_configuration
     permitted_params = params.permit(:demo_mode_enabled, :genie_enabled, :split_pane_mode,
                                      :keyboard_shortcuts_enabled, :developer_enabled,
-                                     :email_list_view_row_height)
+                                     :email_list_view_row_height, :inbox_tabs_enabled)
     @user_configuration.update_attributes!(permitted_params)
     
     @user_configuration.skin = Skin.find_by_uid(params[:skin_uid])
