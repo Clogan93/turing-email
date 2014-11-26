@@ -33,3 +33,6 @@ FactoryGirl.define "Email", ->
 
   @folder_ids = ["Test"]
   
+  @email_attachments = _.map(FactoryGirl.createLists("EmailAttachment", FactoryGirl.SMALL_LIST_SIZE),
+    (emailAttachment) -> emailAttachment.toJSON()
+  )
