@@ -67,6 +67,14 @@
 
         <div id="tab-2" class="tab-pane">
           <% outputListsTable(listsUnsubscribed, false, currentListsUnsubscribedPageNumber, pageSize); %>
+
+          <nav class="list-unsubscription-pagination">
+            <ul class="pagination pagination-lg">
+              <li><a href="#" class="previous-list-unsubscription-page"><span aria-hidden="true">&laquo;</span><span class="sr-only">Previous</span></a></li>
+              <li><a href="#" class="next-list-unsubscription-page"><span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></a></li>
+            </ul>
+          </nav>
+
         </div>
 
       </div>
