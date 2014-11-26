@@ -21,6 +21,9 @@ $config.heroku_api_key ||= ENV['HEROKU_API_KEY']
 
 $config.google_analytics_key ||= ENV['GOOGLE_ANALYTICS_KEY']
 
+$config.aws_access_key_id ||= ENV['AWS_ACCESS_KEY_ID']
+$config.aws_secret_access_key ||= ENV['AWS_SECRET_ACCESS_KEY']
+
 # http errors
 
 $config.http_errors = {
@@ -41,8 +44,19 @@ $config.http_errors = {
     :app_not_found => {:status_code => 670, :description => 'App not found.'},
     
     :email_template_not_found => {:status_code => 680, :description => 'Email template not found.'},
-    :email_template_name_in_use => {:status_code => 681, :description => 'Email template name in use.'}
+    :email_template_name_in_use => {:status_code => 681, :description => 'Email template name in use.'},
+    
+    :email_attachment_not_ready => {:status_code => 690, :description => 'Email attachment not ready.'},
+    :email_attachment_not_found => {:status_code => 691, :description => 'Email attachment not found.'}
 }
+
+# aws config
+
+AWS.config(:access_key_id => $config.aws_access_key_id,
+           :secret_access_key => $config.aws_secret_access_key)
+
+$config.s3_key_length = 256
+$config.s3_base_url = "https://s3.amazonaws.com/#{$config.s3_bucket}"
 
 # globals
 
@@ -99,17 +113,3 @@ $config.dj_queue_alert_size = 100000
 $config.dj_queues_heroku_dynos = {
     #'worker' => 'worker'
 }
-
-=begin
-$config.s3_key_length = 256
-$config.s3_base_url = "https://s3.amazonaws.com/#{$config.s3_bucket}"
-
-# keys
-
-$config.aws_access_key_id ||= ENV['AWS_ACCESS_KEY_ID']
-$config.aws_secret_access_key ||= ENV['AWS_SECRET_ACCESS_KEY']
-
-# aws config
-AWS.config(:access_key_id => $config.aws_access_key_id,
-           :secret_access_key => $config.aws_secret_access_key)
-=end

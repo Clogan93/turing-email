@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141124074302) do
+ActiveRecord::Schema.define(version: 20141125074239) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -76,7 +76,15 @@ ActiveRecord::Schema.define(version: 20141124074302) do
     t.integer  "file_size"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "uid"
+    t.text     "mime_type"
+    t.text     "content_disposition"
+    t.text     "sha256_hex_digest"
+    t.text     "gmail_attachment_id"
+    t.text     "s3_key"
   end
+
+  add_index "email_attachments", ["uid"], name: "index_email_attachments_on_uid", unique: true, using: :btree
 
   create_table "email_folder_mappings", force: true do |t|
     t.integer  "email_id"
@@ -217,8 +225,8 @@ ActiveRecord::Schema.define(version: 20141124074302) do
     t.string   "email_account_type"
     t.integer  "email_thread_id"
     t.integer  "ip_info_id"
-    t.boolean  "auto_filed",              default: false
-    t.boolean  "auto_filed_reported",     default: false
+    t.boolean  "auto_filed",                        default: false
+    t.boolean  "auto_filed_reported",               default: false
     t.integer  "auto_filed_folder_id"
     t.string   "auto_filed_folder_type"
     t.text     "uid"
@@ -226,7 +234,7 @@ ActiveRecord::Schema.define(version: 20141124074302) do
     t.text     "message_id"
     t.text     "list_name"
     t.text     "list_id"
-    t.boolean  "seen",                    default: false
+    t.boolean  "seen",                              default: false
     t.text     "snippet"
     t.datetime "date"
     t.text     "from_name"
@@ -242,16 +250,18 @@ ActiveRecord::Schema.define(version: 20141124074302) do
     t.text     "html_part"
     t.text     "text_part"
     t.text     "body_text"
-    t.boolean  "has_calendar_attachment", default: false
+    t.boolean  "has_calendar_attachment",           default: false
     t.integer  "list_subscription_id"
-    t.boolean  "bounce_back",             default: false
+    t.boolean  "bounce_back",                       default: false
     t.datetime "bounce_back_time"
     t.text     "bounce_back_type"
     t.integer  "bounce_back_job_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "auto_file_folder_name"
-    t.boolean  "queued_auto_file",        default: false
+    t.boolean  "queued_auto_file",                  default: false
+    t.integer  "upload_attachments_delayed_job_id"
+    t.boolean  "attachments_uploaded",              default: false
   end
 
   add_index "emails", ["date", "id"], name: "index_emails_on_date_and_id", order: {"date"=>:desc, "id"=>:desc}, using: :btree

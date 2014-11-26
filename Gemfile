@@ -67,7 +67,7 @@ gem 'oj', '~> 2.7.2'
 gem 'swagger-docs', '0.1.8'
 
 # aws
-gem 'aws-sdk', '~> 1.45.0'
+gem 'aws-sdk', '~> 1.59.0'
 
 # google api
 gem 'google-api-client', '~> 0.7.1'

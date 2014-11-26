@@ -4,6 +4,8 @@ Rails.application.configure do
   config.domain = 'turing-email-beta.herokuapp.com'
   config.http_host = config.domain
 
+  config.s3_bucket = 'beta.turingemail.com'
+
   config.smtp_helo_domain = 'smtp-beta.turingemail.com'
 
   config.url = "https://#{config.http_host}"

@@ -3,7 +3,9 @@ TuringEmailApp.Views.EmailThreads ||= {}
 class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
   template: JST["backbone/templates/email_threads/email_thread"]
 
-  initialize: ->
+  initialize: (options) ->
+    @app = options.app
+    
     if @model
       @listenTo(@model, "change", @render)
       @listenTo(@model, "destroy", @remove)
@@ -36,6 +38,7 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
           @setupQuickReplyButton()
           @setupTooltips()
           @setupHoverPreviews()
+          @setupAttachmentLinks()
 
           @rendering = false
 
@@ -164,6 +167,15 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
     # @$el.find("iframe").each ->
     #   $(@).contents().find("body").find("a").livePreview()
 
+  # TODO write tests
+  setupAttachmentLinks: ->
+    @$el.find(".attachment-link").click((event) =>
+      event.preventDefault()
+      s3Key = $(event.currentTarget).attr("href")
+      
+      TuringEmailApp.Models.EmailAttachment.Download(@app, s3Key)
+    )
+  
   setupTooltips: ->
     @$el.find(".email-to").tooltip()
 

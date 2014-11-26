@@ -4,6 +4,8 @@ Rails.application.configure do
   config.domain = 'turingemail.com'
   config.http_host = "www.#{config.domain}"
 
+  config.s3_bucket = 'prod.turingemail.com'
+
   config.smtp_helo_domain = 'smtp.turingemail.com'
 
   config.url = "http://#{config.http_host}"

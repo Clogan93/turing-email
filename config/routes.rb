@@ -57,6 +57,8 @@ Rails.application.routes.draw do
       post '/email_accounts/delete_draft', to: 'email_accounts#delete_draft'
       get '/email_accounts/cleaner_report', to: 'email_accounts#cleaner_report'
       post '/email_accounts/apply_cleaner', to: 'email_accounts#apply_cleaner'
+
+      get '/email_attachments/download/:attachment_uid', to: 'email_attachments#download'
       
       get '/emails/show/:email_uid', to: 'emails#show'
       post '/emails/set_seen', to: 'emails#set_seen'

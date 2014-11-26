@@ -28,6 +28,9 @@ class GmailAccount < ActiveRecord::Base
   has_many :emails,
            :as => :email_account,
            :dependent => :destroy
+
+  has_many :email_attachments,
+           :through => :emails
   
   has_many :people,
            :as => :email_account,

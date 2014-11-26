@@ -14,6 +14,10 @@ attributes :html_part, :text_part, :body_text
 
 attributes :auto_file_folder_name
 
+node(:email_attachments) do |email|
+  partial('api/v1/email_attachments/index', object: email.email_attachments)
+end
+
 #child(:gmail_labels, :if => lambda { |email| email.email_account_type == "GmailAccount" }) do |gmail_label|
 #  extends('api/v1/gmail_labels/show', :locals => {:no_counts => true})
 #end

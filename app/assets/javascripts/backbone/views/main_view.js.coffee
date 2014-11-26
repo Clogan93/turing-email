@@ -287,6 +287,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
 
     @stopListening(@currentEmailThreadView) if @currentEmailThreadView?
     @currentEmailThreadView = emailThreadView = new TuringEmailApp.Views.EmailThreads.EmailThreadView(
+      app: @app
       model: emailThread
     )
     
