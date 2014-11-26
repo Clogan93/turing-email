@@ -87,6 +87,11 @@ describe "SettingsView", ->
       expect(@settingsDiv).toContain(developerSwitch)
       expect(developerSwitch.is(":checked")).toEqual(@userConfiguration.get("developer_enabled"))
 
+    it "renders the inbox tabs switch", ->
+      inboxTabsSwitch = $(".inbox-tabs-switch")
+      expect(@settingsDiv).toContain(inboxTabsSwitch)
+      expect(inboxTabsSwitch.is(":checked")).toEqual(@userConfiguration.get("inbox_tabs_enabled"))
+
     it "renders the skin select", ->
       skinSelect = $(".skin-select")
       expect(@settingsDiv).toContain(skinSelect)

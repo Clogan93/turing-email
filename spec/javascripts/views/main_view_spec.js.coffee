@@ -130,6 +130,65 @@ describe "MainView", ->
           expect(@resizeEmailThreadsListViewSpy).toHaveBeenCalled()
           @resizeEmailThreadsListViewSpy.restore()
 
+        describe "when the inbox tabs feature is enabled", ->
+          beforeEach ->
+            @mainView.app.models.userConfiguration.set("inbox_tabs_enabled", true)
+
+          afterEach ->
+            @mainView.app.models.userConfiguration.set("inbox_tabs_enabled", false)
+
+          describe "when the email folder is one of the core system labels", ->
+            beforeEach ->
+              @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
+              @selectedEmailFolderIDStub.returns("INBOX")
+              @mainView.showEmails()
+
+            afterEach ->
+              @selectedEmailFolderIDStub.restore()
+
+            it "renders the inbox tabs in the primary pane", ->
+              expect(@mainView.$el).toContain($(".inbox-tabs"))
+
+          describe "when the email folder is not one of the core system labels", ->
+            beforeEach ->
+              @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
+              @selectedEmailFolderIDStub.returns("Label_45")
+              @mainView.showEmails()
+
+            afterEach ->
+              @selectedEmailFolderIDStub.restore()
+
+            it "does not render the inbox tabs in the primary pane", ->
+              expect(@mainView.$el).not.toContain($(".inbox-tabs"))
+
+        describe "when the inbox tabs feature is disabled", ->
+          beforeEach ->
+            @mainView.app.models.userConfiguration.set("inbox_tabs_enabled", false)
+
+          describe "when the email folder is one of the core system labels", ->
+            beforeEach ->
+              @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
+              @selectedEmailFolderIDStub.returns("INBOX")
+              @mainView.showEmails()
+
+            afterEach ->
+              @selectedEmailFolderIDStub.restore()
+
+            it "does not render the inbox tabs in the primary pane", ->
+              expect(@mainView.$el).not.toContain($(".inbox-tabs"))
+
+          describe "when the email folder is not one of the core system labels", ->
+            beforeEach ->
+              @selectedEmailFolderIDStub = sinon.stub(TuringEmailApp, "selectedEmailFolderID")
+              @selectedEmailFolderIDStub.returns("Label_45")
+              @mainView.showEmails()
+
+            afterEach ->
+              @selectedEmailFolderIDStub.restore()
+
+            it "does not render the inbox tabs in the primary pane", ->
+              expect(@mainView.$el).not.toContain($(".inbox-tabs"))
+
         describe "without split pane", ->
           beforeEach ->
             @resizePrimarySplitPaneSpy = sinon.spy(@mainView, "resizePrimarySplitPane")
