@@ -26,6 +26,8 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     
     console.log("EmailThreads.ListView render took " + (Date.now() - startTime) / 1000 + " seconds")
 
+    @setupInfiniteScroll()
+
     return this
 
   resetView: (models, options) ->
@@ -232,3 +234,16 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     @listenTo(listItemView, "unchecked", (listItemView) =>
       @trigger("listItemUnchecked", this, listItemView)
     )
+
+  setupInfiniteScroll: ->
+    #TODO make the jQuery selectors non-global. Problem: the selectors are in the wrapper.
+    @infiniteScrollTriggerable = true if not @infiniteScrollTriggerable?
+    $(".email-threads-list-view").scroll =>
+      if @infiniteScrollTriggerable
+        if $(".email-threads-list-view").scrollTop() + $(".email-threads-list-view").height() > $(".email-threads-list-view").get(0).scrollHeight - 50
+          console.log "near bottom!"
+          @infiniteScrollTriggerable = false
+          @trigger("listViewBottomReached")
+
+      if $(".email-threads-list-view").scrollTop() + $(".email-threads-list-view").height() < $(".email-threads-list-view").get(0).scrollHeight - 250
+        @infiniteScrollTriggerable = true
