@@ -179,3 +179,11 @@ div[contenteditable]:focus {
   background-image: none !important;
   border: 1px solid #e7eaec !important;
 }
+
+.show-more-toolbar-buttons {
+  position: relative !important;
+  top: 7px;
+  left: 11px;
+  cursor: pointer !important;
+  color: rgb(103, 106, 108) !important;
+}

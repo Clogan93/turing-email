@@ -214,6 +214,16 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       $(event.target).hide()
       @$el.find(".bcc-input").show()
 
+    setTimeout (=>
+      @$el.find("#cke_34").after("<span class='show-more-toolbar-buttons'>More</span>")
+      @$el.find("#cke_37, #cke_40, #cke_46").hide()
+
+      @$el.find(".show-more-toolbar-buttons").click (event) =>
+        $(event.target).hide()
+        @$el.find("#cke_37, #cke_40, #cke_46").show()
+
+    ), 2500
+
   setupSendAndArchive: ->
     @$el.find(".send-and-archive").click =>
       console.log "send-and-archive clicked"
