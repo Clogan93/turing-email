@@ -224,7 +224,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     @$el.find(".compose-form .to-input, .compose-form .cc-input, .compose-form .bcc-input").keyup ->
       inputText = $(@).val()
       indexOfObfuscatedEmail = inputText.search(/(.+) ?\[at\] ?(.+) ?[dot] ?(.+)/)
-      console.log indexOfObfuscatedEmail
+
       if indexOfObfuscatedEmail != -1
         $(@).val(inputText.replace(" [at] ", "@").replace(" [dot] ", "."))
 
@@ -260,7 +260,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
 
   # TODO write tests
   setupAttachmentUpload: ->
-    @attachmentS3Keys = []
+    @attachmentS3Keys = {}
     
     @$el.find(".upload-attachments").empty()
     @$el.find(".upload-attachments").html(
@@ -311,7 +311,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
           progressBar.text "Uploading done"
 
           key = $(data.jqXHR.responseXML).find("Key").text()
-          @attachmentS3Keys.push(key)
+          @attachmentS3Keys[fileInput] = key
 
         fail: (event, data) =>
           submitButton.prop "disabled", false
@@ -564,7 +564,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     
     email.set("tracking_enabled", @$el.find(".compose-form .tracking-switch").parent().parent().hasClass("switch-on"))
     
-    email.set("attachment_s3_keys", @attachmentS3Keys)
+    email.set("attachment_s3_keys", _.values(@attachmentS3Keys))
     
     email.set("bounce_back_enabled", @$el.find(".compose-form .bounce-back-switch").parent().parent().hasClass("switch-on"))
     email.set("bounce_back_time", new Date(@$el.find(".compose-form .bounce-back-datetimepicker").val()))
