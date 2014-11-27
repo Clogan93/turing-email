@@ -146,18 +146,16 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
   checkAll: ->
     listItemView.check() for listItemView in _.values(@listItemViews)
 
-    @selectedListItemView?.deselect()
-
   checkAllRead: ->
     for listItemView in _.values(@listItemViews)
-      seen = listItemView.model.seen
+      seen = listItemView.model.get("seen")
       if seen then listItemView.check() else listItemView.uncheck()
 
     @selectedListItemView?.deselect()
 
   checkAllUnread: ->
     for listItemView in _.values(@listItemViews)
-      seen = listItemView.model.seen
+      seen = listItemView.model.get("seen")
       if !seen then listItemView.check() else listItemView.uncheck()
 
     @selectedListItemView?.deselect()
