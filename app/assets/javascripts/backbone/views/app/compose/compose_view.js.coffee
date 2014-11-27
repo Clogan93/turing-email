@@ -22,7 +22,6 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     @setupSendAndArchive()
     @setupEmailAddressAutocompleteOnAddressFields()
     @setupEmailAddressDeobfuscation()
-    @setupEmailTemplatesDropdown()
 
     @$el.find(".datetimepicker").datetimepicker(
       format: "m/d/Y g:i a"
@@ -212,14 +211,18 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       @$el.find(".bcc-input").show()
 
     setTimeout (=>
-      @$el.find("#cke_34").after("<span class='show-more-toolbar-buttons'>More</span>")
-      @$el.find("#cke_37, #cke_40, #cke_46").hide()
-
-      @$el.find(".show-more-toolbar-buttons").click (event) =>
-        $(event.target).hide()
-        @$el.find("#cke_37, #cke_40, #cke_46").show()
-
+      @setupCustomComposeToolbarButtons()
     ), 2500
+
+  setupCustomComposeToolbarButtons: ->
+    @setupEmailTemplatesDropdown()
+
+    @$el.find("#cke_34").after("<span class='show-more-toolbar-buttons'>More</span>")
+    @$el.find("#cke_37, #cke_40, #cke_46").hide()
+
+    @$el.find(".show-more-toolbar-buttons").click (event) =>
+      $(event.target).hide()
+      @$el.find("#cke_37, #cke_40, #cke_46, .email-templates-dropdown-div").show()
 
   setupSendAndArchive: ->
     @$el.find(".send-and-archive").click =>
@@ -294,7 +297,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     emailTemplates.fetch()
     @emailTemplatesDropdownView = new TuringEmailApp.Views.App.EmailTemplatesDropdownView(
       collection: emailTemplates
-      el: @$el.find(".send-later-button")
+      el: @$el.find("#cke_46")
       composeView: @
     )
     @emailTemplatesDropdownView.render()
@@ -305,13 +308,6 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       @$el.find(".compose-modal-dialog").toggleClass("compose-modal-dialog-small")
       $(event.target).toggleClass("fa-compress")
       $(event.target).toggleClass("fa-expand")
-
-  # setupEmailTagsDropdown: ->
-  #   @emailTagDropdownView = new TuringEmailApp.Views.App.EmailTagDropdownView(
-  #     el: @$el.find(".note-toolbar.btn-toolbar")
-  #     composeView: @
-  #   )
-  #   @emailTagDropdownView.render()
 
   #########################
   ### Display Functions ###

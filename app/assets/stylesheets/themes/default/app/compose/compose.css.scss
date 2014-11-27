@@ -81,16 +81,23 @@ div[contenteditable]:focus {
   float: left;
 
   button {
-    padding-top: 5px;
-    padding-bottom: 7px;
-    margin-top: 0px;
-    margin-left: 15px;
+    border: 1px solid #e7eaec !important;
+    border-radius: 3px;
+    padding: 5px 13px 7px 15px;
   }
 
   li {
     cursor: pointer;
   }
 
+}
+
+.email-templates-dropdown {
+  float: left !important;
+  position: absolute !important;
+  top: 232px;
+  left: 391px;
+  background-color: white !important;
 }
 
 .quick-compose-item, .email-tag-item {

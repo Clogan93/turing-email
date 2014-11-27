@@ -16,6 +16,8 @@ class TuringEmailApp.Views.App.EmailTemplatesDropdownView extends TuringEmailApp
     @setupLoadEmailTemplate()
     @setupUpdateEmailTemplate()
 
+    @$el.parent().find(".email-templates-dropdown-div").hide()
+
     return this
 
   cleanUpEmailTemplateUI: ->
