@@ -54,7 +54,12 @@ class GmailLabel < ActiveRecord::Base
 
       query_params.push(last_email.date, last_email_thread.id, last_email.id)
     else
-      max_date = self.emails.maximum(:date) + 1.second
+      if self.emails.count > 0
+        max_date = self.emails.maximum(:date) + 1.second
+      else
+        max_date = DateTime.now()
+      end
+      
       query_params.push(max_date, -1, -1)
     end
       
@@ -138,7 +143,10 @@ sql
     email_threads = EmailThread.find_by_sql(query_params)
     email_threads = EmailThread.joins(:emails => :gmail_labels).
                                 includes(:emails => :gmail_labels).
-                                where(:id => email_threads).order('"emails"."draft_id" NULLS FIRST, "emails"."date" DESC, "email_threads"."id" DESC')
+                                where(:id => email_threads).
+                                order('"emails"."draft_id" NULLS FIRST, "emails"."date" DESC, "email_threads"."id" DESC')
+    
+    email_threads = email_threads.includes(:emails => :email_attachments)
 
     return email_threads
   end
