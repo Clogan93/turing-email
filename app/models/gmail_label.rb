@@ -141,9 +141,12 @@ sql
 
     query_params.unshift(sql)
     email_threads = EmailThread.find_by_sql(query_params)
-    email_threads = EmailThread.joins(:emails => [:gmail_labels]).
-                                includes(:emails => [:gmail_labels, :email_attachments]).
-                                where(:id => email_threads).order('"emails"."draft_id" NULLS FIRST, "emails"."date" DESC, "email_threads"."id" DESC')
+    email_threads = EmailThread.joins(:emails => :gmail_labels).
+                                includes(:emails => :gmail_labels).
+                                where(:id => email_threads).
+                                order('"emails"."draft_id" NULLS FIRST, "emails"."date" DESC, "email_threads"."id" DESC')
+    
+    email_threads = email_threads.includes(:emails => :email_attachments)
 
     return email_threads
   end
