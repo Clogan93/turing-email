@@ -47,13 +47,7 @@ describe "ComposeView", ->
           @composeView.$el.find(".compose-form .send-later-button").click()
           expect(sendEmailDelayedStub).toHaveBeenCalled()
           sendEmailDelayedStub.restore()
-  
-        it "saves the draft when the save button is clicked", ->
-          saveDraft = sinon.stub(@composeView, "saveDraft", ->)
-          @composeView.$el.find(".compose-form .save-button").click()
-          expect(saveDraft).toHaveBeenCalledWith(true)
-          saveDraft.restore()
-  
+
         it "saves the draft when the compose dialog is hidden", ->
           saveDraft = sinon.stub(@composeView, "saveDraft", ->)
           @composeView.$el.find(".compose-modal").trigger("hidden.bs.modal")
@@ -763,7 +757,7 @@ describe "ComposeView", ->
 
         it "updates the draft", ->
           spy = sinon.spy(@composeView, "updateDraft")
-          @composeView.$el.find(".compose-form .save-button").click()
+          @composeView.saveDraft(true)
           expect(spy).toHaveBeenCalled()
           spy.restore()
 
@@ -772,7 +766,7 @@ describe "ComposeView", ->
           it "if does not update the draft", ->
             @composeView.savingDraft = true
             spy = sinon.spy(@composeView, "updateDraft")
-            @composeView.$el.find(".compose-form .save-button").click()
+            @composeView.saveDraft(true)
             expect(spy).not.toHaveBeenCalled()
             spy.restore()
 
@@ -782,19 +776,19 @@ describe "ComposeView", ->
 
           it "triggers change:draft", ->
             spy = sinon.backbone.spy(@composeView, "change:draft")
-            @composeView.$el.find(".compose-form .save-button").click()
+            @composeView.saveDraft(true)
             @server.respond()
             expect(spy).toHaveBeenCalled()
             spy.restore()
 
           it "stops saving the draft", ->
-            @composeView.$el.find(".compose-form .save-button").click()
+            @composeView.saveDraft(true)
             @server.respond()
             expect(@composeView.savingDraft).toEqual(false)
 
         describe "when the server responds unsuccessfully", ->
           it "stops saving the draft", ->
-            @composeView.$el.find(".compose-form .save-button").click()
+            @composeView.saveDraft(true)
             @server.respond([404, {}, ""])
             expect(@composeView.savingDraft).toEqual(false)
         

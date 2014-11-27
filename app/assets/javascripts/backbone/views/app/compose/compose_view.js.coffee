@@ -199,9 +199,6 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
 
     @$el.find(".compose-form .send-later-button").click =>
       @sendEmailDelayed()
-      
-    @$el.find(".compose-form .save-button").click =>
-      @saveDraft(true)
 
     @$el.find(".compose-modal").on "hidden.bs.modal", (event) =>
       @saveDraft(false)
