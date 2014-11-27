@@ -1073,9 +1073,11 @@ class GmailAccount < ActiveRecord::Base
                  html_part = nil, text_part = nil,
                  email_in_reply_to_uid = nil,
                  tracking_enabled = false,
-                 bounce_back = false, bounce_back_time = nil, bounce_back_type = nil)
+                 bounce_back = false, bounce_back_time = nil, bounce_back_type = nil,
+                 attachment_s3_keys = [])
     email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, html_part, text_part,
-                                                               self, email_in_reply_to_uid)
+                                                               self, email_in_reply_to_uid,
+                                                               attachment_s3_keys)
 
     email = nil
     
@@ -1159,6 +1161,14 @@ class GmailAccount < ActiveRecord::Base
       
       email.save!
     end
+
+    attachment_s3_keys.each do |attachment_s3_key|
+      parts = attachment_s3_key.split(/\//)
+      
+      s3_key = parts[2]
+      email_attachment_upload = email.user.email_attachment_uploads.find_by_s3_key(s3_key)
+      log_exception() { email_attachment_upload.destroy!() if email_attachment_upload }
+    end
     
     return email
   end
@@ -1199,7 +1209,7 @@ class GmailAccount < ActiveRecord::Base
     end
   end
 
-  def sync_draft_data(draft_data)
+  def sync_draft_data(draft_data, attachment_s3_keys)
     draft_id = draft_data['id']
     gmail_id = draft_data['message']['id']
     
@@ -1210,14 +1220,30 @@ class GmailAccount < ActiveRecord::Base
     draft_email.draft_id = draft_id
     draft_email.save!
 
+    attachment_s3_keys.each do |attachment_s3_key|
+      parts = attachment_s3_key.split(/\//)
+
+      s3_key = parts[2]
+      
+      email_attachment_upload = self.user.email_attachment_uploads.find_by_s3_key(s3_key)
+      
+      if email_attachment_upload
+        email_attachment_upload.email = draft_email
+        email_attachment_upload.filename = parts[-1]
+        email_attachment_upload.s3_key_full = attachment_s3_key
+        email_attachment_upload.save!()
+      end
+    end
+
     EmailFolderMapping.where(:email => draft_email).update_all(:folder_email_draft_id => draft_id)
 
     return draft_email
   end
 
-  def create_draft(tos, ccs, bccs, subject, html_part, text_part, email_in_reply_to_uid = nil)
+  def create_draft(tos, ccs, bccs, subject, html_part, text_part, email_in_reply_to_uid = nil, attachment_s3_keys = [])
     email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, html_part, text_part,
-                                                               self, email_in_reply_to_uid)
+                                                               self, email_in_reply_to_uid,
+                                                               attachment_s3_keys)
 
     if email_in_reply_to
       draft_data = self.gmail_client.drafts_create('me', :threadId => email_in_reply_to.email_thread.uid, :email_raw => email_raw)
@@ -1225,10 +1251,10 @@ class GmailAccount < ActiveRecord::Base
       draft_data = self.gmail_client.drafts_create('me', :email_raw => email_raw)
     end
 
-    return sync_draft_data(draft_data)
+    return sync_draft_data(draft_data, attachment_s3_keys)
   end
 
-  def update_draft(draft_id, tos, ccs, bccs, subject, html_part, text_part)
+  def update_draft(draft_id, tos, ccs, bccs, subject, html_part, text_part, attachment_s3_keys = [])
     email = self.emails.find_by(:draft_id => draft_id)
     if email
       email_in_reply_to_uid = email.email_references.order(:position).last.email.uid if email.email_references.count > 0
@@ -1239,7 +1265,7 @@ class GmailAccount < ActiveRecord::Base
     end
     
     email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, html_part, text_part,
-                                                               self, email_in_reply_to_uid)
+                                                               self, email_in_reply_to_uid, attachment_s3_keys)
 
     if email_in_reply_to
       draft_data = self.gmail_client.drafts_update('me', draft_id,
@@ -1248,7 +1274,7 @@ class GmailAccount < ActiveRecord::Base
       draft_data = self.gmail_client.drafts_update('me', draft_id, :email_raw => email_raw)
     end
 
-    return sync_draft_data(draft_data)
+    return sync_draft_data(draft_data, attachment_s3_keys)
   end
 
   def send_draft(draft_id)

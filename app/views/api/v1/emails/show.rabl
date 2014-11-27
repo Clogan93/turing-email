@@ -18,6 +18,10 @@ node(:email_attachments) do |email|
   partial('api/v1/email_attachments/index', object: email.email_attachments)
 end
 
+node(:email_attachment_uploads) do |email|
+  partial('api/v1/email_attachment_uploads/index', object: email.email_attachment_uploads)
+end
+
 #child(:gmail_labels, :if => lambda { |email| email.email_account_type == "GmailAccount" }) do |gmail_label|
 #  extends('api/v1/gmail_labels/show', :locals => {:no_counts => true})
 #end

@@ -35,6 +35,9 @@ class User < ActiveRecord::Base
   has_many :email_templates,
            :dependent => :destroy
 
+  has_many :email_attachment_uploads,
+           :dependent => :destroy
+
   before_validation {
     self.email = cleanse_email(self.email) if self.email
     self.password_confirmation = '' if self.password_confirmation.nil?

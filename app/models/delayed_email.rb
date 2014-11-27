@@ -6,6 +6,7 @@ class DelayedEmail < ActiveRecord::Base
   serialize :tos
   serialize :ccs
   serialize :bccs
+  serialize :attachment_s3_keys
 
   validates_presence_of(:email_account)
   
@@ -25,7 +26,8 @@ class DelayedEmail < ActiveRecord::Base
                                   self.subject,
                                   self.html_part, self.text_part,
                                   self.email_in_reply_to_uid,
-                                  self.bounce_back_enabled, self.bounce_back_time, self.bounce_back_type)
+                                  self.bounce_back_enabled, self.bounce_back_time, self.bounce_back_type,
+                                  self.attachment_s3_keys)
     self.destroy!()
   end
   

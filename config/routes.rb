@@ -27,6 +27,7 @@ Rails.application.routes.draw do
       get '/users/current', to: 'users#current'
       get '/users/installed_apps', to: 'users#installed_apps'
       post '/users/declare_email_bankruptcy', to: 'users#declare_email_bankruptcy'
+      get '/users/upload_attachment_post', to: 'users#upload_attachment_post'
 
       get '/user_configurations', to: 'user_configurations#show'
       put '/user_configurations', to: 'user_configurations#update'
