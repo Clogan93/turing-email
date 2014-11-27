@@ -54,7 +54,12 @@ class GmailLabel < ActiveRecord::Base
 
       query_params.push(last_email.date, last_email_thread.id, last_email.id)
     else
-      max_date = self.emails.maximum(:date) + 1.second
+      if self.emails.count > 0
+        max_date = self.emails.maximum(:date) + 1.second
+      else
+        max_date = DateTime.now()
+      end
+      
       query_params.push(max_date, -1, -1)
     end
       
