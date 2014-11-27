@@ -163,3 +163,19 @@ div[contenteditable]:focus {
     font-weight: bold;
   }
 }
+
+.cke_top, .cke_bottom {
+  background: white !important;
+  background-image: none !important;
+  border-bottom: 1px solid #e5e6e7 !important;
+}
+
+.cke_chrome {
+  border: 1px solid #e5e6e7 !important;
+}
+
+.cke_combo_button, .cke_toolgroup {
+  background: white !important;
+  background-image: none !important;
+  border: 1px solid #e7eaec !important;
+}
