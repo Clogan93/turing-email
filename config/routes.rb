@@ -111,6 +111,10 @@ Rails.application.routes.draw do
       resources :email_templates, only: [:create, :index]
       patch '/email_templates/:email_template_uid', :to => 'email_templates#update'
       delete '/email_templates/:email_template_uid', :to => 'email_templates#destroy'
+
+      resources :email_signatures, only: [:create, :index]
+      patch '/email_signatures/:email_signature_uid', :to => 'email_signatures#update'
+      delete '/email_signatures/:email_signature_uid', :to => 'email_signatures#destroy'
     end
   end
 

@@ -35,6 +35,9 @@ class User < ActiveRecord::Base
   has_many :email_templates,
            :dependent => :destroy
 
+  has_many :email_signatures,
+           :dependent => :destroy
+
   has_many :email_attachment_uploads,
            :dependent => :destroy
 
