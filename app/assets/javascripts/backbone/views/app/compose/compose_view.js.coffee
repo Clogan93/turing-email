@@ -210,19 +210,24 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       $(event.target).hide()
       @$el.find(".bcc-input").show()
 
-    setTimeout (=>
-      @setupCustomComposeToolbarButtons()
-    ), 2500
+    @setupCustomComposeToolbarButtons()
 
   setupCustomComposeToolbarButtons: ->
-    @setupEmailTemplatesDropdown()
+    cke_34 = @$el.find("#cke_34")
+    cke_37_cke_40_cke_46 = @$el.find("#cke_37, #cke_40, #cke_46")
+    if cke_34.length and cke_37_cke_40_cke_46.length
+      @setupEmailTemplatesDropdown()
 
-    @$el.find("#cke_34").after("<span class='show-more-toolbar-buttons'>More</span>")
-    @$el.find("#cke_37, #cke_40, #cke_46").hide()
+      cke_34.after("<span class='show-more-toolbar-buttons'>More</span>")
+      cke_37_cke_40_cke_46.hide()
 
-    @$el.find(".show-more-toolbar-buttons").click (event) =>
-      $(event.target).hide()
-      @$el.find("#cke_37, #cke_40, #cke_46, .email-templates-dropdown-div").show()
+      @$el.find(".show-more-toolbar-buttons").click (event) =>
+        $(event.target).hide()
+        @$el.find("#cke_37, #cke_40, #cke_46, .email-templates-dropdown-div").show()
+    else
+      setTimeout (=>
+        @setupCustomComposeToolbarButtons()
+      ), 500
 
   setupSendAndArchive: ->
     @$el.find(".send-and-archive").click =>
