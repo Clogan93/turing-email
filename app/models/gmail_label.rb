@@ -146,7 +146,7 @@ sql
                                 where(:id => email_threads).
                                 order('"emails"."draft_id" NULLS FIRST, "emails"."date" DESC, "email_threads"."id" DESC')
     
-    email_threads = email_threads.includes(:emails => :email_attachments)
+    email_threads = email_threads.includes(:emails => [:email_attachments, :email_attachment_uploads])
 
     return email_threads
   end

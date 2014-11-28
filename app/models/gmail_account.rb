@@ -1073,32 +1073,35 @@ class GmailAccount < ActiveRecord::Base
                  html_part = nil, text_part = nil,
                  email_in_reply_to_uid = nil,
                  tracking_enabled = false,
-                 bounce_back = false, bounce_back_time = nil, bounce_back_type = nil)
+                 bounce_back = false, bounce_back_time = nil, bounce_back_type = nil,
+                 attachment_s3_keys = [])
+    attachment_s3_keys = [] if attachment_s3_keys.nil?
     email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, html_part, text_part,
-                                                               self, email_in_reply_to_uid)
+                                                               self, email_in_reply_to_uid,
+                                                               attachment_s3_keys)
 
     email = nil
+
+    self.google_o_auth2_token.refresh()
+
+    email_raw.From = self.email
+    email_raw.delivery_method.settings = {
+        :enable_starttls_auto => true,
+        :address              => 'smtp.gmail.com',
+        :port                 => 587,
+        :domain               => $config.smtp_helo_domain,
+        :user_name            => self.email,
+        :password             => self.google_o_auth2_token.access_token,
+        :authentication       => :xoauth2,
+        :enable_starttls      => true
+    }
     
     if tracking_enabled
       log_console('tracking_enabled = true!!!!!!')
 
       html_part = '' if html_part.nil?
-
-      self.google_o_auth2_token.refresh()
       
-      email_raw.From = self.email
-      email_raw.delivery_method.settings = {
-          :enable_starttls_auto => true,
-          :address              => 'smtp.gmail.com',
-          :port                 => 587,
-          :domain               => $config.smtp_helo_domain,
-          :user_name            => self.email,
-          :password             => self.google_o_auth2_token.access_token,
-          :authentication       => :xoauth2,
-          :enable_starttls      => true
-      }
-      
-      email_uids = []
+      email_message_ids = []
       
       email_tracker = EmailTracker.new()
       email_tracker.uid = SecureRandom.uuid()
@@ -1128,6 +1131,7 @@ class GmailAccount < ActiveRecord::Base
         end
         
         email_raw.smtp_envelope_to = rcpt_to
+        email_raw.message_id = nil
 
         retry_block do
           email_raw.deliver!
@@ -1135,17 +1139,28 @@ class GmailAccount < ActiveRecord::Base
 
         email_tracker_recipient.email = email
         email_tracker_recipient.save!()
-        
-        # TODO figure out how to get email after sync since sending via SMTP
-        #email_uids.push(email.uid)
+
+        email_message_ids.push(email_raw.message_id)
       end
 
-      email_tracker.email_uids = email_uids
+      self.sync_email(delay: false)
+
+      email_tracker.email_uids = []
+      email_message_ids.each do |message_id|
+        email = self.emails.find_by_message_id(message_id)
+        email_tracker.email_uids.push(email.uid) if email
+      end
+      
       email_tracker.save!()
     else
       log_console('NO tracking_enabled')
-      
-      email = self.send_email_raw(email_raw, email_in_reply_to)
+
+      retry_block do
+        email_raw.deliver!
+      end
+
+      self.sync_email(delay: false)
+      email = self.emails.find_by_message_id(email_raw.message_id)
     end
     
     if email && bounce_back
@@ -1158,6 +1173,14 @@ class GmailAccount < ActiveRecord::Base
       email.bounce_back_job_id = job.id
       
       email.save!
+    end
+
+    attachment_s3_keys.each do |attachment_s3_key|
+      parts = attachment_s3_key.split(/\//)
+      
+      s3_key = parts[2]
+      email_attachment_upload = email.user.email_attachment_uploads.find_by_s3_key(s3_key)
+      log_exception() { email_attachment_upload.destroy!() if email_attachment_upload }
     end
     
     return email
@@ -1199,7 +1222,7 @@ class GmailAccount < ActiveRecord::Base
     end
   end
 
-  def sync_draft_data(draft_data)
+  def sync_draft_data(draft_data, attachment_s3_keys)
     draft_id = draft_data['id']
     gmail_id = draft_data['message']['id']
     
@@ -1210,14 +1233,31 @@ class GmailAccount < ActiveRecord::Base
     draft_email.draft_id = draft_id
     draft_email.save!
 
+    attachment_s3_keys.each do |attachment_s3_key|
+      parts = attachment_s3_key.split(/\//)
+
+      s3_key = parts[2]
+      
+      email_attachment_upload = self.user.email_attachment_uploads.find_by_s3_key(s3_key)
+      
+      if email_attachment_upload
+        email_attachment_upload.email = draft_email
+        email_attachment_upload.filename = parts[-1]
+        email_attachment_upload.s3_key_full = attachment_s3_key
+        email_attachment_upload.save!()
+      end
+    end
+
     EmailFolderMapping.where(:email => draft_email).update_all(:folder_email_draft_id => draft_id)
 
     return draft_email
   end
 
-  def create_draft(tos, ccs, bccs, subject, html_part, text_part, email_in_reply_to_uid = nil)
+  def create_draft(tos, ccs, bccs, subject, html_part, text_part, email_in_reply_to_uid = nil, attachment_s3_keys = [])
+    attachment_s3_keys = [] if attachment_s3_keys.nil?
     email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, html_part, text_part,
-                                                               self, email_in_reply_to_uid)
+                                                               self, email_in_reply_to_uid,
+                                                               attachment_s3_keys)
 
     if email_in_reply_to
       draft_data = self.gmail_client.drafts_create('me', :threadId => email_in_reply_to.email_thread.uid, :email_raw => email_raw)
@@ -1225,10 +1265,11 @@ class GmailAccount < ActiveRecord::Base
       draft_data = self.gmail_client.drafts_create('me', :email_raw => email_raw)
     end
 
-    return sync_draft_data(draft_data)
+    return sync_draft_data(draft_data, attachment_s3_keys)
   end
 
-  def update_draft(draft_id, tos, ccs, bccs, subject, html_part, text_part)
+  def update_draft(draft_id, tos, ccs, bccs, subject, html_part, text_part, attachment_s3_keys = [])
+    attachment_s3_keys = [] if attachment_s3_keys.nil?
     email = self.emails.find_by(:draft_id => draft_id)
     if email
       email_in_reply_to_uid = email.email_references.order(:position).last.email.uid if email.email_references.count > 0
@@ -1239,7 +1280,7 @@ class GmailAccount < ActiveRecord::Base
     end
     
     email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, html_part, text_part,
-                                                               self, email_in_reply_to_uid)
+                                                               self, email_in_reply_to_uid, attachment_s3_keys)
 
     if email_in_reply_to
       draft_data = self.gmail_client.drafts_update('me', draft_id,
@@ -1248,16 +1289,36 @@ class GmailAccount < ActiveRecord::Base
       draft_data = self.gmail_client.drafts_update('me', draft_id, :email_raw => email_raw)
     end
 
-    return sync_draft_data(draft_data)
+    return sync_draft_data(draft_data, attachment_s3_keys)
   end
 
   def send_draft(draft_id)
-    gmail_data = self.gmail_client.drafts_send('me', draft_id)
-    self.emails.where(:draft_id => draft_id).destroy_all if !draft_id.blank?
+    email = self.emails.find_by_draft_id(draft_id)
+    return nil if email.nil?
+    email_raw = self.email_raw_from_gmail_id(email.uid)
 
-    gmail_id = gmail_data['id']
-    sync_gmail_ids([gmail_id])
-    email = self.emails.find_by(:uid => gmail_id)
+    self.google_o_auth2_token.refresh()
+
+    email_raw.From = self.email
+    email_raw.delivery_method.settings = {
+        :enable_starttls_auto => true,
+        :address              => 'smtp.gmail.com',
+        :port                 => 587,
+        :domain               => $config.smtp_helo_domain,
+        :user_name            => self.email,
+        :password             => self.google_o_auth2_token.access_token,
+        :authentication       => :xoauth2,
+        :enable_starttls      => true
+    }
+
+    retry_block do
+      email_raw.deliver!
+    end
+    
+    self.delete_draft(draft_id)
+
+    self.sync_email(delay: false)
+    email = self.emails.find_by_message_id(email_raw.message_id)
     
     return email
   end

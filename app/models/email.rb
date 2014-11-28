@@ -1,3 +1,5 @@
+require 'tmpdir'
+
 class Email < ActiveRecord::Base
   belongs_to :email_account, polymorphic: true
   belongs_to :email_thread
@@ -28,8 +30,12 @@ class Email < ActiveRecord::Base
   
   has_many :email_tracker_views,
            :through => :email_tracker_recipients
+
+  has_many :email_attachment_uploads
   
   belongs_to :list_subscription
+
+  serialize :attachment_s3_keys
 
   enum :bounce_back_type => {
     :always => 'always',
@@ -62,7 +68,10 @@ class Email < ActiveRecord::Base
   def Email.email_raw_from_params(tos = nil, ccs = nil, bccs = nil,
                                   subject = nil,
                                   html_part = nil, text_part = nil,
-                                  email_account = nil, email_in_reply_to_uid = nil)
+                                  email_account = nil, email_in_reply_to_uid = nil,
+                                  attachment_s3_keys = [])
+    attachment_s3_keys = [] if attachment_s3_keys.nil?
+    
     email_raw = Mail.new do
       to tos
       cc ccs
@@ -88,12 +97,34 @@ class Email < ActiveRecord::Base
         Email.add_reply_headers(email_raw, email_in_reply_to)
       end
     end
+
+    s3_bucket = s3_get_bucket()
+    
+    attachment_s3_keys.each do |attachment_s3_key|
+      object = s3_bucket.objects[attachment_s3_key]
+      parts = attachment_s3_key.split(/\//)
+      
+      begin
+        dir = Dir.mktmpdir($config.service_name_short.downcase)
+        path = "#{dir}/#{parts[-1]}"
+        
+        open(path, 'wb') do |file|
+          object.read do |chunk|
+            file.write(chunk)
+          end
+        end
+        
+        email_raw.add_file(path)
+      ensure
+        FileUtils.remove_entry_secure dir
+      end 
+    end
     
     return email_raw, email_in_reply_to
   end
 
   def Email.email_raw_from_mime_data(mime_data)
-    mail_data_file = Tempfile.new('turing')
+    mail_data_file = Tempfile.new($config.service_name_short.downcase)
     mail_data_file.binmode
 
     mail_data_file.write(mime_data)

@@ -82,4 +82,21 @@ class Api::V1::UsersController < ApiController
 
     render :json => {}
   end
+
+  swagger_api :upload_attachment_post do
+    summary 'Get POST URL for attachment upload.'
+
+    response :ok
+  end
+  
+  def upload_attachment_post
+    email_attachment_upload = EmailAttachmentUpload.new
+    email_attachment_upload.user = current_user
+    email_attachment_upload.save!
+    
+    presigned_post = email_attachment_upload.presigned_post()
+    
+    render :json => {:url => presigned_post.url.to_s,
+                     :fields => presigned_post.fields}
+  end
 end

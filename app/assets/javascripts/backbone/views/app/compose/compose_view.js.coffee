@@ -22,6 +22,8 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     @setupSendAndArchive()
     @setupEmailAddressAutocompleteOnAddressFields()
     @setupEmailAddressDeobfuscation()
+    @setupEmailTemplatesDropdown()
+    @setupAttachmentUpload()
 
     @$el.find(".datetimepicker").datetimepicker(
       format: "m/d/Y g:i a"
@@ -269,6 +271,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     @$el.find(".compose-form .to-input, .compose-form .cc-input, .compose-form .bcc-input").keyup ->
       inputText = $(@).val()
       indexOfObfuscatedEmail = inputText.search(/(.+) ?\[at\] ?(.+) ?[dot] ?(.+)/)
+
       if indexOfObfuscatedEmail != -1
         $(@).val(inputText.replace(" [at] ", "@").replace(" [dot] ", "."))
 
@@ -302,6 +305,66 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     )
     @emailTemplatesDropdownView.render()
 
+  # TODO write tests
+  setupAttachmentUpload: ->
+    @attachmentS3Keys = {}
+    
+    @$el.find(".upload-attachments").empty()
+    @$el.find(".upload-attachments").html(
+      'Upload Attachment(s): <button type="button" class="btn btn-default btn-add-file">Add File</button>'
+    )
+    
+    @$el.find(".btn-add-file").click(=>
+      @addAttachmentUpload()
+    )
+    
+    @addAttachmentUpload()
+
+  # TODO write tests
+  addAttachmentUpload: ->
+    uploadAttachments = @$el.find(".upload-attachments")
+    fileInput = $('<input type="file" class="form-control">').appendTo(uploadAttachments)
+    fileInput.hide()
+  
+    TuringEmailApp.Models.EmailAttachmentUpload.GetUploadAttachmentPost().done((data) =>
+      fileInput.show()
+      
+      submitButton = @$el.find(".send-button")
+
+      progressBar = $("<div class='bar'></div>")
+      barContainer = $("<div class='progress'></div>").append(progressBar)
+      fileInput.after barContainer
+
+      fileInput.fileupload
+        fileInput: fileInput
+        url: data.url
+        type: "POST"
+        autoUpload: true
+        formData: data.fields
+        paramName: "file"
+        dataType: "XML"
+        replaceFileInput: false
+
+        progressall: (event, data) =>
+          progress = parseInt(data.loaded / data.total * 100, 10)
+          progressBar.css "width", progress + "%"
+
+        start: (event) =>
+          submitButton.prop "disabled", true
+          progressBar.css("background", "green").css("display", "block").css("width", "0%").text "Loading..."
+
+        done: (event, data) =>
+          submitButton.prop "disabled", false
+          progressBar.text "Uploading done"
+
+          key = $(data.jqXHR.responseXML).find("Key").text()
+          @attachmentS3Keys[fileInput] = key
+
+        fail: (event, data) =>
+          submitButton.prop "disabled", false
+          progressBar.css("background", "red").text "Failed"
+    )
+    
   setupSizeToggle: ->
     @$el.find(".compose-modal-size-toggle").click (event) =>
       @$el.find(".compose-modal-dialog").toggleClass("compose-modal-dialog-large")
@@ -356,6 +419,8 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     @$el.find(".compose-modal .cc-input").hide()
     @$el.find(".compose-modal .display-bcc").show()
     @$el.find(".compose-modal .bcc-input").hide()
+    
+    @setupAttachmentUpload()
 
   showEmailSentAlert: (emailSentJSON) ->
     console.log "ComposeView showEmailSentAlert"
@@ -539,8 +604,9 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     
     email.set("tracking_enabled", @$el.find(".compose-form .tracking-switch").parent().parent().hasClass("switch-on"))
     
+    email.set("attachment_s3_keys", _.values(@attachmentS3Keys))
+    
     email.set("bounce_back_enabled", if @$el.find(".compose-form .bounce-back-select").val() is "never" then false else true)
-
     email.set("bounce_back_time", new Date(@$el.find(".compose-form .bounce-back-datetimepicker").val()))
     email.set("bounce_back_type", @$el.find(".compose-form .bounce-back-select").val())
 
