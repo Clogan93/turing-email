@@ -21,7 +21,7 @@ class TuringEmailApp.Views.Main extends Backbone.View
     )
     @sidebarView.render()
 
-    @composeView = new TuringEmailApp.Views.App.ComposeView(
+    @composeView = new TuringEmailApp.Views.App.ModalComposeView(
       app: @app
       el: @$el.find(".compose-view")
     )

@@ -210,9 +210,9 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       $(event.target).hide()
       @$el.find(".bcc-input").show()
 
-    @setupCustomComposeToolbarButtons()
-
   setupCustomComposeToolbarButtons: ->
+    return if @$el.find(".show-more-toolbar-buttons").length or @$el.find(".email-templates-dropdown-div").length
+    console.log "#setupCustomComposeToolbarButtons"
     cke_34 = @$el.find("#cke_34")
     cke_37_cke_40_cke_46 = @$el.find("#cke_37, #cke_40, #cke_46")
     if cke_34.length and cke_37_cke_40_cke_46.length
