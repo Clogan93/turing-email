@@ -113,13 +113,15 @@ class TuringEmailApp.Views.EmailThreads.EmailThreadView extends Backbone.View
   renderDrafts: ->
     @embeddedComposeViews = {}
 
-    for email in @model.get("emails")
+    emails = @model.get("emails")
+    for email in emails
       if email.draft_id?
         embeddedComposeView = @embeddedComposeViews[email.uid] = new TuringEmailApp.Views.App.EmbeddedComposeView(app: TuringEmailApp)
         embeddedComposeView.email = email
         embeddedComposeView.emailThread = @model
         embeddedComposeView.render()
         @$el.find(".embedded_compose_view_" + email.uid).append(embeddedComposeView.$el)
+        embeddedComposeView.loadEmailDraft(_.last(emails), @model)
 
   setupEmailExpandAndCollapse: ->
     @$el.find(".email .email-information").click (event) =>
