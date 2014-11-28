@@ -1075,6 +1075,7 @@ class GmailAccount < ActiveRecord::Base
                  tracking_enabled = false,
                  bounce_back = false, bounce_back_time = nil, bounce_back_type = nil,
                  attachment_s3_keys = [])
+    attachment_s3_keys = [] if attachment_s3_keys.nil?
     email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, html_part, text_part,
                                                                self, email_in_reply_to_uid,
                                                                attachment_s3_keys)
@@ -1253,6 +1254,7 @@ class GmailAccount < ActiveRecord::Base
   end
 
   def create_draft(tos, ccs, bccs, subject, html_part, text_part, email_in_reply_to_uid = nil, attachment_s3_keys = [])
+    attachment_s3_keys = [] if attachment_s3_keys.nil?
     email_raw, email_in_reply_to = Email.email_raw_from_params(tos, ccs, bccs, subject, html_part, text_part,
                                                                self, email_in_reply_to_uid,
                                                                attachment_s3_keys)
@@ -1267,6 +1269,7 @@ class GmailAccount < ActiveRecord::Base
   end
 
   def update_draft(draft_id, tos, ccs, bccs, subject, html_part, text_part, attachment_s3_keys = [])
+    attachment_s3_keys = [] if attachment_s3_keys.nil?
     email = self.emails.find_by(:draft_id => draft_id)
     if email
       email_in_reply_to_uid = email.email_references.order(:position).last.email.uid if email.email_references.count > 0
@@ -1290,12 +1293,32 @@ class GmailAccount < ActiveRecord::Base
   end
 
   def send_draft(draft_id)
-    gmail_data = self.gmail_client.drafts_send('me', draft_id)
-    self.emails.where(:draft_id => draft_id).destroy_all if !draft_id.blank?
+    email = self.emails.find_by_draft_id(draft_id)
+    return nil if email.nil?
+    email_raw = self.email_raw_from_gmail_id(email.uid)
 
-    gmail_id = gmail_data['id']
-    sync_gmail_ids([gmail_id])
-    email = self.emails.find_by(:uid => gmail_id)
+    self.google_o_auth2_token.refresh()
+
+    email_raw.From = self.email
+    email_raw.delivery_method.settings = {
+        :enable_starttls_auto => true,
+        :address              => 'smtp.gmail.com',
+        :port                 => 587,
+        :domain               => $config.smtp_helo_domain,
+        :user_name            => self.email,
+        :password             => self.google_o_auth2_token.access_token,
+        :authentication       => :xoauth2,
+        :enable_starttls      => true
+    }
+
+    retry_block do
+      email_raw.deliver!
+    end
+    
+    self.delete_draft(draft_id)
+
+    self.sync_email(delay: false)
+    email = self.emails.find_by_message_id(email_raw.message_id)
     
     return email
   end

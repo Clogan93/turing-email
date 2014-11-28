@@ -70,6 +70,8 @@ class Email < ActiveRecord::Base
                                   html_part = nil, text_part = nil,
                                   email_account = nil, email_in_reply_to_uid = nil,
                                   attachment_s3_keys = [])
+    attachment_s3_keys = [] if attachment_s3_keys.nil?
+    
     email_raw = Mail.new do
       to tos
       cc ccs
