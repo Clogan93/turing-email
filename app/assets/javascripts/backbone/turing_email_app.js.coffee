@@ -249,6 +249,8 @@ window.TuringEmailApp = new(Backbone.View.extend(
       @trigger "change:selectedEmailThread", this, null
 
   currentEmailFolderIs: (emailFolderID, pageTokenIndex, lastEmailThreadUID=null, dir="DESC") ->
+    @searchQuery = undefined
+
     @collections.emailThreads.folderIDIs(emailFolderID)
     @collections.emailThreads.pageTokenIndexIs(parseInt(pageTokenIndex))  if pageTokenIndex?
     @collections.emailThreads.setupURL(lastEmailThreadUID, dir) if @models.userConfiguration.get("demo_mode_enabled")
@@ -391,7 +393,10 @@ window.TuringEmailApp = new(Backbone.View.extend(
         myOptions.error(collection, response, options) if myOptions?.error?
     )
 
-  loadSearchResults: (query) ->
+  loadSearchResults: (query, reset = true) ->
+    @searchQuery = query
+    @collections.emailThreads.resetPageTokens() if reset
+    
     @reloadEmailThreads(
       query: query
       skipRender: true
@@ -461,19 +466,28 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
   leftArrowClicked: ->
     if @collections.emailThreads.hasPreviousPage()
-      url = "#email_folder/" + @selectedEmailFolderID()
-      url += "/" + (@collections.emailThreads.pageTokenIndex - 1)
-      url += "/" + @collections.emailThreads.at(0).get("uid") + "/ASC" if @models.userConfiguration.get("demo_mode_enabled")
-      
-      @routers.emailFoldersRouter.navigate(url, trigger: true)
+      if not @searchQuery?
+        url = "#email_folder/" + @selectedEmailFolderID()
+        url += "/" + (@collections.emailThreads.pageTokenIndex - 1)
+        url += "/" + @collections.emailThreads.at(0).get("uid") + "/ASC" if @models.userConfiguration.get("demo_mode_enabled")
+        
+        @routers.emailFoldersRouter.navigate(url, trigger: true)
+      else
+        @collections.emailThreads.pageTokenIndexIs(@collections.emailThreads.pageTokenIndex - 1)
+        @loadSearchResults(@searchQuery, false)
 
   rightArrowClicked: ->
     if @collections.emailThreads.hasNextPage()
-      url = "#email_folder/" + @selectedEmailFolderID()
-      url += "/" + (@collections.emailThreads.pageTokenIndex + 1)
-      url += "/" + @collections.emailThreads.last().get("uid") + "/DESC" if @models.userConfiguration.get("demo_mode_enabled")
-      
-      @routers.emailFoldersRouter.navigate(url, trigger: true)
+      if not @searchQuery?
+        url = "#email_folder/" + @selectedEmailFolderID()
+        url += "/" + (@collections.emailThreads.pageTokenIndex + 1)
+        url += "/" + @collections.emailThreads.last().get("uid") + "/DESC" if @models.userConfiguration.get("demo_mode_enabled")
+        
+        @routers.emailFoldersRouter.navigate(url, trigger: true)
+      else
+        if @collections.emailThreads.hasNextPage(true)
+          @collections.emailThreads.pageTokenIndexIs(@collections.emailThreads.pageTokenIndex + 1)
+          @loadSearchResults(@searchQuery, false)
 
   labelAsClicked: (labelID, labelName) ->
     @applyActionToSelectedThreads(

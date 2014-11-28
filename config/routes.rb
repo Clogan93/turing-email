@@ -69,6 +69,7 @@ Rails.application.routes.draw do
       post '/emails/trash', to: 'emails#trash'
 
       get '/email_threads/show/:email_thread_uid', to: 'email_threads#show'
+      post '/email_threads/retrieve', to: 'email_threads#retrieve'
       get '/email_threads/inbox', to: 'email_threads#inbox'
       get '/email_threads/in_folder', to: 'email_threads#in_folder'
       post '/email_threads/move_to_folder', to: 'email_threads#move_to_folder'

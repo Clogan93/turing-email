@@ -16,14 +16,15 @@ class GmailLabel < ActiveRecord::Base
 
   def update_counts
     self.with_lock do
+      self.update_num_unread_threads()
+
       self.num_threads = EmailFolderMapping.joins(:email).where(:email_folder => self).
                                             count('DISTINCT "emails"."email_thread_id"')
-      self.update_num_unread_threads()
       self.save!
     end
   end
   
-  def update_num_unread_threads
+  def update_num_unread_threads()
     self.with_lock do
       self.num_unread_threads = EmailFolderMapping.joins(:email).where(:email_folder => self).
                                                    where('"emails"."seen" = ?',false).

@@ -3,7 +3,7 @@ class Api::V1::EmailThreadsController < ApiController
     signed_in_user(true)
   end
 
-  before_action :correct_user, :except => [:inbox, :in_folder, :move_to_folder, :apply_gmail_label,:remove_from_folder, :trash, :snooze]
+  before_action :correct_user, :except => [:inbox, :in_folder, :retrieve, :move_to_folder, :apply_gmail_label,:remove_from_folder, :trash, :snooze]
   before_action :correct_email_account
   before_action :filter_email_thread_uids, :only => [:move_to_folder, :apply_gmail_label, :remove_from_folder, :trash, :snooze]
 
@@ -72,6 +72,19 @@ class Api::V1::EmailThreadsController < ApiController
   end
 
   def show
+  end
+
+  swagger_api :retrieve do
+    summary 'Get email threads.'
+
+    param :form, :email_thread_uids, :string, :required, 'Email Thread UIDs'
+
+    response :ok
+  end
+  
+  def retrieve
+    @email_threads = EmailThread.where(:email_account => @email_account, :uid => params[:email_thread_uids])
+    render 'api/v1/email_threads/index'
   end
 
   swagger_api :move_to_folder do
