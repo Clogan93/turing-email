@@ -25,23 +25,21 @@ class Api::V1::EmailAccountsController < ApiController
     param :form, :bounce_back_enabled, :boolean, false, 'Bounce Back Enabled'
     param :form, :bounce_back_time, :string, false, 'Bounce Back Time'
     param :form, :bounce_back_type, :string, false, 'Bounce Back Type'
+    
+    param :form, :attachment_s3_keys, :string, false, 'Array of attachment s3 keys'
 
     response :ok
   end
 
   # TODO write tests
   def send_email
-    @email = @email_account.send_email(params[:tos], params[:ccs], params[:bccs],
-                                       params[:subject], params[:html_part], params[:text_part],
-                                       params[:email_in_reply_to_uid],
-                                       params[:tracking_enabled].downcase == 'true',
-                                       params[:bounce_back_enabled].downcase == 'true', params[:bounce_back_time], params[:bounce_back_type])
-
-    if @email
-      render 'api/v1/emails/show'
-    else
-      render :json => {}
-    end
+    @email_account.delay.send_email(params[:tos], params[:ccs], params[:bccs],
+                                    params[:subject], params[:html_part], params[:text_part],
+                                    params[:email_in_reply_to_uid],
+                                    params[:tracking_enabled].downcase == 'true',
+                                    params[:bounce_back_enabled].downcase == 'true', params[:bounce_back_time], params[:bounce_back_type],
+                                    params[:attachment_s3_keys])
+    render :json => {}
   end
 
   swagger_api :send_email_delayed do
@@ -64,6 +62,8 @@ class Api::V1::EmailAccountsController < ApiController
     param :form, :bounce_back_enabled, :boolean, false, 'Bounce Back Enabled'
     param :form, :bounce_back_time, :string, false, 'Bounce Back Time'
     param :form, :bounce_back_type, :string, false, 'Bounce Back Type'
+
+    param :form, :attachment_s3_keys, :string, false, 'Array of attachment s3 keys'
 
     response :ok
   end
@@ -90,6 +90,8 @@ class Api::V1::EmailAccountsController < ApiController
       delayed_email.bounce_back = params[:bounce_back_enabled].downcase == 'true'
       delayed_email.bounce_back_time = params[:bounce_back_time]
       delayed_email.bounce_back_type = params[:bounce_back_type]
+      
+      delayed_email.attachment_s3_keys = params[:attachment_s3_keys]
       
       delayed_email.save!
 
@@ -144,6 +146,8 @@ class Api::V1::EmailAccountsController < ApiController
 
     param :form, :email_in_reply_to_uid, :string, false, 'Email UID being replied to.'
 
+    param :form, :attachment_s3_keys, :string, false, 'Array of attachment s3 keys'
+
     response :ok
   end
 
@@ -151,7 +155,8 @@ class Api::V1::EmailAccountsController < ApiController
   def create_draft
     @email = @email_account.create_draft(params[:tos], params[:ccs], params[:bccs],
                                          params[:subject], params[:html_part], params[:text_part],
-                                         params[:email_in_reply_to_uid])
+                                         params[:email_in_reply_to_uid],
+                                         params[:attachment_s3_keys])
     render 'api/v1/emails/show'
   end
 
@@ -168,6 +173,8 @@ class Api::V1::EmailAccountsController < ApiController
     param :form, :html_part, :string, false, 'HTML Part'
     param :form, :text_part, :string, false, 'Text Part'
 
+    param :form, :attachment_s3_keys, :string, false, 'Array of attachment s3 keys'
+
     response :ok
   end
 
@@ -175,7 +182,8 @@ class Api::V1::EmailAccountsController < ApiController
   def update_draft
     @email = @email_account.update_draft(params[:draft_id],
                                          params[:tos], params[:ccs], params[:bccs],
-                                         params[:subject], params[:html_part], params[:text_part])
+                                         params[:subject], params[:html_part], params[:text_part],
+                                         params[:attachment_s3_keys])
     render 'api/v1/emails/show'
   end
 

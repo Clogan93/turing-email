@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141126001126) do
+ActiveRecord::Schema.define(version: 20141127090922) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,6 +48,7 @@ ActiveRecord::Schema.define(version: 20141126001126) do
     t.text     "bounce_back_type"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "attachment_s3_keys"
   end
 
   add_index "delayed_emails", ["delayed_job_id"], name: "index_delayed_emails_on_delayed_job_id", using: :btree
@@ -68,6 +69,21 @@ ActiveRecord::Schema.define(version: 20141126001126) do
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
+
+  create_table "email_attachment_uploads", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "email_id"
+    t.text     "uid"
+    t.text     "s3_key"
+    t.text     "s3_key_full"
+    t.text     "filename"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "email_attachment_uploads", ["s3_key"], name: "index_email_attachment_uploads_on_s3_key", unique: true, using: :btree
+  add_index "email_attachment_uploads", ["s3_key_full"], name: "index_email_attachment_uploads_on_s3_key_full", unique: true, using: :btree
+  add_index "email_attachment_uploads", ["uid"], name: "index_email_attachment_uploads_on_uid", unique: true, using: :btree
 
   create_table "email_attachments", force: true do |t|
     t.integer  "email_id"
