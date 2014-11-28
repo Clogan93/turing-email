@@ -42,15 +42,26 @@ div[contenteditable]:focus {
   margin-right: 10px;
 }
 
+.compose-form .bounce-back-select {
+  width: 67%;
+  float: left;
+}
+
 .compose-form .send-later-datetimepicker {
   float: left;
+}
+
+.compose-form .bounce-back {
+  float: left;
+  margin-top: 10px;
+  margin-right: 10px;
 }
 
 .compose-form .datetimepicker {
   background-color: #FFFFFF;
   background-image: none;
   border: 1px solid #e5e6e7;
-  padding: 8px 12px;
+  padding: 8px 12px 9px 12px;
   -webkit-transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
   transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
   width: 19%;
@@ -198,4 +209,8 @@ div[contenteditable]:focus {
   left: 11px;
   cursor: pointer !important;
   color: rgb(103, 106, 108) !important;
+}
+
+.btn-group.submit-buttons {
+  margin-left: 6px;
 }

@@ -21,7 +21,7 @@
     <input class="send-later-datetimepicker datetimepicker" type="text" placeholder="date &amp; time" />
     Tracking: <input type="checkbox" class="tracking-switch switch">
 
-    <div class="btn-group">
+    <div class="btn-group submit-buttons">
       <button type="submit" class="btn btn-primary send-button">Send</button>
       <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
         <span class="caret"></span>
@@ -35,12 +35,13 @@
   </div>
 
   <div class="modal-footer">
+    <label class="bounce-back">Bounce Back:</label>
     <select class="form-control bounce-back-select">
+      <option value="never">Never</option>
       <option value="always">Always</option>
       <option value="no_reply">No Reply</option>
     </select>
 
     <input class="bounce-back-datetimepicker datetimepicker" type="text" placeholder="date &amp; time" />
-    Bounce Back: <input type="checkbox" class="bounce-back-switch switch">
   </div>
 </form>

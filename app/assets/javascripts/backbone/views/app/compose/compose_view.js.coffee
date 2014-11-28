@@ -349,7 +349,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     @$el.find(".compose-form .send-later-switch").bootstrapSwitch("setState", false, true)
     @$el.find(".compose-form .send-later-datetimepicker").val("")
 
-    @$el.find(".compose-form .bounce-back-switch").bootstrapSwitch("setState", false, true)
+    @$el.find(".compose-form .bounce-back-select").val("never")
     @$el.find(".compose-form .bounce-back-datetimepicker").val("")
 
     @$el.find(".compose-modal .display-cc").show()
@@ -539,7 +539,8 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     
     email.set("tracking_enabled", @$el.find(".compose-form .tracking-switch").parent().parent().hasClass("switch-on"))
     
-    email.set("bounce_back_enabled", @$el.find(".compose-form .bounce-back-switch").parent().parent().hasClass("switch-on"))
+    email.set("bounce_back_enabled", if @$el.find(".compose-form .bounce-back-select").val() is "never" then false else true)
+
     email.set("bounce_back_time", new Date(@$el.find(".compose-form .bounce-back-datetimepicker").val()))
     email.set("bounce_back_type", @$el.find(".compose-form .bounce-back-select").val())
 
