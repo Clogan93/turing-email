@@ -172,7 +172,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     listItemView = _.values(@listItemViews)[selectedItemIndex - 1]
     @select(listItemView.model)
 
-    @scrollListItemIntoView(listItemView, "top")
+    @scrollListItemViewIntoView(listItemView, "top")
     
     return listItemView
 
@@ -185,11 +185,17 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
     listItemView = _.values(@listItemViews)[selectedItemIndex + 1]
     @select(listItemView.model)
 
-    @scrollListItemIntoView(listItemView, "bottom")
+    @scrollListItemViewIntoView(listItemView, "bottom")
 
     return listItemView
+
+  scrollListItemIntoView: (listItem, position) ->
+    return if not listItem?
     
-  scrollListItemIntoView: (listItemView, position) ->
+    listItemView = @listItemViews[listItem.get("uid")]
+    @scrollListItemViewIntoView(listItemView, position) if listItemView?
+    
+  scrollListItemViewIntoView: (listItemView, position) ->
     el = listItemView.$el
     top = el.position().top
     bottom = top + el.outerHeight(true)
@@ -241,7 +247,7 @@ class TuringEmailApp.Views.EmailThreads.ListView extends Backbone.View
         if $(".email-threads-list-view").scrollTop() + $(".email-threads-list-view").height() > $(".email-threads-list-view").get(0).scrollHeight - 50
           console.log "near bottom!"
           @infiniteScrollTriggerable = false
-          @trigger("listViewBottomReached")
+          @trigger("listViewBottomReached", this)
 
       if $(".email-threads-list-view").scrollTop() + $(".email-threads-list-view").height() < $(".email-threads-list-view").get(0).scrollHeight - 250
         @infiniteScrollTriggerable = true

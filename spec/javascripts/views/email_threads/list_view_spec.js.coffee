@@ -259,11 +259,11 @@ describe "ListView", ->
           @secLastListItemView = _.values(@listView.listItemViews)[@numListItemViews - 2]
           
           @selectSpy = sinon.spy(@listView, "select")
-          @scrollListItemIntoViewSpy = sinon.spy(@listView, "scrollListItemIntoView")
+          @scrollListItemViewIntoViewSpy = sinon.spy(@listView, "scrollListItemViewIntoView")
           
         afterEach ->
           @selectSpy.restore()
-          @scrollListItemIntoViewSpy.restore()
+          @scrollListItemViewIntoViewSpy.restore()
   
         describe "last item selected", ->
           beforeEach ->
@@ -275,7 +275,7 @@ describe "ListView", ->
             expect(@selectSpy).toHaveBeenCalledWith(@secLastListItemView.model)
               
           it "scrolls the second to last list item view into view", ->
-            expect(@scrollListItemIntoViewSpy).toHaveBeenCalledWith(@secLastListItemView, "top")
+            expect(@scrollListItemViewIntoViewSpy).toHaveBeenCalledWith(@secLastListItemView, "top")
             
           it "returns the selected list item view", ->
             expect(@listItemViewSelected).toEqual(@secLastListItemView)
@@ -300,11 +300,11 @@ describe "ListView", ->
           @lastListItemView = _.values(@listView.listItemViews)[@numListItemViews - 1]
 
           @selectSpy = sinon.spy(@listView, "select")
-          @scrollListItemIntoViewSpy = sinon.spy(@listView, "scrollListItemIntoView")
+          @scrollListItemViewIntoViewSpy = sinon.spy(@listView, "scrollListItemViewIntoView")
 
         afterEach ->
           @selectSpy.restore()
-          @scrollListItemIntoViewSpy.restore()
+          @scrollListItemViewIntoViewSpy.restore()
 
         describe "first item selected", ->
           beforeEach ->
@@ -316,7 +316,7 @@ describe "ListView", ->
             expect(@selectSpy).toHaveBeenCalledWith(@secListItemView.model)
 
           it "scrolls the second list item view into view", ->
-            expect(@scrollListItemIntoViewSpy).toHaveBeenCalledWith(@secListItemView, "bottom")
+            expect(@scrollListItemViewIntoViewSpy).toHaveBeenCalledWith(@secListItemView, "bottom")
 
           it "returns the selected list item view", ->
             expect(@listItemViewSelected).toEqual(@secListItemView)
@@ -332,7 +332,7 @@ describe "ListView", ->
           it "does not move the selection", ->
             expect(@listView.moveSelectionDown()).toBeFalsy()
       
-    describe "#scrollListItemIntoView", ->
+    describe "#scrollListItemViewIntoView", ->
       beforeEach ->
         @listItemView = _.values(@listView.listItemViews)[0]
         @el = @listItemView.$el
@@ -352,14 +352,14 @@ describe "ListView", ->
 
         describe "position=bottom", ->
           beforeEach ->
-            @listView.scrollListItemIntoView(@listItemView, "bottom")
+            @listView.scrollListItemViewIntoView(@listItemView, "bottom")
             
           it "not to have scrolled", ->
             expect(@scrollTopSpy).not.toHaveBeenCalled()
 
         describe "position=top", ->
           beforeEach ->
-            @listView.scrollListItemIntoView(@listItemView, "top")
+            @listView.scrollListItemViewIntoView(@listItemView, "top")
 
           it "not to have scrolled", ->
             expect(@scrollTopSpy).not.toHaveBeenCalled()
@@ -377,14 +377,14 @@ describe "ListView", ->
 
         describe "position=bottom", ->
           beforeEach ->
-            @listView.scrollListItemIntoView(@listItemView, "bottom")
+            @listView.scrollListItemViewIntoView(@listItemView, "bottom")
 
           it "to have scrolled the list item into view", ->
             expect(@scrollTopSpy).toHaveBeenCalledWith(@bottom - @parent.outerHeight(true))
 
         describe "position=top", ->
           beforeEach ->
-            @listView.scrollListItemIntoView(@listItemView, "top")
+            @listView.scrollListItemViewIntoView(@listItemView, "top")
 
           it "to have scrolled the list item into view", ->
             expect(@scrollTopSpy).toHaveBeenCalled(@top)

@@ -83,7 +83,15 @@ class Api::V1::EmailThreadsController < ApiController
   end
   
   def retrieve
-    @email_threads = EmailThread.where(:email_account => @email_account, :uid => params[:email_thread_uids])
+    @email_threads = EmailThread.where(:email_account => @email_account, :uid => params[:email_thread_uids]).to_a()
+    
+    @email_threads.sort!() do |left, right|
+      left_index = params[:email_thread_uids].find_index(left.uid)
+      right_index = params[:email_thread_uids].find_index(right.uid)
+
+      left_index <=> right_index
+    end
+    
     render 'api/v1/email_threads/index'
   end
 

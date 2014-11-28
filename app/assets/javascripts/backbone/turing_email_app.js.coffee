@@ -196,6 +196,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @listenTo(@views.emailThreadsListView, "listItemDeselected", @listItemDeselected)
     @listenTo(@views.emailThreadsListView, "listItemChecked", @listItemChecked)
     @listenTo(@views.emailThreadsListView, "listItemUnchecked", @listItemUnchecked)
+    @listenTo(@views.emailThreadsListView, "listViewBottomReached", @listViewBottomReached)
 
   setupRouters: ->
     @routers.emailFoldersRouter = new TuringEmailApp.Routers.EmailFoldersRouter()
@@ -255,8 +256,12 @@ window.TuringEmailApp = new(Backbone.View.extend(
     @collections.emailThreads.pageTokenIndexIs(parseInt(pageTokenIndex))  if pageTokenIndex?
     @collections.emailThreads.setupURL(lastEmailThreadUID, dir) if @models.userConfiguration.get("demo_mode_enabled")
 
+    reset = not pageTokenIndex?
+    lastItem = @collections.emailThreads.last()
+    
     @reloadEmailThreads(
       skipRender: true
+      reset: reset
       
       success: (collection, response, options) =>
         emailFolder = @collections.emailFolders.get(emailFolderID)
@@ -264,6 +269,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
         @trigger("change:currentEmailFolder", this, emailFolder, @collections.emailThreads.pageTokenIndex + 1)
   
         @showEmails()
+        @views.emailThreadsListView.scrollListItemIntoView(lastItem, "bottom") if !reset
 
         if @isSplitPaneMode() && @collections.emailThreads.length > 0 &&
             not @collections.emailThreads.models[0].get("emails")?[0].draft_id?
@@ -356,19 +362,21 @@ window.TuringEmailApp = new(Backbone.View.extend(
           callback?(emailThread)
       )
       
-  reloadEmailThreads: (myOptions=skipRender: false) ->
+  reloadEmailThreads: (myOptions=skipRender: false, reset: true) ->
     selectedEmailThread = @selectedEmailThread()
 
     @views.emailThreadsListView.skipRender = myOptions.skipRender
     
     @collections.emailThreads.fetch(
-      query: myOptions?.query
-      reset: true
+      query: myOptions.query
+      reset: myOptions.reset
+      remove: myOptions.reset
       
       success: (collection, response, options) =>
         @views.emailThreadsListView.skipRender = false
 
-        @stopListening(emailThread) for emailThread in options.previousModels
+        if options.previousModels?
+          @stopListening(emailThread) for emailThread in options.previousModels
 
         for emailThread in collection.models
           @listenTo(emailThread, "change:seen", @emailThreadSeenChanged)
@@ -396,13 +404,17 @@ window.TuringEmailApp = new(Backbone.View.extend(
   loadSearchResults: (query, reset = true) ->
     @searchQuery = query
     @collections.emailThreads.resetPageTokens() if reset
+
+    lastItem = @collections.emailThreads.last()
     
     @reloadEmailThreads(
       query: query
       skipRender: true
-      
+      reset: reset
+
       success: (collection, response, options) =>
         @showEmails()
+        @views.emailThreadsListView.scrollListItemIntoView(lastItem, "bottom") if !reset
     )
 
   applyActionToSelectedThreads: (singleAction, multiAction, remove=false, clearSelection=false, refreshFolders=false, moveSelection=false) ->
@@ -642,6 +654,9 @@ window.TuringEmailApp = new(Backbone.View.extend(
     if @views.emailThreadsListView.getCheckedListItemViews().length is 0
       @currentEmailThreadView.$el.show() if @currentEmailThreadView
 
+  listViewBottomReached: (listView) ->
+    @rightArrowClicked()
+      
   ####################################
   ### EmailFolders.TreeView Events ###
   ####################################
