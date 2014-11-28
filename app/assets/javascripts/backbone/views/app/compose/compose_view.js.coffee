@@ -528,7 +528,7 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
     if ckeditor_body.length
       ckeditor_body.html(body)
     else
-      @$el.find(".compose-form .compose-email-body").html(body.html())
+      @$el.find(".compose-form .compose-email-body").html(if body.html? then body.html() else body)
 
     return body
 
