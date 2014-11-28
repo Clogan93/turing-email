@@ -69,6 +69,7 @@ Rails.application.routes.draw do
       post '/emails/trash', to: 'emails#trash'
 
       get '/email_threads/show/:email_thread_uid', to: 'email_threads#show'
+      post '/email_threads/retrieve', to: 'email_threads#retrieve'
       get '/email_threads/inbox', to: 'email_threads#inbox'
       get '/email_threads/in_folder', to: 'email_threads#in_folder'
       post '/email_threads/move_to_folder', to: 'email_threads#move_to_folder'
@@ -111,6 +112,10 @@ Rails.application.routes.draw do
       resources :email_templates, only: [:create, :index]
       patch '/email_templates/:email_template_uid', :to => 'email_templates#update'
       delete '/email_templates/:email_template_uid', :to => 'email_templates#destroy'
+
+      resources :email_signatures, only: [:create, :index]
+      patch '/email_signatures/:email_signature_uid', :to => 'email_signatures#update'
+      delete '/email_signatures/:email_signature_uid', :to => 'email_signatures#destroy'
     end
   end
 

@@ -16,7 +16,7 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends TuringEmailApp.C
   ###############
 
   sync: (method, collection, options) ->
-    if method != "read" || @demoMode
+    if method != "read" || (@demoMode && not options?.query?)
       super(method, collection, options)
     else
       options ?= {}
@@ -59,12 +59,21 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends TuringEmailApp.C
       options.success?([])
 
   loadThreads: (threadsListInfo, options) ->
-    googleRequest(
-      @app
-      => @threadsGetBatch(threadsListInfo)
-      (response) => @processThreadsGetBatch(response, options)
-      options.error
-    )
+    if options.query?
+      emailThreadUIDs = _.pluck(threadsListInfo, "id")
+      
+      $.post("/api/v1/email_threads/retrieve", email_thread_uids: emailThreadUIDs).done(
+        (data) => options.success?(data)
+      ).fail(
+        => options.error?()
+      )
+    else
+      googleRequest(
+        @app
+        => @threadsGetBatch(threadsListInfo)
+        (response) => @processThreadsGetBatch(response, options)
+        options.error
+      )
 
   loadDrafts: (draftsListInfo, options) ->
     options.draftsListInfo = draftsListInfo
@@ -204,8 +213,8 @@ class TuringEmailApp.Collections.EmailThreadsCollection extends TuringEmailApp.C
   ### Getters ###
   ###############
 
-  hasNextPage: ->
-    if @demoMode
+  hasNextPage: (absolute = false) ->
+    if @demoMode && !absolute
       return @length % TuringEmailApp.Models.UserConfiguration.EmailThreadsPerPage == 0
     else
       return @pageTokenIndex < @pageTokens.length - 1

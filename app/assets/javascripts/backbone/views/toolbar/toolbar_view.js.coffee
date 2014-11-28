@@ -85,14 +85,6 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       @$el.find("i.fa-trash-o").tooltip("hide")
       @trigger("trashClicked", this)
 
-    @$el.find(".paginate-left-link").click =>
-      @$el.find(".paginate-left-link").tooltip("hide")
-      @trigger("leftArrowClicked", this)
-
-    @$el.find(".paginate-right-link").click =>
-      @$el.find(".paginate-right-link").tooltip("hide")
-      @trigger("rightArrowClicked", this)
-
     $(window).resize =>
       if $(".mail-box-header.toolbar").width() < 525
         $(".current-emails-displayed-counter").hide()
@@ -178,8 +170,6 @@ class TuringEmailApp.Views.ToolbarView extends Backbone.View
       lastThreadNumber = 0
 
     @$el.find(".total-emails-number").html(numThreads)
-    @$el.find(".start-number").html(firstThreadNumber)
-    @$el.find(".end-number").html(lastThreadNumber)
     
   showMoveToFolderMenu: ->
     @$el.find(".move-to-folder-dropdown-menu").trigger("click.bs.dropdown")

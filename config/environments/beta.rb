@@ -1,8 +1,8 @@
 Rails.application.configure do
   config.heroku_app_name = 'turing-email-beta'
 
-  config.domain = 'turing-email-beta.herokuapp.com'
-  config.http_host = config.domain
+  config.domain = 'turingemail.com'
+  config.http_host = "www.#{config.domain}"
 
   config.s3_bucket = 'beta.turingemail.com'
 
