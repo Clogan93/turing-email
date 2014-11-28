@@ -10,6 +10,10 @@
   <%= subjectPreview %> - <span><%= snippet %></span>
 </td>
 
-<td class="text-right mail-date">
+<td class="text-right mail-date last-list-view-column">
+  <% if(hasAttachment) { %>
+    <i class="fa fa-paperclip attachment-indicator"></i>
+  <% } %>
+
   <%= datePreview %>
 </td>

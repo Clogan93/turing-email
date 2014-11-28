@@ -48,8 +48,12 @@
   background-color: rgb(252, 248, 227) !important;
 }
 
-.table-mail .mail-date {
+.table-mail .last-list-view-column {
   font-size: 12px;
-  min-width: 75px;
+  min-width: 85px;
   padding-right: 20px !important;
+}
+
+.attachment-indicator {
+  padding-right: 5px;
 }
