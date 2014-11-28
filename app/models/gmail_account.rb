@@ -1080,27 +1080,27 @@ class GmailAccount < ActiveRecord::Base
                                                                attachment_s3_keys)
 
     email = nil
+
+    self.google_o_auth2_token.refresh()
+
+    email_raw.From = self.email
+    email_raw.delivery_method.settings = {
+        :enable_starttls_auto => true,
+        :address              => 'smtp.gmail.com',
+        :port                 => 587,
+        :domain               => $config.smtp_helo_domain,
+        :user_name            => self.email,
+        :password             => self.google_o_auth2_token.access_token,
+        :authentication       => :xoauth2,
+        :enable_starttls      => true
+    }
     
     if tracking_enabled
       log_console('tracking_enabled = true!!!!!!')
 
       html_part = '' if html_part.nil?
-
-      self.google_o_auth2_token.refresh()
       
-      email_raw.From = self.email
-      email_raw.delivery_method.settings = {
-          :enable_starttls_auto => true,
-          :address              => 'smtp.gmail.com',
-          :port                 => 587,
-          :domain               => $config.smtp_helo_domain,
-          :user_name            => self.email,
-          :password             => self.google_o_auth2_token.access_token,
-          :authentication       => :xoauth2,
-          :enable_starttls      => true
-      }
-      
-      email_uids = []
+      email_message_ids = []
       
       email_tracker = EmailTracker.new()
       email_tracker.uid = SecureRandom.uuid()
@@ -1130,6 +1130,7 @@ class GmailAccount < ActiveRecord::Base
         end
         
         email_raw.smtp_envelope_to = rcpt_to
+        email_raw.message_id = nil
 
         retry_block do
           email_raw.deliver!
@@ -1137,17 +1138,28 @@ class GmailAccount < ActiveRecord::Base
 
         email_tracker_recipient.email = email
         email_tracker_recipient.save!()
-        
-        # TODO figure out how to get email after sync since sending via SMTP
-        #email_uids.push(email.uid)
+
+        email_message_ids.push(email_raw.message_id)
       end
 
-      email_tracker.email_uids = email_uids
+      self.sync_email(delay: false)
+
+      email_tracker.email_uids = []
+      email_message_ids.each do |message_id|
+        email = self.emails.find_by_message_id(message_id)
+        email_tracker.email_uids.push(email.uid) if email
+      end
+      
       email_tracker.save!()
     else
       log_console('NO tracking_enabled')
-      
-      email = self.send_email_raw(email_raw, email_in_reply_to)
+
+      retry_block do
+        email_raw.deliver!
+      end
+
+      self.sync_email(delay: false)
+      email = self.emails.find_by_message_id(email_raw.message_id)
     end
     
     if email && bounce_back
