@@ -459,7 +459,11 @@ class TuringEmailApp.Views.App.ComposeView extends Backbone.View
       [body, html] = @parseEmail(emailJSON)
       body = $.parseHTML(body) if not html
 
-    @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable").html(body)
+    ckeditor_body = @$el.find(".compose-form iframe.cke_wysiwyg_frame.cke_reset").contents().find("body.cke_editable")
+    if ckeditor_body.length
+      ckeditor_body.html(body)
+    else
+      @$el.find(".compose-form .compose-email-body").html(body.html())
 
     return body
 
