@@ -1109,3 +1109,17 @@ describe "EmailThread", ->
     describe "#datePreview", ->
       it "returns the localized date string", ->
         expect(@emailThread.datePreview()).toEqual(TuringEmailApp.Models.Email.localDateString(@emailThread.get("date")))
+
+    describe "#hasAttachment", ->
+      describe "when the email thread does have attachments", ->
+
+        it "returns true", ->
+          expect(@emailThread.hasAttachment()).toBeTruthy()
+
+      describe "when the email thread does not have attachments", ->
+        beforeEach ->
+          for email in @emailThread.get("emails")
+            email.email_attachments = []
+
+        it "returns false", ->
+          expect(@emailThread.hasAttachment()).toBeFalsy()
