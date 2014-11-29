@@ -130,7 +130,7 @@ class EmailGenie
                                                  batch_request: true, gmail_client: gmail_client,
                                                  auto_cleaner_enabled: auto_cleaner_enabled)
   
-        if $config.gmail_live
+        if $config.gmail_live && call
           batch_request.add(call)
           batch_empty = false
   
