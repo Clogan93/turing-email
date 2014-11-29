@@ -63,7 +63,6 @@ class GmailAccount < ActiveRecord::Base
 
   validates_presence_of(:user, :google_id, :email, :verified_email)
 
-
   before_destroy :sync_reset, prepend: true
   
   # TODO write tests
