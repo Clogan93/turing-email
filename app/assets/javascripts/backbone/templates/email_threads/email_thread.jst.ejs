@@ -72,13 +72,16 @@
                   %>
 
                   <% if (email.email_attachments.length > 0) { %>
+                    <span class="attachments-footer">
                     <br />
+                    <hr />
                     Attachments:
                     <% _.each(email.email_attachments, function(email_attachment, index) { %>
                       <a class="attachment-link" href="<%= email_attachment.uid %>">
                         <%= email_attachment.filename %>
                       </a>
                     <% }); %>
+                  </span>
                   <% } %>
                 </div>
               </div>

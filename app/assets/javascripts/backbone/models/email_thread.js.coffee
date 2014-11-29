@@ -389,3 +389,8 @@ class TuringEmailApp.Models.EmailThread extends Backbone.Model
 
   datePreview: ->
     return TuringEmailApp.Models.Email.localDateString(@get("date"))
+
+  hasAttachment: ->
+    for email in @get("emails")
+      return true if email.email_attachments.length > 0
+    return false

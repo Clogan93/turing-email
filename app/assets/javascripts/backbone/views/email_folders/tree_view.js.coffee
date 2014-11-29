@@ -63,7 +63,7 @@ class TuringEmailApp.Views.EmailFolders.TreeView extends Backbone.View
       else
         $(event.target).text("► ")
 
-    @$el.find('a').click (event) =>
+    @$el.find('a:not(.default-functionality-sidebar-link)').click (event) =>
       event.preventDefault()
 
       emailFolderID = $(event.currentTarget).attr("href")
