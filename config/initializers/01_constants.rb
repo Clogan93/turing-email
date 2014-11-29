@@ -60,7 +60,7 @@ $config.s3_base_url = "https://s3.amazonaws.com/#{$config.s3_bucket}"
 
 # globals
 
-$config.gmail_live = false
+$config.gmail_live = true
 
 $config.company_name = 'Turing Technology, Inc.'
 $config.service_name = 'Turing Email'

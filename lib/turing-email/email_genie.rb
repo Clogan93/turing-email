@@ -115,7 +115,7 @@ class EmailGenie
     inbox_label = gmail_account.inbox_folder
     sent_label = gmail_account.sent_folder
 
-    if !gmail_account.user.user_configuration.demo_mode_enabled && $config.gmail_live
+    if $config.gmail_live
       batch_request = EmailGenie.new_gmail_batch_request()
       gmail_client = gmail_account.gmail_client
       batch_empty = true
@@ -130,7 +130,7 @@ class EmailGenie
                                                  batch_request: true, gmail_client: gmail_client,
                                                  auto_cleaner_enabled: auto_cleaner_enabled)
   
-        if !gmail_account.user.user_configuration.demo_mode_enabled && $config.gmail_live
+        if $config.gmail_live
           batch_request.add(call)
           batch_empty = false
   
@@ -145,7 +145,7 @@ class EmailGenie
       end
     end
 
-    if !batch_empty && !gmail_account.user.user_configuration.demo_mode_enabled && $config.gmail_live
+    if !batch_empty && $config.gmail_live
       gmail_account.google_o_auth2_token.api_client.execute!(batch_request)
     end
 
