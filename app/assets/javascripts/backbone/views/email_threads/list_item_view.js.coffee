@@ -17,7 +17,6 @@ class TuringEmailApp.Views.EmailThreads.ListItemView extends Backbone.View
     modelJSON["datePreview"] = @model.datePreview()
     modelJSON["hasAttachment"] = @model.hasAttachment()
     modelJSON["snippet"] = escapeHTML(@model.get("snippet"))
-    console.log modelJSON
     @$el.html(@template(modelJSON))
 
     if @model.get("seen")
