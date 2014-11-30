@@ -1,1 +1,1 @@
-worker: rake jobs:work_multi NUM_PROCESSES=5 QUEUE=worker
+worker: rake jobs:work_multi NUM_PROCESSES=1 QUEUE=worker
