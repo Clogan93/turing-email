@@ -802,11 +802,12 @@ class GmailAccount < ActiveRecord::Base
               job_ids.push(job.id)
             else
               self.sync_gmail_ids(gmail_ids, delay: false)
+
+              self.set_last_history_id_synced(historys_data.last['id']) if !historys_data.empty?
             end
+            
             num_emails_synced += gmail_ids.length
           end
-          
-          self.set_last_history_id_synced(historys_data.last['id']) if !historys_data.empty?
           
           nextPageToken = history_list_data['nextPageToken']
         end

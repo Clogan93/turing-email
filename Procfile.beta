@@ -1,1 +1,1 @@
-worker: rake jobs:work_multi NUM_PROCESSES=1 QUEUE=worker
+worker: bin/delayed_job -n 4 --queue=worker start
