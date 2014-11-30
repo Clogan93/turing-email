@@ -114,8 +114,5 @@ gem 'premailer', '~> 1.8.2'
 gem 'delayed_job', '~> 4.0.4'
 gem 'delayed_job_active_record', '~> 4.0.2'
 
-# daemons
-gem 'daemons', '~> 1.1.9'
-
 # gmail oauth
 gem 'gmail_xoauth', '~> 0.4.1'

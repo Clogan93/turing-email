@@ -501,7 +501,7 @@ class GmailAccount < ActiveRecord::Base
     log_console("process_sync_failed_emails #{self.sync_failed_emails.count} emails!")
 
     gmail_ids = self.sync_failed_emails.pluck(:email_uid)
-    self.sync_failed_emails.where(:email_uid => gmail_ids).destroy_all()
+    self.sync_failed_emails.where(:email_uid => gmail_ids).delete_all()
 
     if gmail_ids.length > 0
       if delay
