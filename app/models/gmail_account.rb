@@ -935,13 +935,11 @@ class GmailAccount < ActiveRecord::Base
           
           job_ids.push(job.id)
         else
-          benchmark_time("SYNC gmail data") do
-            if gmail_data['raw']
-              self.create_email_from_gmail_data(JSON.parse(gmail_data.to_json))
-            else
-              #log_console('EXISTS - minimal update!')
-              self.update_email_from_gmail_data(JSON.parse(gmail_data.to_json))
-            end
+          if gmail_data['raw']
+            self.create_email_from_gmail_data(JSON.parse(gmail_data.to_json))
+          else
+            #log_console('EXISTS - minimal update!')
+            self.update_email_from_gmail_data(JSON.parse(gmail_data.to_json))
           end
         end
       rescue SignalException => ex
@@ -1039,9 +1037,7 @@ class GmailAccount < ActiveRecord::Base
   ensure
     GmailLabel.skip_update_counts = false
 
-    benchmark_time("SYNC gmail labels") do
-      self.gmail_labels.each { |label| label.update_counts() }
-    end
+    self.gmail_labels.each { |label| label.update_counts() }
   end
 
   def sync_gmail_thread(gmail_thread_id)
