@@ -561,7 +561,7 @@ class GmailAccount < ActiveRecord::Base
     log_console("sync_account for #{self.email}")
 
     self.sync_labels()
-    self.sync_email()
+    self.sync_email(delay: false)
   end
   
   def sync_email(labelIds: nil, delay: true)
