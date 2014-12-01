@@ -1,4 +1,14 @@
 class GmailLabel < ActiveRecord::Base
+  @@skip_update_counts = false
+  
+  def GmailLabel.skip_update_counts
+    @@skip_update_counts
+  end
+
+  def GmailLabel.skip_update_counts=(val)
+    @@skip_update_counts = val
+  end
+  
   belongs_to :gmail_account
 
   has_many :email_folder_mappings,
@@ -13,8 +23,10 @@ class GmailLabel < ActiveRecord::Base
            :as => :auto_filed_folder
 
   validates_presence_of(:gmail_account_id, :label_id, :name, :label_type)
-
+  
   def update_counts
+    return if GmailLabel.skip_update_counts
+    
     self.with_lock do
       self.update_num_unread_threads()
 
@@ -25,6 +37,8 @@ class GmailLabel < ActiveRecord::Base
   end
   
   def update_num_unread_threads()
+    return if GmailLabel.skip_update_counts
+    
     self.with_lock do
       self.num_unread_threads = EmailFolderMapping.joins(:email).where(:email_folder => self).
                                                    where('"emails"."seen" = ?',false).
