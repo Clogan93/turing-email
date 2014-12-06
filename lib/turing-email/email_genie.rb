@@ -222,8 +222,8 @@ class EmailGenie
       reply_address = email.reply_to_address ? email.reply_to_address : email.from_address
 
       num_emails_to_address = sent_label.emails.where('tos ILIKE ?', "%#{reply_address}%").count
-      num_emails_from_address = Email.where("from_address=? OR reply_to_address=?",
-                                            reply_address, reply_address).count
+      num_emails_from_address = email.user.emails.where("from_address=? OR reply_to_address=?",
+                                                        reply_address, reply_address).count
 
       ratio = num_emails_to_address / num_emails_from_address.to_f()
       if ratio < 0.1

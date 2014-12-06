@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141128045027) do
+ActiveRecord::Schema.define(version: 20141206022456) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -293,14 +293,20 @@ ActiveRecord::Schema.define(version: 20141128045027) do
     t.boolean  "attachments_uploaded",              default: false
   end
 
+  add_index "emails", ["bccs"], name: "index_emails_on_bccs", using: :btree
+  add_index "emails", ["ccs"], name: "index_emails_on_ccs", using: :btree
   add_index "emails", ["date", "id"], name: "index_emails_on_date_and_id", order: {"date"=>:desc, "id"=>:desc}, using: :btree
   add_index "emails", ["date"], name: "index_emails_on_date", order: {"date"=>:desc}, using: :btree
   add_index "emails", ["email_account_id", "email_account_type", "draft_id"], name: "index_emails_on_email_account_and_draft_id", unique: true, using: :btree
   add_index "emails", ["email_account_id", "email_account_type", "uid"], name: "index_emails_on_email_account_id_and_email_account_type_and_uid", unique: true, using: :btree
   add_index "emails", ["email_account_id", "email_account_type"], name: "index_emails_on_email_account_id_and_email_account_type", using: :btree
   add_index "emails", ["email_thread_id"], name: "index_emails_on_email_thread_id", using: :btree
+  add_index "emails", ["from_address"], name: "index_emails_on_from_address", using: :btree
   add_index "emails", ["id"], name: "index_emails_on_id", where: "(NOT seen)", using: :btree
   add_index "emails", ["message_id"], name: "index_emails_on_message_id", using: :btree
+  add_index "emails", ["reply_to_address"], name: "index_emails_on_reply_to_address", using: :btree
+  add_index "emails", ["sender_address"], name: "index_emails_on_sender_address", using: :btree
+  add_index "emails", ["tos"], name: "index_emails_on_tos", using: :btree
   add_index "emails", ["uid"], name: "index_emails_on_uid", unique: true, using: :btree
 
   create_table "genie_rules", force: true do |t|
