@@ -293,8 +293,6 @@ ActiveRecord::Schema.define(version: 20141206022456) do
     t.boolean  "attachments_uploaded",              default: false
   end
 
-  add_index "emails", ["bccs"], name: "index_emails_on_bccs", using: :btree
-  add_index "emails", ["ccs"], name: "index_emails_on_ccs", using: :btree
   add_index "emails", ["date", "id"], name: "index_emails_on_date_and_id", order: {"date"=>:desc, "id"=>:desc}, using: :btree
   add_index "emails", ["date"], name: "index_emails_on_date", order: {"date"=>:desc}, using: :btree
   add_index "emails", ["email_account_id", "email_account_type", "draft_id"], name: "index_emails_on_email_account_and_draft_id", unique: true, using: :btree
@@ -306,7 +304,6 @@ ActiveRecord::Schema.define(version: 20141206022456) do
   add_index "emails", ["message_id"], name: "index_emails_on_message_id", using: :btree
   add_index "emails", ["reply_to_address"], name: "index_emails_on_reply_to_address", using: :btree
   add_index "emails", ["sender_address"], name: "index_emails_on_sender_address", using: :btree
-  add_index "emails", ["tos"], name: "index_emails_on_tos", using: :btree
   add_index "emails", ["uid"], name: "index_emails_on_uid", unique: true, using: :btree
 
   create_table "genie_rules", force: true do |t|
