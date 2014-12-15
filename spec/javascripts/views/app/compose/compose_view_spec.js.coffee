@@ -536,10 +536,10 @@ describe "ComposeView", ->
             @emailJSON["text_part"] = @seededChance.string({length: 250})
             
             @body = @composeView.loadEmailBody(@emailJSON, true)
-            
+
           it "loads the email body", ->
             expect(@formatEmailReplyBodySpy).toHaveBeenCalledWith(@emailJSON)
-            expect(@htmlSpy).toHaveBeenCalledWith(@body)
+            expect(@htmlSpy).toHaveBeenCalledWith(@body.html())
   
         describe "isReply=false", ->
           describe "html=true", ->
@@ -552,7 +552,7 @@ describe "ComposeView", ->
             it "loads the email body", ->
               expect(@formatEmailReplyBodySpy).not.toHaveBeenCalled()
               expect(@parseEmailSpy).toHaveBeenCalled()
-              expect(@htmlSpy).toHaveBeenCalledWith(@body)
+              expect(@htmlSpy).toHaveBeenCalledWith(@body.html())
   
           describe "html=false", ->
             beforeEach ->
