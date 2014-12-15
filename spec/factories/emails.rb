@@ -13,6 +13,7 @@ FactoryGirl.define do
     auto_filed false
     auto_filed_reported false
     auto_filed_folder nil
+    auto_file_folder_name ""
 
     sequence(:uid) { |n| "#{n}" }
     sequence(:message_id) { |n| "foo#{n}@bar.com" }
@@ -22,6 +23,9 @@ FactoryGirl.define do
     sequence(:snippet) { |n| "test email #{n} snippet" }
 
     date { DateTime.now.rfc2822 }
+
+    email_attachments []
+    email_attachment_uploads []
 
     from_name 'From Name'
     from_address 'from@address.com'

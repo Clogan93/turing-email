@@ -11,7 +11,9 @@ describe 'api/v1/user_configurations/show', :type => :view do
     user_configuration_rendered = JSON.parse(rendered)
 
     expected_attributes = %w(id
+                             auto_cleaner_enabled
                              demo_mode_enabled genie_enabled
+                             skin_uid
                              split_pane_mode keyboard_shortcuts_enabled developer_enabled
                              installed_apps)
     
