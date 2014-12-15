@@ -1337,7 +1337,7 @@ describe "TuringEmailApp", ->
 
         it "clears the sync timeout", ->
           TuringEmailApp.pauseClicked()
-          expect(TuringEmailApp.syncTimeout).not.toBeDefined()
+          expect(TuringEmailApp.syncTimeout is null).toBeTruthy()
 
         it "show the pause alert", ->
           spy = sinon.spy(TuringEmailApp, "showAlert")

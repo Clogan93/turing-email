@@ -69,13 +69,20 @@ window.TuringEmailApp = new(Backbone.View.extend(
     if windowLocationHash is ""
       @routers.emailFoldersRouter.navigate("#email_folder/INBOX", trigger: true)
 
-    @syncTimeout = window.setTimeout(=>
-      @syncEmail()
-    , 60000)
+    @setupSyncTimeout()
 
   #######################
   ### Setup Functions ###
   #######################
+
+  setupSyncTimeout: ->
+    if @syncTimeout
+      clearTimeout @syncTimeout
+      @syncTimeout = null
+
+    @syncTimeout = window.setTimeout(=>
+      @syncEmail()
+    , 60000)
 
   setupGmailAPI: ->
     @gmailAPIReady = false
@@ -297,10 +304,8 @@ window.TuringEmailApp = new(Backbone.View.extend(
             reload()
       )
 
-    @syncTimeout = window.setTimeout(=>
-      @syncEmail()
-    , 60000)
-    
+    @setupSyncTimeout()
+
   #######################
   ### Alert Functions ###
   #######################
@@ -525,6 +530,7 @@ window.TuringEmailApp = new(Backbone.View.extend(
 
   pauseClicked: ->
     clearTimeout(@syncTimeout)
+    @syncTimeout = null
     @showAlert("Email sync paused.", "alert-success")
 
   searchClicked: (query) ->
