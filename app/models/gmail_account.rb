@@ -541,6 +541,9 @@ class GmailAccount < ActiveRecord::Base
     self.emails.delete_all
     log_console('Email DELETED!')
 
+    self.email_threads.delete_all
+    log_console('Email Threads DELETED!')
+
     SyncFailedEmail.where(:email_account => self).delete_all
     log_console('SyncFailedEmail DELETED!')
     
