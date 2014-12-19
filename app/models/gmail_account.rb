@@ -522,7 +522,7 @@ class GmailAccount < ActiveRecord::Base
     log_console('EmailFolderMapping DELETED!')
     
     EmailRecipient.where(:email => self.emails).delete_all
-    log_console('EmailRecipient DELETED!')
+    log_console('EmailRecipient(email) DELETED!')
     
     EmailReference.where(:email => self.emails).delete_all
     log_console('EmailReference DELETED!')
@@ -543,6 +543,12 @@ class GmailAccount < ActiveRecord::Base
 
     self.email_threads.delete_all
     log_console('Email Threads DELETED!')
+
+    EmailRecipient.where(:person => self.people).delete_all
+    log_console('EmailRecipient(person) DELETED!')
+
+    self.people.delete_all
+    log_console('People DELETED!')
 
     SyncFailedEmail.where(:email_account => self).delete_all
     log_console('SyncFailedEmail DELETED!')
