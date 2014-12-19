@@ -518,10 +518,22 @@ class GmailAccount < ActiveRecord::Base
   end
 
   def sync_reset(reset_history_id = true)
-    destroy_all_batch(self.emails)
+    EmailFolderMapping.where(:email => self.emails).delete_all
+    EmailRecipient.where(:email => self.emails).delete_all
+    EmailReference.where(:email => self.emails).delete_all
+    EmailInReplyTo.where(:email => self.emails).delete_all
+    
+    destroy_all_batch(EmailAttachment.where(:email => self.emails).where('s3_key IS NOT NULL'))
+    destroy_all_batch(EmailTrackerRecipient.where(:email => self.emails))
+
+    EmailAttachment.where(:email => self.emails).delete_all
+    
+    self.emails.delete_all
+
+    SyncFailedEmail.where(:email_account => self).delete_all
+    ListSubscription.where(:email => self.emails).delete_all
+    
     destroy_all_batch(self.gmail_labels)
-    destroy_all_batch(self.sync_failed_emails)
-    destroy_all_batch(self.list_subscriptions)
     
     self.sync_started_time = nil
     self.last_history_id_synced = nil if reset_history_id
