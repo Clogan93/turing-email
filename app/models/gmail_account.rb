@@ -519,21 +519,36 @@ class GmailAccount < ActiveRecord::Base
 
   def sync_reset(reset_history_id = true)
     EmailFolderMapping.where(:email => self.emails).delete_all
+    log_console('EmailFolderMapping DELETED!')
+    
     EmailRecipient.where(:email => self.emails).delete_all
+    log_console('EmailRecipient DELETED!')
+    
     EmailReference.where(:email => self.emails).delete_all
+    log_console('EmailReference DELETED!')
+    
     EmailInReplyTo.where(:email => self.emails).delete_all
+    log_console('EmailInReplyTo DELETED!')
     
     destroy_all_batch(EmailAttachment.where(:email => self.emails).where('s3_key IS NOT NULL'))
-    destroy_all_batch(EmailTrackerRecipient.where(:email => self.emails))
-
+    log_console('EmailAttachment destroyed!!!')
     EmailAttachment.where(:email => self.emails).delete_all
+    log_console('EmailAttachment DELETED!')
+    
+    destroy_all_batch(EmailTrackerRecipient.where(:email => self.emails))
+    log_console('EmailTrackerRecipient destroyed!!!')
     
     self.emails.delete_all
+    log_console('Email DELETED!')
 
     SyncFailedEmail.where(:email_account => self).delete_all
-    ListSubscription.where(:email => self.emails).delete_all
+    log_console('SyncFailedEmail DELETED!')
+    
+    ListSubscription.where(:email_account => self).delete_all
+    log_console('ListSubscription DELETED!')
     
     destroy_all_batch(self.gmail_labels)
+    log_console('gmail_labels destroyed!!!')
     
     self.sync_started_time = nil
     self.last_history_id_synced = nil if reset_history_id
