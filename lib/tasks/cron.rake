@@ -69,7 +69,7 @@ task :queue_sync_account => :environment do
 
     log_console('STARTING queue_sync_account')
     
-    GmailAccount.all.each do |gmail_account|
+    GmailAccount.find_each do |gmail_account|
       log_exception() do
         log_console("PROCESSING account #{gmail_account.email}")
   
