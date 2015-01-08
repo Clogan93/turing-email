@@ -67,7 +67,9 @@ class GmailAccount < ActiveRecord::Base
   
   # TODO write tests
   def GmailAccount.mime_data_from_gmail_data(gmail_data)
+    #Converted to and from JSON to get around a ruby library bug.
     gmail_json = JSON.parse(gmail_data.to_json())
+
     mime_data = Base64.urlsafe_decode64(gmail_json['raw'])
 
     return mime_data
