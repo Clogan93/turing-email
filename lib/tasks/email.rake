@@ -5,7 +5,7 @@ task :sync_email, [:labelIds_string] => :environment do |t, args|
   labelIds = nil
   labelIds = args.labelIds_string.split(' ') if args.labelIds_string
   
-  GmailAccount.all.each do |gmail_account|
+  GmailAccount.find_each do |gmail_account|
     begin
       log_console("PROCESSING account #{gmail_account.email}")
       
@@ -19,7 +19,7 @@ end
 desc 'Sync all email accounts - labels only'
 
 task :sync_labels => :environment do
-  GmailAccount.all.each do |gmail_account|
+  GmailAccount.find_each do |gmail_account|
     begin
       log_console("PROCESSING account #{gmail_account.email}")
 
@@ -35,7 +35,7 @@ desc 'Run the genie on all email accounts'
 task :email_genie, [:demo] => :environment do |t, args|
   args.with_defaults(:demo => false)
   
-  GmailAccount.all.each do |gmail_account|
+  GmailAccount.find_each do |gmail_account|
     begin
       log_console("PROCESSING account #{gmail_account.email}")
   
@@ -52,7 +52,7 @@ desc 'Run genie reports for all accounts'
 task :email_genie_reports, [:demo] => :environment do |t, args|
   args.with_defaults(:demo => false)
   
-  User.all.each do |user|
+  User.find_each do |user|
     begin
       log_console("PROCESSING user #{user.email}")
 
@@ -68,7 +68,7 @@ desc 'Run brain and report for all accounts'
 task :brain_and_report, [:demo] => :environment do |t, args|
   args.with_defaults(:demo => false)
 
-  User.all.each do |user|
+  User.find_each do |user|
     begin
       log_console("PROCESSING user #{user.email}")
 
@@ -88,7 +88,7 @@ end
 desc 'Reset the genie for testing purposes'
 
 task :email_genie_reset => :environment do
-  User.all.each do |user|
+  User.find_each do |user|
     begin
       emails_auto_filed = user.emails.where(:auto_filed => true)
       log_console("FOUND #{emails_auto_filed.length} AUTO FILED!!")
@@ -120,7 +120,7 @@ end
 desc 'Reset the genie report for testing purposes'
 
 task :email_genie_reports_reset => :environment do
-  User.all.each do |user|
+  User.find_each do |user|
     begin
       email_ids_auto_filed = user.emails.where(:auto_filed => true).pluck(:id)
       log_console("FOUND #{email_ids_auto_filed.length} AUTO FILED!!")
@@ -138,7 +138,7 @@ end
 desc 'Run email rules'
 
 task :run_email_rules => :environment do
-  User.all.each do |user|
+  User.find_each do |user|
     begin
       log_console("PROCESSING account #{user.email}")
       

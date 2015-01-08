@@ -67,7 +67,9 @@ class GmailAccount < ActiveRecord::Base
   
   # TODO write tests
   def GmailAccount.mime_data_from_gmail_data(gmail_data)
+    #Converted to and from JSON to get around a ruby library bug.
     gmail_json = JSON.parse(gmail_data.to_json())
+
     mime_data = Base64.urlsafe_decode64(gmail_json['raw'])
 
     return mime_data
@@ -517,14 +519,50 @@ class GmailAccount < ActiveRecord::Base
     return []
   end
 
-  def sync_reset
-    destroy_all_batch(self.emails)
+  def sync_reset(reset_history_id = true)
+    EmailFolderMapping.where(:email => self.emails).delete_all
+    log_console('EmailFolderMapping DELETED!')
+    
+    EmailRecipient.where(:email => self.emails).delete_all
+    log_console('EmailRecipient(email) DELETED!')
+    
+    EmailReference.where(:email => self.emails).delete_all
+    log_console('EmailReference DELETED!')
+    
+    EmailInReplyTo.where(:email => self.emails).delete_all
+    log_console('EmailInReplyTo DELETED!')
+    
+    destroy_all_batch(EmailAttachment.where(:email => self.emails).where('s3_key IS NOT NULL'))
+    log_console('EmailAttachment destroyed!!!')
+    EmailAttachment.where(:email => self.emails).delete_all
+    log_console('EmailAttachment DELETED!')
+    
+    destroy_all_batch(EmailTrackerRecipient.where(:email => self.emails))
+    log_console('EmailTrackerRecipient destroyed!!!')
+    
+    self.emails.delete_all
+    log_console('Email DELETED!')
+
+    self.email_threads.delete_all
+    log_console('Email Threads DELETED!')
+
+    EmailRecipient.where(:person => self.people).delete_all
+    log_console('EmailRecipient(person) DELETED!')
+
+    self.people.delete_all
+    log_console('People DELETED!')
+
+    SyncFailedEmail.where(:email_account => self).delete_all
+    log_console('SyncFailedEmail DELETED!')
+    
+    ListSubscription.where(:email_account => self).delete_all
+    log_console('ListSubscription DELETED!')
+    
     destroy_all_batch(self.gmail_labels)
-    destroy_all_batch(self.sync_failed_emails)
-    destroy_all_batch(self.list_subscriptions)
+    log_console('gmail_labels destroyed!!!')
     
     self.sync_started_time = nil
-    self.last_history_id_synced = nil
+    self.last_history_id_synced = nil if reset_history_id
     
     self.save!
   end

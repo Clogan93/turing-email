@@ -12,7 +12,12 @@ module WorkerExtensions
     if !job.payload_object.respond_to?(:error)
       text = "FAILED (#{job.attempts} prior attempts) with #{error.class.name}: #{error.message}"
       text = "Job #{job.name} (id=#{job.id}) #{text}"
-      log_email('JOB FAILURE!!!', text)
+      
+      if job.attempts >= Delayed::Worker.max_attempts - 1
+        log_email('JOB FAILURE!!!', text)
+      else
+        log_console(text)
+      end
     else
       log_console("handle_failed_job SKIPPING email!!")
     end
